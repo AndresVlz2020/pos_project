@@ -1,0 +1,64 @@
+@import url(tokens.css);
+@import url(semantic.css);
+/* Estya linea tiene que ir de ultimo */
+@import "tailwindcss";
+
+
+@theme {
+
+--color-brand: var(--semantic-brand);
+--color-brand-hover: var(--semantic-brand-hover);
+--color-brand-soft: var(--semantic-brand-soft);
+--color-brand-soft-hover: var(--semantic-brand-soft-hover);
+
+
+/* =================Background==================== */
+
+--color-background: var(--semantic-background);
+--color-surface: var(--semantic-surface);
+--color-surface-muted: var(--semantic-surface-muted);
+--color-background-inverse: var(--semantic-background-inverse);
+
+/* ==================Text===================== */
+
+--color-text-primary: var(--semantic-text-primary);
+--color-text-secondary: var(--semantic-text-secondary);
+--color-text-muted: var(--semantic-text-muted);
+--color-text-inverse: var(--semantic-text-inverse);
+
+
+/* ====================Border==================== */
+
+--color-border: var(--semantic-border);
+--color-border-strong: var(--semantic-border-strong);
+
+/* ====================Focus==================== */
+
+--color-focus-ring: var(--semantic-focus-ring);
+--color-border-strong: var(--semantic-focus-border);
+
+/* STATUS */
+
+--color-success: var(--semantic-success);
+--color-warning: var(--semantic-warning);
+--color-error: var(--semantic-error);
+
+/* TYPOGRAPHY */
+
+--font-size-display: var(--semantic-font-size-display);
+--font-size-main: var(--semantic-font-size-h1);
+--font-size-title: var(--semantic-font-size-h2);
+--font-size-subtitle: var(--semantic-font-size-h3);
+--font-size-body: var(--semantic-font-size-body);
+--font-size-medium: var(--semantic-font-size-medium);
+--font-size-small: var(--semantic-font-size-small);
+--font-size-caption: var(--semantic-font-size-caption);
+
+/* FONT WEIGHT */
+
+--font-weight-heading: var(--semantic-font-weight-heading);
+--font-weight-body: var(--semantic-font-weight-body);
+--font-weight-label: var(--semantic-font-weight-label);
+
+
+}
