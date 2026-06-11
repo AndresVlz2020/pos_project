@@ -2,6 +2,9 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthLayout } from "@/shared";
 import { DashboardLayout} from "@/shared";
+import DeleteCounter from "@/shared/components/DeleteCounter";
+
+
 
 const router = createBrowserRouter([
   {
@@ -9,7 +12,7 @@ const router = createBrowserRouter([
     element: <Navigate to="/dashboard" replace />,
   },
   {
-    path: "/auth",
+    path: "/Auth",
     element: <AuthLayout />,
     children: [
       {

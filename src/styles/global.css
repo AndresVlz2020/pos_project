@@ -1,8 +1,6 @@
-@import url(tokens.css);
-@import url(semantic.css);
-/* Estya linea tiene que ir de ultimo */
 @import "tailwindcss";
-
+@import "./tokens.css" layer(base);
+@import "./semantic.css" layer(base);
 
 @theme {
 

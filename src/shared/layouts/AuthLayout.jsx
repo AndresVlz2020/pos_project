@@ -1,12 +1,33 @@
+import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import authBg from "@/assets/images/bg-1.png"; 
-import { Input, Button } from "@/shared"; 
+import {
+   Input,
+   Button, 
+   DeleteCounter2, 
+   Select,
+   Checkbox } from "@/shared";
+import { getDocumentTypes } from "../../services/selectServices";
 
 export default function AuthLayout(){
+
+  // Estado para los documentos
+  const [documentTypes, setDocumentTypes] = useState([]);
+  
+  useEffect(() => {
+
+    getDocumentTypes()
+      .then(setDocumentTypes)
+      .catch((error) => {
+        console.error("Error al cargar los documentos:", error);
+        setDocumentTypes([]); // Evita que el Select se rompa si la API falla
+      });
+  }, []);
+  
   return (
     <>
       <div 
-        className="min-h-screen w-full"
+        className="min-h-screen w-full mx-auto flex items-center justify-center"
         style={{
           backgroundImage: `url(${authBg})`,
           backgroundSize: "cover",
@@ -49,7 +70,6 @@ export default function AuthLayout(){
           />
 
           {/* Actions */}
-          
           <div className="flex gap-6 items-center">
             <Button
               variant="secondary"
@@ -68,8 +88,19 @@ export default function AuthLayout(){
               >Guardar
             </Button>
           </div>
+          <h1>Ejemplo 1</h1>
 
+          <DeleteCounter2 />
 
+          {/* Implementación del Select */}
+          <Select
+            label="Tipo de documento"
+            name="userDocumentType"
+            htmlFor="userDocumentType"
+            options={documentTypes}
+          />
+
+          
 
           <Outlet/>
         </main>
