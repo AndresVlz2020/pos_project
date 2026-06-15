@@ -6,6 +6,7 @@ import CreateOrder from "@/features/create/CreateOrder";
 import UsersManagement from "@/features/create/UsersManagement";
 import Login from "@/features/auth/Login";
 import Register from "@/features/auth/Register";
+import CreateUser from "@/features/create/CreateUser";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 
@@ -40,6 +41,13 @@ const router = createBrowserRouter([
     element: <DashboardLayout />,
     children: [
       { index: true, element: <CreateOrder /> },
+    ],
+  },
+  {
+    path: "/CreateUser",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <CreateUser /> },
     ],
   },
   {
