@@ -32,14 +32,14 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/crear-orden",
+    path: "/CreateOrder",
     element: <DashboardLayout />,
     children: [
       { index: true, element: <CreateOrder /> },
     ],
   },
   {
-    path: "/gestion-usuarios",
+    path: "/UsersManagement",
     element: <DashboardLayout />,
     children: [
       { index: true, element: <UsersManagement /> },
