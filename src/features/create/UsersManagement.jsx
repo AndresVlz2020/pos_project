@@ -82,7 +82,6 @@ export default function UsersManagement() {
           </button>
           <div className="flex items-center gap-3">
             <img src={logoDPiero} alt="D,PIERO" className="h-8 w-auto object-contain" />
-            <span className="text-xl font-semibold tracking-wide">D,PIERO</span>
           </div>
         </div>
       </div>
