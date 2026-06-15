@@ -150,7 +150,7 @@ export default function CreateOrder() {
                 >
                   -
                 </button>
-                <span className="min-w-[2.5rem] h-8 md:h-9 px-3 flex items-center justify-center rounded-md bg-[var(--color-surface-muted)] text-[var(--color-text-primary)]">
+                <span className="min-w-[2.5rem] h-8 md:h-9 px-3 flex items-center justify-center rounded-md bg-[var(--color-primary-700)] text-[var(--color-text-inverse)]">
                   {qty[dish.id]}
                 </span>
                 <button
