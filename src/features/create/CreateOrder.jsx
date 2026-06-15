@@ -110,7 +110,7 @@ export default function CreateOrder() {
 
         <h2 className="text-center text-xl font-bold mt-8 mb-6">Platillos del Menu</h2>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center mb-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-10 justify-items-center mb-10">
           {dishes.map((dish) => (
             <div key={dish.id} className="w-80 rounded-lg border border-[var(--color-border-strong)] p-4 bg-[var(--color-primary-900)] text-[var(--color-text-inverse)] shadow-sm overflow-hidden on-dark">
               <img src={dish.image} alt={dish.name} className="w-full aspect-[16/9] object-cover rounded-md" />
