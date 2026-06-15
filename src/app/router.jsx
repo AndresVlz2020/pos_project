@@ -3,7 +3,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthLayout } from "@/shared";
 import { DashboardLayout} from "@/shared";
 import CreateOrder from "@/features/create/CreateOrder";
-import UsersManagement from "@/features/users/UsersManagement";
+import UsersManagement from "@/features/create/UsersManagement";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 
