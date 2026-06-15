@@ -62,3 +62,22 @@
 
 
 }
+
+.on-dark label {
+  color: var(--color-text-inverse);
+}
+
+.on-dark .text-secondary {
+  color: var(--color-text-inverse);
+}
+
+/* Asegura contraste correcto en inputs ubicados dentro de contenedores oscuros */
+.on-dark input {
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  width: 100%;
+}
+
+.on-dark input::placeholder {
+  color: var(--color-text-secondary);
+}
