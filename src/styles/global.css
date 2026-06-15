@@ -81,3 +81,18 @@
 .on-dark input::placeholder {
   color: var(--color-text-secondary);
 }
+
+/* Ajustes específicos para la vista de Gestión de Usuarios */
+.users-mgmt select {
+  width: 100% !important; /* anula w-80 del componente para evitar desfase */
+  height: 2.5rem; /* h-10 para alinear con inputs */
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem;
+  border-color: var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.users-mgmt label {
+  color: var(--color-text-primary);
+}

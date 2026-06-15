@@ -69,7 +69,7 @@ export default function UsersManagement() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full users-mgmt">
       {/* Header */}
       <div className="w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
