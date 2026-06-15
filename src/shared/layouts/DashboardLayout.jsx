@@ -15,7 +15,7 @@ export default function DashboardLayout() {
       >
         <main className="mx-auto">
           <Outlet />
-          <UserRegisterForm />
+          {/* <UserRegisterForm /> */}
         </main>
       </div>
     </>
