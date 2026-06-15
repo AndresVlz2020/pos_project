@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthLayout } from "@/shared";
 import { DashboardLayout} from "@/shared";
 import CreateOrder from "@/features/create/CreateOrder";
+import UsersManagement from "@/features/users/UsersManagement";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 
@@ -35,6 +36,13 @@ const router = createBrowserRouter([
     element: <DashboardLayout />,
     children: [
       { index: true, element: <CreateOrder /> },
+    ],
+  },
+  {
+    path: "/gestion-usuarios",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <UsersManagement /> },
     ],
   },
 ]);
