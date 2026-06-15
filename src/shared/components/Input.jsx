@@ -1,5 +1,6 @@
 export default function Input({
     label,
+    error,
     htmlFor,
     type= "text",
     variant= "primary",
@@ -45,12 +46,13 @@ export default function Input({
                     mb-1
                     text-secondary
                     ${
-                      size === "sm" 
-                      ? "-mb-2" 
-                      : size === "md" 
-                      ? "-mb-0" 
+                      size === "sm"
+                      ? "-mb-2"
+                      : size === "md"
+                      ? "-mb-0"
                       : "mb-1"
                     }
+                    ${error ? "text-red-500" : ""}
                 `} 
                 
                 >
@@ -82,6 +84,7 @@ export default function Input({
                     <input
                         id={htmlFor}
                         type={type}
+                        error={error}
                         className={`
                         relative
                         w-80
@@ -95,10 +98,15 @@ export default function Input({
                         focus:ring-brand
                         ${variants[variant]}
                         ${sizes[size]}
+                        ${error ? "border-red-800" : ""}
                         `}
                         {...props}
                     />
             </div>
+            {/* Feedback */}
+            {error && (
+                <p className="text-caption text-red-500 place self-start">{error}</p>
+            )}
         </div>
     )
 }

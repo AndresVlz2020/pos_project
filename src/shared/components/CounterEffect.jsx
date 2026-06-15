@@ -3,7 +3,6 @@
 // Este componente muestra un contador que se incrementa cada segundo utilizando el hook useEffect para manejar el efecto de temporizador.
 
 import { useEffect, useState } from "react";
-import Button from "./Button";
 export default function CounterEffect(){
 
     // Se crea el estaado
@@ -26,7 +25,7 @@ export default function CounterEffect(){
             <h2>{count}</h2>
             <p>{Message}</p>
 
-            <Button variant="primary" onClick={() => setCount(count + 1)}>Incrementar</Button>
+            <button onClick={() => setCount(count + 1)} className="border p-6   bg-green-300">Incrementar efecto </button>
         </div>
     )
 

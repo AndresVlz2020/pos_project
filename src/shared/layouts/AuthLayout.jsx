@@ -4,9 +4,8 @@ import authBg from "@/assets/images/bg-1.png";
 import {
    Input,
    Button, 
-   DeleteCounter2, 
    Select,
-   Checkbox } from "@/shared";
+   } from "@/shared";
 import { getDocumentTypes } from "../../services/selectServices";
 
 export default function AuthLayout(){
@@ -90,8 +89,9 @@ export default function AuthLayout(){
           </div>
           <h1>Ejemplo 1</h1>
 
-          <DeleteCounter2 />
+          {/* <DeleteCounter2 /> */}
 
+          
           {/* Implementación del Select */}
           <Select
             label="Tipo de documento"

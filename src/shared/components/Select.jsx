@@ -3,6 +3,9 @@ export default function Select ({
     label,
     htmlFor,
     name,
+    error,
+    onChange,
+    value,
     options = [],
 }) {
     return (
@@ -18,6 +21,8 @@ export default function Select ({
 
             {/* Select */}
             <select 
+                value={value}
+                onChange={onChange}
                 name={name}
                 id={htmlFor} 
                 className="
@@ -30,6 +35,7 @@ export default function Select ({
                     hover:border-2
                     hover:border-focus-border
                 "
+
             >
                 <option value="">Selecciona una opción</option>
                 
@@ -39,6 +45,11 @@ export default function Select ({
                     </option>
                 ))}
             </select>
+
+            {error &&
+             <p className="text-caption text-red-800 place-self-start mt-1">{error}</p>}
+
+
         </div>
     );
 }
