@@ -112,7 +112,7 @@ export default function CreateOrder() {
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-10 justify-items-center mb-10">
           {dishes.map((dish) => (
-            <div key={dish.id} className="w-80 rounded-lg border border-[var(--color-border-strong)] p-4 bg-[var(--color-primary-900)] text-[var(--color-text-inverse)] shadow-sm overflow-hidden on-dark">
+            <div key={dish.id} className="w-72 rounded-lg border border-[var(--color-border-strong)] p-4 bg-[var(--color-primary-900)] text-[var(--color-text-inverse)] shadow-sm overflow-hidden on-dark">
               <img src={dish.image} alt={dish.name} className="w-full aspect-[16/9] object-cover rounded-md" />
 
               <div className="mt-4 grid gap-3">
@@ -150,7 +150,7 @@ export default function CreateOrder() {
                 >
                   -
                 </button>
-                <span className="min-w-[2.5rem] h-8 md:h-9 px-3 flex items-center justify-center rounded-md bg-[var(--color-surface-muted)] text-[var(--color-gray-900)]">
+                <span className="min-w-[2.5rem] h-8 md:h-9 px-3 flex items-center justify-center rounded-md bg-[var(--color-surface-muted)] text-[var(--color-text-primary)]">
                   {qty[dish.id]}
                 </span>
                 <button
