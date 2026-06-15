@@ -1,0 +1,82 @@
+import { useState } from "react";
+import { Input, Button, Checkbox } from "@/shared";
+import { Link } from "react-router-dom";
+import logoDPiero from "@/assets/images/logo-d,piero.png";
+import bgLogin from "@/assets/images/bg-login.png";
+
+export default function Login() {
+  const [form, setForm] = useState({ email: "", password: "", remember: false });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Inicio de sesión (demo)");
+  };
+
+  return (
+    <div className="w-full">
+      {/* Header */}
+      <div className="w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)]">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-3">
+          <img src={logoDPiero} alt="D,PIERO" className="h-8 w-auto object-contain" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-6 py-10">
+        {/* Left image */}
+        <div className="hidden md:block relative h-[60vh] md:h-[70vh] rounded-lg overflow-hidden border border-[var(--color-border)]">
+          <img src={bgLogin} alt="Fondo Login" className="absolute inset-0 w-full h-full object-cover" />
+        </div>
+
+        {/* Right form */}
+        <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto">
+          <div className="rounded-lg border border-[var(--color-border-strong)] p-8">
+            <div className="grid gap-4">
+              <Input
+                label="Correo Electrónico"
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                htmlFor="login-email"
+              />
+              <Input
+                label="Contraseña"
+                name="password"
+                type="password"
+                value={form.password}
+                onChange={handleChange}
+                htmlFor="login-password"
+              />
+              <Checkbox
+                id="login-remember"
+                name="remember"
+                label="Recordarme"
+                checked={form.remember}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <Button variant="primary" type="submit" className="w-full">Iniciar Sesión</Button>
+          </div>
+
+          <div className="mt-4">
+            <Link to="#" className="text-sm underline text-[var(--color-primary-700)]">¿Olvidó su contraseña?</Link>
+          </div>
+
+          <div className="mt-6 text-sm">
+            ¿Aun no tienes cuenta? {" "}
+            <Link to="/Auth/register" className="underline text-[var(--color-primary-700)]">Regístrate Aquí</Link>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

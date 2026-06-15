@@ -33,75 +33,77 @@ export default function AuthLayout(){
           backgroundPosition: "center",
         }}
       >
-        <main className="mx-auto">
+        <main className="w-full">
         {/* Envolvemos el input en un div con ancho controlado */}
-          <Input 
-            label="Nombre"
-            type="text"
-            placeholder="Escribe tu nombre"
-            htmlFor="name"
-            variant="primary"
-            size="lg"
-          />
-          <Input 
-            label="Correo"
-            type="email"
-            placeholder="Escribe tu correo"
-            htmlFor="user-email"
-          />
-          <Input 
-            label="Telefono"
-            type="tel"
-            placeholder="Escribe tu telefono"
-            htmlFor="user-phone"
-          />
-          <Input 
-            label="Borar tipo de documento"
-            type="text"
-            placeholder="Escribe tu telefono"
-            htmlFor="name"
-          />
-          <Input 
-            label="Documento"
-            type="text"
-            placeholder="Escribe tu numero de documento"
-            htmlFor="user-document-number"
-          />
-
-          {/* Actions */}
-          <div className="flex gap-6 items-center">
-            <Button
-              variant="secondary"
-              size="md"
-              type="submit"
-              align="left"
-              onClick={() => console.log("Se oprimió el submit")}
-              >Cancelar
-            </Button>
-   
-            <Button
+        {false && (
+          <>
+            <Input 
+              label="Nombre"
+              type="text"
+              placeholder="Escribe tu nombre"
+              htmlFor="name"
               variant="primary"
-              size="md"
-              type="submit"
-              onClick={() => console.log("Se oprimió el submit")}
-              >Guardar
-            </Button>
-          </div>
-          <h1>Ejemplo 1</h1>
+              size="lg"
+            />
+            <Input 
+              label="Correo"
+              type="email"
+              placeholder="Escribe tu correo"
+              htmlFor="user-email"
+            />
+            <Input 
+              label="Telefono"
+              type="tel"
+              placeholder="Escribe tu telefono"
+              htmlFor="user-phone"
+            />
+            <Input 
+              label="Borar tipo de documento"
+              type="text"
+              placeholder="Escribe tu telefono"
+              htmlFor="name"
+            />
+            <Input 
+              label="Documento"
+              type="text"
+              placeholder="Escribe tu numero de documento"
+              htmlFor="user-document-number"
+            />
 
-          {/* <DeleteCounter2 /> */}
+            {/* Actions */}
+            <div className="flex gap-6 items-center">
+              <Button
+                variant="secondary"
+                size="md"
+                type="submit"
+                align="left"
+                onClick={() => console.log("Se oprimió el submit")}
+              >
+                Cancelar
+              </Button>
+  
+              <Button
+                variant="primary"
+                size="md"
+                type="submit"
+                onClick={() => console.log("Se oprimió el submit")}
+              >
+                Guardar
+              </Button>
+            </div>
+            <h1>Ejemplo 1</h1>
 
-          
-          {/* Implementación del Select */}
-          <Select
-            label="Tipo de documento"
-            name="userDocumentType"
-            htmlFor="userDocumentType"
-            options={documentTypes}
-          />
+            {/* <DeleteCounter2 /> */}
 
-          
-
+            {/* Implementación del Select */}
+            <Select
+              label="Tipo de documento"
+              name="userDocumentType"
+              htmlFor="userDocumentType"
+              options={documentTypes}
+            />
+          </>
+        )}
           <Outlet/>
         </main>
       </div>

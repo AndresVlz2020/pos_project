@@ -4,6 +4,8 @@ import { AuthLayout } from "@/shared";
 import { DashboardLayout} from "@/shared";
 import CreateOrder from "@/features/create/CreateOrder";
 import UsersManagement from "@/features/create/UsersManagement";
+import Login from "@/features/auth/Login";
+import Register from "@/features/auth/Register";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 
@@ -19,7 +21,9 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <Login />,
       },
+      { path: "register", element: <Register /> },
     ],
   },
   {
