@@ -1,6 +1,6 @@
 import { Input, Select, Button } from "@/shared";
-import ImgUpload from "@/assets/images/upload.png";
-import ImgUploadBar from "@/assets/images/upload-bar.png";
+import ImgUpload from "@/assets/icons/upload.png";
+import ImgUploadBar from "@/assets/icons/upload-bar.png";
 
 export default function CreateProduct() {
     return (
