@@ -7,9 +7,8 @@ import UsersManagement from "@/features/create/UsersManagement";
 import Login from "@/features/auth/Login";
 import Register from "@/features/auth/Register";
 import CreateUser from "@/features/create/CreateUser";
+import CreateProduct from "@/features/create/CreateProduct";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
-
-
 
 const router = createBrowserRouter([
   {
@@ -34,6 +33,13 @@ const router = createBrowserRouter([
       { index: true, element: <h1>Hello1</h1> },
       { path: "/dashboard/auth", element: <h1>Hello2</h1> },
       { path: "/dashboard/userList", element: <h1>Hello3</h1> },
+    ],
+  },
+  {
+    path: "/CreateProduct",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <CreateProduct /> },
     ],
   },
   {
