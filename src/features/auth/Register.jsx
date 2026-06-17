@@ -41,9 +41,20 @@ export default function Register() {
     e.preventDefault();
     const result = userSchema.safeParse(form);
     if (!result.success) {
+      const alias = {
+        userName: "name",
+        userEmail: "email",
+        userPhone: "phone",
+        userDocumentTypes: "documentType",
+        userDocumentNumber: "documentNumber",
+        userPassword: "password",
+      };
       const fieldErrors = {};
       result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
+        const src = issue.path[0];
+        const msg = issue.message;
+        const key = alias[src];
+        if (key) fieldErrors[key] = msg;
       });
       setErrors(fieldErrors);
       return;

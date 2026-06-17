@@ -118,6 +118,7 @@ export default function UsersManagement() {
                 value={form.group}
                 onChange={handleSelect}
                 options={groupOptions}
+                error={errors.group}
               />
             </div>
 
@@ -129,6 +130,7 @@ export default function UsersManagement() {
                 value={form.user}
                 onChange={handleSelect}
                 options={userOptions}
+                error={errors.user}
               />
             </div>
           </div>

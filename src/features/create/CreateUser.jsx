@@ -51,9 +51,23 @@ export default function CreateUser() {
 
     const result = userSchema.safeParse(form);
     if (!result.success) {
+      const alias = {
+        userName: "fullName",
+        userDocumentNumber: "documentNumber",
+        userDocumentTypes: "documentType",
+        userPhone: "phone",
+      };
       const fieldErrors = {};
       result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
+        const src = issue.path[0];
+        const msg = issue.message;
+        if (src === "userEmail") {
+          fieldErrors.corporateEmail = msg;
+          fieldErrors.personalEmail = msg;
+          return;
+        }
+        const key = alias[src];
+        if (key) fieldErrors[key] = msg;
       });
       setErrors(fieldErrors);
       return;

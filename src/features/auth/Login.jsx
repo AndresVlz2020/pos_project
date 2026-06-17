@@ -23,9 +23,12 @@ export default function Login() {
     e.preventDefault();
     const result = userSchema.safeParse(form);
     if (!result.success) {
+      const alias = { userEmail: "email", userPassword: "password" };
       const fieldErrors = {};
       result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
+        const src = issue.path[0];
+        const key = alias[src];
+        if (key) fieldErrors[key] = issue.message;
       });
       setErrors(fieldErrors);
       return;
