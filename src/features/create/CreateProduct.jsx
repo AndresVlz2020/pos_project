@@ -1,8 +1,75 @@
 import { Input, Select, Button } from "@/shared";
 import ImgUpload from "@/assets/icons/upload.png";
 import ImgUploadBar from "@/assets/icons/upload-bar.png";
+import logoDPiero from "@/assets/images/logo-d,piero.png";
+import { useState } from "react";
+import { userSchema } from "../users/schemas/userSchema";
 
 export default function CreateProduct() {
+    const [formProduct, setProducts] = useState({
+        productId: "",
+        productStatus: "",
+        productName: "",
+        productAccountant: "",
+        productDescription: "",
+        productLocation: "",
+        personalEmail: "",
+        numberBatch: "",
+        maxAmount: "",
+        minAmount: "",
+        priceBuy: "",
+        priceSell: "",
+        priceBatch: "",
+        expirationDate: "",
+    });
+
+    const [errors, setErrors] = useState({});
+
+    const statusOptions = [
+        { value: "good", label: "Excelente Estado" },
+        { value: "normal", label: "Estado Aceptable" },
+        { value: "bad", label: "Mal Estado" },
+    ];
+
+    const handleChange = (e) => {
+        const{name, value} = e.target;
+        setProducts((prev) => ({ ...prev, [name]: value}));
+
+        // Limpiar el error del campo si existe
+        setErrors((prevErrors) => {
+            if (!prevErrors[name]) return prevErrors;
+            const { [name]: _, ...rest } = prevErrors;
+            return rest;
+        });
+    };
+
+
+    const handleSubmit = async (e) => { 
+        e.preventDefault();
+
+        const result = userSchema.safeParse(formProduct);
+
+
+        if(!result.success){
+            const fieldErrors = {};
+            result.error.issues.forEach((issue) => {
+                fieldErrors[issue.path[0]] = issue.message;
+            });
+            setErrors(fieldErrors);
+            return;
+        }
+        
+        setErrors({});
+
+        try {
+          alert("Informacion Confirmada");
+        } catch (error) {
+          console.error("Error:", error.message);
+          alert(error.message)
+        }
+    };
+
+
     return (
         <div className="h-full bg-white min-h-screen">
             <div className="
@@ -26,6 +93,7 @@ export default function CreateProduct() {
                     >
                         Crear Orden
                     </h1>
+                    <img src={logoDPiero} alt="Logo" className="h-8 w-auto" />
                 </div>
             </div>
             <div className="
@@ -65,91 +133,155 @@ export default function CreateProduct() {
                         Suba un codigo de barras
                     </p>
                 </div>
-                <form>
+                <form
+                    action=""
+                    onSubmit={handleSubmit}
+                >
                     <Input
                         label="ID"
-                        name="product-id"
+                        name="productId"
+                        type="text"
+                        value={formProduct.productId}
                         placeholder="Ingrese el ID del producto"
+                        htmlFor="product-id"
+                        onChange={handleChange}
+                        errors={errors.productId}
                     />
                     <Select
                         label="Estado del producto"
-                        name="product-status"
-                        placeholder="Seleccione"
+                        name="productStatus"
+                        value={formProduct.productStatus}
+                        placeholder="Seleccione el estado del producto"
+                        htmlFor="product-status"
+                        options={statusOptions}
+                        onChange={handleChange}
+                        errors={errors.productStatus}
                     />
                     <Input
                         label="Nombre del producto"
-                        name="product-name"
+                        name="productName"
+                        type="text"
+                        value={formProduct.productName}
                         placeholder="Ingrese el nombre del producto"
+                        htmlFor="product-name"
+                        onChange={handleChange}
+                        errors={errors.productName}
                     />
                     <Input
                         label="Cuentandante"
-                        name="product-accountant"
+                        name="productAccountant"
+                        type="text"
+                        value={formProduct.productAccountant}
                         placeholder="Cuentandante"
+                        htmlFor="product-accountant"
+                        onChange={handleChange}
+                        errors={errors.productAccountant}
                     />
                     <Input
                         label="Descripcion"
-                        name="product-description"
-                        placeholder="Ingrese la descripcion"
+                        name="productDescription"
+                        type="text"
+                        value={formProduct.productDescription}
+                        placeholder="Ingrese la descripcion del producto"
+                        htmlFor="product-description"
+                        onChange={handleChange}
+                        errors={errors.productDescription}
                     />
                     <Input
                         label="Ubicacion"
-                        name="product-location"
+                        name="productLocation"
+                        type="text"
+                        value={formProduct.productLocation}
                         placeholder="Ingrese la ubicacion"
+                        htmlFor="product-location"
+                        onChange={handleChange}
+                        errors={errors.productLocation}
                     />
                 </form>
         
-                <form>
+                <form action="" onSubmit={handleSubmit}>
                     <Input
                         label="Numero Lote"
-                        name="number-batch"
+                        name="numberBatch"
+                        type="text"
+                        value={formProduct.numberBatch}
                         placeholder="Lote"
+                        htmlFor="number-batch"
+                        onChange={handleChange}
+                        errors={errors.numberBatch}
                     />
                     <Input
                         label="Cantidad Maxima"
-                        name="max-amount"
-                        placeholder="Maxima"
+                        name="maxAmount"
+                        type="text"
+                        value={formProduct.maxAmount}
+                        placeholder="Maxima cantidad"
+                        htmlFor="max-amount"
+                        onChange={handleChange}
+                        errors={errors.maxAmount}
                     />
                     <Input
                         label="Cantidad Minima"
-                        name="min-amount"
-                        placeholder="Minima"
+                        name="minAmount"
+                        type="text"
+                        value={formProduct.minAmount}
+                        placeholder="Minima cantidad"
+                        htmlFor="min-amount"
+                        onChange={handleChange}
+                        errors={errors.minAmount}
                     />
                     <Input
                         label="Valor de la compra"
-                        name="price-buy"
+                        name="priceBuy"
+                        type="text"
+                        value={formProduct.priceBuy}
                         placeholder="Ingrese el valor de la compra"
+                        htmlFor="price-buy"
+                        onChange={handleChange}
+                        errors={errors.priceBuy}
                     />
                     <Input
                         label="Valor de la venta"
-                        name="price-sell"
+                        name="priceSell"
+                        type="text"
+                        value={formProduct.priceSell}
                         placeholder="Ingrese el valor de la venta"
+                        htmlFor="price-sell"
+                        onChange={handleChange}
+                        errors={errors.priceSell}
                     />
                     <Input
                         label="Valor total del lote"
-                        name="price-sell"
-                        placeholder="Ingrese el valor de la venta"
+                        name="priceBatch"
+                        type="text"
+                        value={formProduct.priceBatch}
+                        placeholder="Ingrese el valor del lote"
+                        htmlFor="price-batch"
+                        onChange={handleChange}
+                        errors={errors.priceBatch}
                     />
                 </form>
-                <form>
+                <form action="" onSubmit={handleSubmit}>
                     <Input
                         label="Fecha de vencimiento"
-                        name="expiration-date"
-                        placeholder="Ingrese la fecha"
+                        name="expirationDate"
+                        type="text"
+                        value={formProduct.expirationDate}
+                        placeholder="Ingrese la fecha de vencimiento"
+                        htmlFor="expiration-date"
+                        onChange={handleChange}
+                        errors={errors.expirationDate}
                     />
+                    <div className="w-full flex justify-center mt-12">
+                        <Button
+                            variant="primary"
+                            size="md"
+                            type="submit"
+                        >
+                            Confirmar Informacion
+                        </Button>
+                    </div>
                 </form>
-            </div>
-            <div className="w-full flex justify-center mt-12">
-                <Button
-                    className="
-                        w-60
-                        p-2 
-                        rounded-md
-                        bg-[var(--color-primary-950)]
-                        text-white
-                    "
-                >
-                    Confirmar Informacion
-                </Button>
             </div>
         </div>
     );
