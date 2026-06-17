@@ -24,7 +24,7 @@ export default function CreateProduct() {
                             text-2xl font-bold
                         "
                     >
-                        Crear Orden
+                        Crear Producto
                     </h1>
                 </div>
             </div>
