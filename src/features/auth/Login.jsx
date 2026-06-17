@@ -62,6 +62,7 @@ export default function Login() {
                 value={form.email}
                 onChange={handleChange}
                 htmlFor="login-email"
+                error={errors.email}
               />
               <Input
                 label="Contraseña"
@@ -70,6 +71,7 @@ export default function Login() {
                 value={form.password}
                 onChange={handleChange}
                 htmlFor="login-password"
+                error={errors.password}
               />
               <Checkbox
                 id="login-remember"

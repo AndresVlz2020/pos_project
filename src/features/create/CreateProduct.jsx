@@ -145,7 +145,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese el ID del producto"
                         htmlFor="product-id"
                         onChange={handleChange}
-                        errors={errors.productId}
+                        error={errors.productId}
                     />
                     <Select
                         label="Estado del producto"
@@ -155,7 +155,7 @@ export default function CreateProduct() {
                         htmlFor="product-status"
                         options={statusOptions}
                         onChange={handleChange}
-                        errors={errors.productStatus}
+                        error={errors.productStatus}
                     />
                     <Input
                         label="Nombre del producto"
@@ -165,7 +165,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese el nombre del producto"
                         htmlFor="product-name"
                         onChange={handleChange}
-                        errors={errors.productName}
+                        error={errors.productName}
                     />
                     <Input
                         label="Cuentandante"
@@ -175,7 +175,7 @@ export default function CreateProduct() {
                         placeholder="Cuentandante"
                         htmlFor="product-accountant"
                         onChange={handleChange}
-                        errors={errors.productAccountant}
+                        error={errors.productAccountant}
                     />
                     <Input
                         label="Descripcion"
@@ -185,7 +185,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese la descripcion del producto"
                         htmlFor="product-description"
                         onChange={handleChange}
-                        errors={errors.productDescription}
+                        error={errors.productDescription}
                     />
                     <Input
                         label="Ubicacion"
@@ -195,7 +195,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese la ubicacion"
                         htmlFor="product-location"
                         onChange={handleChange}
-                        errors={errors.productLocation}
+                        error={errors.productLocation}
                     />
                 </form>
         
@@ -208,7 +208,7 @@ export default function CreateProduct() {
                         placeholder="Lote"
                         htmlFor="number-batch"
                         onChange={handleChange}
-                        errors={errors.numberBatch}
+                        error={errors.numberBatch}
                     />
                     <Input
                         label="Cantidad Maxima"
@@ -218,7 +218,7 @@ export default function CreateProduct() {
                         placeholder="Maxima cantidad"
                         htmlFor="max-amount"
                         onChange={handleChange}
-                        errors={errors.maxAmount}
+                        error={errors.maxAmount}
                     />
                     <Input
                         label="Cantidad Minima"
@@ -228,7 +228,7 @@ export default function CreateProduct() {
                         placeholder="Minima cantidad"
                         htmlFor="min-amount"
                         onChange={handleChange}
-                        errors={errors.minAmount}
+                        error={errors.minAmount}
                     />
                     <Input
                         label="Valor de la compra"
@@ -238,7 +238,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese el valor de la compra"
                         htmlFor="price-buy"
                         onChange={handleChange}
-                        errors={errors.priceBuy}
+                        error={errors.priceBuy}
                     />
                     <Input
                         label="Valor de la venta"
@@ -248,7 +248,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese el valor de la venta"
                         htmlFor="price-sell"
                         onChange={handleChange}
-                        errors={errors.priceSell}
+                        error={errors.priceSell}
                     />
                     <Input
                         label="Valor total del lote"
@@ -258,7 +258,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese el valor del lote"
                         htmlFor="price-batch"
                         onChange={handleChange}
-                        errors={errors.priceBatch}
+                        error={errors.priceBatch}
                     />
                 </form>
                 <form action="" onSubmit={handleSubmit}>
@@ -270,7 +270,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese la fecha de vencimiento"
                         htmlFor="expiration-date"
                         onChange={handleChange}
-                        errors={errors.expirationDate}
+                        error={errors.expirationDate}
                     />
                     <div className="w-full flex justify-center mt-12">
                         <Button

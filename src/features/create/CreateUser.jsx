@@ -96,6 +96,7 @@ export default function CreateUser() {
               value={form.fullName}
               onChange={handleChange}
               htmlFor="user-full-name"
+              error={errors.fullName}
             />
             <Input
               label="Numero de Documento"
@@ -104,6 +105,7 @@ export default function CreateUser() {
               value={form.documentNumber}
               onChange={handleChange}
               htmlFor="user-document-number"
+              error={errors.documentNumber}
             />
 
             <Select
@@ -113,6 +115,7 @@ export default function CreateUser() {
               options={userTypeOptions}
               value={form.userType}
               onChange={handleChange}
+              error={errors.userType}
             />
             <Input
               label="Numero Telefónico"
@@ -121,6 +124,7 @@ export default function CreateUser() {
               value={form.phone}
               onChange={handleChange}
               htmlFor="user-phone"
+              error={errors.phone}
             />
 
             <Select
@@ -130,6 +134,7 @@ export default function CreateUser() {
               options={documentTypes}
               value={form.documentType}
               onChange={handleChange}
+              error={errors.documentType}
             />
             <Input
               label="Correo Empresarial"
@@ -138,6 +143,7 @@ export default function CreateUser() {
               value={form.corporateEmail}
               onChange={handleChange}
               htmlFor="user-corporate-email"
+              error={errors.corporateEmail}
             />
 
             <Input
@@ -148,6 +154,7 @@ export default function CreateUser() {
               value={form.startDate}
               onChange={handleChange}
               htmlFor="user-start-date"
+              error={errors.startDate}
             />
             <Input
               label="Correo Electronico"
@@ -156,6 +163,7 @@ export default function CreateUser() {
               value={form.personalEmail}
               onChange={handleChange}
               htmlFor="user-personal-email"
+              error={errors.personalEmail}
             />
 
             <Input
@@ -166,6 +174,7 @@ export default function CreateUser() {
               value={form.endDate}
               onChange={handleChange}
               htmlFor="user-end-date"
+              error={errors.endDate}
             />
           </div>
         </div>

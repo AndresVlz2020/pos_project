@@ -81,6 +81,7 @@ export default function Register() {
                 value={form.name}
                 onChange={handleChange}
                 htmlFor="register-name"
+                error={errors.name}
               />
               <Input
                 label="Apellidos"
@@ -89,6 +90,7 @@ export default function Register() {
                 value={form.surname}
                 onChange={handleChange}
                 htmlFor="register-surname"
+                error={errors.surname}
               />
               <Select
                 label="Tipo de documento"
@@ -97,6 +99,7 @@ export default function Register() {
                 options={documentTypes}
                 value={form.documentType}
                 onChange={handleChange}
+                error={errors.documentType}
               />
               <Input
                 label="Número de documento"
@@ -105,6 +108,7 @@ export default function Register() {
                 value={form.documentNumber}
                 onChange={handleChange}
                 htmlFor="register-document-number"
+                error={errors.documentNumber}
               />
               <Input
                 label="Correo Electrónico"
@@ -113,6 +117,7 @@ export default function Register() {
                 value={form.email}
                 onChange={handleChange}
                 htmlFor="register-email"
+                error={errors.email}
               />
               <Input
                 label="Teléfono"
@@ -121,6 +126,7 @@ export default function Register() {
                 value={form.phone}
                 onChange={handleChange}
                 htmlFor="register-phone"
+                error={errors.phone}
               />
               <Input
                 label="Contraseña"
@@ -129,6 +135,7 @@ export default function Register() {
                 value={form.password}
                 onChange={handleChange}
                 htmlFor="register-password"
+                error={errors.password}
               />
               <Input
                 label="Confirmar Contraseña"
@@ -137,6 +144,7 @@ export default function Register() {
                 value={form.confirmPassword}
                 onChange={handleChange}
                 htmlFor="register-confirm-password"
+                error={errors.confirmPassword}
               />
               <Checkbox
                 id="register-terms"
