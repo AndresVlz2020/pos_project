@@ -49,20 +49,10 @@ export default function CreateProduct() {
 
         const result = userSchema.safeParse(formProduct);
 
-
         if(!result.success){
-            const alias = {
-              userName: "productName",
-              userEmail: "personalEmail",
-              userPhone: "contactPhone",
-              userDocumentNumber: "productId",
-            };
             const fieldErrors = {};
             result.error.issues.forEach((issue) => {
-                const src = issue.path[0];
-                const msg = issue.message;
-                const key = alias[src];
-                if (key) fieldErrors[key] = msg;
+                fieldErrors[issue.path[0]] = issue.message;
             });
             setErrors(fieldErrors);
             return;
@@ -154,7 +144,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese el ID del producto"
                         htmlFor="product-id"
                         onChange={handleChange}
-                        error={errors.productId}
+                        error={errors.userDocumentNumber}
                     />
                     <Select
                         label="Estado del producto"
@@ -174,7 +164,7 @@ export default function CreateProduct() {
                         placeholder="Ingrese el nombre del producto"
                         htmlFor="product-name"
                         onChange={handleChange}
-                        error={errors.productName}
+                        error={errors.userName}
                     />
                     <Input
                         label="Cuentandante"

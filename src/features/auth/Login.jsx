@@ -6,7 +6,7 @@ import bgLogin from "@/assets/images/bg-login.png";
 import { userSchema } from "@/features/users/schemas/userSchema";
 
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "", remember: false });
+  const [form, setForm] = useState({ userEmail: "", userPassword: "", remember: false });
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -23,12 +23,9 @@ export default function Login() {
     e.preventDefault();
     const result = userSchema.safeParse(form);
     if (!result.success) {
-      const alias = { userEmail: "email", userPassword: "password" };
       const fieldErrors = {};
       result.error.issues.forEach((issue) => {
-        const src = issue.path[0];
-        const key = alias[src];
-        if (key) fieldErrors[key] = issue.message;
+        fieldErrors[issue.path[0]] = issue.message;
       });
       setErrors(fieldErrors);
       return;
@@ -60,21 +57,21 @@ export default function Login() {
             <div className="grid gap-4">
               <Input
                 label="Correo Electrónico"
-                name="email"
+                name="userEmail"
                 type="email"
-                value={form.email}
+                value={form.userEmail}
                 onChange={handleChange}
-                htmlFor="login-email"
-                error={errors.email}
+                htmlFor="login-user-email"
+                error={errors.userEmail}
               />
               <Input
                 label="Contraseña"
-                name="password"
+                name="userPassword"
                 type="password"
-                value={form.password}
+                value={form.userPassword}
                 onChange={handleChange}
-                htmlFor="login-password"
-                error={errors.password}
+                htmlFor="login-user-password"
+                error={errors.userPassword}
               />
               <Checkbox
                 id="login-remember"

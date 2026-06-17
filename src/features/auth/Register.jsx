@@ -8,12 +8,12 @@ import { userSchema } from "@/features/users/schemas/userSchema";
 
 export default function Register() {
   const [form, setForm] = useState({
-    name: "",
+    userName: "",
     surname: "",
-    documentType: "",
-    documentNumber: "",
-    email: "",
-    phone: "",
+    userDocumentTypes: "",
+    userDocumentNumber: "",
+    userEmail: "",
+    userPhone: "",
     password: "",
     confirmPassword: "",
     terms: false,
@@ -41,20 +41,9 @@ export default function Register() {
     e.preventDefault();
     const result = userSchema.safeParse(form);
     if (!result.success) {
-      const alias = {
-        userName: "name",
-        userEmail: "email",
-        userPhone: "phone",
-        userDocumentTypes: "documentType",
-        userDocumentNumber: "documentNumber",
-        userPassword: "password",
-      };
       const fieldErrors = {};
       result.error.issues.forEach((issue) => {
-        const src = issue.path[0];
-        const msg = issue.message;
-        const key = alias[src];
-        if (key) fieldErrors[key] = msg;
+        fieldErrors[issue.path[0]] = issue.message;
       });
       setErrors(fieldErrors);
       return;
@@ -87,12 +76,12 @@ export default function Register() {
             <div className="grid gap-4">
               <Input
                 label="Nombre"
-                name="name"
+                name="userName"
                 type="text"
-                value={form.name}
+                value={form.userName}
                 onChange={handleChange}
                 htmlFor="register-name"
-                error={errors.name}
+                error={errors.userName}
               />
               <Input
                 label="Apellidos"
@@ -105,39 +94,39 @@ export default function Register() {
               />
               <Select
                 label="Tipo de documento"
-                name="documentType"
+                name="userDocumentTypes"
                 htmlFor="register-document-type"
                 options={documentTypes}
-                value={form.documentType}
+                value={form.userDocumentTypes}
                 onChange={handleChange}
-                error={errors.documentType}
+                error={errors.userDocumentTypes}
               />
               <Input
                 label="Número de documento"
-                name="documentNumber"
+                name="userDocumentNumber"
                 type="text"
-                value={form.documentNumber}
+                value={form.userDocumentNumber}
                 onChange={handleChange}
                 htmlFor="register-document-number"
-                error={errors.documentNumber}
+                error={errors.userDocumentNumber}
               />
               <Input
                 label="Correo Electrónico"
-                name="email"
+                name="userEmail"
                 type="email"
-                value={form.email}
+                value={form.userEmail}
                 onChange={handleChange}
                 htmlFor="register-email"
-                error={errors.email}
+                error={errors.userEmail}
               />
               <Input
                 label="Teléfono"
-                name="phone"
+                name="userPhone"
                 type="tel"
-                value={form.phone}
+                value={form.userPhone}
                 onChange={handleChange}
                 htmlFor="register-phone"
-                error={errors.phone}
+                error={errors.userPhone}
               />
               <Input
                 label="Contraseña"

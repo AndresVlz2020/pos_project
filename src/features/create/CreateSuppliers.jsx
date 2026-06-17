@@ -147,7 +147,7 @@ export default function CreateSuppliers() {
                         htmlFor="supplier-document-types"
                         options={documentTypes}
                         onChange={handleChange}
-                        error={errors.supplierDocumentTypes}
+                        error={errors.userDocumentTypes}
                     />
                     <Input
                         label="Numero de Documento"
@@ -156,7 +156,7 @@ export default function CreateSuppliers() {
                         value={formSupliers.supplierDocumentNumber}
                         htmlFor="supplier-document-number"
                         onChange={handleChange}
-                        error={errors.supplierDocumentNumber}
+                        error={errors.userDocumentNumber}
                     />
                     <Input
                         label="Nombre del producto"
@@ -183,7 +183,7 @@ export default function CreateSuppliers() {
                         value={formSupliers.contactPhone}
                         htmlFor="contact-phone"
                         onChange={handleChange}
-                        error={errors.contactPhone}
+                        error={errors.userPhone}
                     />
                     <Input
                         label="Correo Electronico (Empresa)"
@@ -192,7 +192,7 @@ export default function CreateSuppliers() {
                         value={formSupliers.enterpriseEmail}
                         htmlFor="enterpriseEmail"
                         onChange={handleChange}
-                        error={errors.enterpriseEmail}
+                        error={errors.userEmail}
                     />
                 </form>
                 <form action="" onSubmit={handleSubmit}>

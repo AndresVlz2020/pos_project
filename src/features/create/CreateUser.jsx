@@ -7,13 +7,13 @@ import { userSchema } from "../users/schemas/userSchema";
 
 export default function CreateUser() {
   const [form, setForm] = useState({
-    fullName: "",
-    documentNumber: "",
+    userName: "",
+    userDocumentNumber: "",
     userType: "",
-    phone: "",
-    documentType: "",
+    userPhone: "",
+    userDocumentTypes: "",
+    userEmail: "",
     corporateEmail: "",
-    personalEmail: "",
     startDate: "",
     endDate: "",
   });
@@ -51,23 +51,9 @@ export default function CreateUser() {
 
     const result = userSchema.safeParse(form);
     if (!result.success) {
-      const alias = {
-        userName: "fullName",
-        userDocumentNumber: "documentNumber",
-        userDocumentTypes: "documentType",
-        userPhone: "phone",
-      };
       const fieldErrors = {};
       result.error.issues.forEach((issue) => {
-        const src = issue.path[0];
-        const msg = issue.message;
-        if (src === "userEmail") {
-          fieldErrors.corporateEmail = msg;
-          fieldErrors.personalEmail = msg;
-          return;
-        }
-        const key = alias[src];
-        if (key) fieldErrors[key] = msg;
+        fieldErrors[issue.path[0]] = issue.message;
       });
       setErrors(fieldErrors);
       return;
@@ -105,21 +91,21 @@ export default function CreateUser() {
           <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input
               label="Nombre Completo"
-              name="fullName"
+              name="userName"
               type="text"
-              value={form.fullName}
+              value={form.userName}
               onChange={handleChange}
               htmlFor="user-full-name"
-              error={errors.fullName}
+              error={errors.userName}
             />
             <Input
               label="Numero de Documento"
-              name="documentNumber"
+              name="userDocumentNumber"
               type="text"
-              value={form.documentNumber}
+              value={form.userDocumentNumber}
               onChange={handleChange}
               htmlFor="user-document-number"
-              error={errors.documentNumber}
+              error={errors.userDocumentNumber}
             />
 
             <Select
@@ -133,22 +119,22 @@ export default function CreateUser() {
             />
             <Input
               label="Numero Telefónico"
-              name="phone"
+              name="userPhone"
               type="tel"
-              value={form.phone}
+              value={form.userPhone}
               onChange={handleChange}
               htmlFor="user-phone"
-              error={errors.phone}
+              error={errors.userPhone}
             />
 
             <Select
               label="Tipo de Documento"
-              name="documentType"
+              name="userDocumentTypes"
               htmlFor="user-document-type"
               options={documentTypes}
-              value={form.documentType}
+              value={form.userDocumentTypes}
               onChange={handleChange}
-              error={errors.documentType}
+              error={errors.userDocumentTypes}
             />
             <Input
               label="Correo Empresarial"
@@ -157,7 +143,7 @@ export default function CreateUser() {
               value={form.corporateEmail}
               onChange={handleChange}
               htmlFor="user-corporate-email"
-              error={errors.corporateEmail}
+              error={errors.userEmail}
             />
 
             <Input
@@ -172,12 +158,12 @@ export default function CreateUser() {
             />
             <Input
               label="Correo Electronico"
-              name="personalEmail"
+              name="userEmail"
               type="email"
-              value={form.personalEmail}
+              value={form.userEmail}
               onChange={handleChange}
               htmlFor="user-personal-email"
-              error={errors.personalEmail}
+              error={errors.userEmail}
             />
 
             <Input
