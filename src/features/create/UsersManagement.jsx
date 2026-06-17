@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Select, Checkbox, Button } from "@/shared";
 import logoDPiero from "@/assets/images/logo-d,piero.png";
+import { userSchema } from "@/features/users/schemas/userSchema";
 
 export default function UsersManagement() {
   const [form, setForm] = useState({ group: "", user: "" });
   const [checks, setChecks] = useState({});
+  const [errors, setErrors] = useState({});
 
   const groupOptions = [
     { value: "cocina", label: "Cocina" },
@@ -57,6 +59,11 @@ export default function UsersManagement() {
   const handleSelect = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+
+    if (errors[name]) {
+      const { [name]: _omit, ...rest } = errors;
+      setErrors(rest);
+    }
   };
 
   const toggleCheck = (key) => {
@@ -65,6 +72,16 @@ export default function UsersManagement() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const result = userSchema.safeParse(form);
+    if (!result.success) {
+      const fieldErrors = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
     alert("Gestión actualizada (demo)");
   };
 

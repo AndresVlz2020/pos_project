@@ -4,6 +4,7 @@ import imgPunta from "@/assets/images/punta-de-anca.png";
 import imgLimonada from "@/assets/images/limonada.png";
 import imgPostre from "@/assets/images/postre-coco.png";
 import imgCoctel from "@/assets/images/coctel-fresa.png";
+import { userSchema } from "../users/schemas/userSchema";
 
 export default function CreateOrder() {
   const [form, setForm] = useState({
@@ -61,6 +62,18 @@ export default function CreateOrder() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const result = userSchema.safeParse(form);
+    if (!result.success) {
+      const fieldErrors = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
     alert("Orden creada (demo)");
   };
 

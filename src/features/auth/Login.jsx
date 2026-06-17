@@ -3,17 +3,35 @@ import { Input, Button, Checkbox } from "@/shared";
 import { Link } from "react-router-dom";
 import logoDPiero from "@/assets/images/logo-d,piero.png";
 import bgLogin from "@/assets/images/bg-login.png";
+import { userSchema } from "@/features/users/schemas/userSchema";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "", remember: false });
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+
+    if (errors[name]) {
+      const { [name]: _omit, ...rest } = errors;
+      setErrors(rest);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const result = userSchema.safeParse(form);
+    if (!result.success) {
+      const fieldErrors = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
     alert("Inicio de sesión (demo)");
   };
 
