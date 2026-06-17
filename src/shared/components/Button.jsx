@@ -36,6 +36,8 @@ export default function Button ({
             inline-flex items-center justify-center
             rounded-md
             transition-colors
+
+            cursor-pointer
             ${variants[variant]}
             ${sizes[size]}
             `}
