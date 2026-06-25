@@ -9,6 +9,7 @@ import Register from "@/features/auth/Register";
 import CreateUser from "@/features/create/CreateUser";
 import CreateProduct from "@/features/create/CreateProduct";
 import CreateSuppliers from "../features/create/CreateSuppliers";
+import { UserListPage, UserRegisterForm } from "@/features/users";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 const router = createBrowserRouter([
@@ -31,9 +32,9 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <DashboardLayout />,
     children: [
-      { index: true, element: <h1>Hello1</h1> },
-      { path: "/dashboard/auth", element: <h1>Hello2</h1> },
-      { path: "/dashboard/userList", element: <h1>Hello3</h1> },
+      { index: true, element: <UserRegisterForm /> },
+      { path: "auth", element: <Navigate to="/dashboard" replace /> },
+      { path: "userList", element: <UserListPage /> },
     ],
   },
   {
@@ -69,8 +70,9 @@ const router = createBrowserRouter([
     element: <DashboardLayout />,
     children: [
       { index: true, element: <CreateSuppliers /> },
-    ],
+    ],  
   },
+  
 ]);
 
 export default router;
