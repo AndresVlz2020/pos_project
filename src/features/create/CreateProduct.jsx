@@ -38,8 +38,9 @@ export default function CreateProduct() {
         // Limpiar el error del campo si existe
         setErrors((prevErrors) => {
             if (!prevErrors[name]) return prevErrors;
-            const { [name]: _, ...rest } = prevErrors;
-            return rest;
+            const nextErrors = { ...prevErrors };
+            delete nextErrors[name];
+            return nextErrors;
         });
     };
 

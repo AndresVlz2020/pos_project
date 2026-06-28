@@ -33,8 +33,9 @@ export default function CreateSuppliers() {
 
         setErrors((prevErrors) => {
             if (!prevErrors[name]) return prevErrors;
-            const { [name]: _, ...rest } = prevErrors;
-            return rest;
+            const nextErrors = { ...prevErrors };
+            delete nextErrors[name];
+            return nextErrors;
         });
     };
     

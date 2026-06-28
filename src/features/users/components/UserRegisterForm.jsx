@@ -7,16 +7,12 @@ import{
     Button,
  } from "@/shared";
  import { getDocumentTypes } from "../../../services/selectServices";
- import { useNavigate } from "react-router-dom";
  import { userSchema } from "../schemas/userSchema";
 
 export  default function UserRegisterForm() {
 
 // Estado de envío
   // const [isSubmitting, setIsSubmitting] = useState(false);
-
-// Navegacion
-  const navigate = useNavigate();
 
 // Estado del error
   const [errors, setErrors] = useState({});
@@ -51,8 +47,9 @@ export  default function UserRegisterForm() {
         // Limpiar el error del campo si existe
         setErrors((prevErrors) => {
             if (!prevErrors[name]) return prevErrors;
-            const { [name]: _, ...rest } = prevErrors;
-            return rest;
+            const nextErrors = { ...prevErrors };
+            delete nextErrors[name];
+            return nextErrors;
         });
     };
 

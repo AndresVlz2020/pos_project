@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Input, Select, Button } from "@/shared";
 import imgPunta from "@/assets/images/punta-de-anca.png";
 import imgLimonada from "@/assets/images/limonada.png";
@@ -55,8 +55,9 @@ export default function CreateOrder() {
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
 
     if (errors[name]) {
-      const { [name]: _omit, ...rest } = errors;
-      setErrors(rest);
+      const nextErrors = { ...errors };
+      delete nextErrors[name];
+      setErrors(nextErrors);
     }
   };
 

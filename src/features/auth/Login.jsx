@@ -14,8 +14,9 @@ export default function Login() {
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
 
     if (errors[name]) {
-      const { [name]: _omit, ...rest } = errors;
-      setErrors(rest);
+      const nextErrors = { ...errors };
+      delete nextErrors[name];
+      setErrors(nextErrors);
     }
   };
 

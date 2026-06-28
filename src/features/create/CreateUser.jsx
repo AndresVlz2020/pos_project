@@ -41,8 +41,9 @@ export default function CreateUser() {
     setForm((prev) => ({ ...prev, [name]: value }));
 
     if (errors[name]) {
-      const { [name]: _omit, ...rest } = errors;
-      setErrors(rest);
+      const nextErrors = { ...errors };
+      delete nextErrors[name];
+      setErrors(nextErrors);
     }
   };
 
