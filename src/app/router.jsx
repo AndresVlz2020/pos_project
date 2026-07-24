@@ -10,12 +10,15 @@ import CreateUser from "@/features/create/CreateUser";
 import CreateProduct from "@/features/create/CreateProduct";
 import CreateSuppliers from "../features/create/CreateSuppliers";
 import { UserListPage, UserRegisterForm } from "@/features/users";
+import { ProductListPage } from "@/features/products";
+import { InventoryListPage } from "@/features/inventory";
+import { HomePage } from "@/features/home";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/dashboard" replace />,
+    element: <HomePage/>,
   },
   {
     path: "/Auth",
@@ -35,6 +38,8 @@ const router = createBrowserRouter([
       { index: true, element: <UserRegisterForm /> },
       { path: "auth", element: <Navigate to="/dashboard" replace /> },
       { path: "userList", element: <UserListPage /> },
+      { path: "productList", element: <ProductListPage /> },
+      { path: "inventoryList", element: <InventoryListPage /> },
     ],
   },
   {
@@ -42,6 +47,34 @@ const router = createBrowserRouter([
     element: <DashboardLayout />,
     children: [
       { index: true, element: <CreateProduct /> },
+    ],
+  },
+  {
+    path: "/productList",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <ProductListPage /> },
+    ],
+  },
+  {
+    path: "/inventoryList",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <InventoryListPage /> },
+    ],
+  },
+  {
+    path: "/products",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <ProductListPage /> },
+    ],
+  },
+  {
+    path: "/inventory",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <InventoryListPage /> },
     ],
   },
   {

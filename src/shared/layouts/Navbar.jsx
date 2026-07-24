@@ -99,14 +99,17 @@ export default function Navbar(){
 
             {/* Contenido */}
             <DropdownContent className="right-0">
-              <DropdownItem>
-                Gestión de usuarios
-              </DropdownItem>
               <DropdownItem onClick={() => navigate("/dashboard/userList")}>
-                Listar usuarios
+                Usuarios
               </DropdownItem>
-              <DropdownItem>
-                Gestión de productos
+              <DropdownItem onClick={() => navigate("/productList")}>
+                Productos
+              </DropdownItem>
+              <DropdownItem onClick={() => navigate("/inventoryList")}>
+                Inventario
+              </DropdownItem>
+              <DropdownItem onClick={() => navigate("/CreateSuppliers")}>
+                Proveedores
               </DropdownItem>
               <DropdownItem>
                 Cerrar sesión
