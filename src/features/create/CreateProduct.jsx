@@ -4,6 +4,7 @@ import ImgUploadBar from "@/assets/icons/upload-bar.png";
 import logoDPiero from "@/assets/images/logo-d,piero.png";
 import { useState } from "react";
 import { userSchema } from "../users/schemas/userSchema";
+import { Link } from "react-router-dom";
 
 export default function CreateProduct() {
     const [formProduct, setProducts] = useState({
@@ -272,7 +273,16 @@ export default function CreateProduct() {
                         onChange={handleChange}
                         error={errors.expirationDate}
                     />
-                    <div className="w-full flex justify-center mt-12">
+                    <div className="w-full flex justify-center mt-12 gap-4">
+                        <Link to="/productList">
+                            <Button
+                                variant="secondary"
+                                size="md"
+                                type="submit"
+                                >
+                                Cancelar
+                            </Button>
+                        </Link>
                         <Button
                             variant="primary"
                             size="md"

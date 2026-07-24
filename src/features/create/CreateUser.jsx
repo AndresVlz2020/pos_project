@@ -4,6 +4,7 @@ import logoDPiero from "@/assets/images/logo-d,piero.png";
 import iconUpload from "@/assets/icons/cargar.png";
 import { getDocumentTypes } from "../../services/selectServices";
 import { userSchema } from "../users/schemas/userSchema";
+import { Link } from "react-router-dom";
 
 export default function CreateUser() {
   const [form, setForm] = useState({
@@ -180,7 +181,16 @@ export default function CreateUser() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto flex md:justify-end justify-center mt-8">
+        <div className="max-w-7xl mx-auto flex md:justify-end justify-center mt-8 gap-4">
+            <Link to="/userList">
+              <Button
+                variant="secondary"
+                size="md"
+                type="submit"
+              >
+                Cancelar
+              </Button>
+            </Link>
           <Button variant="primary" size="md" type="submit">Crear</Button>
         </div>
       </form>

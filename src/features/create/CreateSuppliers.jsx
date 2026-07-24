@@ -5,6 +5,7 @@ import logoDPiero from "@/assets/images/logo-d,piero.png"
 import ImgUpload from "@/assets/icons/upload.png"
 import ImgUploadBar from "@/assets/icons/upload-bar.png"
 import { Input, Select, Checkbox, Button } from "@/shared"
+import { Link } from "react-router-dom";
 
 export default function CreateSuppliers() {
 
@@ -75,25 +76,20 @@ export default function CreateSuppliers() {
 
     return (
         <div className="h-full bg-white min-h-screen">
-            <div className="
-                    w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)]
-                "
-            >
-                <div className=
-                        "max-w-7xl mx-auto px-6 py-4 flex items-center gap-4"
-                >
-                    <button type="
-                                button
-                            "
+            <div className="w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)]">
+                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
+                    <button type="button"
                             className="
-                                px-3 py-1 rounded-md border border-[var(--color-text-inverse)] text-[var(--color-text-inverse)]"
+                                px-3 
+                                py-1 
+                                rounded-md 
+                                border border-[var(--color-text-inverse)] 
+                                text-[var(--color-text-inverse)]
+                            "
                     >
                         ←
                     </button>
-                    <h1 className="
-                            text-2xl font-bold
-                        "
-                    >
+                    <h1 className=" text-2xl font-bold">
                         Crear Proveedores
                     </h1>
                     <img src={logoDPiero} alt="Logo" className="h-8 w-auto" />
@@ -108,17 +104,14 @@ export default function CreateSuppliers() {
                 "
             >
                 <div className="w-40 mt-8 gap-200">
+
                     <img ImgUpload
                         src={ImgUpload} 
                         alt="image-icon"
-                        className="
-                            h-40
-                            w-50
-                        "
+                        className="h-40 w-50"
                     />
-                    <p className="
-                        text-center
-                    ">
+
+                    <p className="text-center">
                         Suba un Archivo
                     </p>
                     <img ImgUploadBar
@@ -232,10 +225,19 @@ export default function CreateSuppliers() {
                         onChange={handleChange}
                         />                    
                     </div>
-                    <div className="w-full flex justify-center mt-12">
+                    <div className="w-full flex justify-center mt-12 gap-4">
+                        <Link to="/supplierList">
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                type="submit"
+                                >
+                                Cancelar
+                            </Button>
+                        </Link>
                         <Button
                             variant="primary"
-                            size="md"
+                            size="sm"
                             type="submit"
                         >
                             Confirmar Informacion

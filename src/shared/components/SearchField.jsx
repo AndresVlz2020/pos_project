@@ -19,7 +19,7 @@ const variantStyles = {
 
     // Outlined: campo con fondo transparente, borde grueso (Material "Outlined textField")
     outlined: 
-    "bg-transparent border border-green-500 hover:border-green-600",
+    "bg-transparent border border-[var(--color-primary-500)] hover:shadow-2xl",
 
 };
 

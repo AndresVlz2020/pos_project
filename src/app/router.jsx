@@ -11,6 +11,7 @@ import CreateProduct from "@/features/create/CreateProduct";
 import CreateSuppliers from "../features/create/CreateSuppliers";
 import { UserListPage, UserRegisterForm } from "@/features/users";
 import { ProductListPage } from "@/features/products";
+import { SuppliersListPage } from "@/features/suppliers";
 import { InventoryListPage } from "@/features/inventory";
 import { HomePage } from "@/features/home";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
@@ -57,6 +58,13 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/supplierList",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <SuppliersListPage /> },
+    ],
+  },
+  {
     path: "/inventoryList",
     element: <DashboardLayout />,
     children: [
@@ -99,7 +107,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/CreateSuppliers",
+    path: "/CreateSupplier",
     element: <DashboardLayout />,
     children: [
       { index: true, element: <CreateSuppliers /> },

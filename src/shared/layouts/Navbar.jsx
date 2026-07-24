@@ -108,7 +108,7 @@ export default function Navbar(){
               <DropdownItem onClick={() => navigate("/inventoryList")}>
                 Inventario
               </DropdownItem>
-              <DropdownItem onClick={() => navigate("/CreateSuppliers")}>
+              <DropdownItem onClick={() => navigate("/supplierList")}>
                 Proveedores
               </DropdownItem>
               <DropdownItem>
