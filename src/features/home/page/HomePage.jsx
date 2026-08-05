@@ -3,14 +3,14 @@ import { products } from "@/features/products/data/products";
 
 export default function HomePage() {
   return (
-    <div className="mx-auto mt-4 max-w-7x1">
+    <div className="mx-auto max-w-7x1">
       <Navbar />
       {/* Hero */}
       {/* Carrusel */ }
       {/* Titulo */}
-      <h2 className="text-h2 place-self-center mb-12">
+      <h1 className="text-h1 text-2xl font-bold place-self-center mt-16 mb-12">
           Productos
-      </h2>
+      </h1>
         {/* Cards */}
       <div 
         className="

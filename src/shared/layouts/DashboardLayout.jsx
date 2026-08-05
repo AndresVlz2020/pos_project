@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import authBg from "@/assets/images/bg-2.jpg";
+import authBg from "@/assets/images/bg-3.jpg";
 import { Navbar } from "@/shared";
 
 export default function DashboardLayout() {

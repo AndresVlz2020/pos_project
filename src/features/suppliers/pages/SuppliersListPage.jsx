@@ -12,7 +12,7 @@ const suppliersReportFields = [
     { key: "isActive", label: "Estado", default: true },
 ];
 
-export default function ProductListPage() {
+export default function SuppliersListPage() {
     const [isReportOpen, setIsReportOpen] = useState(false);
 
     return (

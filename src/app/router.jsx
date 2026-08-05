@@ -14,6 +14,8 @@ import { ProductListPage } from "@/features/products";
 import { SuppliersListPage } from "@/features/suppliers";
 import { InventoryListPage } from "@/features/inventory";
 import { HomePage } from "@/features/home";
+import ReadUser1 from "../features/read/users/ReadUser1";
+import EditUser1 from "../features/edit/user/EditUser1";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 const router = createBrowserRouter([
@@ -113,7 +115,20 @@ const router = createBrowserRouter([
       { index: true, element: <CreateSuppliers /> },
     ],  
   },
-  
+  {
+    path: "/readuser",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <ReadUser1 /> },
+    ],  
+  },
+  {
+    path: "/edituser",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <EditUser1 /> },
+    ],  
+  },
 ]);
 
 export default router;

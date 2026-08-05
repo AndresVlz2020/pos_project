@@ -207,16 +207,16 @@ export  default function UserRegisterForm() {
             error={errors.userPassword}
           />
 
-<FileInput
-  value={formData.userImage}
-onChange={(files) =>
-  setFormData((prev) => ({ ...prev, userImage: files }))
-}
-multiple={true}
-/>
-{errors.userImage && (
-  <span className="text-red-500 text-sm">{errors.userImage}</span>
-)}
+          <FileInput
+            value={formData.userImage}
+          onChange={(files) =>
+            setFormData((prev) => ({ ...prev, userImage: files }))
+          }
+          multiple={true}
+          />
+          {errors.userImage && (
+            <span className="text-red-500 text-sm">{errors.userImage}</span>
+          )}
 
           {/* Checkbox */}
 

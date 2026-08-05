@@ -1,5 +1,5 @@
 // Iconos usados en los botones de acciones
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Eye } from "lucide-react";
 
 // Hook de react router para navegar programáticamente ennntre rutas
 import { useNavigate } from "react-router-dom";
@@ -45,6 +45,12 @@ export default function UserRowActions({ user }) {
                 className="p-1 rounded hover:bg-gray-100"
             >     
             <Trash2 size={16}/> {/* Icono de eliminación */}
+            </button>
+            <button
+                onClick={() => navigate("/readuser")}
+                className="p-1 rounded hover:bg-gray-100"
+                >     
+            <Eye size={16}/> {/* Icono de eliminación */}
             </button>
         </div>
 

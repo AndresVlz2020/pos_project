@@ -66,7 +66,7 @@ export default function FileInput({
 
     <div className="flex flex-col items-center gap-2 w-full">
       <h2 className="text-center text-text-muted text-xs font-semibold mb-1">Máx 12 archivo (10MB)</h2>
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 place-items-center">
+      <div className="relative grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 place-items-center">
       {value.map((file, i) => (
         <div
           key={i}

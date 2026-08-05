@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Input, Select, Button, FileInput } from "@/shared";
-import { getDocumentTypes } from "../../services/selectServices";
-import { userSchema } from "../users/schemas/userSchema";
+import { Input, Select, Button, FileInput, Checkbox } from "@/shared";
+import { getDocumentTypes } from "../../../services/selectServices";
+import { userSchema } from "../../users/schemas/userSchema";
 import { Link } from "react-router-dom";
 
-export default function CreateUser() {
+export default function EditUser1() {
   const [form, setForm] = useState({
     userName: "",
     userDocumentNumber: "",
@@ -12,9 +12,7 @@ export default function CreateUser() {
     userPhone: "",
     userDocumentTypes: "",
     userEmail: "",
-    corporateEmail: "",
-    startDate: "",
-    endDate: "",
+    isActive: false
   });
 
   const [errors, setErrors] = useState({});
@@ -26,14 +24,6 @@ export default function CreateUser() {
       .then(setDocumentTypes)
       .catch(() => setDocumentTypes([]));
   }, []);
-
-  const userTypeOptions = [
-    { value: "mesero", label: "Mesero" },
-    { value: "administrador", label: "Administrador" },
-    { value: "superadministrador", label: "SuperAdministrador" },
-    { value: "proveedor", label: "Proveedor" },
-    { value: "cocina", label: "Cocina" },
-  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,10 +54,10 @@ export default function CreateUser() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="overflow-y-hidden">
       {/* Body */}
-      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-8 p-6 bg-[var(--color-tertiary-300)] rounded-lg border border-[var(--color-border)] shadow-sm">
-        <h1 className="text-2xl font-bold text-center mb-8">Crear Usuario</h1>
+      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-22 p-6 bg-[var(--color-tertiary-300)] rounded-lg border border-[var(--color-border)] shadow-sm">
+        <h1 className="text-2xl font-bold text-center mb-8">Editar Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Left: upload placeholder */}
@@ -105,16 +95,6 @@ export default function CreateUser() {
               htmlFor="user-document-number"
               error={errors.userDocumentNumber}
             />
-
-            <Select
-              label="Tipo de Usuario"
-              name="userType"
-              htmlFor="user-type"
-              options={userTypeOptions}
-              value={form.userType}
-              onChange={handleChange}
-              error={errors.userType}
-            />
             <Input
               label="Numero Telefónico"
               name="userPhone"
@@ -124,7 +104,6 @@ export default function CreateUser() {
               htmlFor="user-phone"
               error={errors.userPhone}
             />
-
             <Select
               label="Tipo de Documento"
               name="userDocumentTypes"
@@ -133,26 +112,6 @@ export default function CreateUser() {
               value={form.userDocumentTypes}
               onChange={handleChange}
               error={errors.userDocumentTypes}
-            />
-            <Input
-              label="Correo Empresarial"
-              name="corporateEmail"
-              type="email"
-              value={form.corporateEmail}
-              onChange={handleChange}
-              htmlFor="user-corporate-email"
-              error={errors.userEmail}
-            />
-
-            <Input
-              label="Fecha Inicio Laboral"
-              name="startDate"
-              type="text"
-              placeholder="AAAA/MM/DD"
-              value={form.startDate}
-              onChange={handleChange}
-              htmlFor="user-start-date"
-              error={errors.startDate}
             />
             <Input
               label="Correo Electronico"
@@ -164,21 +123,19 @@ export default function CreateUser() {
               error={errors.userEmail}
             />
 
-            <Input
-              label="Fecha Fin Laboral"
-              name="endDate"
-              type="text"
-              placeholder="AAAA/MM/DD"
-              value={form.endDate}
-              onChange={handleChange}
-              htmlFor="user-end-date"
-              error={errors.endDate}
+            <Checkbox
+            id="isActive"
+            name="isActive"
+            label="Esta activo"
+            checked={form.isActive}
+            onChange={handleChange}
             />
+
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto flex md:justify-end justify-center mt-8 gap-4">
-            <Link to="/dashboard/userList">
+            <Link to="/readuser">
               <Button
                 variant="secondary"
                 size="md"
@@ -187,7 +144,15 @@ export default function CreateUser() {
                 Cancelar
               </Button>
             </Link>
-          <Button variant="primary" size="md" type="submit">Crear</Button>
+            <Link to="/dashboard/userList">
+                <Button 
+                    variant="primary" 
+                    size="md" 
+                    type="submit"
+                >
+                    Hecho
+                </Button>
+            </Link>
         </div>
       </form>
     </div>

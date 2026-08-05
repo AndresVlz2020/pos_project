@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import authBg from "@/assets/images/bg-1.png";
-
 export default function AuthLayout(){
 
   
