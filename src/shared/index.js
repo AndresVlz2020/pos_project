@@ -12,8 +12,11 @@ export { default as EffectDemo } from "./components/EffectDemo";
 export { default as CounterEffect } from "./components/CounterEffect";
 export { default as Select } from "./components/Select";
 export { default as Checkbox } from "./components/Checkbox";
+export { default as FileInput } from "./components/FileInput";
 export { default as DataTable } from "./components/DataTable";
+export { default as Card } from "./components/Card";
 export { default as StatusSwitch } from "./components/StatusSwitch";
+export { default as ListReportModal } from "./components/ListReportModal";
 export { IconButton } from "./components/IconButton";
 
 export { 

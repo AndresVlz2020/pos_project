@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { fileSchema } from "../../../shared/schemas/fileSchema";
 
 export const userSchema = z.object ({
     userName: z
@@ -37,5 +38,7 @@ export const userSchema = z.object ({
 
     isSuperUser: z.boolean(),
 
+    userImage: fileSchema.shape.files.optional()
+    
 
 })

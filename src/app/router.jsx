@@ -10,12 +10,18 @@ import CreateUser from "@/features/create/CreateUser";
 import CreateProduct from "@/features/create/CreateProduct";
 import CreateSuppliers from "../features/create/CreateSuppliers";
 import { UserListPage, UserRegisterForm } from "@/features/users";
+import { ProductListPage } from "@/features/products";
+import { SuppliersListPage } from "@/features/suppliers";
+import { InventoryListPage } from "@/features/inventory";
+import { HomePage } from "@/features/home";
+import ReadUser1 from "../features/read/users/ReadUser1";
+import EditUser1 from "../features/edit/user/EditUser1";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/dashboard" replace />,
+    element: <HomePage/>,
   },
   {
     path: "/Auth",
@@ -35,6 +41,8 @@ const router = createBrowserRouter([
       { index: true, element: <UserRegisterForm /> },
       { path: "auth", element: <Navigate to="/dashboard" replace /> },
       { path: "userList", element: <UserListPage /> },
+      { path: "productList", element: <ProductListPage /> },
+      { path: "inventoryList", element: <InventoryListPage /> },
     ],
   },
   {
@@ -42,6 +50,41 @@ const router = createBrowserRouter([
     element: <DashboardLayout />,
     children: [
       { index: true, element: <CreateProduct /> },
+    ],
+  },
+  {
+    path: "/productList",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <ProductListPage /> },
+    ],
+  },
+  {
+    path: "/supplierList",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <SuppliersListPage /> },
+    ],
+  },
+  {
+    path: "/inventoryList",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <InventoryListPage /> },
+    ],
+  },
+  {
+    path: "/products",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <ProductListPage /> },
+    ],
+  },
+  {
+    path: "/inventory",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <InventoryListPage /> },
     ],
   },
   {
@@ -66,13 +109,26 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/CreateSuppliers",
+    path: "/CreateSupplier",
     element: <DashboardLayout />,
     children: [
       { index: true, element: <CreateSuppliers /> },
     ],  
   },
-  
+  {
+    path: "/readuser",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <ReadUser1 /> },
+    ],  
+  },
+  {
+    path: "/edituser",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <EditUser1 /> },
+    ],  
+  },
 ]);
 
 export default router;

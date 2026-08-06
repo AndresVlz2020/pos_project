@@ -4,6 +4,7 @@
 import { useRef, useState, useEffect, useMemo } from "react";
 import { Infinity as InfinityLoader } from "ldrs/react";
 import "ldrs/react/Infinity.css";
+import { Plus } from "lucide-react";
 
 export default function FileInput({
   value = [], // estado externo (files)
@@ -62,7 +63,10 @@ export default function FileInput({
   };
 
   return (
-    <div className="flex items-center gap-2">
+
+    <div className="flex flex-col items-center gap-2 w-full">
+      <h2 className="text-center text-text-muted text-xs font-semibold mb-1">Máx 12 archivo (10MB)</h2>
+      <div className="relative grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 place-items-center">
       {value.map((file, i) => (
         <div
           key={i}
@@ -74,7 +78,7 @@ export default function FileInput({
         >
           {/* Render condicional: imagen vs archivo genérico */}
           {isImage(file) ? (
-            <img src={previews[i]} className="w-full h-full object-cover" />
+            <img src={previews[i]} className="w-full h-full object-contain bg-gray-50" />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 text-[10px] px-1">
               <span className="font-semibold">PDF</span>
@@ -112,8 +116,9 @@ export default function FileInput({
             color="black"
           />
         ) : (
-          <span className="text-blue-500 text-sm">Seleccionar</span>
+          <Plus className="text-blue-500" size={24} />
         )}
+      </div>
       </div>
 
       {/* Input desacoplado de UI */}

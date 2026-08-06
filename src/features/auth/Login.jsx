@@ -37,7 +37,7 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-3">
@@ -46,9 +46,9 @@ export default function Login() {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-6 py-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-6 py-10">
         {/* Left image */}
-        <div className="hidden md:block relative h-[60vh] md:h-[70vh] rounded-lg overflow-hidden border border-[var(--color-border)]">
+        <div className="hidden md:block relative h-[60vh] md:h-[80vh] rounded-lg overflow-hidden border border-[var(--color-border)]">
           <img src={bgLogin} alt="Fondo Login" className="absolute inset-0 w-full h-full object-cover" />
         </div>
 

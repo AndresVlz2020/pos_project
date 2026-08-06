@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Input, Select, Button } from "@/shared";
-import logoDPiero from "@/assets/images/logo-d,piero.png";
-import iconUpload from "@/assets/icons/cargar.png";
+import { Input, Select, Button, FileInput } from "@/shared";
 import { getDocumentTypes } from "../../services/selectServices";
 import { userSchema } from "../users/schemas/userSchema";
+import { Link } from "react-router-dom";
 
 export default function CreateUser() {
   const [form, setForm] = useState({
@@ -65,25 +64,23 @@ export default function CreateUser() {
   };
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)]">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
-          <button type="button" onClick={() => window.history.back()} className="px-3 py-1 rounded-md border border-[var(--color-text-inverse)] text-[var(--color-text-inverse)]">←</button>
-          <img src={logoDPiero} alt="D,PIERO" className="h-8 w-auto object-contain" />
-        </div>
-      </div>
-
+    <div className="min-h-screen">
       {/* Body */}
-      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto p-6 bg-[var(--color-tertiary-300)] rounded-lg border border-[var(--color-border)] shadow-sm">
+      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-8 p-6 bg-[var(--color-tertiary-300)] rounded-lg border border-[var(--color-border)] shadow-sm">
         <h1 className="text-2xl font-bold text-center mb-8">Crear Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Left: upload placeholder */}
           <div className="col-span-1 flex flex-col items-center">
-            <div className="w-80 h-56 md:h-64 rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] shadow-sm flex flex-col items-center justify-center text-[var(--color-gray-900)]">
-              <span className="mb-3">Cargar Imagen</span>
-              <img src={iconUpload} alt="Cargar" className="w-8 h-8 opacity-80" />
+            <span className="text-center mb-2">Cargar Imagen</span>
+            <div className="w-full h-56 md:h-64 rounded-lg bg-[var(--color-surface)] flex flex-col items-center justify-center text-[var(--color-gray-900)] place-items-center">
+                <FileInput className="flex items-center justify-center"
+                  value={form.userImage}
+                  onChange={(files) => 
+                    setForm((prev) => ({ ...prev, userImage: files}))
+                  }
+                  multiple={true}
+                />
             </div>
             {/* Sin switch: solo texto descriptivo si se requiere en el futuro */}
           </div>
@@ -180,7 +177,16 @@ export default function CreateUser() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto flex md:justify-end justify-center mt-8">
+        <div className="max-w-7xl mx-auto flex md:justify-end justify-center mt-8 gap-4">
+            <Link to="/dashboard/userList">
+              <Button
+                variant="secondary"
+                size="md"
+                type="submit"
+              >
+                Cancelar
+              </Button>
+            </Link>
           <Button variant="primary" size="md" type="submit">Crear</Button>
         </div>
       </form>

@@ -68,7 +68,7 @@ export default function StatusSwitch({
       className={`
         relative inline-flex items-center rounded-full transition-colors
         ${sizes[size]}
-        ${isActive ? "bg-green-500" : "bg-gray-300"}
+        ${isActive ? "bg-[var(--color-primary-500)]" : "bg-gray-300"}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
     >

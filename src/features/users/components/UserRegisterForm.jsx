@@ -5,14 +5,21 @@ import{
     Select,
     Checkbox,
     Button,
+    IconButton,
+    FileInput, 
  } from "@/shared";
  import { getDocumentTypes } from "../../../services/selectServices";
+ import { useNavigate } from "react-router-dom";
  import { userSchema } from "../schemas/userSchema";
+ import { ArrowLeft } from "lucide-react";
 
 export  default function UserRegisterForm() {
 
 // Estado de envío
   // const [isSubmitting, setIsSubmitting] = useState(false);
+
+// Navegacion
+  const navigate = useNavigate();
 
 // Estado del error
   const [errors, setErrors] = useState({});
@@ -134,6 +141,7 @@ export  default function UserRegisterForm() {
             <form
              action=""
              onSubmit={handleSubmit}
+             className="flex flex-col items-center w-80"
              >
             <Input 
             label="Nombre"
@@ -198,9 +206,21 @@ export  default function UserRegisterForm() {
             onChange={handleChange}
             error={errors.userPassword}
           />
+
+          <FileInput
+            value={formData.userImage}
+          onChange={(files) =>
+            setFormData((prev) => ({ ...prev, userImage: files }))
+          }
+          multiple={true}
+          />
+          {errors.userImage && (
+            <span className="text-red-500 text-sm">{errors.userImage}</span>
+          )}
+
           {/* Checkbox */}
 
-          <div className="grid gap-4 my-2">
+          <div className="grid gap-4 my-2 w-full justify-items-center">
 
           <Checkbox
           id="isSuperUser"
@@ -230,7 +250,7 @@ export  default function UserRegisterForm() {
 
 
           {/* Actions */}
-            <div className="flex gap-6 items-center">
+            <div className="flex gap-6 items-center justify-center w-full">
            <Button
             variant="secondary"
             size="sm"
@@ -245,6 +265,13 @@ export  default function UserRegisterForm() {
             type="submit"
             > Guardar
             </Button>
+            <IconButton
+            ariaLabel="Volver"
+            variant="ghost"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft />
+          </IconButton>
             </div>
             </form>
           </div>

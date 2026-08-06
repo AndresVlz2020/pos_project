@@ -32,7 +32,7 @@ export default function Navbar(){
 
 
     return (
-      <nav className="w-full bg-transparent border-b-2">
+      <nav className="w-full bg-[var(--color-primary-950)] border-b-2">
         <div className="mx-auto max-w-7xl px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Logo de marca */}
@@ -45,7 +45,7 @@ export default function Navbar(){
 
 
             {/* Links de navegación */}
-            <ul className="hidden md:flex items-center gap-6">
+            <ul className="hidden md:flex items-center gap-6 text-[var(--color-white)]">
               <li>
                 <Link to={"/auth"} className="hover:text-primary transition">
                   Inicio
@@ -98,17 +98,23 @@ export default function Navbar(){
                 </div>
 
             {/* Contenido */}
-            <DropdownContent className="right-0">
-              <DropdownItem>
-                Gestión de usuarios
+            <DropdownContent className="right-0 ">
+              <DropdownItem onClick={() => navigate("/")}>
+                Inicio
               </DropdownItem>
               <DropdownItem onClick={() => navigate("/dashboard/userList")}>
-                Listar usuarios
+                Usuarios
               </DropdownItem>
-              <DropdownItem>
-                Gestión de productos
+              <DropdownItem onClick={() => navigate("/productList")}>
+                Productos
               </DropdownItem>
-              <DropdownItem>
+              <DropdownItem onClick={() => navigate("/inventoryList")}>
+                Inventario
+              </DropdownItem>
+              <DropdownItem onClick={() => navigate("/supplierList")}>
+                Proveedores
+              </DropdownItem>
+              <DropdownItem onClick={() => navigate("/Auth")}>
                 Cerrar sesión
               </DropdownItem>
             </DropdownContent>

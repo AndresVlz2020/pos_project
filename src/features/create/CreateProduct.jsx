@@ -1,9 +1,8 @@
-import { Input, Select, Button } from "@/shared";
-import ImgUpload from "@/assets/icons/upload.png";
-import ImgUploadBar from "@/assets/icons/upload-bar.png";
-import logoDPiero from "@/assets/images/logo-d,piero.png";
+import { Input, Select, Button, FileInput } from "@/shared";
+
 import { useState } from "react";
 import { userSchema } from "../users/schemas/userSchema";
+import { Link } from "react-router-dom";
 
 export default function CreateProduct() {
     const [formProduct, setProducts] = useState({
@@ -71,31 +70,7 @@ export default function CreateProduct() {
 
 
     return (
-        <div className="h-full bg-white min-h-screen">
-            <div className="
-                    w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)]
-                "
-            >
-                <div className=
-                        "max-w-7xl mx-auto px-6 py-4 flex items-center gap-4"
-                >
-                    <button type="
-                                button
-                            "
-                            className="
-                                px-3 py-1 rounded-md border border-[var(--color-text-inverse)] text-[var(--color-text-inverse)]"
-                    >
-                        ←
-                    </button>
-                    <h1 className="
-                            text-2xl font-bold
-                        "
-                    >
-                        Crear Producto
-                    </h1>
-                    <img src={logoDPiero} alt="Logo" className="h-8 w-auto" />
-                </div>
-            </div>
+        <div className="overflow-y-hidden">
             <div className="
                     flex 
                     gap-24
@@ -104,27 +79,25 @@ export default function CreateProduct() {
                     justify-center
                 "
             >
-                <div className="w-40 mt-8 gap-200">
-                    <img ImgUpload
-                        src={ImgUpload} 
-                        alt="image-icon"
-                        className="
-                            h-40
-                            w-50
-                        "
+                <div className="w-40 mt-9 gap-300">
+                    <FileInput className="flex items-center justify-center"
+                    value={formProduct.userImage}
+                    onChange={(files) => 
+                        setProducts((prev) => ({ ...prev, userImage: files}))
+                    }
+                    multiple={true}
                     />
                     <p className="
                         text-center
                     ">
                         Suba un Archivo
                     </p>
-                    <img ImgUploadBar
-                        src={ImgUploadBar} 
-                        alt="upload-bar"
-                        className="
-                            h-40
-                            w-50
-                        "
+                    <FileInput className="flex items-center justify-center"
+                    value={formProduct.userImage}
+                    onChange={(files) => 
+                        setProducts((prev) => ({ ...prev, userImage: files}))
+                    }
+                    multiple={true}
                     />
                     <p className="
                         text-center
@@ -272,7 +245,16 @@ export default function CreateProduct() {
                         onChange={handleChange}
                         error={errors.expirationDate}
                     />
-                    <div className="w-full flex justify-center mt-12">
+                    <div className="w-full flex justify-center mt-12 gap-4">
+                        <Link to="/productList">
+                            <Button
+                                variant="secondary"
+                                size="md"
+                                type="submit"
+                                >
+                                Cancelar
+                            </Button>
+                        </Link>
                         <Button
                             variant="primary"
                             size="md"
