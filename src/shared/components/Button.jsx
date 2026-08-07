@@ -9,8 +9,8 @@ export default function Button ({
 }){
 
      const variants = {
-     primary: "bg-[var(--color-primary-500)] text-white hover:bg-[var   (--color-primary-600)]",
-     secondary: "border border-[var(--color-secondary-500)] bg-[var   (--color-secondary-50)] text-[var(--color-secondary-700)] hover:bg-[var   (--color-secondary-100)]"
+     primary: "bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-gray-500)] hover:text-black cursor-pointer",
+     secondary: "border border-[var(--color-secondary-500)] bg-[var(--color-secondary-50)] text-[var(--color-secondary-700)] hover:bg-[var(--color-secondary-100)] cursor-pointer"
    };
 
     const sizes = {

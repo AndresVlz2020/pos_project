@@ -1,9 +1,9 @@
 import { Input, Button, FileInput, Select } from "@/shared";
 import { useState } from "react";
-import { productSchema } from "../products/schemas/productSchema";
+import { productSchema } from "../../products/schemas/productSchema";
 import { Link } from "react-router-dom";
 
-export default function CreateProduct() {
+export default function EditProduct1() {
     const [formProduct, setProduct] = useState({
         productName: "",
         productPrice: "",
@@ -67,7 +67,7 @@ export default function CreateProduct() {
 
         return (
         <div className="overflow-y-hidden">
-            <h1 className="text-[length:var(--fs-md)] font-bold place-self-center mt-8">Crear Producto</h1>
+            <h1 className="text-[length:var(--fs-md)] font-bold place-self-center mt-8">Editar Producto</h1>
             <div className="
                     flex 
                     gap-24
@@ -166,7 +166,7 @@ export default function CreateProduct() {
                                     size="md"
                                     type="submit"
                                     >
-                                    Confirmar Informacion
+                                    Hecho
                                 </Button>
                             </div>
                         </div>

@@ -67,7 +67,7 @@ export default function CreateUser() {
     <div className="min-h-screen">
       {/* Body */}
       <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-8 p-6 bg-[var(--color-tertiary-300)] rounded-lg border border-[var(--color-border)] shadow-sm">
-        <h1 className="text-2xl font-bold text-center mb-8">Crear Usuario</h1>
+        <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-8">Crear Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Left: upload placeholder */}

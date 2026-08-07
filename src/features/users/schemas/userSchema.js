@@ -19,6 +19,8 @@ export const userSchema = z.object ({
 
     userDocumentTypes: z.string().min(1, "Debe seleccionar un tipo de documento"),
 
+    userType: z.string().min(1, "Debe seleccionar un tipo de usuario"),
+
     userDocumentNumber: z
     .string()
     .min(5, "Número de documento inválido")

@@ -25,8 +25,8 @@ export default function InventoryListPage() {
                     <Button variant="secondary" onClick={() => setIsReportOpen(true)}>
                         Generar reporte
                     </Button>
-                    <Link to="/CreateProduct">
-                        <Button>Agregar producto</Button>
+                    <Link to="/CreateInventory">
+                        <Button>Agregar al inventario</Button>
                     </Link>
                 </div>
             </div>

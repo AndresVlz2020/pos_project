@@ -14,13 +14,6 @@ export default function UserRowActions({ user }) {
 
     // Hook que permite redirigir a otra ruta desde código
     const navigate = useNavigate();
-
-    // Acción para editar el usuario
-    // Redirige a la página de edición usando el id del usuario
-    const handleEdit = () => {       
-         navigate(`/users/${user.id}/edit`);
-        
-    };
     
     // Acción para eliminar el usuario
     // Actualmente solo se imprime en consola
@@ -34,7 +27,7 @@ export default function UserRowActions({ user }) {
         <div className="flex gap-2">
             {/* Botón de edición */}
             <button
-                onClick={handleEdit} // Ejecuta la acción de edición
+                onClick={() => navigate("/edituser")}
                 className="btn btn-primary" 
             >
                 <Pencil size={16}/> {/* Icono de edición */}
@@ -44,13 +37,13 @@ export default function UserRowActions({ user }) {
                 onClick={handleDelete} // Ejecuta la acción de eliminación
                 className="p-1 rounded hover:bg-gray-100"
             >     
-            <Trash2 size={16}/> {/* Icono de eliminación */}
+                <Trash2 size={16}/> {/* Icono de eliminación */}
             </button>
             <button
                 onClick={() => navigate("/readuser")}
                 className="p-1 rounded hover:bg-gray-100"
                 >     
-            <Eye size={16}/> {/* Icono de eliminación */}
+                <Eye size={16}/> {/* Icono de visualizacion */}
             </button>
         </div>
 
