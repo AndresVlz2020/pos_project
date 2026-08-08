@@ -21,6 +21,7 @@ import ReadSupplier1 from "../features/read/suppliers/ReadSupplier1";
 import EditSupplier1 from "../features/edit/suppliers/EditSupplier1";
 import ReadProduct1 from "../features/read/products/ReadProduct1";
 import EditProduct1 from "../features/edit/products/EditProduct1";
+import EditOrder from "../features/edit/orders/EditOrder";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 const router = createBrowserRouter([
@@ -48,6 +49,13 @@ const router = createBrowserRouter([
       { path: "userList", element: <UserListPage /> },
       { path: "productList", element: <ProductListPage /> },
       { path: "inventoryList", element: <InventoryListPage /> },
+      { path: "supplierList", element: <SuppliersListPage /> },
+      { path: "CreateOrder", element: <CreateOrder /> },
+      { path: "editorder", element: <EditOrder /> },
+      { path: "EditOrder", element: <EditOrder /> },
+      { path: "edituser", element: <EditUser1 /> },
+      { path: "editsupplier", element: <EditSupplier1 /> },
+      { path: "editproduct", element: <EditProduct1 /> },
     ],
   },
   {
@@ -168,6 +176,24 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <EditProduct1 /> },
     ],  
+  },
+  {
+    path: "/editorder",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <EditOrder /> },
+    ],  
+  },
+  {
+    path: "/EditOrder",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <EditOrder /> },
+    ],  
+  },
+  {
+    path: "*",
+    element: <Navigate to="/CreateOrder" replace />,
   },
 ]);
 

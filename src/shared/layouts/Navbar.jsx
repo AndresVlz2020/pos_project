@@ -114,6 +114,9 @@ export default function Navbar(){
               <DropdownItem onClick={() => navigate("/supplierList")} className="cursor-pointer">
                 Proveedores
               </DropdownItem>
+              <DropdownItem onClick={() => navigate("/CreateOrder")} className="cursor-pointer">
+                Ordenes
+              </DropdownItem>
               <DropdownItem onClick={() => navigate("/Auth")} className="cursor-pointer">
                 Cerrar sesión
               </DropdownItem>

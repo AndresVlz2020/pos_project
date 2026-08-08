@@ -5,6 +5,7 @@ export default function Input({
     type= "text",
     variant= "primary",
     size= "md",
+    className = "",
     ...props
 }){
 
@@ -28,13 +29,13 @@ export default function Input({
         h-10
         `,
         lg:`
-       h-12
+        h-12
         `,
     }
 
     
     return(
-        <div>
+        <div className="w-full">
 
             {/* Label */}
             <label 
@@ -66,6 +67,7 @@ export default function Input({
                     h-12
                     flex
                     items-center
+                    w-full
                 "
                 
                 >
@@ -84,14 +86,14 @@ export default function Input({
                     <input
                         id={htmlFor}
                         type={type}
-                        error={error}
                         className={`
                         relative
-                        w-80
+                        w-full
                         rounded-md
                         border
                         px-4
-                        text-body
+                        text-gray-900
+                        bg-white
                         focus:outline-none
                         focus:ring-2
                         focus:ring-ring
@@ -99,13 +101,14 @@ export default function Input({
                         ${variants[variant]}
                         ${sizes[size]}
                         ${error ? "border-red-800" : ""}
+                        ${className}
                         `}
                         {...props}
                     />
             </div>
             {/* Feedback */}
             {error && (
-                <p className="text-caption text-red-500 place self-start">{error}</p>
+                <p className="text-caption text-red-500 place-self-start mt-1">{error}</p>
             )}
         </div>
     )

@@ -9,7 +9,7 @@ export default function Select({
 
   return (
 
-    <div className="mb-3">
+    <div className="w-full mb-3">
 
       {label && (
         <label className="block text-caption mb-1 text-text-muted">
