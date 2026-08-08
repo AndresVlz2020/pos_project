@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { supplierSchema } from "../suppliers/schemas/supplierSchema"
+import { supplierSchema } from "../../suppliers/schemas/supplierSchema"
 import { Input, Checkbox, Button, FileInput } from "@/shared"
 import { Link } from "react-router-dom";
 
-export default function CreateSuppliers() {
+export default function EditSupplier1() {
 
     const [errors, setErrors] = useState({});
     
@@ -65,7 +65,7 @@ export default function CreateSuppliers() {
 
     return (
         <div>
-            <h1 className="text-[length:var(--fs-md)] font-bold place-self-center mt-8">Crear Proveedor</h1>
+            <h1 className="text-[length:var(--fs-md)] font-bold place-self-center mt-8">Editar Proveedor</h1>
             <div className=" 
                     flex 
                     gap-24
@@ -114,9 +114,9 @@ export default function CreateSuppliers() {
                     <Input
                         label="Correo Electronico"
                         name="supplierEmail"
-                        type="tel"
+                        type="email"
                         value={formSupliers.supplierEmail}
-                        htmlFor="contact-phone"
+                        htmlFor="supplier-email"
                         onChange={handleChange}
                         error={errors.supplierEmail}
                     />
@@ -181,7 +181,7 @@ export default function CreateSuppliers() {
                             size="sm"
                             type="submit"
                         >
-                            Confirmar Informacion
+                            Hecho
                         </Button>
                     </div>
                 </form>     

@@ -98,23 +98,23 @@ export default function Navbar(){
                 </div>
 
             {/* Contenido */}
-            <DropdownContent className="right-0 ">
-              <DropdownItem onClick={() => navigate("/")}>
+            <DropdownContent className="right-0">
+              <DropdownItem onClick={() => navigate("/")} className="cursor-pointer">
                 Inicio
               </DropdownItem>
-              <DropdownItem onClick={() => navigate("/dashboard/userList")}>
+              <DropdownItem onClick={() => navigate("/dashboard/userList")} className="cursor-pointer">
                 Usuarios
               </DropdownItem>
-              <DropdownItem onClick={() => navigate("/productList")}>
+              <DropdownItem onClick={() => navigate("/productList")} className="cursor-pointer">
                 Productos
               </DropdownItem>
-              <DropdownItem onClick={() => navigate("/inventoryList")}>
+              <DropdownItem onClick={() => navigate("/inventoryList")} className="cursor-pointer">
                 Inventario
               </DropdownItem>
-              <DropdownItem onClick={() => navigate("/supplierList")}>
+              <DropdownItem onClick={() => navigate("/supplierList")} className="cursor-pointer">
                 Proveedores
               </DropdownItem>
-              <DropdownItem onClick={() => navigate("/Auth")}>
+              <DropdownItem onClick={() => navigate("/Auth")} className="cursor-pointer">
                 Cerrar sesión
               </DropdownItem>
             </DropdownContent>

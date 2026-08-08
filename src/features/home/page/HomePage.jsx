@@ -8,7 +8,7 @@ export default function HomePage() {
       {/* Hero */}
       {/* Carrusel */ }
       {/* Titulo */}
-      <h1 className="text-h1 text-2xl font-bold place-self-center mt-16 mb-12">
+      <h1 className="text-[length:var(--fs-md)] font-bold place-self-center mt-16 mb-12">
           Productos
       </h1>
         {/* Cards */}

@@ -7,7 +7,7 @@ import UsersManagement from "@/features/create/UsersManagement";
 import Login from "@/features/auth/Login";
 import Register from "@/features/auth/Register";
 import CreateUser from "@/features/create/CreateUser";
-import CreateProduct from "@/features/create/CreateProduct";
+import CreateInventory from "@/features/create/CreateInventory";
 import CreateSuppliers from "../features/create/CreateSuppliers";
 import { UserListPage, UserRegisterForm } from "@/features/users";
 import { ProductListPage } from "@/features/products";
@@ -16,6 +16,11 @@ import { InventoryListPage } from "@/features/inventory";
 import { HomePage } from "@/features/home";
 import ReadUser1 from "../features/read/users/ReadUser1";
 import EditUser1 from "../features/edit/user/EditUser1";
+import CreateProduct from "../features/create/CreateProduct";
+import ReadSupplier1 from "../features/read/suppliers/ReadSupplier1";
+import EditSupplier1 from "../features/edit/suppliers/EditSupplier1";
+import ReadProduct1 from "../features/read/products/ReadProduct1";
+import EditProduct1 from "../features/edit/products/EditProduct1";
 // import DeleteCounter from "@/shared/components/DeleteCounter";
 
 const router = createBrowserRouter([
@@ -43,6 +48,13 @@ const router = createBrowserRouter([
       { path: "userList", element: <UserListPage /> },
       { path: "productList", element: <ProductListPage /> },
       { path: "inventoryList", element: <InventoryListPage /> },
+    ],
+  },
+  {
+    path: "/CreateInventory",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <CreateInventory /> },
     ],
   },
   {
@@ -123,10 +135,38 @@ const router = createBrowserRouter([
     ],  
   },
   {
+    path: "/readsupplier",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <ReadSupplier1 /> },
+    ],  
+  },
+  {
+    path: "/readproduct",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <ReadProduct1 /> },
+    ],  
+  },
+  {
     path: "/edituser",
     element: <DashboardLayout />,
     children: [
       { index: true, element: <EditUser1 /> },
+    ],  
+  },
+  {
+    path: "/editsupplier",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <EditSupplier1 /> },
+    ],  
+  },
+  {
+    path: "/editproduct",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <EditProduct1 /> },
     ],  
   },
 ]);

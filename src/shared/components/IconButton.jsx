@@ -47,6 +47,7 @@ export const IconButton = React.forwardRef(function IconButton(
       hover:bg-neutral-200
       hover:text-[var(--color-black)]
       focus-visible:ring-neutral-400
+      cursor-pointer
     `,
     ghost: `
       text-neutral-600

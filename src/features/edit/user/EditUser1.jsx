@@ -57,7 +57,7 @@ export default function EditUser1() {
     <div className="overflow-y-hidden">
       {/* Body */}
       <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-22 p-6 bg-[var(--color-tertiary-300)] rounded-lg border border-[var(--color-border)] shadow-sm">
-        <h1 className="text-2xl font-bold text-center mb-8">Editar Usuario</h1>
+        <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-8">Editar Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Left: upload placeholder */}
@@ -135,7 +135,7 @@ export default function EditUser1() {
         </div>
 
         <div className="max-w-7xl mx-auto flex md:justify-end justify-center mt-8 gap-4">
-            <Link to="/readuser">
+            <Link to="/dashboard/userList">
               <Button
                 variant="secondary"
                 size="md"
@@ -144,7 +144,6 @@ export default function EditUser1() {
                 Cancelar
               </Button>
             </Link>
-            <Link to="/dashboard/userList">
                 <Button 
                     variant="primary" 
                     size="md" 
@@ -152,7 +151,6 @@ export default function EditUser1() {
                 >
                     Hecho
                 </Button>
-            </Link>
         </div>
       </form>
     </div>
