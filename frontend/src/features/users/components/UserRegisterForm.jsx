@@ -1,6 +1,6 @@
 // Componente para registrar un usuario 
 import { useState, useEffect } from "react"
-import{
+import {
     Input,
     Select,
     Checkbox,
@@ -9,14 +9,15 @@ import{
     FileInput, 
  } from "@/shared";
  import { getDocumentTypes } from "../../../services/selectServices";
+ import { createUser } from "../../../services/userService";
  import { useNavigate } from "react-router-dom";
  import { userSchema } from "../schemas/userSchema";
  import { ArrowLeft } from "lucide-react";
 
-export  default function UserRegisterForm() {
+export default function UserRegisterForm() {
 
 // Estado de envío
-  // const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 // Navegacion
   const navigate = useNavigate();
@@ -25,29 +26,28 @@ export  default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
 
 // Estados del formulario
-    const[formData, setFormData] = useState({
-        userName:"",
-        userEmail:"",
-        userPhone:"",
-        userDocumentTypes:"",
-        userDocumentNumber:"",
-        userPassword:"",
+    const [formData, setFormData] = useState({
+        userName: "",
+        userEmail: "",
+        userPhone: "",
+        userDocumentTypes: "",
+        userDocumentNumber: "",
+        userPassword: "",
         isStaff: false,
         isActive: true,
         isSuperUser: false,
-    })
+    });
 
     // Handle generico
-
     const handleChange = (e) => {
         // Se obtiene el nombre del campo y su valor
-        const{name, value, type, checked} = e.target;
+        const { name, value, type, checked } = e.target;
 
         setFormData((prev) => ({
             // Se copian todos los valores anteriores del estado
             ...prev,
 
-            // S actualiza unicamente lo que cambio
+            // Se actualiza unicamente lo que cambio
             [name]: type === "checkbox" ? checked : value,
         }));
 
@@ -65,22 +65,15 @@ export  default function UserRegisterForm() {
         // Evita que el formulario recargue la pagina 
         e.preventDefault();
 
-        const result= userSchema.safeParse(formData);
+        const result = userSchema.safeParse(formData);
 
-
-        if(!result.success){
-
+        if (!result.success) {
             const fieldErrors = {};
-
             result.error.issues.forEach((issue) => {
-
                 fieldErrors[issue.path[0]] = issue.message;
             });
 
             setErrors(fieldErrors);
-
-            // Cortamos la ejecucion:no se envia nada al backend
-
             return;
         }
         
@@ -88,34 +81,25 @@ export  default function UserRegisterForm() {
         setErrors({});
 
         // Activamos estado de envío
-        // setIsSubmitting(true);
+        setIsSubmitting(true);
 
         try {
-          // LLamamos al servicio frontend para que consume la AÍ
-          // result.data contiene los datos ya validados ór zod
-          // const response =  await createUser(result.data);
+          // Llamamos al servicio frontend para que consuma la API
+          const response = await createUser(result.data);
 
-          // Log informativo para desarrollo
-          // console.log("usuario creado:", response);
-
-          // Feedback básico al ususario
+          console.log("✅ Usuario registrado exitosamente:", response);
           alert("Usuario creado correctamente");
 
-          // Navegamos a las vista anterior
-          // navigate(-1) equivale a "volver atrás"
-          // navigate(-1);
+          // Volvemos a la lista de usuarios
+          navigate(-1);
 
         } catch (error) {
-          // Capturamos errores de red o errores lanzados por el service
-          console.error("Error:", error.message);
-
-          // Mostramos el mensaje de error al usuario
-          alert(error.message);
+          console.error("❌ Error al registrar usuario:", error.message);
+          alert(`Error: ${error.message}`);
         } finally {
-          // Pase lo que pase, desactivamos el estado de envío
-          // setIsSubmitting(false);
+          setIsSubmitting(false);
         }
-    }
+    };
 
     // HandleNameChange
 
@@ -263,7 +247,8 @@ export  default function UserRegisterForm() {
             variant="primary"
             size="md"
             type="submit"
-            > Guardar
+            disabled={isSubmitting}
+            > {isSubmitting ? "Guardando..." : "Guardar"}
             </Button>
             <IconButton
             ariaLabel="Volver"

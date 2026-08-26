@@ -26,11 +26,12 @@ const Card = ({
         w-full
         rounded-xl
         border
-        border-[var(--color-border-strong)]
+        border-[var(--color-primary-700)]
         bg-[var(--color-primary-900)]
         text-[var(--color-white)]
         shadow-md
         hover:shadow-xl
+        hover:border-[var(--color-primary-500)]
         transition-all
         overflow-hidden
         flex
@@ -41,14 +42,15 @@ const Card = ({
     >
       <div>
         {image && (
-          <div className="relative aspect-[16/10] overflow-hidden bg-[var(--color-black)]/20">
+          <div className="relative w-full h-44 sm:h-48 flex items-center justify-center p-3 bg-[var(--color-primary-950)]/50 overflow-hidden">
             <img
               src={image}
               alt={displayTitle}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              className="max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-300 hover:scale-105"
+              loading="lazy"
             />
             {status && (
-              <span className="absolute bottom-2 left-2 bg-[var(--color-primary-700)] text-[var(--color-white)] text-[length:var(--fs-xxxs)] font-semibold px-2.5 py-0.5 rounded-full backdrop-blur-xs">
+              <span className="absolute bottom-2 left-2 bg-[var(--color-primary-700)] text-[var(--color-white)] text-[length:var(--fs-xxxs)] font-semibold px-2.5 py-0.5 rounded-full backdrop-blur-sm border border-[var(--color-primary-500)]/40 shadow-xs">
                 {status}
               </span>
             )}
@@ -63,13 +65,13 @@ const Card = ({
           )}
 
           {displayDesc && (
-            <p className="text-[length:var(--fs-xxs)] text-[var(--color-gray-300)]">
+            <p className="text-[length:var(--fs-xxs)] text-[var(--color-gray-300)] line-clamp-2">
               {displayDesc}
             </p>
           )}
 
           {displayPrice && (
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pt-1">
               <span className="text-[length:var(--fs-xxs)] text-[var(--color-gray-300)]">
                 Precio unitario:
               </span>
