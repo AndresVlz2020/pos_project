@@ -13,14 +13,6 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const currentUser = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("auth_user") || "null");
-    } catch {
-      return null;
-    }
-  })();
-
   const pathname = location.pathname.toLowerCase();
   const isHome = pathname === "/";
   const isProducts = pathname.includes("product");
@@ -89,14 +81,6 @@ export default function Navbar() {
 
           {/* Menú de Acciones / Hamburguesa */}
           <div className="flex items-center gap-3">
-            {currentUser && (
-              <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-400)] bg-[var(--color-primary-900)] px-2.5 py-1 rounded border border-[var(--color-primary-800)]">
-                <span className="font-semibold text-[var(--color-white)] truncate max-w-[140px]">
-                  {currentUser.name || "Administrador"}
-                </span>
-              </div>
-            )}
-
             <Dropdown>
               <div>
                 <DropdownTrigger>
