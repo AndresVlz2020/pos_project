@@ -45,39 +45,13 @@ const Card = ({
     >
       <div>
         {image && (
-          <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-[var(--color-primary-950)]">
+          <div className="w-full h-48 sm:h-52 overflow-hidden bg-[var(--color-primary-950)]">
             <img
               src={image}
               alt={displayTitle}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary-950)]/80 via-transparent to-transparent pointer-events-none" />
-            
-            {/* Badges superiores tipo Material Chips */}
-            <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1 pointer-events-none">
-              {displayCategory && (
-                <span className="bg-[var(--color-primary-950)] text-[var(--color-secondary-300)] text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-md border border-[var(--color-primary-700)] shadow-sm">
-                  {displayCategory}
-                </span>
-              )}
-              {isPopular && (
-                <span className="bg-[var(--color-secondary-500)] text-[var(--color-white)] text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-                  ★ Popular
-                </span>
-              )}
-              {!isPopular && rating && (
-                <span className="bg-[var(--color-primary-950)] text-[var(--color-secondary-300)] text-[11px] font-semibold px-2 py-0.5 rounded-md border border-[var(--color-primary-700)] flex items-center gap-1 shadow-sm">
-                  ★ {rating}
-                </span>
-              )}
-            </div>
-
-            {status && (
-              <span className="absolute bottom-2 left-2.5 bg-[var(--color-primary-950)] text-[var(--color-white)] text-[length:var(--fs-xxxs)] font-medium px-2 py-0.5 rounded-md border border-[var(--color-primary-700)]">
-                {status}
-              </span>
-            )}
           </div>
         )}
 
