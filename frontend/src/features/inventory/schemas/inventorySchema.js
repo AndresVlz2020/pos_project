@@ -43,6 +43,10 @@ export const inventorySchema = z.object ({
     priceBuy: z
     .string()
     .min(1, "El valor de la compra debe ser mayor a 0"),
+
+    expirationDate: z
+    .string()
+    .min(1, "Debe ingresar una fecha de vencimiento"),
     
     userImage: fileSchema.shape.files.optional()
     

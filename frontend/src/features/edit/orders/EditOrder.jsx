@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Input, Select, Button, Card } from "@/shared";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import imgPunta from "@/assets/images/punta-de-anca.png";
-import imgLimonada from "@/assets/images/limonada.png";
-import imgPostre from "@/assets/images/postre-coco.png";
-import imgCoctel from "@/assets/images/coctel-fresa.png";
-
 import { products } from "../../products/data/products";
 
 export default function EditOrder() {
@@ -133,8 +128,8 @@ export default function EditOrder() {
 
       <form onSubmit={handleSubmit} className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
         {/* Main Info Card */}
-        <div className="p-6 bg-[var(--color-tertiary-300)] rounded-xl border border-[var(--color-border)] shadow-sm mb-8">
-          <h2 className="text-[length:var(--fs-sm)] font-bold mb-4 text-[var(--color-gray-900)]">
+        <div className="p-6 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)] mb-8">
+          <h2 className="text-[length:var(--fs-sm)] font-bold mb-4 text-[var(--color-white)]">
             Información de la Orden
           </h2>
 
@@ -184,7 +179,7 @@ export default function EditOrder() {
         </div>
 
         {/* Dishes list header */}
-        <h2 className="text-[length:var(--fs-md)] font-bold mb-6 text-[var(--color-gray-900)] text-center">
+        <h2 className="text-[length:var(--fs-md)] font-bold mb-6 text-[var(--color-white)] text-center">
           Platillos Incluidos en la Orden
         </h2>
 
@@ -204,9 +199,9 @@ export default function EditOrder() {
         </div>
 
         {/* Footer actions */}
-        <div className="p-6 bg-[var(--color-tertiary-300)] rounded-xl border border-[var(--color-border)] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-[length:var(--fs-sm)] font-bold text-[var(--color-gray-900)]">
-            Total de la Orden: <span className="text-[var(--color-primary-700)] text-[length:var(--fs-md)]">${totalAmount.toLocaleString()}</span>
+        <div className="p-6 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-[length:var(--fs-sm)] font-bold text-[var(--color-white)]">
+            Total de la Orden: <span className="text-[var(--color-secondary-400)] text-[length:var(--fs-md)] font-bold">${totalAmount.toLocaleString()}</span>
           </div>
           <div className="flex gap-4">
             <Link to="/CreateOrder">

@@ -64,113 +64,100 @@ export default function EditProduct1() {
         { value: "habilitado", label: "Habilitado" },
         { value: "inhabilitado", label: "Inhabilitado" }
     ];
+        return (
+        <div className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)]">
+            <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-8 text-[var(--color-white)]">Editar Producto</h1>
+            <form onSubmit={handleSubmit}>
+                <div className="flex flex-col md:flex-row gap-8 md:gap-16 justify-center">
+                    <div className="flex flex-col gap-3 flex-1 max-w-md">
+                        <Input
+                            label="Nombre del Platillo"
+                            name="productName"
+                            type="text"
+                            value={formProduct.productName}
+                            placeholder="Ingrese el nombre del platillo"
+                            htmlFor="product-name"
+                            onChange={handleChange}
+                            error={errors.productName}
+                        />
+                        <Input
+                            label="Precio"
+                            name="productPrice"
+                            type="text"
+                            value={formProduct.productPrice}
+                            placeholder="Ingrese el precio del producto"
+                            htmlFor="product-price"
+                            onChange={handleChange}
+                            error={errors.productPrice}
+                        />
+                        <Select
+                            label="Categoria"
+                            name="productCategory"
+                            htmlFor="product-category"
+                            options={categoryOptions}
+                            value={formProduct.productCategory}
+                            onChange={handleChange}
+                            error={errors.productCategory}
+                        />
+                    </div>
+            
+                    <div className="flex flex-col gap-3 flex-1 max-w-md">
+                        <Input
+                            label="Descripcion"
+                            name="productDescription"
+                            type="text"
+                            value={formProduct.productDescription}
+                            placeholder="Ingrese la descripcion del producto"
+                            htmlFor="product-description"
+                            onChange={handleChange}
+                            error={errors.productDescription}
+                        />
+                        <Select
+                            label="Estado del producto"
+                            name="productStatus"
+                            htmlFor="product-status"
+                            options={statusOptions}
+                            value={formProduct.productStatus}
+                            onChange={handleChange}
+                            error={errors.productStatus}
+                        />
+                    </div>
+                </div>
 
-        return (
-        <div className="overflow-y-hidden">
-            <h1 className="text-[length:var(--fs-md)] font-bold place-self-center mt-8">Editar Producto</h1>
-            <div className="
-                    flex 
-                    gap-24
-                    mt-6
-                    h-full
-                    justify-center
-                "
-            >
-                <form
-                    className="flex flex-col gap-3" 
-                    action=""
-                    onSubmit={handleSubmit}
-                >
-                    <Input
-                        label="Nombre del Platillo"
-                        name="productName"
-                        type="text"
-                        value={formProduct.productName}
-                        placeholder="Ingrese el nombre del platillo"
-                        htmlFor="product-name"
-                        onChange={handleChange}
-                        error={errors.productName}
-                    />
-                    <Input
-                        label="Precio"
-                        name="productPrice"
-                        type="text"
-                        value={formProduct.productPrice}
-                        placeholder="Ingrese el precio del producto"
-                        htmlFor="product-price"
-                        onChange={handleChange}
-                        error={errors.productPrice}
-                    />
-                    <Select
-                        label="Categoria"
-                        name="productCategory"
-                        htmlFor="product-category"
-                        options={categoryOptions}
-                        value={formProduct.productCategory}
-                        onChange={handleChange}
-                        error={errors.productCategory}
-                    />
-                </form>
-        
-                <form action="" onSubmit={handleSubmit} className="flex flex-col gap-3">
-                    <Input
-                        label="Descripcion"
-                        name="productDescription"
-                        type="text"
-                        value={formProduct.productDescription}
-                        placeholder="Ingrese la descripcion del producto"
-                        htmlFor="product-description"
-                        onChange={handleChange}
-                        error={errors.productDescription}
-                    />
-                    <Select
-                        label="Estado del producto"
-                        name="productStatus"
-                        htmlFor="product-status"
-                        options={statusOptions}
-                        value={formProduct.productStatus}
-                        onChange={handleChange}
-                        error={errors.productStatus}
-                    />
-                </form>
-            </div>
-                    <form action="" onSubmit={handleSubmit} flex gap-3>
-                        <div className="flex justify-center mt-12 gap-16">
-                                <div>
-                                    <FileInput className="flex items-center justify-center"
-                                    value={formProduct.userImage}
-                                    onChange={(files) => 
-                                        setProduct((prev) => ({ ...prev, userImage: files}))
-                                    }
-                                    multiple={true}
-                                    />
-                                    <p className="
-                                        text-center
-                                        "
-                                        >
-                                        Suba una imagen del platillo
-                                    </p>
-                                </div>
-                            <div className="flex gap-4 justify-center items-center">
-                                <Link to="/productList">
-                                    <Button
-                                        variant="secondary"
-                                        size="md"
-                                        type="submit"
-                                        >
-                                        Cancelar
-                                    </Button>
-                                </Link>
-                                <Button
-                                    variant="primary"
-                                    size="md"
-                                    type="submit"
-                                    >
-                                    Hecho
-                                </Button>
-                            </div>
-                        </div>
-                    </form>
+                <div className="flex flex-col md:flex-row justify-center items-center mt-10 gap-12">
+                    <div className="flex flex-col items-center">
+                        <FileInput
+                            className="flex items-center justify-center"
+                            value={formProduct.userImage}
+                            onChange={(files) => 
+                                setProduct((prev) => ({ ...prev, userImage: files}))
+                            }
+                            multiple={true}
+                        />
+                        <p className="text-center text-[var(--color-gray-300)] text-sm mt-2">
+                            Suba una imagen del platillo
+                        </p>
+                    </div>
+                    <div className="flex gap-4 justify-center items-center">
+                        <Link to="/productList">
+                            <Button
+                                variant="secondary"
+                                size="md"
+                                type="button"
+                            >
+                                Cancelar
+                            </Button>
+                        </Link>
+                        <Button
+                            variant="primary"
+                            size="md"
+                            type="submit"
+                        >
+                            Hecho
+                        </Button>
+                    </div>
+                </div>
+            </form>
         </div>
     );
 }

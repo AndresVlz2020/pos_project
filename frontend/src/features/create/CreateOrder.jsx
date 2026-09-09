@@ -2,11 +2,6 @@ import { useState } from "react";
 import { Input, Select, Button, IconButton, Card } from "@/shared";
 import { Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import imgPunta from "@/assets/images/punta-de-anca.png";
-import imgLimonada from "@/assets/images/limonada.png";
-import imgPostre from "@/assets/images/postre-coco.png";
-import imgCoctel from "@/assets/images/coctel-fresa.png";
-
 import { products } from "../products/data/products";
 
 export default function CreateOrder() {
@@ -119,8 +114,8 @@ export default function CreateOrder() {
 
       <form onSubmit={handleSubmit} className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
         {/* General order data card */}
-        <div className="p-6 bg-[var(--color-tertiary-300)] rounded-xl border border-[var(--color-border)] shadow-sm mb-8">
-          <h2 className="text-[length:var(--fs-sm)] font-bold mb-4 text-[var(--color-gray-900)]">
+        <div className="p-6 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)] mb-8">
+          <h2 className="text-[length:var(--fs-sm)] font-bold mb-4 text-[var(--color-white)]">
             Datos de la Mesa y Mesero
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start w-full">
@@ -159,7 +154,7 @@ export default function CreateOrder() {
         </div>
 
         {/* Dishes list header */}
-        <h2 className="text-[length:var(--fs-md)] font-bold mb-6 text-[var(--color-gray-900)] text-center">
+        <h2 className="text-[length:var(--fs-md)] font-bold mb-6 text-[var(--color-white)] text-center">
           Platillos del Menú
         </h2>
 
@@ -179,10 +174,10 @@ export default function CreateOrder() {
         </div>
 
         {/* Action footer */}
-        <div className="p-6 bg-[var(--color-tertiary-300)] rounded-xl border border-[var(--color-border)] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-6 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="text-[length:var(--fs-sm)] font-bold text-[var(--color-gray-900)]">
-              Total estimado: <span className="text-[var(--color-primary-700)] text-[length:var(--fs-md)]">${totalAmount.toLocaleString()}</span>
+            <div className="text-[length:var(--fs-sm)] font-bold text-[var(--color-white)]">
+              Total estimado: <span className="text-[var(--color-secondary-400)] text-[length:var(--fs-md)]">${totalAmount.toLocaleString()}</span>
             </div>
             <IconButton
               type="button"

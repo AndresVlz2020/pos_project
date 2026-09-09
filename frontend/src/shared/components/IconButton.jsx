@@ -44,20 +44,33 @@ export const IconButton = React.forwardRef(function IconButton(
   const variants = {
     default: `
       text-[var(--color-white)]
-      hover:bg-neutral-200
-      hover:text-[var(--color-black)]
-      focus-visible:ring-neutral-400
+      hover:bg-[var(--color-primary-800)]
+      focus-visible:ring-[var(--color-primary-600)]
       cursor-pointer
     `,
     ghost: `
-      text-neutral-600
-      hover:bg-neutral-100
-      focus-visible:ring-neutral-300
+      text-[var(--color-gray-300)]
+      hover:text-[var(--color-white)]
+      hover:bg-[var(--color-primary-800)]
+      focus-visible:ring-[var(--color-primary-600)]
+      cursor-pointer
     `,
     primary: `
-      text-white bg-blue-600
-      hover:bg-blue-700
-      focus-visible:ring-blue-500
+      text-[var(--color-white)]
+      bg-[var(--color-secondary-500)]
+      hover:bg-[var(--color-secondary-400)]
+      border border-[var(--color-secondary-400)]
+      focus-visible:ring-[var(--color-secondary-400)]
+      shadow-sm
+      cursor-pointer
+    `,
+    secondary: `
+      text-[var(--color-white)]
+      bg-[var(--color-primary-800)]
+      hover:bg-[var(--color-primary-700)]
+      border border-[var(--color-primary-700)]
+      focus-visible:ring-[var(--color-primary-600)]
+      cursor-pointer
     `,
   };
 
@@ -69,7 +82,7 @@ export const IconButton = React.forwardRef(function IconButton(
       disabled={disabled}
       onClick={onClick}
       className={clsx(baseStyles, variants[variant], className, {
-        "bg-neutral-300": isActive,
+        "bg-[var(--color-primary-800)]": isActive,
       })}
       style={{
         width: `${hitSize}px`,

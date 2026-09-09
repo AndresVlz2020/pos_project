@@ -9,10 +9,10 @@ export default function UserListPage(){
     const [isReportOpen, setIsReportOpen] = useState(false);
 
     return (
-        <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-                <h1 className="text-xl font-semibold">Listado de usuarios</h1>
-                <div className="flex gap-2">
+        <div className="bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-2xl p-6 shadow-xl text-[var(--color-white)]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <h1 className="text-xl font-bold text-[var(--color-white)]">Listado de Usuarios</h1>
+                <div className="flex gap-2.5">
                     <Button variant="secondary" onClick={() => setIsReportOpen(true)}>
                         Generar reporte
                     </Button>

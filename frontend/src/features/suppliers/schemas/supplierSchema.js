@@ -1,41 +1,39 @@
 import { z } from "zod";
 import { fileSchema } from "../../../shared/schemas/fileSchema";
 
-export const supplierSchema = z.object ({
-    supplierNit: z
+export const supplierSchema = z.object({
+  supplierNit: z
     .string()
-    .regex(/^[0-9]{10}$/, "El NIT solo debe contener numeros"),
+    .min(5, "El NIT debe tener al menos 5 caracteres")
+    .max(30, "El NIT es demasiado largo"),
 
-    supplierName: z
+  supplierName: z
     .string()
     .min(3, "El nombre debe tener al menos 3 caracteres")
     .max(60, "El nombre es demasiado largo"),
 
-    supplierEmail: z
+  supplierEmail: z
     .string()
-    .email("Debe ingresar un email válido")
-    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Debe ingresar un email válido"),
+    .email("Debe ingresar un email válido"),
 
-    supplierPhone: z
+  supplierPhone: z
     .string()
-    .regex(/^[0-9]{10}$/, "El telefono debe ser unicamente numeros"),
+    .min(7, "El teléfono debe tener al menos 7 números")
+    .regex(/^[0-9+ -]+$/, "El teléfono debe ser únicamente números"),
 
-    supplierDirection: z
+  supplierDirection: z
     .string()
-    .min(5, "Ingrese una direccion valida")
-    .max(100, "La direccion supera los 100 caracteres"),
+    .min(5, "Ingrese una dirección válida (mínimo 5 caracteres)")
+    .max(120, "La dirección supera los 120 caracteres"),
 
-    supplierObservation: z
+  supplierObservation: z
     .string()
-    .min(5, "Ingrese una observacion valida")
-    .max(500, "La observacion supera los 500 caracteres"),
+    .min(5, "Ingrese una observación válida (mínimo 5 caracteres)")
+    .max(500, "La observación supera los 500 caracteres"),
 
-    isStaff: z.boolean(),
+  isStaff: z.boolean().optional(),
+  isActive: z.boolean().optional(),
+  isSuperUser: z.boolean().optional(),
 
-    isActive: z.boolean(),
-
-    isSuperUser: z.boolean(),
-
-    userImage: fileSchema.shape.files.optional()
-    
-})
+  userImage: fileSchema.shape.files.optional(),
+});

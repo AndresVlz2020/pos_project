@@ -45,7 +45,7 @@ export default function Input({
                     block
                     text-caption
                     mb-1
-                    text-secondary
+                    text-[var(--color-gray-200)] font-medium
                     ${
                       size === "sm"
                       ? "-mb-2"
@@ -91,16 +91,16 @@ export default function Input({
                         w-full
                         rounded-md
                         border
+                        ${error ? "border-red-500 focus:border-red-500" : "border-[var(--color-primary-700)] focus:border-[var(--color-secondary-400)]"}
                         px-4
-                        text-gray-900
-                        bg-white
+                        text-[var(--color-white)]
+                        bg-[var(--color-primary-900)]
+                        placeholder:text-[var(--color-gray-400)]
                         focus:outline-none
                         focus:ring-2
-                        focus:ring-ring
-                        focus:ring-brand
+                        focus:ring-[var(--color-secondary-400)]/30
                         ${variants[variant]}
                         ${sizes[size]}
-                        ${error ? "border-red-800" : ""}
                         ${className}
                         `}
                         {...props}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input, Button, Checkbox } from "@/shared";
 import { Link } from "react-router-dom";
 import logoDPiero from "@/assets/images/logo-d,piero.png";
-import bgLogin from "@/assets/images/bg-login.png";
+import bgLogin from "@/assets/images/bg-auth-restaurant.jpg";
 import { userSchema } from "@/features/users/schemas/userSchema";
 
 export default function Login() {
@@ -39,22 +39,31 @@ export default function Login() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)]">
+      <div className="w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)] border-b border-[var(--color-primary-800)]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-3">
-          <img src={logoDPiero} alt="D,PIERO" className="h-8 w-auto object-contain" />
+          <Link to="/" className="flex items-center gap-2">
+            <img src={logoDPiero} alt="D,PIERO" className="h-9 w-auto object-contain drop-shadow" />
+          </Link>
         </div>
       </div>
 
       {/* Content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-6 py-10">
-        {/* Left image */}
-        <div className="hidden md:block relative h-[60vh] md:h-[80vh] rounded-lg overflow-hidden border border-[var(--color-border)]">
-          <img src={bgLogin} alt="Fondo Login" className="absolute inset-0 w-full h-full object-cover" />
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-6 py-10">
+        {/* Left image with culinary mood */}
+        <div className="hidden md:block relative h-[60vh] md:h-[75vh] rounded-2xl overflow-hidden border border-[var(--color-primary-800)] shadow-2xl">
+          <img src={bgLogin} alt="D'Piero Restaurante" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary-950)] via-[var(--color-primary-950)]/40 to-transparent flex flex-col justify-end p-8">
+            <h2 className="text-2xl font-bold text-[var(--color-white)] mb-2">D'Piero • Parrilla & POS</h2>
+            <p className="text-sm text-[var(--color-gray-300)] leading-relaxed">
+              Sistema de Punto de Venta optimizado para comandas de mesa, cocina, inventario y facturación.
+            </p>
+          </div>
         </div>
 
         {/* Right form */}
         <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto">
-          <div className="rounded-lg border border-[var(--color-border-strong)] p-8">
+          <div className="rounded-2xl border border-[var(--color-primary-800)] bg-[var(--color-primary-900)] p-8 shadow-2xl text-[var(--color-white)]">
+            <h2 className="text-xl font-bold text-center mb-6 text-[var(--color-white)]">Iniciar Sesión</h2>
             <div className="grid gap-4">
               <Input
                 label="Correo Electrónico"
@@ -82,19 +91,19 @@ export default function Login() {
                 onChange={handleChange}
               />
             </div>
-          </div>
 
-          <div className="mt-6">
-            <Button variant="primary" type="submit" className="w-full">Iniciar Sesión</Button>
-          </div>
+            <div className="mt-6">
+              <Button variant="primary" type="submit" className="w-full">Iniciar Sesión</Button>
+            </div>
 
-          <div className="mt-4">
-            <Link to="#" className="text-sm underline text-[var(--color-primary-700)]">¿Olvidó su contraseña?</Link>
-          </div>
+            <div className="mt-4 text-center">
+              <Link to="#" className="text-xs text-[var(--color-secondary-400)] hover:text-[var(--color-secondary-300)] hover:underline">¿Olvidó su contraseña?</Link>
+            </div>
 
-          <div className="mt-6 text-sm">
-            ¿Aun no tienes cuenta? {" "}
-            <Link to="/Auth/register" className="underline text-[var(--color-primary-700)]">Regístrate Aquí</Link>
+            <div className="mt-6 text-xs text-center text-[var(--color-gray-300)]">
+              ¿Aún no tienes cuenta?{" "}
+              <Link to="/Auth/register" className="font-semibold text-[var(--color-secondary-400)] hover:text-[var(--color-secondary-300)] hover:underline">Regístrate Aquí</Link>
+            </div>
           </div>
         </form>
       </div>

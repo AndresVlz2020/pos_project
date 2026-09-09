@@ -120,175 +120,168 @@ export default function CreateInventory() {
         { value: "del-campo", label: "Lácteos del Campo" },
         { value: "alpina-pro", label: "Alpina Professional" },
         { value: "halls", label: "Halls" },
-        { value: "corelware", label: "Corelle" },
         { value: "other", label: "Genérica / Otra" }
     ];
 
-
     return (
-        <div className="overflow-y-hidden">
-            <h1 className="text-[length:var(--fs-md)] font-bold place-self-center mt-8">Crear Inventario</h1>
-            <div className="
-                    flex 
-                    gap-24
-                    mt-6
-                    h-full
-                    justify-center
-                "
-            >
-                <div className="w-40 mt-18 gap-300">
-                    <FileInput className="flex items-center justify-center"
-                    value={formInventory.userImage}
-                    onChange={(files) => 
-                        setInventory((prev) => ({ ...prev, userImage: files}))
-                    }
-                    multiple={true}
-                    />
-                    <p className="
-                        text-center
+        <div className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)]">
+            <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-8 text-[var(--color-white)]">Crear Inventario</h1>
+            <form onSubmit={handleSubmit}>
+                <div className="
+                        flex 
+                        flex-col lg:flex-row
+                        gap-8 lg:gap-12
+                        justify-center
+                        items-start
                     "
-                    >
-                        Suba un codigo de barras
-                    </p>
-                </div>
-                <form
-                    className="flex flex-col gap-1" 
-                    action=""
-                    onSubmit={handleSubmit}
                 >
-                    <Select
-                        label="Proveedor"
-                        name="inventorySupplierSelect"
-                        htmlFor="supplier-select"
-                        options={supplierOptions}
-                        value={formInventory.inventorySupplierSelect}
-                        onChange={handleChange}
-                        error={errors.inventorySupplierSelect}
-                    />
-                    <Input
-                        label="Nombre del producto"
-                        name="inventoryProductName"
-                        type="text"
-                        value={formInventory.inventoryProductName}
-                        placeholder="Ingrese el nombre del producto"
-                        htmlFor="inventory-product-name"
-                        onChange={handleChange}
-                        error={errors.inventoryProductName}
-                    />
-                    <Input
-                        label="Cuentadante"
-                        name="inventoryProductAccountant"
-                        type="text"
-                        value={formInventory.inventoryProductAccountant}
-                        placeholder="Cuentandante"
-                        htmlFor="inventory-product-accountant"
-                        onChange={handleChange}
-                        error={errors.inventoryProductAccountant}
-                    />
-                    <Input
-                        label="Descripcion"
-                        name="inventoryProductDescription"
-                        type="text"
-                        value={formInventory.inventoryProductDescription}
-                        placeholder="Ingrese la descripcion del producto"
-                        htmlFor="inventory-product-description"
-                        onChange={handleChange}
-                        error={errors.inventoryProductDescription}
-                    />
-                    <Input
-                        label="Ubicacion"
-                        name="inventoryProductLocation"
-                        type="text"
-                        value={formInventory.inventoryProductLocation}
-                        placeholder="Ingrese la ubicacion"
-                        htmlFor="inventory-product-location"
-                        onChange={handleChange}
-                        error={errors.inventoryProductLocation}
-                    />
-                </form>
-        
-                <form action="" onSubmit={handleSubmit} className="flex flex-col gap-1">
-                    <Select
-                        label="Marca del producto"
-                        name="productBrandSelect"
-                        htmlFor="product-brand-select"
-                        options={brandOptions}
-                        value={formInventory.productBrandSelect}
-                        onChange={handleChange}
-                        error={errors.productBrandSelect}
-                    />
-                    <Input
-                        label="Numero Lote"
-                        name="numberBatch"
-                        type="text"
-                        value={formInventory.numberBatch}
-                        placeholder="Lote"
-                        htmlFor="number-batch"
-                        onChange={handleChange}
-                        error={errors.numberBatch}
-                    />
-                    <Input
-                        label="Stock Inicial"
-                        name="initialStock"
-                        type="text"
-                        value={formInventory.initialStock}
-                        placeholder="Cantidad Inicial"
-                        htmlFor="initial-stock"
-                        onChange={handleChange}
-                        error={errors.initialStock}
-                    />
-                    <Input
-                        label="Cantidad Minima"
-                        name="minAmount"
-                        type="text"
-                        value={formInventory.minAmount}
-                        placeholder="Minima cantidad"
-                        htmlFor="min-amount"
-                        onChange={handleChange}
-                        error={errors.minAmount}
-                    />
-                    <Input
-                        label="Valor de la compra"
-                        name="priceBuy"
-                        type="text"
-                        value={formInventory.priceBuy}
-                        placeholder="Ingrese el valor de la compra"
-                        htmlFor="price-buy"
-                        onChange={handleChange}
-                        error={errors.priceBuy}
-                    />
-                </form>
-                <form action="" onSubmit={handleSubmit} className="flex flex-col gap-1">
-                    <Input
-                        label="Fecha de vencimiento"
-                        name="expirationDate"
-                        type="text"
-                        value={formInventory.expirationDate}
-                        placeholder="Ingrese la fecha de vencimiento"
-                        htmlFor="expiration-date"
-                        onChange={handleChange}
-                        error={errors.expirationDate}
-                    />
-                    <div className="w-full flex justify-center mt-12 gap-4">
-                        <Link to="/inventoryList">
-                            <Button
-                                variant="secondary"
-                                size="md"
-                                type="submit"
-                                >
-                                Cancelar
-                            </Button>
-                        </Link>
-                        <Button
-                            variant="primary"
-                            size="md"
-                            type="submit"
-                        >
-                            Confirmar Informacion
-                        </Button>
+                    <div className="w-full lg:w-48 flex flex-col items-center">
+                        <FileInput className="flex items-center justify-center"
+                        value={formInventory.userImage}
+                        onChange={(files) => 
+                            setInventory((prev) => ({ ...prev, userImage: files}))
+                        }
+                        multiple={true}
+                        />
+                        <p className="text-center text-[var(--color-gray-300)] text-sm mt-2">
+                            Suba un código de barras
+                        </p>
                     </div>
-                </form>
-            </div>
+                    <div className="flex-1 flex flex-col gap-1 w-full">
+                        <Select
+                            label="Proveedor"
+                            name="inventorySupplierSelect"
+                            htmlFor="supplier-select"
+                            options={supplierOptions}
+                            value={formInventory.inventorySupplierSelect}
+                            onChange={handleChange}
+                            error={errors.inventorySupplierSelect}
+                        />
+                        <Input
+                            label="Nombre del producto"
+                            name="inventoryProductName"
+                            type="text"
+                            value={formInventory.inventoryProductName}
+                            placeholder="Ingrese el nombre del producto"
+                            htmlFor="inventory-product-name"
+                            onChange={handleChange}
+                            error={errors.inventoryProductName}
+                        />
+                        <Input
+                            label="Cuentadante"
+                            name="inventoryProductAccountant"
+                            type="text"
+                            value={formInventory.inventoryProductAccountant}
+                            placeholder="Cuentandante"
+                            htmlFor="inventory-product-accountant"
+                            onChange={handleChange}
+                            error={errors.inventoryProductAccountant}
+                        />
+                        <Input
+                            label="Descripcion"
+                            name="inventoryProductDescription"
+                            type="text"
+                            value={formInventory.inventoryProductDescription}
+                            placeholder="Ingrese la descripcion del producto"
+                            htmlFor="inventory-product-description"
+                            onChange={handleChange}
+                            error={errors.inventoryProductDescription}
+                        />
+                        <Input
+                            label="Ubicacion"
+                            name="inventoryProductLocation"
+                            type="text"
+                            value={formInventory.inventoryProductLocation}
+                            placeholder="Ingrese la ubicacion"
+                            htmlFor="inventory-product-location"
+                            onChange={handleChange}
+                            error={errors.inventoryProductLocation}
+                        />
+                    </div>
+            
+                    <div className="flex-1 flex flex-col gap-1 w-full">
+                        <Select
+                            label="Marca del producto"
+                            name="productBrandSelect"
+                            htmlFor="product-brand-select"
+                            options={brandOptions}
+                            value={formInventory.productBrandSelect}
+                            onChange={handleChange}
+                            error={errors.productBrandSelect}
+                        />
+                        <Input
+                            label="Numero Lote"
+                            name="numberBatch"
+                            type="text"
+                            value={formInventory.numberBatch}
+                            placeholder="Lote"
+                            htmlFor="number-batch"
+                            onChange={handleChange}
+                            error={errors.numberBatch}
+                        />
+                        <Input
+                            label="Stock Inicial"
+                            name="initialStock"
+                            type="text"
+                            value={formInventory.initialStock}
+                            placeholder="Cantidad Inicial"
+                            htmlFor="initial-stock"
+                            onChange={handleChange}
+                            error={errors.initialStock}
+                        />
+                        <Input
+                            label="Cantidad Minima"
+                            name="minAmount"
+                            type="text"
+                            value={formInventory.minAmount}
+                            placeholder="Minima cantidad"
+                            htmlFor="min-amount"
+                            onChange={handleChange}
+                            error={errors.minAmount}
+                        />
+                        <Input
+                            label="Valor de la compra"
+                            name="priceBuy"
+                            type="text"
+                            value={formInventory.priceBuy}
+                            placeholder="Ingrese el valor de la compra"
+                            htmlFor="price-buy"
+                            onChange={handleChange}
+                            error={errors.priceBuy}
+                        />
+                    </div>
+                    <div className="flex-1 flex flex-col gap-1 w-full">
+                        <Input
+                            label="Fecha de vencimiento"
+                            name="expirationDate"
+                            type="text"
+                            value={formInventory.expirationDate}
+                            placeholder="Ingrese la fecha de vencimiento"
+                            htmlFor="expiration-date"
+                            onChange={handleChange}
+                            error={errors.expirationDate}
+                        />
+                    </div>
+                </div>
+                <div className="w-full flex justify-center mt-12 gap-4">
+                    <Link to="/inventoryList">
+                        <Button
+                            variant="secondary"
+                            size="md"
+                            type="button"
+                        >
+                            Cancelar
+                        </Button>
+                    </Link>
+                    <Button
+                        variant="primary"
+                        size="md"
+                        type="submit"
+                    >
+                        Confirmar Informacion
+                    </Button>
+                </div>
+            </form>
         </div>
     );
 }

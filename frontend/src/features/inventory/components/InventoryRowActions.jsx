@@ -16,15 +16,17 @@ export default function InventoryRowActions({ item }) {
         <div className="flex gap-2">
             <button
                 onClick={handleEdit}
-                className="btn btn-primary"
+                className="p-2 rounded-lg bg-[var(--color-primary-800)] hover:bg-[var(--color-secondary-500)] text-[var(--color-white)] transition cursor-pointer border border-[var(--color-primary-700)]"
+                title="Editar inventario"
             >
-                <Pencil size={16} />
+                <Pencil size={15} />
             </button>
             <button
                 onClick={handleDelete}
-                className="p-1 rounded hover:bg-gray-100"
+                className="p-2 rounded-lg bg-[var(--color-primary-800)] hover:bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] transition cursor-pointer border border-[var(--color-primary-700)]"
+                title="Eliminar inventario"
             >
-                <Trash2 size={16} />
+                <Trash2 size={15} />
             </button>
         </div>
     );

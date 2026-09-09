@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Input, Select, Button, FileInput } from "@/shared";
 import { getDocumentTypes } from "../../services/selectServices";
-import { userSchema } from "../users/schemas/userSchema";
+import { createUserSchema } from "../users/schemas/userSchema";
 import { Link } from "react-router-dom";
 
 export default function CreateUser() {
@@ -49,7 +49,7 @@ export default function CreateUser() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const result = userSchema.safeParse(form);
+    const result = createUserSchema.safeParse(form);
     if (!result.success) {
       const fieldErrors = {};
       result.error.issues.forEach((issue) => {
@@ -66,14 +66,14 @@ export default function CreateUser() {
   return (
     <div className="min-h-screen">
       {/* Body */}
-      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-8 p-6 bg-[var(--color-tertiary-300)] rounded-lg border border-[var(--color-border)] shadow-sm">
-        <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-8">Crear Usuario</h1>
+      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)]">
+        <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-8 text-[var(--color-white)]">Crear Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Left: upload placeholder */}
           <div className="col-span-1 flex flex-col items-center">
-            <span className="text-center mb-2">Cargar Imagen</span>
-            <div className="w-full h-56 md:h-64 rounded-lg bg-[var(--color-surface)] flex flex-col items-center justify-center text-[var(--color-gray-900)] place-items-center">
+            <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cargar Imagen</span>
+            <div className="w-full h-56 md:h-64 rounded-xl bg-[var(--color-primary-950)] border border-[var(--color-primary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
                 <FileInput className="flex items-center justify-center"
                   value={form.userImage}
                   onChange={(files) => 
@@ -141,7 +141,7 @@ export default function CreateUser() {
               value={form.corporateEmail}
               onChange={handleChange}
               htmlFor="user-corporate-email"
-              error={errors.userEmail}
+              error={errors.corporateEmail}
             />
 
             <Input
@@ -182,7 +182,7 @@ export default function CreateUser() {
               <Button
                 variant="secondary"
                 size="md"
-                type="submit"
+                type="button"
               >
                 Cancelar
               </Button>

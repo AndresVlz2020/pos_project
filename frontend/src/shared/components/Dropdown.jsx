@@ -93,15 +93,13 @@ export function DropdownContent({ children, className = "" }) {
         mt-1
         min-w-48
         border
-        text-text-inverse
-        p-1
-        dark:bg-neutral-950/80
-        backdrop-blur-[1px]
-        shadow-lg
+        border-[var(--color-primary-800)]
+        bg-[var(--color-primary-900)]
+        text-[var(--color-white)]
+        p-1.5
+        shadow-xl
         rounded-2xl
         overflow-hidden
-        hover:shadow-black
-        transition-shadow duration-700
         ${className}
       `}
     >
@@ -128,9 +126,10 @@ export function DropdownItem({
       role="menuitem"
       onClick={handleClick}
       className={`
-        w-full text-left px-3 py-2 rounded-lg
-        hover:bg-gray-500 focus:bg-gray-100
-        transition-colors
+        w-full text-left px-3 py-2 rounded-xl text-sm font-medium
+        hover:bg-[var(--color-primary-800)] focus:bg-[var(--color-primary-800)]
+        text-[var(--color-white)]
+        transition-colors cursor-pointer
         ${className}
       `}
     >

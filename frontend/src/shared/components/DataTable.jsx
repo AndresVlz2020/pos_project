@@ -85,60 +85,46 @@ export default function DataTable({ data, columns }) {
       {/* Barra superior con buscador y selector de filas */}
 
 
-      <div className="flex items-center justify-between gap-4">
-
-
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* ================== BUSCADOR ================== */}
         {/* Filtra todas las columnas de la tabla */}
         <input
           type="text"
-          placeholder="Buscar..."
+          placeholder="Buscar en la tabla..."
           value={globalFilter ?? ""}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          className="border rounded px-3 py-2 w-64"
+          className="bg-[var(--color-primary-900)] border border-[var(--color-primary-700)] text-[var(--color-white)] placeholder:text-[var(--color-gray-400)] rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:border-[var(--color-secondary-400)] w-full sm:w-72"
         />
-
 
         {/* ================== SELECTOR DE FILAS ================== */}
         {/* Permite cambiar cuántas filas se muestran por página */}
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => table.setPageSize(Number(e.target.value))}
-          className="border rounded px-2 py-2"
-        >
-          {[5, 7, 10, 20, 50].map(size => (
-            <option key={size} value={size}>
-              {size} filas
-            </option>
-          ))}
-        </select>
-
-
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-[var(--color-gray-300)]">
+          <span>Filas por página:</span>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+            className="bg-[var(--color-primary-900)] border border-[var(--color-primary-700)] text-[var(--color-white)] rounded-xl px-3 py-1.5 outline-none cursor-pointer"
+          >
+            {[5, 7, 10, 20, 50].map(size => (
+              <option key={size} value={size} className="bg-[var(--color-primary-950)] text-white">
+                {size} filas
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-
       {/* ================== TABLA ================== */}
-      <div className="overflow-x-auto border rounded">
-        <table className="w-full">
-
-
+      <div className="overflow-x-auto border border-[var(--color-primary-800)] bg-[var(--color-primary-900)] rounded-xl shadow-lg">
+        <table className="w-full text-left">
           {/* ================== CABECERA ================== */}
-          <thead className="bg-gray-100">
-
-
-            {/* TanStack agrupa cabeceras automáticamente */}
+          <thead className="bg-[var(--color-primary-950)] text-[var(--color-gray-300)] border-b border-[var(--color-primary-800)]">
             {table.getHeaderGroups().map(headerGroup => (
-
-
               <tr key={headerGroup.id}>
-
-
                 {headerGroup.headers.map(header => (
-
-
                   <th
                     key={header.id}
-                    className="p-3 text-left border-b"
+                    className="p-3.5 text-left border-b border-[var(--color-primary-800)] text-xs uppercase tracking-wider font-bold text-[var(--color-gray-300)]"
                   >
 
 
@@ -172,61 +158,32 @@ export default function DataTable({ data, columns }) {
 
             {/* Filas generadas por TanStack */}
             {table.getRowModel().rows.map(row => (
-
-
-              <tr key={row.id} className="hover:bg-gray-50">
-
-
+              <tr key={row.id} className="hover:bg-[var(--color-primary-800)]/50 transition-colors border-b border-[var(--color-primary-800)]/60 text-[var(--color-white)]">
                 {/* Celdas visibles de cada fila */}
                 {row.getVisibleCells().map(cell => (
-
-
-                  <td key={cell.id} className="p-3 border-b">
-
-
-                    {/* Render dinámico del contenido de la celda */}
+                  <td key={cell.id} className="p-3.5 border-b border-[var(--color-primary-800)]/60 text-[var(--color-gray-200)] text-sm">
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext()
                     )}
-
-
                   </td>
-
-
                 ))}
-
-
               </tr>
-
-
             ))}
-
-
           </tbody>
-
-
         </table>
       </div>
 
-
       {/* ================== FOOTER ================== */}
-      <div className="flex items-center justify-between">
-
-
-        {/* ================== INFORMACIÓN ================== */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
         {/* Cantidad de registros visibles */}
-        <span className="text-sm text-gray-600">
-          Mostrando {table.getRowModel().rows.length} de{" "}
-          {table.getFilteredRowModel().rows.length} registros
+        <span className="text-xs sm:text-sm text-[var(--color-gray-400)]">
+          Mostrando <strong className="text-[var(--color-white)]">{table.getRowModel().rows.length}</strong> de{" "}
+          <strong className="text-[var(--color-white)]">{table.getFilteredRowModel().rows.length}</strong> registros
         </span>
 
-
         {/* ================== CONTROLES DE PAGINACIÓN ================== */}
-        <div className="flex items-center gap-2">
-
-
-          {/* Ir a la primera página */}
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             size="sm"
             variant="secondary"
@@ -236,8 +193,6 @@ export default function DataTable({ data, columns }) {
             Inicio
           </Button>
 
-
-          {/* Página anterior */}
           <Button
             size="sm"
             variant="secondary"
@@ -247,75 +202,44 @@ export default function DataTable({ data, columns }) {
             Anterior
           </Button>
 
-
-          {/* Información de página actual */}
-          <span className="text-sm px-2">
-            Página {table.getState().pagination.pageIndex + 1} de{" "}
-            {table.getPageCount()}
+          <span className="text-xs sm:text-sm px-2 text-[var(--color-gray-300)]">
+            Página <strong className="text-[var(--color-white)]">{table.getState().pagination.pageIndex + 1}</strong> de{" "}
+            <strong className="text-[var(--color-white)]">{table.getPageCount() || 1}</strong>
           </span>
 
-
-          {/* Página siguiente */}
           <Button
             size="sm"
+            variant="secondary"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             Siguiente
           </Button>
 
-
-          {/* Ir a la última página */}
           <Button
             size="sm"
+            variant="secondary"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             Final
           </Button>
-
-
         </div>
-
-
       </div>
-
 
       {/* ================== IR A PÁGINA ================== */}
-      {/* Permite navegar directamente a una página específica */}
-      <div className="flex items-center gap-2 text-sm">
-
-
+      <div className="flex items-center gap-2 text-xs sm:text-sm text-[var(--color-gray-400)]">
         <span>Ir a página:</span>
-
-
         <input
           type="number"
-
-
-          // Página actual (se muestra +1 porque el índice empieza en 0)
           defaultValue={table.getState().pagination.pageIndex + 1}
-
-
           onChange={(e) => {
-
-
-            // Convierte el número ingresado en índice de página
-            const page = e.target.value ? Number(e.target.value) - 1 : 0
-
-
-            // Cambia la página
-            table.setPageIndex(page)
+            const page = e.target.value ? Number(e.target.value) - 1 : 0;
+            table.setPageIndex(page);
           }}
-
-
-          className="border rounded px-2 py-1 w-16"
+          className="bg-[var(--color-primary-900)] border border-[var(--color-primary-700)] text-[var(--color-white)] rounded-lg px-2.5 py-1 w-16 text-center outline-none focus:border-[var(--color-secondary-400)]"
         />
-
-
       </div>
-
-
     </div>
-  )
+  );
 }

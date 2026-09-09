@@ -10,27 +10,27 @@
 
 /* ====================Background============== */
 
---semantic-background: var(--color-white);
---semantic-background-inverse: var(--color--gray-800);
---semantic-surface: var(--color--gray-400);
---semantic-surface-muted: var(--color--gray-200);
+--semantic-background: var(--color-primary-950);
+--semantic-background-inverse: var(--color-white);
+--semantic-surface: var(--color-primary-900);
+--semantic-surface-muted: var(--color-primary-800);
 
 /* ============TEXT============================= */
-/* Color principal en lectura, titulo, texto base ddel documento */
---semantic-text-primary: var(--color-gray-900);
-/* Textos mennos dominantes */
---semantic-text-secondary: var(--color-gray-700);
-/* Texto desabilado */
---semantic-text-muted: var(--color-gray-500);
+/* Color principal en lectura, titulo, texto base del documento */
+--semantic-text-primary: var(--color-white);
+/* Textos menos dominantes */
+--semantic-text-secondary: var(--color-gray-300);
+/* Texto deshabilitado */
+--semantic-text-muted: var(--color-gray-400);
 /* Texto invertido */
---semantic-text-inverse: var(--color-white);
+--semantic-text-inverse: var(--color-primary-950);
 
 /* =====================Border=================== */
 
 /* Borde principal de los componentes */
---semantic-border: var(--color-gray-400);
+--semantic-border: var(--color-primary-800);
 /* Bordes mas fuertes */
---semantic-border-strong:  var(--color-gray-700);
+--semantic-border-strong: var(--color-primary-700);
 
 /* ====================Focus====================== */
 

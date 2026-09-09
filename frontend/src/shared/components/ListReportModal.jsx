@@ -35,9 +35,9 @@ export default function ListReportModal({ isOpen, onClose, title, data, fields, 
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-[26px] bg-white px-6 py-6 shadow-2xl">
-        <h2 className="mb-6 text-xl font-semibold">Generar reporte de {title}</h2>
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-2xl bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] text-[var(--color-white)] px-6 py-6 shadow-2xl">
+        <h2 className="mb-6 text-xl font-semibold text-[var(--color-white)]">Generar reporte de {title}</h2>
         <div className="mb-4">
           <Select
             label="Formato del reporte"
@@ -49,7 +49,7 @@ export default function ListReportModal({ isOpen, onClose, title, data, fields, 
             ]}
           />
         </div>
-        <p className="mb-2 font-medium">Campos del reporte:</p>
+        <p className="mb-2 font-medium text-[var(--color-gray-200)]">Campos del reporte:</p>
         <div className="grid grid-cols-2 gap-3">
           {fields.map((field) => (
             <Checkbox

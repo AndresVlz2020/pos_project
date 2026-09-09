@@ -68,7 +68,7 @@ export default function StatusSwitch({
       className={`
         relative inline-flex items-center rounded-full transition-colors
         ${sizes[size]}
-        ${isActive ? "bg-[var(--color-primary-500)]" : "bg-gray-300"}
+        ${isActive ? "bg-[var(--color-secondary-500)]" : "bg-[var(--color-primary-700)]"}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
     >
@@ -78,7 +78,7 @@ export default function StatusSwitch({
       */}
       <span
         className={`
-          absolute left-0.5 flex items-center justify-center rounded-full bg-white shadow transition-transform
+          absolute left-0.5 flex items-center justify-center rounded-full bg-[var(--color-white)] shadow transition-transform
           ${knobSizes[size]}
           ${isActive ? "translate-x-full" : "translate-x-0"}
         `}
@@ -90,9 +90,9 @@ export default function StatusSwitch({
           ✕ inactivo
         */}
         {isActive ? (
-          <Check size={12} className="text-green-600" />
+          <Check size={12} className="text-[var(--color-primary-950)]" />
         ) : (
-          <X size={12} className="text-gray-500" />
+          <X size={12} className="text-[var(--color-primary-700)]" />
         )}
       </span>
 

@@ -105,14 +105,14 @@ export default function UsersManagement() {
       </div>
 
       {/* Content */}
-      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto p-6 bg-[var(--color-tertiary-300)] rounded-lg border border-[var(--color-border)] shadow-sm">
-        <h1 className="text-center text-xl font-bold mb-6">Gestión de Permisos</h1>
+      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)]">
+        <h1 className="text-center text-xl font-bold mb-8 text-[var(--color-white)]">Gestión de Permisos</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 items-start">
           {/* Left column: groups and users */}
           <div className="col-span-1 w-full space-y-6">
-            <div className="rounded-lg p-5 bg-[var(--color-tertiary-200)] text-[var(--color-gray-900)] shadow-sm border border-[var(--color-border)]">
-              <h3 className="text-center font-semibold mb-4">Grupo usuarios.</h3>
+            <div className="rounded-xl p-5 bg-[var(--color-primary-950)] text-[var(--color-white)] shadow-sm border border-[var(--color-primary-800)]">
+              <h3 className="text-center font-semibold mb-4 text-[var(--color-white)]">Grupo usuarios</h3>
               <Select
                 label="Grupo Seleccionado"
                 name="group"
@@ -123,8 +123,8 @@ export default function UsersManagement() {
               />
             </div>
 
-            <div className="rounded-lg p-5 bg-[var(--color-tertiary-200)] text-[var(--color-gray-900)] shadow-sm border border-[var(--color-border)]">
-              <h3 className="text-center font-semibold mb-4">Usuarios Individual</h3>
+            <div className="rounded-xl p-5 bg-[var(--color-primary-950)] text-[var(--color-white)] shadow-sm border border-[var(--color-primary-800)]">
+              <h3 className="text-center font-semibold mb-4 text-[var(--color-white)]">Usuarios Individual</h3>
               <Select
                 label="Usuario"
                 name="user"
@@ -139,17 +139,18 @@ export default function UsersManagement() {
           {/* Right column: permissions */}
           <div className="col-span-1 md:col-span-3 grid gap-6">
             {permissionGroups.map((group) => (
-              <div key={group.title} className="rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div key={group.title} className="rounded-xl border border-[var(--color-primary-800)] bg-[var(--color-primary-950)] p-5">
+                <h4 className="font-semibold text-[var(--color-secondary-400)] mb-3 text-sm tracking-wide">{group.title}</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {group.items.map((item) => (
-                    <label key={item} className="flex items-center gap-3 p-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)]">
+                    <label key={item} className="flex items-center gap-3 p-3 rounded-lg border border-[var(--color-primary-800)] bg-[var(--color-primary-900)] hover:border-[var(--color-secondary-500)] transition cursor-pointer">
                       <Checkbox
                         id={item}
                         name={item}
                         checked={!!checks[item]}
                         onChange={() => toggleCheck(item)}
                       />
-                      <span className="text-[var(--color-gray-900)]">{item}</span>
+                      <span className="text-[var(--color-white)] text-sm">{item}</span>
                     </label>
                   ))}
                 </div>

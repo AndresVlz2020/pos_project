@@ -119,14 +119,14 @@ export default function UserRegisterForm() {
 
 
     return(
-        <div className="flex flex-col items-center justify-center">
-             
-           <h1 className="mx-auto my-12 text-2xl font-bold">Registro de usuarios</h1>            
-            <form
-             action=""
-             onSubmit={handleSubmit}
-             className="flex flex-col items-center w-80"
-             >
+        <div className="flex flex-col items-center justify-center my-6">
+           <div className="w-full max-w-md p-8 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)]">
+             <h1 className="text-center mb-8 text-2xl font-bold text-[var(--color-white)]">Registro de Usuarios</h1>            
+             <form
+              action=""
+              onSubmit={handleSubmit}
+              className="flex flex-col items-center w-full"
+              >
             <Input 
             label="Nombre"
             name="userName"
@@ -259,6 +259,7 @@ export default function UserRegisterForm() {
           </IconButton>
             </div>
             </form>
+           </div>
           </div>
     ) 
 
