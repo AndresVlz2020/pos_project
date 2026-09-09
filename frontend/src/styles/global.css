@@ -105,3 +105,47 @@ body {
 .users-mgmt label {
   color: var(--color-text-primary);
 }
+
+/* Soporte de Tema Claro Dinámico */
+html.theme-light {
+  --color-primary-950: #F4F6F9;
+  --color-primary-900: #FFFFFF;
+  --color-primary-800: #E2E8F0;
+  --color-primary-700: #CBD5E1;
+  --color-primary-600: #94A3B8;
+  --color-primary-500: #64748B;
+  --color-white: #0F172A;
+  --color-gray-950: #F8FAFC;
+  --color-gray-900: #F1F5F9;
+  --color-gray-800: #E2E8F0;
+  --color-gray-700: #CBD5E1;
+  --color-gray-600: #94A3B8;
+  --color-gray-500: #64748B;
+  --color-gray-400: #475569;
+  --color-gray-300: #334155;
+  --color-gray-200: #1E293B;
+  --color-gray-100: #0F172A;
+  --color-gray-50:  #020617;
+}
+
+html.theme-light body {
+  background-color: var(--color-primary-950);
+  color: var(--color-white);
+}
+
+/* Intercambio automático de Logo según el tema activo */
+.logo-dark-theme {
+  display: block;
+}
+.logo-light-theme {
+  display: none !important;
+}
+
+html.theme-light .logo-dark-theme {
+  display: none !important;
+}
+html.theme-light .logo-light-theme {
+  display: block !important;
+}
+
+

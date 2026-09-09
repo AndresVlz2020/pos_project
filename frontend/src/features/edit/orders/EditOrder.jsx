@@ -119,7 +119,7 @@ export default function EditOrder() {
               Items: {totalItems}
             </span>
 
-            <div className="text-[length:var(--fs-xs)] font-bold bg-[var(--color-primary-800)] text-[var(--color-white)] px-4 py-1.5 rounded-lg border border-[var(--color-primary-600)] shadow-sm">
+            <div className="text-[length:var(--fs-xs)] font-bold bg-[var(--color-primary-800)] text-[var(--color-white)] px-4 py-1.5 rounded-md border border-[var(--color-primary-600)]">
               Total: ${totalAmount.toLocaleString()}
             </div>
           </div>
@@ -128,7 +128,7 @@ export default function EditOrder() {
 
       <form onSubmit={handleSubmit} className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
         {/* Main Info Card */}
-        <div className="p-6 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)] mb-8">
+        <div className="p-6 bg-[var(--color-primary-900)] rounded-lg border border-[var(--color-primary-800)] shadow-md text-[var(--color-white)] mb-8">
           <h2 className="text-[length:var(--fs-sm)] font-bold mb-4 text-[var(--color-white)]">
             Información de la Orden
           </h2>
@@ -199,7 +199,7 @@ export default function EditOrder() {
         </div>
 
         {/* Footer actions */}
-        <div className="p-6 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-6 bg-[var(--color-primary-900)] rounded-lg border border-[var(--color-primary-800)] shadow-md text-[var(--color-white)] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-[length:var(--fs-sm)] font-bold text-[var(--color-white)]">
             Total de la Orden: <span className="text-[var(--color-secondary-400)] text-[length:var(--fs-md)] font-bold">${totalAmount.toLocaleString()}</span>
           </div>

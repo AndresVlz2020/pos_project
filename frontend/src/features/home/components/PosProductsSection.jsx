@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { UtensilsCrossed, SearchX, Filter, Plus } from "lucide-react";
+import { SearchX, Filter, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SearchField } from "@/shared";
 import PosCategoryFilter from "./PosCategoryFilter";
@@ -31,9 +31,8 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
       const titleMatch = normalizeText(product.title).includes(query);
       const descMatch = normalizeText(product.description).includes(query);
       const catMatch = normalizeText(product.category).includes(query);
-      const codeMatch = normalizeText(product.code).includes(query);
 
-      return titleMatch || descMatch || catMatch || codeMatch;
+      return titleMatch || descMatch || catMatch;
     }).sort((a, b) => {
       if (sortBy === "price-asc") return a.price - b.price;
       if (sortBy === "price-desc") return b.price - a.price;
@@ -47,74 +46,52 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
   };
 
   return (
-    <div className="space-y-6">
-      {/* Panel Superior del Catálogo: Título, Filtros y Búsqueda Destacada */}
-      <div className="bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-2xl p-6 shadow-xl space-y-5">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-[var(--color-white)] flex items-center gap-2.5">
-              <UtensilsCrossed className="size-5 text-[var(--color-secondary-400)]" />
-              Catálogo de Venta Directa (Menú POS)
-            </h2>
-            <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-              Búsqueda en tiempo real para comandas, pedidos en mesa y mostrador de caja.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Selector de ordenamiento */}
-            <div className="flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-primary-950)] px-3.5 py-2 rounded-xl border border-[var(--color-primary-700)]">
-              <Filter className="size-3.5 text-[var(--color-secondary-400)]" />
-              <span>Ordenar:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-transparent text-[var(--color-white)] text-xs font-semibold outline-none cursor-pointer"
-              >
-                <option value="default" className="bg-[var(--color-primary-950)] text-white">Código / Defecto</option>
-                <option value="price-asc" className="bg-[var(--color-primary-950)] text-white">Menor Precio</option>
-                <option value="price-desc" className="bg-[var(--color-primary-950)] text-white">Mayor Precio</option>
-              </select>
-            </div>
-
-            <Link
-              to="/CreateProduct"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--color-secondary-500)] hover:bg-[var(--color-secondary-400)] text-xs font-bold text-[var(--color-white)] shadow-md transition-all cursor-pointer"
-            >
-              <Plus className="size-4" />
-              <span>Crear Producto</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Barra de Búsqueda con Gran Presencia Visual */}
-        <div className="w-full">
+    <div className="space-y-3.5">
+      {/* Barra de Búsqueda y Ordenamiento directa */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="flex-1">
           <SearchField
             value={searchQuery}
             onChange={onSearchChange}
             onSubmit={onSearchChange}
             onClear={onClearSearch}
-            placeholder="Buscar por platillo, corte de carne, bebida, postre o código..."
-            size="lg"
+            placeholder="Buscar por platillo, corte de carne, bebida o postre..."
+            size="md"
             variant="dark"
             fullWidth={true}
-            className="w-full shadow-lg border-[var(--color-primary-700)] hover:border-[var(--color-secondary-400)]"
+            className="w-full border-[var(--color-primary-700)] hover:border-[var(--color-secondary-400)] shadow-none"
           />
         </div>
 
-        {/* Botones de Categorías */}
-        <div className="pt-2 border-t border-[var(--color-primary-800)]/80">
-          <PosCategoryFilter
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-            products={products}
-          />
+        <div className="flex items-center justify-between sm:justify-end gap-2.5">
+          <div className="flex items-center gap-1.5 text-xs text-[var(--color-gray-300)] bg-[var(--color-primary-900)] px-3 py-2 rounded-md border border-[var(--color-primary-800)]">
+            <Filter className="size-3.5 text-[var(--color-secondary-400)]" />
+            <span>Ordenar:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-transparent text-[var(--color-white)] text-xs font-semibold outline-none cursor-pointer"
+            >
+              <option value="default" className="bg-[var(--color-primary-950)] text-white">Por Defecto</option>
+              <option value="price-asc" className="bg-[var(--color-primary-950)] text-white">Menor Precio</option>
+              <option value="price-desc" className="bg-[var(--color-primary-950)] text-white">Mayor Precio</option>
+            </select>
+          </div>
         </div>
+      </div>
+
+      {/* Barra de Filtros de Categoría Compacta justo debajo del buscador */}
+      <div className="pb-1">
+        <PosCategoryFilter
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+          products={products}
+        />
       </div>
 
       {/* Indicador de Filtro o Búsqueda Activa */}
       {(searchQuery || selectedCategory !== "all") && (
-        <div className="flex items-center justify-between p-2.5 rounded-xl bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] text-xs">
+        <div className="flex items-center justify-between p-2.5 rounded-md bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] text-xs">
           <span className="text-[var(--color-gray-300)]">
             Mostrando <strong className="text-[var(--color-white)] font-bold">{filteredProducts.length}</strong> productos
             {searchQuery && <> para <strong className="text-[var(--color-secondary-300)] font-semibold">"{searchQuery}"</strong></>}
@@ -140,19 +117,19 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
       ) : (
         /* Estado vacío si no hay coincidencias */
         <div className="py-14 text-center max-w-md mx-auto">
-          <div className="size-16 mx-auto rounded-xl bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] flex items-center justify-center text-[var(--color-secondary-400)] mb-3">
+          <div className="size-16 mx-auto rounded-md bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] flex items-center justify-center text-[var(--color-secondary-400)] mb-3">
             <SearchX className="size-8" />
           </div>
           <h3 className="text-base font-bold text-[var(--color-white)] mb-1">
             Sin productos coincidentes
           </h3>
           <p className="text-xs text-[var(--color-gray-400)] mb-4 leading-relaxed">
-            No se encontraron productos con el filtro aplicado. Verifica el código SKU, término de búsqueda o selecciona otra categoría.
+            No se encontraron productos con el filtro aplicado. Verifica el término de búsqueda o selecciona otra categoría.
           </p>
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-secondary-500)] hover:bg-[var(--color-secondary-600)] text-xs font-semibold text-[var(--color-white)] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[var(--color-secondary-500)] hover:bg-[var(--color-secondary-600)] text-xs font-semibold text-[var(--color-white)] transition-colors cursor-pointer"
           >
             Ver todos los productos
           </button>

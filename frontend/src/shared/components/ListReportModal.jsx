@@ -35,8 +35,8 @@ export default function ListReportModal({ isOpen, onClose, title, data, fields, 
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] text-[var(--color-white)] px-6 py-6 shadow-2xl">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4">
+      <div className="w-full max-w-md rounded-lg bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] text-[var(--color-white)] px-6 py-6 shadow-xl">
         <h2 className="mb-6 text-xl font-semibold text-[var(--color-white)]">Generar reporte de {title}</h2>
         <div className="mb-4">
           <Select

@@ -91,7 +91,7 @@ export default function CreateOrder() {
             </span>
 
             {/* Total Badge */}
-            <div className="text-[length:var(--fs-xs)] font-bold bg-[var(--color-primary-800)] text-[var(--color-white)] px-4 py-1.5 rounded-lg border border-[var(--color-primary-600)] shadow-sm flex items-center gap-2">
+            <div className="text-[length:var(--fs-xs)] font-bold bg-[var(--color-primary-800)] text-[var(--color-white)] px-4 py-1.5 rounded-md border border-[var(--color-primary-600)] flex items-center gap-2">
               <span>Total: ${totalAmount.toLocaleString()}</span>
             </div>
 
@@ -99,10 +99,10 @@ export default function CreateOrder() {
             <IconButton
               type="button"
               ariaLabel="Editar orden"
-              hitSize={36}
-              iconSize={18}
+              hitSize={34}
+              iconSize={16}
               variant="primary"
-              className="rounded-lg shadow-sm cursor-pointer"
+              className="rounded-md cursor-pointer"
               onClick={() => navigate("/editorder", { state: { form, qty } })}
               title="Editar orden"
             >
@@ -114,7 +114,7 @@ export default function CreateOrder() {
 
       <form onSubmit={handleSubmit} className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
         {/* General order data card */}
-        <div className="p-6 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)] mb-8">
+        <div className="p-6 bg-[var(--color-primary-900)] rounded-lg border border-[var(--color-primary-800)] shadow-md text-[var(--color-white)] mb-8">
           <h2 className="text-[length:var(--fs-sm)] font-bold mb-4 text-[var(--color-white)]">
             Datos de la Mesa y Mesero
           </h2>
@@ -174,7 +174,7 @@ export default function CreateOrder() {
         </div>
 
         {/* Action footer */}
-        <div className="p-6 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-6 bg-[var(--color-primary-900)] rounded-lg border border-[var(--color-primary-800)] shadow-md text-[var(--color-white)] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="text-[length:var(--fs-sm)] font-bold text-[var(--color-white)]">
               Total estimado: <span className="text-[var(--color-secondary-400)] text-[length:var(--fs-md)]">${totalAmount.toLocaleString()}</span>
@@ -182,10 +182,10 @@ export default function CreateOrder() {
             <IconButton
               type="button"
               ariaLabel="Editar orden"
-              hitSize={36}
-              iconSize={18}
+              hitSize={34}
+              iconSize={16}
               variant="primary"
-              className="rounded-lg shadow-sm cursor-pointer"
+              className="rounded-md cursor-pointer"
               onClick={() => navigate("/editorder", { state: { form, qty } })}
               title="Editar orden"
             >

@@ -42,6 +42,12 @@ export const createUserSchema = z.object({
     .string()
     .min(1, "Debe ingresar la fecha de fin laboral"),
 
+  pin: z
+    .string()
+    .min(1, "Debe asignar un PIN de terminal")
+    .length(4, "El PIN debe tener exactamente 4 dígitos")
+    .regex(/^\d{4}$/, "El PIN debe contener únicamente números"),
+
   userImage: fileSchema.shape.files.optional(),
 });
 
@@ -83,4 +89,17 @@ export const userSchema = z.object({
   isSuperUser: z.boolean().optional(),
 
   userImage: fileSchema.shape.files.optional(),
+});
+
+// Esquema específico para el login (solo email y contraseña)
+export const loginSchema = z.object({
+  userEmail: z
+    .string()
+    .email("Debe ingresar un email válido"),
+
+  userPassword: z
+    .string()
+    .min(8, "La contraseña debe tener al menos 8 caracteres"),
+
+  remember: z.boolean().optional(),
 });

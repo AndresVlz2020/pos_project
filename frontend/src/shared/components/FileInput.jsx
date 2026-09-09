@@ -88,12 +88,12 @@ export default function FileInput({
 
           {/* Acciones hover: reorder visual + eliminar */}
           <div className="absolute top-1 right-1 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="w-6 h-6 bg-[var(--color-primary-800)] border border-[var(--color-primary-700)] rounded-full text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-primary-700)]">
+            <button className="w-6 h-6 bg-[var(--color-primary-800)] border border-[var(--color-primary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-primary-700)]">
               ↕
             </button>
             <button
               onClick={() => remove(i)}
-              className="w-6 h-6 bg-[var(--color-primary-800)] border border-[var(--color-primary-700)] rounded-full text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-primary-700)]"
+              className="w-6 h-6 bg-[var(--color-primary-800)] border border-[var(--color-primary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-primary-700)]"
             >
               ✕
             </button>

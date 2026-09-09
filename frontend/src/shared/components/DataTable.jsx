@@ -20,7 +20,8 @@ import { Button } from "@/shared"
 // Recibe:
 // - data: datos que se mostrarán
 // - columns: configuración de columnas
-export default function DataTable({ data, columns }) {
+// - compact: reduce el espaciado vertical de la tabla (py-2 px-4)
+export default function DataTable({ data, columns, compact = false }) {
 
 
   // ================== ESTADO DE PAGINACIÓN ==================
@@ -124,7 +125,9 @@ export default function DataTable({ data, columns }) {
                 {headerGroup.headers.map(header => (
                   <th
                     key={header.id}
-                    className="p-3.5 text-left border-b border-[var(--color-primary-800)] text-xs uppercase tracking-wider font-bold text-[var(--color-gray-300)]"
+                    className={`${
+                      compact ? "py-2 px-4" : "p-3.5"
+                    } text-left border-b border-[var(--color-primary-800)] text-xs uppercase tracking-wider font-bold text-[var(--color-gray-300)]`}
                   >
 
 
@@ -161,7 +164,12 @@ export default function DataTable({ data, columns }) {
               <tr key={row.id} className="hover:bg-[var(--color-primary-800)]/50 transition-colors border-b border-[var(--color-primary-800)]/60 text-[var(--color-white)]">
                 {/* Celdas visibles de cada fila */}
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="p-3.5 border-b border-[var(--color-primary-800)]/60 text-[var(--color-gray-200)] text-sm">
+                  <td
+                    key={cell.id}
+                    className={`${
+                      compact ? "py-2 px-4" : "p-3.5"
+                    } border-b border-[var(--color-primary-800)]/60 text-[var(--color-gray-200)] text-sm`}
+                  >
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext()
