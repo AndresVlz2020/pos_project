@@ -34,3 +34,7 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Documents
+*.xlsx
+*.xls

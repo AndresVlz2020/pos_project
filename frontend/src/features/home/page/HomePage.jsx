@@ -75,7 +75,6 @@ export default function HomePage() {
       <PosTerminalHeader 
         station="Terminal Central"
         operator="Administrador General"
-        role="Administrador"
       />
 
       {/* Navegación Modular por Pestañas */}

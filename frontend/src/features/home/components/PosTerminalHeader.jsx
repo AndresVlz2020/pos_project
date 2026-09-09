@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 
 export default function PosTerminalHeader({ 
-  activeShift = "Jornada Completa", 
   station = "Terminal Central", 
-  operator = "Administrador General",
-  role = "Administrador" 
+  operator = "Administrador General"
 }) {
   return (
     <header className="w-full bg-[var(--color-primary-950)] border-b border-[var(--color-primary-800)] py-3">
@@ -21,14 +19,6 @@ export default function PosTerminalHeader({
               </span>
               <span className="px-2 py-0.5 rounded bg-[var(--color-primary-800)] text-[var(--color-secondary-300)] font-medium border border-[var(--color-primary-700)]">
                 Op: {operator}
-              </span>
-              {role && (
-                <span className="px-2 py-0.5 rounded bg-[var(--color-primary-900)] text-[var(--color-secondary-400)] font-semibold border border-[var(--color-primary-800)]">
-                  {role}
-                </span>
-              )}
-              <span className="hidden md:inline-block px-2 py-0.5 rounded bg-[var(--color-primary-900)] text-[var(--color-gray-400)] text-[10px]">
-                {activeShift}
               </span>
             </div>
           </div>
