@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
-import { Plus } from "lucide-react";
 
 export default function PosTerminalHeader({ 
-  activeShift = "Tarde / Noche", 
-  station = "Estación #01", 
-  operator = "Carlos Pérez",
-  role = "Cajero" 
+  activeShift = "Jornada Completa", 
+  station = "Terminal Central", 
+  operator = "Administrador General",
+  role = "Administrador" 
 }) {
   return (
     <header className="w-full bg-[var(--color-primary-950)] border-b border-[var(--color-primary-800)] py-3">
@@ -33,7 +32,6 @@ export default function PosTerminalHeader({
               </span>
             </div>
           </div>
-
         </div>
 
         {/* Métricas Operativas Limpias (KPIs) */}
@@ -67,10 +65,10 @@ export default function PosTerminalHeader({
 
           <div className="bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-md px-3.5 py-2.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Personal Turno
+              Estado Sistema
             </p>
             <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
-              4 en servicio
+              En línea
             </p>
           </div>
         </div>

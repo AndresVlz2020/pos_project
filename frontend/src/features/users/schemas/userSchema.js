@@ -42,12 +42,6 @@ export const createUserSchema = z.object({
     .string()
     .min(1, "Debe ingresar la fecha de fin laboral"),
 
-  pin: z
-    .string()
-    .min(1, "Debe asignar un PIN de terminal")
-    .length(4, "El PIN debe tener exactamente 4 dígitos")
-    .regex(/^\d{4}$/, "El PIN debe contener únicamente números"),
-
   userImage: fileSchema.shape.files.optional(),
 });
 

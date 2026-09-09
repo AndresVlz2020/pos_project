@@ -1,18 +1,18 @@
 :root {
-  /* Primary color */
-  --color-primary-950: #0B132B;
-  --color-primary-900: #0F152D;
-  --color-primary-800: #131835;
-  --color-primary-700: #1B2246;
-  --color-primary-600: #232B58;
-  --color-primary-500: #2E376B;
+  /* Primary color - Tema Blanco Corporativo */
+  --color-primary-950: #F4F6F9;
+  --color-primary-900: #FFFFFF;
+  --color-primary-800: #E2E8F0;
+  --color-primary-700: #CBD5E1;
+  --color-primary-600: #94A3B8;
+  --color-primary-500: #64748B;
   --color-primary-400: #545F96;
   --color-primary-300: #7A88B4;
   --color-primary-200: #9FA8C9;
   --color-primary-100: #C2C8DC;
-  --color-primary-50:  #E6E9F0;
+  --color-primary-50:  #F8FAFC;
 
-  /* Secondary color */
+  /* Secondary color - Marca D'Piero (Terracota Cálido) */
   --color-secondary-950: #5B3622;
   --color-secondary-900: #643B25;
   --color-secondary-800: #74442B;
@@ -25,7 +25,7 @@
   --color-secondary-100: #EBCAB1;
   --color-secondary-50:  #F6E7DD;
 
-  /* Tertiary-2 color */
+  /* Tertiary color */
   --color-tertiary-950: #616161;
   --color-tertiary-900: #696969;
   --color-tertiary-800: #757575;
@@ -38,52 +38,42 @@
   --color-tertiary-100: #FAFAFA;
   --color-tertiary-50:  #FFFFFF;
 
-  /* Basic color */
-  --color-white: #fff;
-  --color-black: #000;
-  --color-gray-950: #181818;
-  --color-gray-900: #242424;
-  --color-gray-800: #3D3D3D;
-  --color-gray-700: #565656;
-  --color-gray-600: #6E6E6E;
-  --color-gray-500: #878787;
-  --color-gray-400: #9F9F9F;
-  --color-gray-300: #B8B8B8;
-  --color-gray-200: #D1D1D1;
-  --color-gray-100: #E9E9E9;
-  --color-gray-50:  #F6F6F6;
+  /* Basic color - Contraste alto para lectura en fondo blanco */
+  --color-white: #0F172A;
+  --color-pure-white: #FFFFFF;
+  --color-black: #000000;
+  --color-gray-950: #F8FAFC;
+  --color-gray-900: #F1F5F9;
+  --color-gray-800: #E2E8F0;
+  --color-gray-700: #CBD5E1;
+  --color-gray-600: #94A3B8;
+  --color-gray-500: #64748B;
+  --color-gray-400: #475569;
+  --color-gray-300: #334155;
+  --color-gray-200: #1E293B;
+  --color-gray-100: #0F172A;
+  --color-gray-50:  #020617;
 
   /* Font-family */
-  --main-font: Helvetica, arial, sans-serif;
+  --main-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --secondary-font: Calibri, Helvetica, Arial;
 
   /* Font-size */
-  --fs-xxxxl: 5rem; /* Ultra grande */
-  --fs-xxxl:  4rem; /* Súper grande */
-  --fs-xxl:   3rem; /* Extra grande */
-  --fs-xl:    2.5rem; /* Muy grande */
-  --fs-lg:    2rem; /* Grande */
-  --fs-md:    1.5rem; /* titulos */
-  --fs-sm:    1.25rem; /* subtitulo */
-  --fs-xs:    1.0rem; /* Extra pequeño */
-  --fs-xxs:   0.875rem; /* Extra extra pequeño */
-  --fs-xxxs:  0.75rem; /* Mínimo */
-  --fs-xxxxs:  0.5rem; /* Mínimo */
+  --fs-xxxxl: 5rem;
+  --fs-xxxl:  4rem;
+  --fs-xxl:   3rem;
+  --fs-xl:    2.5rem;
+  --fs-lg:    2rem;
+  --fs-md:    1.5rem;
+  --fs-sm:    1.25rem;
+  --fs-xs:    1.0rem;
+  --fs-xxs:   0.875rem;
+  --fs-xxxs:  0.75rem;
+  --fs-xxxxs: 0.5rem;
 
-   /* grosores de la fuente */
-    --fw-regular: 400; 
-    --fw-medium:  500; 
-    --fw-bold:    700; 
-    --fw-black:   900;
-
-  /* Material Design 3 (Material You) Tokens */
-  --md-sys-color-background: #111318;
-  --md-sys-color-surface: #111318;
-  --md-sys-color-surface-container: #1d2024;
-  --md-sys-color-surface-container-high: #272a2f;
-  --md-sys-color-surface-variant: #44474e;
-  --md-sys-color-on-surface: #e2e2e9;
-  --md-sys-color-on-surface-variant: #c4c6d0;
-  --md-sys-color-outline: #8e9099;
-  --md-sys-color-outline-variant: #44474e;
+  /* Grosores de la fuente */
+  --fw-regular: 400; 
+  --fw-medium:  500; 
+  --fw-bold:    700; 
+  --fw-black:   900;
 }

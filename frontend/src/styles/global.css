@@ -1,6 +1,6 @@
 @import url(tokens.css);
 @import url(semantic.css);
-/* Estya linea tiene que ir de ultimo */
+/* Esta linea tiene que ir de ultimo */
 @import "tailwindcss";
 
 body {
@@ -12,64 +12,50 @@ body {
   min-height: 100vh;
 }
 
-
 @theme {
+  --color-brand: var(--semantic-brand);
+  --color-brand-hover: var(--semantic-brand-hover);
+  --color-brand-soft: var(--semantic-brand-soft);
+  --color-brand-soft-hover: var(--semantic-brand-soft-hover);
 
---color-brand: var(--semantic-brand);
---color-brand-hover: var(--semantic-brand-hover);
---color-brand-soft: var(--semantic-brand-soft);
---color-brand-soft-hover: var(--semantic-brand-soft-hover);
+  /* Background */
+  --color-background: var(--semantic-background);
+  --color-surface: var(--semantic-surface);
+  --color-surface-muted: var(--semantic-surface-muted);
+  --color-background-inverse: var(--semantic-background-inverse);
 
+  /* Text */
+  --color-text-primary: var(--semantic-text-primary);
+  --color-text-secondary: var(--semantic-text-secondary);
+  --color-text-muted: var(--semantic-text-muted);
+  --color-text-inverse: var(--semantic-text-inverse);
 
-/* =================Background==================== */
+  /* Border */
+  --color-border: var(--semantic-border);
+  --color-border-strong: var(--semantic-border-strong);
 
---color-background: var(--semantic-background);
---color-surface: var(--semantic-surface);
---color-surface-muted: var(--semantic-surface-muted);
---color-background-inverse: var(--semantic-background-inverse);
+  /* Focus */
+  --color-focus-ring: var(--semantic-focus-ring);
 
-/* ==================Text===================== */
+  /* Status */
+  --color-success: var(--semantic-success);
+  --color-warning: var(--semantic-warning);
+  --color-error: var(--semantic-error);
 
---color-text-primary: var(--semantic-text-primary);
---color-text-secondary: var(--semantic-text-secondary);
---color-text-muted: var(--semantic-text-muted);
---color-text-inverse: var(--semantic-text-inverse);
+  /* Typography */
+  --font-size-display: var(--semantic-font-size-display);
+  --font-size-main: var(--semantic-font-size-h1);
+  --font-size-title: var(--semantic-font-size-h2);
+  --font-size-subtitle: var(--semantic-font-size-h3);
+  --font-size-body: var(--semantic-font-size-body);
+  --font-size-medium: var(--semantic-font-size-medium);
+  --font-size-small: var(--semantic-font-size-small);
+  --font-size-caption: var(--semantic-font-size-caption);
 
-
-/* ====================Border==================== */
-
---color-border: var(--semantic-border);
---color-border-strong: var(--semantic-border-strong);
-
-/* ====================Focus==================== */
-
---color-focus-ring: var(--semantic-focus-ring);
---color-border-strong: var(--semantic-focus-border);
-
-/* STATUS */
-
---color-success: var(--semantic-success);
---color-warning: var(--semantic-warning);
---color-error: var(--semantic-error);
-
-/* TYPOGRAPHY */
-
---font-size-display: var(--semantic-font-size-display);
---font-size-main: var(--semantic-font-size-h1);
---font-size-title: var(--semantic-font-size-h2);
---font-size-subtitle: var(--semantic-font-size-h3);
---font-size-body: var(--semantic-font-size-body);
---font-size-medium: var(--semantic-font-size-medium);
---font-size-small: var(--semantic-font-size-small);
---font-size-caption: var(--semantic-font-size-caption);
-
-/* FONT WEIGHT */
-
---font-weight-heading: var(--semantic-font-weight-heading);
---font-weight-body: var(--semantic-font-weight-body);
---font-weight-label: var(--semantic-font-weight-label);
-
-
+  /* Font Weight */
+  --font-weight-heading: var(--semantic-font-weight-heading);
+  --font-weight-body: var(--semantic-font-weight-body);
+  --font-weight-label: var(--semantic-font-weight-label);
 }
 
 .on-dark label {
@@ -80,7 +66,6 @@ body {
   color: var(--color-text-inverse);
 }
 
-/* Asegura contraste correcto en inputs ubicados dentro de contenedores oscuros */
 .on-dark input {
   color: var(--color-text-primary);
   background: var(--color-background);
@@ -93,9 +78,9 @@ body {
 
 /* Ajustes específicos para la vista de Gestión de Usuarios */
 .users-mgmt select {
-  width: 100% !important; /* anula w-80 del componente para evitar desfase */
-  height: 2.5rem; /* h-10 para alinear con inputs */
-  padding-left: 1rem; /* px-4 */
+  width: 100% !important;
+  height: 2.5rem;
+  padding-left: 1rem;
   padding-right: 1rem;
   border-color: var(--color-border);
   background: var(--color-background);
@@ -105,47 +90,3 @@ body {
 .users-mgmt label {
   color: var(--color-text-primary);
 }
-
-/* Soporte de Tema Claro Dinámico */
-html.theme-light {
-  --color-primary-950: #F4F6F9;
-  --color-primary-900: #FFFFFF;
-  --color-primary-800: #E2E8F0;
-  --color-primary-700: #CBD5E1;
-  --color-primary-600: #94A3B8;
-  --color-primary-500: #64748B;
-  --color-white: #0F172A;
-  --color-gray-950: #F8FAFC;
-  --color-gray-900: #F1F5F9;
-  --color-gray-800: #E2E8F0;
-  --color-gray-700: #CBD5E1;
-  --color-gray-600: #94A3B8;
-  --color-gray-500: #64748B;
-  --color-gray-400: #475569;
-  --color-gray-300: #334155;
-  --color-gray-200: #1E293B;
-  --color-gray-100: #0F172A;
-  --color-gray-50:  #020617;
-}
-
-html.theme-light body {
-  background-color: var(--color-primary-950);
-  color: var(--color-white);
-}
-
-/* Intercambio automático de Logo según el tema activo */
-.logo-dark-theme {
-  display: block;
-}
-.logo-light-theme {
-  display: none !important;
-}
-
-html.theme-light .logo-dark-theme {
-  display: none !important;
-}
-html.theme-light .logo-light-theme {
-  display: block !important;
-}
-
-

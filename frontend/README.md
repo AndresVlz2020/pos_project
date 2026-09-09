@@ -88,8 +88,8 @@ frontend/
 * **`npm run preview`**: Levanta un servidor local para previsualizar el bundle de producción compilado.
 * **`npm run lint`**: Ejecuta el análisis estático de código mediante ESLint.
 
-### Configuración del Entorno y Temas
-* **Tema Visual**: La aplicación almacena la preferencia en `localStorage.getItem('app_theme')` (`light` o `dark`). El `<head>` de `index.html` inicializa la clase correspondiente antes de montar React para prevenir parpadeos.
+### Configuración del Entorno y Estilos
+* **Tema Visual**: La aplicación utiliza una guía de estilos y paleta corporativa estandarizada en tema claro (tema blanco), garantizando alto contraste y legibilidad con tokens semánticos definidos.
 * **Alias de Importación**: Configurado en `vite.config.js` con `@` apuntando directamente a `src/`.
 
 ---

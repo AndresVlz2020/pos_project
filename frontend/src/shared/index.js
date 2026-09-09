@@ -21,7 +21,6 @@ export { default as StatusSwitch } from "./components/StatusSwitch";
 export { default as ListReportModal } from "./components/ListReportModal";
 export { default as Alert } from "./components/Alert";
 export { default as ConfirmDialog } from "./components/ConfirmDialog";
-export { default as ThemeToggle } from "./components/ThemeToggle";
 export { default as BrandLogo } from "./components/BrandLogo";
 export { IconButton } from "./components/IconButton";
 export { default as SearchField } from "./components/SearchField";

@@ -4,21 +4,18 @@ import { products } from "@/features/products/data/products";
 import { useSearchParams } from "react-router-dom";
 import { 
   UtensilsCrossed, 
-  Users, 
   Truck, 
   UserCheck
 } from "lucide-react";
 import {
   PosTerminalHeader,
   PosProductsSection,
-  PosStaffPanel,
   PosSuppliersPanel,
   PosCustomersPanel
 } from "../components";
 
 const PRIMARY_TABS = [
   { id: "menu", label: "Catálogo & Comandas", icon: UtensilsCrossed },
-  { id: "staff", label: "Personal en Turno", icon: Users },
   { id: "suppliers", label: "Proveedores", icon: Truck },
   { id: "customers", label: "Clientes & Facturación", icon: UserCheck },
 ];
@@ -28,44 +25,18 @@ export default function HomePage() {
   const urlSearch = searchParams.get("search") || "";
   const tabParam = searchParams.get("tab") || "menu";
 
-  // Obtener usuario autenticado actual y sus permisos
-  const currentUser = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("auth_user") || "null");
-    } catch {
-      return null;
-    }
-  })();
-
-  const role = currentUser?.role || "Cajero";
-  const isAdmin = role === "Admin" || role === "Administrador";
-  const isCajero = role === "Cajero";
-
-  // Definir pestañas permitidas según rol:
-  // - Admin (admin@dpiero.com): Todas las pestañas
-  // - Cajero: Catálogo & Comandas, Clientes & Facturación (no personal ni proveedores)
-  // - Mesero / Cocinero: Catálogo & Comandas exclusivamente
-  const availableTabs = PRIMARY_TABS.filter((tab) => {
-    if (tab.id === "menu") return true;
-    if (tab.id === "customers") return isAdmin || isCajero;
-    if (tab.id === "staff") return isAdmin;
-    if (tab.id === "suppliers") return isAdmin;
-    return false;
-  });
-
   const [searchQuery, setSearchQuery] = useState(urlSearch);
   const [activeTab, setActiveTab] = useState(tabParam);
 
-  // Asegurar que si la URL apunta a una pestaña no permitida para el rol, vuelva a 'menu'
   useEffect(() => {
-    const isAllowed = availableTabs.some((t) => t.id === activeTab);
+    const isAllowed = PRIMARY_TABS.some((t) => t.id === activeTab);
     if (!isAllowed) {
       setActiveTab("menu");
       const next = new URLSearchParams(searchParams);
       next.set("tab", "menu");
       setSearchParams(next, { replace: true });
     }
-  }, [activeTab, availableTabs]);
+  }, [activeTab]);
 
   useEffect(() => {
     setSearchQuery(urlSearch);
@@ -98,23 +69,20 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-primary-950)] text-[var(--color-white)] flex flex-col font-[family-name:var(--main-font)]">
-      {/* Barra de navegación superior */}
+    <div className="flex min-h-screen flex-col bg-[var(--color-primary-950)] text-[var(--color-white)]">
       <Navbar />
 
-      {/* Cabecera operativa del POS con datos dinámicos del usuario activo */}
       <PosTerminalHeader 
-        activeShift="Tarde / Noche" 
-        station={currentUser?.station || "Estación #01"} 
-        operator={currentUser?.name || "Operador en Turno"} 
-        role={currentUser?.role || "Personal"}
+        station="Terminal Central"
+        operator="Administrador General"
+        role="Administrador"
       />
 
-      {/* Tab Bar Tradicional con las pestañas autorizadas para el rol del usuario */}
-      <div className="border-b border-[var(--color-primary-800)] bg-[var(--color-primary-950)] sticky top-16 z-40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 flex items-center justify-between gap-4">
-          <nav className="flex items-center gap-6 overflow-x-auto scrollbar-none" aria-label="Pestañas autorizadas del POS">
-            {availableTabs.map((tab) => {
+      {/* Navegación Modular por Pestañas */}
+      <div className="w-full bg-[var(--color-primary-900)] border-b border-[var(--color-primary-800)] sticky top-16 z-40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <nav className="flex space-x-6 overflow-x-auto scrollbar-none" aria-label="Módulos POS">
+            {PRIMARY_TABS.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
@@ -149,8 +117,6 @@ export default function HomePage() {
             onClearSearch={handleClearSearch}
           />
         )}
-
-        {activeTab === "staff" && <PosStaffPanel />}
 
         {activeTab === "suppliers" && <PosSuppliersPanel />}
 

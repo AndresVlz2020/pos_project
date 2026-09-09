@@ -5,54 +5,6 @@ import imgBebidas from "@/assets/images/supplier-bebidas.jpg";
 import imgMariscos from "@/assets/images/supplier-mariscos.jpg";
 import imgEmpaques from "@/assets/images/supplier-empaques.jpg";
 
-import imgWorkerCarlos from "@/assets/images/worker-carlos.jpg";
-import imgWorkerMaria from "@/assets/images/worker-maria.jpg";
-import imgWorkerJuan from "@/assets/images/worker-juan.jpg";
-import imgWorkerAna from "@/assets/images/worker-ana.jpg";
-
-export const posStaff = [
-  {
-    id: "st-01",
-    name: "Carlos Pérez",
-    role: "Cajero",
-    shift: "Turno Tarde / Noche",
-    station: "Caja Principal",
-    status: "Activo en turno",
-    phone: "315 234 5678",
-    image: imgWorkerCarlos
-  },
-  {
-    id: "st-02",
-    name: "María Rodríguez",
-    role: "Mesero",
-    shift: "Turno Tarde / Noche",
-    station: "Salón",
-    status: "Atendiendo salón",
-    phone: "310 456 7890",
-    image: imgWorkerMaria
-  },
-  {
-    id: "st-03",
-    name: "Juan Gómez",
-    role: "Cocinero",
-    shift: "Turno Completo",
-    station: "Cocina",
-    status: "En comanda",
-    phone: "300 123 4567",
-    image: imgWorkerJuan
-  },
-  {
-    id: "st-04",
-    name: "Ana Martínez",
-    role: "Cajero",
-    shift: "Turno Tarde / Cierre",
-    station: "Caja Principal",
-    status: "Supervisando",
-    phone: "320 987 6543",
-    image: imgWorkerAna
-  }
-];
-
 export const posSuppliers = [
   {
     id: "sup-01",
