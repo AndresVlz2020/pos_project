@@ -110,7 +110,11 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
       {filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredProducts.map((product) => (
-            <Card key={product.id} product={product} />
+            <Card
+              key={product.id}
+              product={product}
+              orderLink="/CreateOrder"
+            />
           ))}
         </div>
       ) : (

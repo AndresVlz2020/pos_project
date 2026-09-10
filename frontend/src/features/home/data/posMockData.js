@@ -4,6 +4,80 @@ import imgFruver from "@/assets/images/supplier-fruver.jpg";
 import imgBebidas from "@/assets/images/supplier-bebidas.jpg";
 import imgMariscos from "@/assets/images/supplier-mariscos.jpg";
 import imgEmpaques from "@/assets/images/supplier-empaques.jpg";
+export const posStaff = [
+  {
+    id: "st-01",
+    name: "Carlos Pérez",
+    role: "Cajero",
+    shift: "12:00 PM - 8:00 PM",
+    station: "Caja Principal #01",
+    status: "En Caja",
+    phone: "315 234 5678",
+    email: "carlos.perez@dpiero.com",
+    avatarInitials: "CP",
+    color: "bg-blue-600"
+  },
+  {
+    id: "st-02",
+    name: "María Rodríguez",
+    role: "Mesera",
+    shift: "1:00 PM - 9:00 PM",
+    station: "Salón Principal & Mesas",
+    status: "En Servicio",
+    phone: "310 456 7890",
+    email: "maria.rodriguez@dpiero.com",
+    avatarInitials: "MR",
+    color: "bg-emerald-600"
+  },
+  {
+    id: "st-03",
+    name: "Juan Gómez",
+    role: "Cocinero",
+    shift: "11:00 AM - 7:00 PM",
+    station: "Cocina Caliente & Parrilla",
+    status: "En Servicio",
+    phone: "300 123 4567",
+    email: "juan.gomez@dpiero.com",
+    avatarInitials: "JG",
+    color: "bg-amber-600"
+  },
+  {
+    id: "st-04",
+    name: "Ana Martínez",
+    role: "Cajera / Supervisora",
+    shift: "3:00 PM - 11:00 PM",
+    station: "Caja Mostrador #02",
+    status: "En Pausa",
+    phone: "320 987 6543",
+    email: "ana.martinez@dpiero.com",
+    avatarInitials: "AM",
+    color: "bg-purple-600"
+  },
+  {
+    id: "st-05",
+    name: "Santiago Castro",
+    role: "Mesero",
+    shift: "2:00 PM - 10:00 PM",
+    station: "Terraza & Bar Exterior",
+    status: "En Servicio",
+    phone: "300 123 4567",
+    email: "santiago.castro@dpiero.com",
+    avatarInitials: "SC",
+    color: "bg-indigo-600"
+  },
+  {
+    id: "st-06",
+    name: "Sofia Jaramillo",
+    role: "Barista / Bartender",
+    shift: "4:00 PM - 11:30 PM",
+    station: "Barra de Bebidas & Coctelería",
+    status: "En Servicio",
+    phone: "312 765 4321",
+    email: "sofia.jaramillo@dpiero.com",
+    avatarInitials: "SJ",
+    color: "bg-rose-600"
+  }
+];
 
 export const posSuppliers = [
   {

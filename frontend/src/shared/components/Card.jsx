@@ -1,10 +1,13 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
 
 const Card = ({
   product,
   qty,
   onIncrement,
   onDecrement,
+  orderLink,
   children,
   className = ""
 }) => {
@@ -112,6 +115,24 @@ const Card = ({
             >
               +
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Botón minimalista gris cuadrado con > para hacer el pedido */}
+      {orderLink && typeof qty !== "number" && (
+        <div className="p-4 pt-0 mt-auto">
+          <div className="pt-2.5 border-t border-[var(--color-primary-800)] flex items-center justify-between">
+            <span className="text-[length:var(--fs-xxs)] font-medium text-[var(--color-gray-400)]">
+              Hacer pedido
+            </span>
+            <Link
+              to={orderLink}
+              aria-label={`Hacer pedido de ${displayTitle}`}
+              className="inline-flex items-center justify-center size-7 rounded-md bg-[var(--color-primary-800)] border border-[var(--color-primary-700)] text-[var(--color-gray-300)] hover:bg-[var(--color-primary-700)] hover:text-[var(--color-white)] hover:border-[var(--color-primary-600)] transition-colors cursor-pointer"
+            >
+              <ChevronRight className="size-4" />
+            </Link>
           </div>
         </div>
       )}

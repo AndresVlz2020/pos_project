@@ -1,4 +1,4 @@
-import { Truck, Phone, Mail, Clock, ArrowRight } from "lucide-react";
+import { Phone, Mail, Clock, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, Button } from "@/shared";
 import { posSuppliers } from "../data/posMockData";
@@ -7,15 +7,6 @@ export default function PosSuppliersPanel() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-[family-name:var(--main-font)]">
-        <div>
-          <h2 className="text-lg font-bold text-[var(--color-white)] flex items-center gap-2">
-            <Truck className="size-5 text-[var(--color-secondary-500)]" />
-            Proveedores de Insumos & Materia Prima
-          </h2>
-          <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-            Directorio de compras para reabastecimiento de carnes, lácteos, fruver, bebidas y empaques.
-          </p>
-        </div>
 
         <Link
           to="/supplierList"

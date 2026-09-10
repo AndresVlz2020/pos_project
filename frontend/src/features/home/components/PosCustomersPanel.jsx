@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserCheck, Receipt } from "lucide-react";
+import { Receipt } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, Button, SearchField } from "@/shared";
 import { posCustomers } from "../data/posMockData";
@@ -20,15 +20,6 @@ export default function PosCustomersPanel() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-[family-name:var(--main-font)]">
-        <div>
-          <h2 className="text-lg font-bold text-[var(--color-white)] flex items-center gap-2">
-            <UserCheck className="size-5 text-[var(--color-secondary-500)]" />
-            Clientes para Facturación POS
-          </h2>
-          <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-            Búsqueda rápida de clientes por Cédula o NIT para asignar a la venta activa.
-          </p>
-        </div>
 
         <div className="w-full sm:w-72">
           <SearchField

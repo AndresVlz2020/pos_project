@@ -4,6 +4,7 @@ import { products } from "@/features/products/data/products";
 import { useSearchParams } from "react-router-dom";
 import { 
   UtensilsCrossed, 
+  Users,
   Truck, 
   UserCheck
 } from "lucide-react";
@@ -11,11 +12,13 @@ import {
   PosTerminalHeader,
   PosProductsSection,
   PosSuppliersPanel,
-  PosCustomersPanel
+  PosCustomersPanel,
+  PosStaffPanel
 } from "../components";
 
 const PRIMARY_TABS = [
   { id: "menu", label: "Catálogo & Comandas", icon: UtensilsCrossed },
+  { id: "staff", label: "Personal en Turno", icon: Users },
   { id: "suppliers", label: "Proveedores", icon: Truck },
   { id: "customers", label: "Clientes & Facturación", icon: UserCheck },
 ];
@@ -116,6 +119,8 @@ export default function HomePage() {
             onClearSearch={handleClearSearch}
           />
         )}
+
+        {activeTab === "staff" && <PosStaffPanel />}
 
         {activeTab === "suppliers" && <PosSuppliersPanel />}
 
