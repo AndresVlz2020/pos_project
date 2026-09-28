@@ -6,6 +6,8 @@ import CreateOrder from "@/features/create/CreateOrder";
 import UsersManagement from "@/features/create/UsersManagement";
 import Login from "@/features/auth/Login";
 import Register from "@/features/auth/Register";
+import ForgotPassword from "@/features/auth/ForgotPassword";
+import ResetPassword from "@/features/auth/ResetPassword";
 import CreateUser from "@/features/create/CreateUser";
 import CreateInventory from "@/features/create/CreateInventory";
 import CreateSuppliers from "../features/create/CreateSuppliers";
@@ -37,7 +39,9 @@ const router = createBrowserRouter([
         index: true,
         element: <Login />,
       },
-      { path: "register", element: <Register /> },
+      { path: "register", element: <Navigate to="/Auth" replace /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "reset-password", element: <ResetPassword /> },
     ],
   },
   {

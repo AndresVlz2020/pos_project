@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/shared";
 import { products } from "@/features/products/data/products";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { 
   UtensilsCrossed, 
   Users, 
   Truck, 
-  UserCheck, 
-  Clock, 
-  MapPin, 
-  Phone,
-  Store
+  UserCheck
 } from "lucide-react";
 import {
   PosTerminalHeader,
@@ -20,11 +16,11 @@ import {
   PosCustomersPanel
 } from "../components";
 
-const TABS = [
-  { id: "menu", label: "Catálogo & Venta POS", icon: UtensilsCrossed },
+const PRIMARY_TABS = [
+  { id: "menu", label: "Catálogo & Comandas", icon: UtensilsCrossed },
   { id: "staff", label: "Personal en Turno", icon: Users },
-  { id: "suppliers", label: "Proveedores de Insumos", icon: Truck },
-  { id: "customers", label: "Clientes / Facturación", icon: UserCheck },
+  { id: "suppliers", label: "Proveedores", icon: Truck },
+  { id: "customers", label: "Clientes & Facturación", icon: UserCheck },
 ];
 
 export default function HomePage() {
@@ -32,8 +28,44 @@ export default function HomePage() {
   const urlSearch = searchParams.get("search") || "";
   const tabParam = searchParams.get("tab") || "menu";
 
+  // Obtener usuario autenticado actual y sus permisos
+  const currentUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("auth_user") || "null");
+    } catch {
+      return null;
+    }
+  })();
+
+  const role = currentUser?.role || "Cajero";
+  const isAdmin = role === "Admin" || role === "Administrador";
+  const isCajero = role === "Cajero";
+
+  // Definir pestañas permitidas según rol:
+  // - Admin (admin@dpiero.com): Todas las pestañas
+  // - Cajero: Catálogo & Comandas, Clientes & Facturación (no personal ni proveedores)
+  // - Mesero / Cocinero: Catálogo & Comandas exclusivamente
+  const availableTabs = PRIMARY_TABS.filter((tab) => {
+    if (tab.id === "menu") return true;
+    if (tab.id === "customers") return isAdmin || isCajero;
+    if (tab.id === "staff") return isAdmin;
+    if (tab.id === "suppliers") return isAdmin;
+    return false;
+  });
+
   const [searchQuery, setSearchQuery] = useState(urlSearch);
   const [activeTab, setActiveTab] = useState(tabParam);
+
+  // Asegurar que si la URL apunta a una pestaña no permitida para el rol, vuelva a 'menu'
+  useEffect(() => {
+    const isAllowed = availableTabs.some((t) => t.id === activeTab);
+    if (!isAllowed) {
+      setActiveTab("menu");
+      const next = new URLSearchParams(searchParams);
+      next.set("tab", "menu");
+      setSearchParams(next, { replace: true });
+    }
+  }, [activeTab, availableTabs]);
 
   useEffect(() => {
     setSearchQuery(urlSearch);
@@ -44,7 +76,6 @@ export default function HomePage() {
     const next = new URLSearchParams(searchParams);
     if (val.trim()) {
       next.set("search", val);
-      // Al buscar, cambiar automáticamente al tab del menú si no está en él
       if (activeTab !== "menu") {
         next.set("tab", "menu");
         setActiveTab("menu");
@@ -67,18 +98,23 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-primary-950)] text-[var(--color-white)] flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen bg-[var(--color-primary-950)] text-[var(--color-white)] flex flex-col font-[family-name:var(--main-font)]">
       {/* Barra de navegación superior */}
       <Navbar />
 
-      {/* Cabecera operativa del POS con estado de caja y métricas de turno */}
-      <PosTerminalHeader activeShift="Tarde / Noche" station="Caja Mostrador #01" />
+      {/* Cabecera operativa del POS con datos dinámicos del usuario activo */}
+      <PosTerminalHeader 
+        activeShift="Tarde / Noche" 
+        station={currentUser?.station || "Estación #01"} 
+        operator={currentUser?.name || "Operador en Turno"} 
+        role={currentUser?.role || "Personal"}
+      />
 
-      {/* Navegación por Módulos Operativos del POS */}
-      <div className="border-b border-[var(--color-primary-800)] bg-[var(--color-primary-900)]/60 sticky top-16 z-40 backdrop-blur-md">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="flex items-center gap-2 overflow-x-auto py-2.5 scrollbar-thin">
-            {TABS.map((tab) => {
+      {/* Tab Bar Tradicional con las pestañas autorizadas para el rol del usuario */}
+      <div className="border-b border-[var(--color-primary-800)] bg-[var(--color-primary-950)] sticky top-16 z-40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 flex items-center justify-between gap-4">
+          <nav className="flex items-center gap-6 overflow-x-auto scrollbar-none" aria-label="Pestañas autorizadas del POS">
+            {availableTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
@@ -87,24 +123,24 @@ export default function HomePage() {
                   type="button"
                   onClick={() => handleTabChange(tab.id)}
                   className={`
-                    inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap
+                    inline-flex items-center gap-2 py-3 px-1 border-b-2 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap
                     ${isActive
-                      ? "bg-[var(--color-secondary-500)] text-[var(--color-white)] shadow-md border border-[var(--color-secondary-400)]"
-                      : "bg-[var(--color-primary-800)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] hover:bg-[var(--color-primary-700)] border border-[var(--color-primary-700)]"
+                      ? "border-[var(--color-secondary-500)] text-[var(--color-secondary-300)]"
+                      : "border-transparent text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:border-[var(--color-primary-700)]"
                     }
                   `}
                 >
-                  <Icon className="size-4" />
+                  <Icon className={`size-3.5 ${isActive ? "text-[var(--color-secondary-400)]" : "text-[var(--color-gray-400)]"}`} />
                   <span>{tab.label}</span>
                 </button>
               );
             })}
-          </div>
+          </nav>
         </div>
       </div>
 
       {/* Contenido Dinámico del Módulo Seleccionado */}
-      <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 py-8">
+      <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 py-5">
         {activeTab === "menu" && (
           <PosProductsSection
             products={products}
@@ -120,69 +156,6 @@ export default function HomePage() {
 
         {activeTab === "customers" && <PosCustomersPanel />}
       </main>
-
-      {/* Pie Operativo del POS */}
-      <footer className="mt-auto border-t border-[var(--color-primary-800)] bg-[var(--color-primary-950)] py-8 text-xs text-[var(--color-gray-400)]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <h4 className="text-[var(--color-white)] font-bold text-sm mb-2 flex items-center gap-2">
-              <Store className="size-4 text-[var(--color-secondary-400)]" />
-              D'Piero Restaurante & Parrilla
-            </h4>
-            <p className="text-[var(--color-gray-400)] leading-relaxed text-[11px]">
-              Sistema de Terminal de Punto de Venta (POS) para control de comandas, mesas, inventario de insumos y facturación operativa.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-[var(--color-white)] font-bold text-sm mb-2">Turno & Caja</h4>
-            <ul className="space-y-1.5 text-[11px]">
-              <li className="flex items-center gap-2">
-                <Clock className="size-3.5 text-[var(--color-secondary-400)] shrink-0" />
-                <span>Horario Turno: 12:00 PM a 11:00 PM</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <MapPin className="size-3.5 text-[var(--color-secondary-400)] shrink-0" />
-                <span>Salón Principal & Terraza Bar</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Phone className="size-3.5 text-[var(--color-secondary-400)] shrink-0" />
-                <span>Soporte Técnico POS: Ext. 101</span>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-[var(--color-white)] font-bold text-sm mb-2">Accesos Directos</h4>
-            <ul className="space-y-1 text-[11px]">
-              <li>
-                <Link to="/CreateOrder" className="hover:text-[var(--color-secondary-300)] transition-colors">
-                  • Tomar Orden / Comanda
-                </Link>
-              </li>
-              <li>
-                <Link to="/productList" className="hover:text-[var(--color-secondary-300)] transition-colors">
-                  • Administrar Productos
-                </Link>
-              </li>
-              <li>
-                <Link to="/inventoryList" className="hover:text-[var(--color-secondary-300)] transition-colors">
-                  • Stock e Inventario
-                </Link>
-              </li>
-              <li>
-                <Link to="/supplierList" className="hover:text-[var(--color-secondary-300)] transition-colors">
-                  • Proveedores Registrados
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 mt-6 pt-4 border-t border-[var(--color-primary-900)] text-center text-[11px] text-[var(--color-gray-500)]">
-          D'Piero POS v2.4 • Estación Mostrador #01 • Licencia Operativa Activa
-        </div>
-      </footer>
     </div>
   );
 }

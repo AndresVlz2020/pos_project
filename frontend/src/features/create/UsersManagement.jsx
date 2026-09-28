@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Select, Checkbox, Button } from "@/shared";
-import logoDPiero from "@/assets/images/logo-d,piero.png";
+import { Select, Checkbox, Button, BrandLogo } from "@/shared";
 import { userSchema } from "@/features/users/schemas/userSchema";
 
 export default function UsersManagement() {
@@ -99,13 +98,13 @@ export default function UsersManagement() {
             ←
           </button>
           <div className="flex items-center gap-3">
-            <img src={logoDPiero} alt="D,PIERO" className="h-8 w-auto object-contain" />
+            <BrandLogo className="h-8 w-auto object-contain" alt="D,PIERO" />
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-primary-900)] rounded-2xl border border-[var(--color-primary-800)] shadow-xl text-[var(--color-white)]">
+      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-primary-900)] rounded-lg border border-[var(--color-primary-800)] shadow-md text-[var(--color-white)]">
         <h1 className="text-center text-xl font-bold mb-8 text-[var(--color-white)]">Gestión de Permisos</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 items-start">

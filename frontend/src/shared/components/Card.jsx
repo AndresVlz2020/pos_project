@@ -26,18 +26,16 @@ const Card = ({
       className={`
         w-full
         group
-        rounded-2xl
+        rounded-lg
         border
-        border-[var(--color-primary-700)]/70
-        bg-gradient-to-b from-[var(--color-primary-900)] to-[var(--color-primary-950)]
+        border-[var(--color-primary-800)]
+        bg-[var(--color-primary-900)]
         text-[var(--color-white)]
-        shadow-lg
-        hover:shadow-2xl
-        hover:shadow-black/50
-        hover:border-[var(--color-secondary-500)]/60
-        hover:-translate-y-1
+        shadow-md
+        hover:shadow-lg
+        hover:border-[var(--color-secondary-500)]
         transition-all
-        duration-300
+        duration-200
         overflow-hidden
         flex
         flex-col
@@ -51,32 +49,32 @@ const Card = ({
             <img
               src={image}
               alt={displayTitle}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-108"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary-950)] via-transparent to-black/20 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary-950)]/80 via-transparent to-transparent pointer-events-none" />
             
-            {/* Badges superiores */}
+            {/* Badges superiores tipo Material Chips */}
             <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1 pointer-events-none">
               {displayCategory && (
-                <span className="bg-black/60 backdrop-blur-md text-[var(--color-secondary-200)] text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full border border-white/10 shadow-sm">
+                <span className="bg-[var(--color-primary-950)] text-[var(--color-secondary-300)] text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-md border border-[var(--color-primary-700)] shadow-sm">
                   {displayCategory}
                 </span>
               )}
               {isPopular && (
-                <span className="bg-[var(--color-secondary-500)] text-[var(--color-white)] text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md">
+                <span className="bg-[var(--color-secondary-500)] text-[var(--color-white)] text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
                   ★ Popular
                 </span>
               )}
               {!isPopular && rating && (
-                <span className="bg-black/60 backdrop-blur-md text-[var(--color-secondary-300)] text-[11px] font-semibold px-2 py-0.5 rounded-full border border-white/10 flex items-center gap-1 shadow-sm">
+                <span className="bg-[var(--color-primary-950)] text-[var(--color-secondary-300)] text-[11px] font-semibold px-2 py-0.5 rounded-md border border-[var(--color-primary-700)] flex items-center gap-1 shadow-sm">
                   ★ {rating}
                 </span>
               )}
             </div>
 
             {status && (
-              <span className="absolute bottom-2 left-2.5 bg-[var(--color-primary-800)]/90 text-[var(--color-white)] text-[length:var(--fs-xxxs)] font-semibold px-2.5 py-0.5 rounded-full backdrop-blur-md border border-[var(--color-primary-600)] shadow-sm">
+              <span className="absolute bottom-2 left-2.5 bg-[var(--color-primary-950)] text-[var(--color-white)] text-[length:var(--fs-xxxs)] font-medium px-2 py-0.5 rounded-md border border-[var(--color-primary-700)]">
                 {status}
               </span>
             )}

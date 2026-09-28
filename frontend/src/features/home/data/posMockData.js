@@ -14,9 +14,9 @@ export const posStaff = [
   {
     id: "st-01",
     name: "Carlos Pérez",
-    role: "Cajero & Facturación",
+    role: "Cajero",
     shift: "Turno Tarde / Noche",
-    station: "Caja Principal #1",
+    station: "Caja Principal",
     status: "Activo en turno",
     phone: "315 234 5678",
     image: imgWorkerCarlos
@@ -24,9 +24,9 @@ export const posStaff = [
   {
     id: "st-02",
     name: "María Rodríguez",
-    role: "Mesera de Salón",
+    role: "Mesero",
     shift: "Turno Tarde / Noche",
-    station: "Mesas 01 a 08",
+    station: "Salón",
     status: "Atendiendo salón",
     phone: "310 456 7890",
     image: imgWorkerMaria
@@ -34,9 +34,9 @@ export const posStaff = [
   {
     id: "st-03",
     name: "Juan Gómez",
-    role: "Maestro Parrillero & Cocina",
+    role: "Cocinero",
     shift: "Turno Completo",
-    station: "Estación de Brasa",
+    station: "Cocina",
     status: "En comanda",
     phone: "300 123 4567",
     image: imgWorkerJuan
@@ -44,9 +44,9 @@ export const posStaff = [
   {
     id: "st-04",
     name: "Ana Martínez",
-    role: "Administradora de Turno",
+    role: "Cajero",
     shift: "Turno Tarde / Cierre",
-    station: "Despacho & Almacén",
+    station: "Caja Principal",
     status: "Supervisando",
     phone: "320 987 6543",
     image: imgWorkerAna

@@ -97,8 +97,8 @@ export function DropdownContent({ children, className = "" }) {
         bg-[var(--color-primary-900)]
         text-[var(--color-white)]
         p-1.5
-        shadow-xl
-        rounded-2xl
+        shadow-lg
+        rounded-lg
         overflow-hidden
         ${className}
       `}
@@ -126,7 +126,7 @@ export function DropdownItem({
       role="menuitem"
       onClick={handleClick}
       className={`
-        w-full text-left px-3 py-2 rounded-xl text-sm font-medium
+        w-full text-left px-3 py-2 rounded-md text-sm font-medium
         hover:bg-[var(--color-primary-800)] focus:bg-[var(--color-primary-800)]
         text-[var(--color-white)]
         transition-colors cursor-pointer

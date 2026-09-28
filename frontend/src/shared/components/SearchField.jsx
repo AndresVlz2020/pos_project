@@ -4,7 +4,7 @@ import { Search, X, LoaderCircle } from "lucide-react";
 import clsx from "clsx";
 
 const baseStyles =
- "search flex items-center rounded-xl px-4 transition-all border";
+  "search flex items-center rounded-md px-4 transition-all border";
 
 const sizeStyles = {
     sm: "h-9 text-xs",

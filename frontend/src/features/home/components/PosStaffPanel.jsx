@@ -1,73 +1,86 @@
-import { Users, Phone, ShieldCheck, UserCheck, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Users, Clock, RefreshCw, UserPlus } from "lucide-react";
 import { posStaff } from "../data/posMockData";
+import PosSectionHeader from "./PosSectionHeader";
+import PosCardGrid from "./PosCardGrid";
+import PosInfoCard from "./PosInfoCard";
+
+const INITIAL_STAFF_STATUS = {
+  "st-01": "En Caja",
+  "st-02": "En Servicio",
+  "st-03": "En Servicio",
+  "st-04": "En Pausa"
+};
 
 export default function PosStaffPanel() {
+  const [query, setQuery] = useState("");
+  const [staffStatus, setStaffStatus] = useState(INITIAL_STAFF_STATUS);
+
+  const handleToggleStatus = (member) => {
+    setStaffStatus((prev) => {
+      const current = prev[member.id] || "En Servicio";
+      let nextStatus = "En Servicio";
+
+      if (current === "En Caja") {
+        nextStatus = "En Pausa";
+      } else if (current === "En Pausa") {
+        nextStatus = "En Servicio";
+      } else {
+        nextStatus = "En Caja";
+      }
+
+      return {
+        ...prev,
+        [member.id]: nextStatus
+      };
+    });
+  };
+
+  const filtered = posStaff.filter((member) => {
+    const q = query.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      member.name.toLowerCase().includes(q) ||
+      member.role.toLowerCase().includes(q) ||
+      member.station.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-bold text-[var(--color-white)] flex items-center gap-2">
-            <Users className="size-5 text-[var(--color-secondary-400)]" />
-            Personal & Operadores de Turno
-          </h2>
-          <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-            Registro del equipo activo en caja, atención de salón, cocina y supervisión.
-          </p>
-        </div>
+      <PosSectionHeader
+        icon={Users}
+        title="Personal en Turno"
+        subtitle="Monitoreo y control del equipo de atención, cocina y barra en servicio activo."
+        searchQuery={query}
+        onSearchChange={setQuery}
+        searchPlaceholder="Buscar por nombre, cargo o estación..."
+        actionLabel="Nuevo Personal"
+        actionIcon={UserPlus}
+        actionLink="/dashboard/userList"
+      />
 
-        <Link
-          to="/dashboard/userList"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-secondary-300)] hover:text-[var(--color-secondary-200)] hover:underline"
-        >
-          <span>Administrar usuarios y permisos</span>
-          <ArrowRight className="size-3.5" />
-        </Link>
-      </div>
+      <PosCardGrid emptyMessage="No se encontraron colaboradores con ese criterio.">
+        {filtered.map((member) => {
+          const currentStatus = staffStatus[member.id] || "En Servicio";
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {posStaff.map((member) => (
-          <div
-            key={member.id}
-            className="rounded-xl border border-[var(--color-primary-800)] bg-[var(--color-primary-900)] p-4 flex flex-col justify-between space-y-3"
-          >
-            <div className="flex items-center gap-3">
-              <div className="relative size-13 shrink-0">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="size-13 rounded-full object-cover border-2 border-[var(--color-primary-700)] shadow-sm"
-                />
-              </div>
-
-              <div className="overflow-hidden">
-                <h4 className="text-sm font-bold text-[var(--color-white)] truncate">
-                  {member.name}
-                </h4>
-                <p className="text-xs text-[var(--color-secondary-300)] font-medium truncate">
-                  {member.role}
-                </p>
-                <span className="text-[10px] text-[var(--color-gray-400)] block truncate">
-                  {member.station}
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-[var(--color-primary-800)] text-[11px] text-[var(--color-gray-300)] space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-[var(--color-gray-400)]">Turno:</span>
-                <span className="font-medium text-[var(--color-white)]">{member.shift}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[var(--color-gray-400)] flex items-center gap-1">
-                  <Phone className="size-3" /> Contacto:
-                </span>
-                <span className="font-mono text-[var(--color-gray-200)]">{member.phone}</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          return (
+            <PosInfoCard
+              key={member.id}
+              tagLeft={member.station}
+              tagRight={currentStatus}
+              title={member.name}
+              subtitle={member.role}
+              bottomIcon={Clock}
+              bottomText={member.shift}
+              actionIcon={RefreshCw}
+              actionLabel="Cambiar Turno"
+              onActionClick={() => handleToggleStatus(member)}
+              actionAriaLabel={`Cambiar turno de ${member.name}`}
+            />
+          );
+        })}
+      </PosCardGrid>
     </div>
   );
 }

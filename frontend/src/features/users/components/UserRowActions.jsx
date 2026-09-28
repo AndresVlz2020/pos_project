@@ -1,25 +1,17 @@
 // Iconos usados en los botones de acciones
 import { Pencil, Trash2, Eye } from "lucide-react";
 
-// Hook de react router para navegar programáticamente ennntre rutas
+// Hook de react router para navegar programáticamente entre rutas
 import { useNavigate } from "react-router-dom";
 
 // Componente que renderiza las acciones de cada fila de usuario
 // Recibe como prop el objeto user
 export default function UserRowActions({ user }) {
-    
-    // const handleEdit = () => {
-    // console.log("Editar usuario", user.id)
-    // };
-
-    // Hook que permite redirigir a otra ruta desde código
     const navigate = useNavigate();
     
     // Acción para eliminar el usuario
-    // Actualmente solo se imprime en consola
-    // Redirige a la página de edición usando el id del usuario
     const handleDelete = () => {       
-        console.log("Eliminar usuario", user.id);
+        console.log("Eliminar usuario", user?.id);
     };
 
     return (
@@ -41,6 +33,7 @@ export default function UserRowActions({ user }) {
             >     
                 <Trash2 size={15}/>
             </button>
+            {/* Botón de visualización */}
             <button
                 onClick={() => navigate("/readuser")}
                 className="p-2 rounded-lg bg-[var(--color-primary-800)] hover:bg-[var(--color-secondary-600)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] transition cursor-pointer border border-[var(--color-primary-700)]"
@@ -49,8 +42,5 @@ export default function UserRowActions({ user }) {
                 <Eye size={15}/>
             </button>
         </div>
-
-    )
-
-
+    );
 }

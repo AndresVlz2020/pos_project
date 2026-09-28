@@ -58,10 +58,9 @@ export const IconButton = React.forwardRef(function IconButton(
     primary: `
       text-[var(--color-white)]
       bg-[var(--color-secondary-500)]
-      hover:bg-[var(--color-secondary-400)]
-      border border-[var(--color-secondary-400)]
+      hover:bg-[var(--color-secondary-600)]
+      border border-[var(--color-secondary-600)]
       focus-visible:ring-[var(--color-secondary-400)]
-      shadow-sm
       cursor-pointer
     `,
     secondary: `
