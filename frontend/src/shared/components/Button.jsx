@@ -9,9 +9,8 @@ export default function Button({
   ...props
 }) {
   const variants = {
-    primary: "bg-[var(--color-secondary-500)] text-[var(--color-white)] hover:bg-[var(--color-secondary-700)] font-medium border border-transparent cursor-pointer",
-    secondary: "border border-[var(--color-primary-700)] bg-[var(--color-primary-900)] text-[var(--color-gray-200)] hover:text-[var(--color-white)] hover:bg-[var(--color-primary-800)] hover:border-[var(--color-primary-600)] cursor-pointer",
-    outline: "border border-[var(--color-secondary-500)] text-[var(--color-secondary-300)] hover:bg-[var(--color-secondary-500)]/10 cursor-pointer"
+    primary: "bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)] font-medium border border-transparent cursor-pointer shadow-sm",
+    secondary: "border border-[var(--color-secondary-700)] bg-[var(--color-secondary-900)] text-[var(--color-gray-200)] hover:text-white hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-secondary-600)] font-medium cursor-pointer"
   };
 
   const sizes = {

@@ -61,50 +61,31 @@ export default function Input({
             </label>
 
             {/* Contenedor de input */}
-            <div
-                className="
-                    relative
-                    h-12
-                    flex
-                    items-center
+            <div className="relative w-full flex items-center">
+                {/* Input visual */}
+                <input
+                    id={htmlFor || props.id || props.name}
+                    type={type}
+                    className={`
                     w-full
-                "
-                
-                >
-                    {/* Área interactiva invisible (48px) */}
-                <div
-                    className="
-                        absolute inset-0
-                    "
-                    onMouseDown={(e)=>{
-                        e.preventDefault();
-                        e.currentTarget.focus();
-                    }}
-                    />
-                    
-                    {/* Input visual */}
-                    <input
-                        id={htmlFor}
-                        type={type}
-                        className={`
-                        relative
-                        w-full
-                        rounded-md
-                        border
-                        ${error ? "border-red-500 focus:border-red-500" : "border-[var(--color-primary-700)] focus:border-[var(--color-secondary-400)]"}
-                        px-4
-                        text-[var(--color-white)]
-                        bg-[var(--color-primary-900)]
-                        placeholder:text-[var(--color-gray-400)]
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-[var(--color-secondary-400)]/30
-                        ${variants[variant]}
-                        ${sizes[size]}
-                        ${className}
-                        `}
-                        {...props}
-                    />
+                    h-12
+                    rounded-md
+                    border
+                    ${error ? "border-red-500 focus:border-red-500" : "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)]"}
+                    px-4
+                    text-[var(--color-white)]
+                    bg-[var(--color-secondary-900)]
+                    placeholder:text-[var(--color-gray-400)]
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-[var(--color-primary-400)]/30
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                    transition-colors
+                    ${variants[variant]}
+                    ${className}
+                    `}
+                    {...props}
+                />
             </div>
             {/* Feedback */}
             {error && (

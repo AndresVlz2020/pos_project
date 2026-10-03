@@ -8,13 +8,9 @@ import {
 } from "@tanstack/react-table"
 
 
-// Hook de React para manejar estado
 import { useState } from "react"
-
-
-// Botón reutilizable del sistema de componentes
-import { Button } from "@/shared"
-
+import Button from "./Button"
+import SearchField from "./SearchField"
 
 // Componente reutilizable de tabla
 // Recibe:
@@ -87,15 +83,15 @@ export default function DataTable({ data, columns, compact = false }) {
 
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        {/* ================== BUSCADOR ================== */}
-        {/* Filtra todas las columnas de la tabla */}
-        <input
-          type="text"
-          placeholder="Buscar en la tabla..."
-          value={globalFilter ?? ""}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="bg-[var(--color-primary-900)] border border-[var(--color-primary-700)] text-[var(--color-white)] placeholder:text-[var(--color-gray-400)] rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:border-[var(--color-secondary-400)] w-full sm:w-72"
-        />
+        {/* ================== BUSCADOR CON COMPONENTE COMPARTIDO ================== */}
+        <div className="w-full sm:w-80">
+          <SearchField
+            placeholder="Buscar en la tabla..."
+            value={globalFilter ?? ""}
+            onChange={(val) => setGlobalFilter(val)}
+            size="sm"
+          />
+        </div>
 
         {/* ================== SELECTOR DE FILAS ================== */}
         {/* Permite cambiar cuántas filas se muestran por página */}
@@ -104,10 +100,10 @@ export default function DataTable({ data, columns, compact = false }) {
           <select
             value={table.getState().pagination.pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
-            className="bg-[var(--color-primary-900)] border border-[var(--color-primary-700)] text-[var(--color-white)] rounded-xl px-3 py-1.5 outline-none cursor-pointer"
+            className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] rounded-xl px-3 py-1.5 outline-none cursor-pointer"
           >
             {[5, 7, 10, 20, 50].map(size => (
-              <option key={size} value={size} className="bg-[var(--color-primary-950)] text-white">
+              <option key={size} value={size} className="bg-[var(--color-secondary-950)] text-white">
                 {size} filas
               </option>
             ))}
@@ -116,10 +112,10 @@ export default function DataTable({ data, columns, compact = false }) {
       </div>
 
       {/* ================== TABLA ================== */}
-      <div className="overflow-x-auto border border-[var(--color-primary-800)] bg-[var(--color-primary-900)] rounded-xl shadow-lg">
+      <div className="overflow-x-auto border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] rounded-xl shadow-lg">
         <table className="w-full text-left">
           {/* ================== CABECERA ================== */}
-          <thead className="bg-[var(--color-primary-950)] text-[var(--color-gray-300)] border-b border-[var(--color-primary-800)]">
+          <thead className="bg-[var(--color-secondary-950)] text-[var(--color-gray-300)] border-b border-[var(--color-secondary-800)]">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
@@ -127,7 +123,7 @@ export default function DataTable({ data, columns, compact = false }) {
                     key={header.id}
                     className={`${
                       compact ? "py-2 px-4" : "p-3.5"
-                    } text-left border-b border-[var(--color-primary-800)] text-xs uppercase tracking-wider font-bold text-[var(--color-gray-300)]`}
+                    } text-left border-b border-[var(--color-secondary-800)] text-xs uppercase tracking-wider font-bold text-[var(--color-gray-300)]`}
                   >
 
 
@@ -155,30 +151,45 @@ export default function DataTable({ data, columns, compact = false }) {
           </thead>
 
 
-          {/* ================== CUERPO DE LA TABLA ================== */}
           <tbody>
-
-
-            {/* Filas generadas por TanStack */}
-            {table.getRowModel().rows.map(row => (
-              <tr key={row.id} className="hover:bg-[var(--color-primary-800)]/50 transition-colors border-b border-[var(--color-primary-800)]/60 text-[var(--color-white)]">
-                {/* Celdas visibles de cada fila */}
-                {row.getVisibleCells().map(cell => (
-                  <td
-                    key={cell.id}
-                    className={`${
-                      compact ? "py-2 px-4" : "p-3.5"
-                    } border-b border-[var(--color-primary-800)]/60 text-[var(--color-gray-200)] text-sm`}
-                  >
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
-                  </td>
-                ))}
+            {table.getRowModel().rows.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="py-12 text-center text-sm text-[var(--color-gray-400)]"
+                >
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="font-medium text-sm text-[var(--color-gray-300)]">
+                      No se encontraron registros coincidentes
+                    </p>
+                    <p className="text-xs text-[var(--color-gray-500)]">
+                      Intente ajustar los términos de búsqueda o filtros aplicados.
+                    </p>
+                  </div>
+                </td>
               </tr>
-            ))}
+            ) : (
+              table.getRowModel().rows.map(row => (
+                <tr key={row.id} className="hover:bg-[var(--color-secondary-800)]/50 transition-colors border-b border-[var(--color-secondary-800)]/60 text-[var(--color-white)]">
+                  {/* Celdas visibles de cada fila */}
+                  {row.getVisibleCells().map(cell => (
+                    <td
+                      key={cell.id}
+                      className={`${
+                        compact ? "py-2 px-4" : "p-3.5"
+                      } border-b border-[var(--color-secondary-800)]/60 text-[var(--color-gray-200)] text-sm`}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
           </tbody>
+
         </table>
       </div>
 
@@ -245,7 +256,7 @@ export default function DataTable({ data, columns, compact = false }) {
             const page = e.target.value ? Number(e.target.value) - 1 : 0;
             table.setPageIndex(page);
           }}
-          className="bg-[var(--color-primary-900)] border border-[var(--color-primary-700)] text-[var(--color-white)] rounded-lg px-2.5 py-1 w-16 text-center outline-none focus:border-[var(--color-secondary-400)]"
+          className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] rounded-lg px-2.5 py-1 w-16 text-center outline-none focus:border-[var(--color-primary-400)]"
         />
       </div>
     </div>

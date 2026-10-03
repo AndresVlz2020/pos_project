@@ -8,7 +8,7 @@ export default function PosCardGrid({ children, emptyMessage = "No se encontraro
 
   if (!hasChildren) {
     return (
-      <div className="py-12 text-center rounded-lg border border-[var(--color-primary-800)] bg-[var(--color-primary-900)]/40 p-6">
+      <div className="py-12 text-center rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)]/40 p-6">
         <p className="text-xs text-[var(--color-gray-400)] font-[family-name:var(--main-font)]">
           {emptyMessage}
         </p>

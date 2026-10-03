@@ -65,7 +65,7 @@ export const products = [
         image: imgEmpanadas,
         category: "entradas",
         stock: 30,
-        status: "Disponible"
+        status: "Inactivo"
     },
     {
         id: "limonada-hierbabuena",

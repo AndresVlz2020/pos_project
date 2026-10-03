@@ -11,12 +11,17 @@ export function buildReportDataset({
   // Copia inmutable del array original (evita mutaciones)
   let filteredUsers = [...users];
 
-  // Filtro por alcance: si es por documento, se aplica filtro específico
-  if (scope === "document" && documentNumber) {
+  // Filtro por alcance según el requerimiento RFADMIN07
+  if (scope === "enabled") {
+    filteredUsers = filteredUsers.filter((u) => u.isActive !== false && u.status !== "Inactivo");
+  } else if (scope === "disabled") {
+    filteredUsers = filteredUsers.filter((u) => u.isActive === false || u.status === "Inactivo");
+  } else if (scope === "document" && documentNumber) {
     filteredUsers = filteredUsers.filter(
-      (user) => user.document_number === documentNumber
+      (user) => String(user.document_number || user.userDocumentNumber || "").trim() === String(documentNumber).trim()
     );
   }
+
 
   // Construcción de encabezados del reporte
   // Se toma el label de cada campo seleccionado

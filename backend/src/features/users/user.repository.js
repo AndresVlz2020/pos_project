@@ -12,10 +12,15 @@ export const userRepository = {
         const {
             userName,
             userEmail,
+            corporateEmail,
             userPhone,
             userDocumentTypes,
             userDocumentNumber,
             userPassword,
+            pin,
+            userType,
+            startDate,
+            endDate,
             userAvatarUrl,
             userImage,
             isStaff = false,
@@ -24,47 +29,70 @@ export const userRepository = {
             isSuperuser,
         } = userData;
 
-        const isSuper = isSuperuser !== undefined ? isSuperuser : (isSuperUser !== undefined ? isSuperUser : false);
+        const isSuper = isSuperuser !== undefined ? isSuperuser : (isSuperUser !== undefined ? isSuperUser : (userType === 'admin' || userType === 'Admin'));
+        const staff = isStaff || userType === 'mesero' || userType === 'cajero' || userType === 'cocina';
         const avatar = userAvatarUrl || (typeof userImage === 'string' ? userImage : null);
+        const parsedStartDate = startDate && startDate.trim() !== '' ? startDate : null;
+        const parsedEndDate = endDate && endDate.trim() !== '' ? endDate : null;
 
         // Usar placeholders ($1, $2, ...) en la consulta SQL evita inyecciones SQL
-        // RETURNING permite obtener datos generados por la base de datos
         const query = `
             INSERT INTO users (
                 user_name,
                 user_email,
+                corporate_email,
                 user_phone,
                 user_document_types,
                 user_document_number,
                 user_password,
+                pin,
+                user_type,
+                start_date,
+                end_date,
                 user_avatar_url,
                 is_staff,
                 is_active,
                 is_superuser
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-            RETURNING id, user_name, user_email, user_phone, user_document_types, user_document_number, is_staff, is_active, is_superuser, created_at;
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+            RETURNING 
+                id, 
+                user_name AS "userName", 
+                user_email AS "userEmail", 
+                corporate_email AS "corporateEmail",
+                user_phone AS "userPhone", 
+                user_document_types AS "userDocumentTypes", 
+                user_document_number AS "userDocumentNumber", 
+                pin,
+                user_type AS "userType",
+                start_date AS "startDate",
+                end_date AS "endDate",
+                user_avatar_url AS "userAvatarUrl",
+                is_staff AS "isStaff", 
+                is_active AS "isActive", 
+                is_superuser AS "isSuperUser", 
+                created_at AS "createdAt";
         `;
 
-        // Array de valores que se pasan al query
-        // El orden coincide EXACTAMENTE con los placeholders en la consulta SQL
         const values = [
             userName,
             userEmail,
-            userPhone,
-            userDocumentTypes,
+            corporateEmail || userEmail,
+            userPhone || null,
+            userDocumentTypes || 'CC',
             userDocumentNumber,
-            userPassword,
+            userPassword || null,
+            pin || '1234',
+            userType || 'mesero',
+            parsedStartDate,
+            parsedEndDate,
             avatar,
-            isStaff,
+            staff,
             isActive,
             isSuper,
         ];
 
-        // Ejecutamos la consulta usando el pool
         const result = await pool.query(query, values);
-
-        // Devolvemos el registro retornado
         return result.rows[0];
     },
 
@@ -74,10 +102,16 @@ export const userRepository = {
             SELECT 
                 id,
                 user_name AS "userName",
+                user_name AS "name",
                 user_email AS "userEmail",
+                corporate_email AS "corporateEmail",
                 user_phone AS "userPhone",
                 user_document_types AS "userDocumentTypes",
                 user_document_number AS "userDocumentNumber",
+                pin,
+                user_type AS "userType",
+                start_date AS "startDate",
+                end_date AS "endDate",
                 user_avatar_url AS "userAvatarUrl",
                 is_staff AS "isStaff",
                 is_active AS "isActive",

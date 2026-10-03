@@ -11,17 +11,17 @@ const icons = {
 };
 
 const styles = {
-  success: "bg-[var(--color-primary-900)] border-[var(--color-secondary-500)] text-[var(--color-white)]",
-  warning: "bg-[var(--color-primary-900)] border-amber-500 text-[var(--color-white)]",
-  error: "bg-[var(--color-primary-900)] border-red-500 text-[var(--color-white)]",
-  info: "bg-[var(--color-primary-900)] border-[var(--color-secondary-400)] text-[var(--color-white)]",
+  success: "bg-[var(--color-secondary-900)] border-[var(--color-primary-500)] text-[var(--color-white)]",
+  warning: "bg-[var(--color-secondary-900)] border-amber-500 text-[var(--color-white)]",
+  error: "bg-[var(--color-secondary-900)] border-red-500 text-[var(--color-white)]",
+  info: "bg-[var(--color-secondary-900)] border-[var(--color-primary-400)] text-[var(--color-white)]",
 };
 
 const iconColors = {
-  success: "text-[var(--color-secondary-400)]",
+  success: "text-[var(--color-primary-400)]",
   warning: "text-amber-400",
   error: "text-red-400",
-  info: "text-[var(--color-secondary-300)]",
+  info: "text-[var(--color-primary-300)]",
 };
 
 export function Alert({

@@ -1,32 +1,40 @@
 // Librería para manipulación y generación de archivos Excel
 import * as XLSX from "xlsx";
 
-// Función utilitaria para generar un archivo Excel a partir de datos tabulares
-// Patrón: exportación de datos (dataset -> archivo descargable)
-
+// Función utilitaria para generar un archivo Excel con membrete y metadatos
+// Cumple con RFADMIN13, RFADMIN19, RFADMIN25 y RFADMIN31
 export function generateExcelReport({
-  headers,   // Array de encabezados (columnas)
-  rows,      // Array de filas (array de arrays)
-  fileName = "user-report.xlsx" // Nombre del archivo de salida
+  headers,
+  rows,
+  title = "Reporte del Sistema",
+  fileName = "report.xlsx"
 }) {
+  const user = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("auth_user") || "null");
+    } catch {
+      return null;
+    }
+  })();
+  const userName = user?.name || user?.userName || user?.email || "Administrador General";
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("es-CO", { year: "numeric", month: "2-digit", day: "2-digit" });
+  const timeStr = now.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
 
-  // Estructura final de la hoja:
-  // Primera fila = headers
-  // Siguientes filas = datos
   const worksheetData = [
+    ["D'PIERO • RESTAURANTE, PARRILLA & POS"],
+    [String(title).toUpperCase()],
+    [`Fecha de generación: ${dateStr} ${timeStr}`, `Generado por: ${userName}`],
+    [], // Fila en blanco
     headers,
     ...rows
   ];
 
-  // Convierte un array de arrays (AOA = Array of Arrays) en una hoja de Excel
   const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-
-  // Crea un nuevo libro de Excel (workbook)
   const workbook = XLSX.utils.book_new();
 
-  // Agrega la hoja al libro con el nombre "Usuarios"
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Usuarios");
-
-  // Genera y descarga el archivo Excel en el cliente
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte");
   XLSX.writeFile(workbook, fileName);
 }
+
+export default generateExcelReport;

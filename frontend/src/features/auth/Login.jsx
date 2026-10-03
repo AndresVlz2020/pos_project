@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Users, Shield } from "lucide-react";
-import { BrandLogo } from "@/shared";
+import { BrandLogo, showErrorAlert } from "@/shared";
 import QuickAccessSelector, { formatRole } from "./components/QuickAccessSelector";
 import PinKeypad from "./components/PinKeypad";
 import AdminLoginForm from "./components/AdminLoginForm";
+import { loginApi } from "@/services/authService";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function Login() {
     setPinError("");
   };
 
-  const handleValidatePin = (pin, onResetPin) => {
+  const handleValidatePin = async (pin, onResetPin) => {
     if (pin === selectedStaff?.pin || pin === "1234") {
       const normalizedRole = formatRole(selectedStaff.role || selectedStaff.baseRole || "");
       const baseRole = normalizedRole === "Administrador" ? "Admin" : normalizedRole;
@@ -45,27 +46,83 @@ export default function Login() {
     }
   };
 
-  const handleAdminSubmit = (form) => {
+  const handleAdminSubmit = async (form) => {
     const emailClean = form.userEmail.trim().toLowerCase();
-    if (emailClean !== "admin@dpiero.com" || form.userPassword !== "12345678") {
+    const attemptsKey = `login_attempts_${emailClean}`;
+    const currentAttempts = parseInt(localStorage.getItem(attemptsKey) || "0", 10);
+
+    // Verificación de bloqueo por 3 intentos fallidos (Rúbrica de seguridad)
+    if (currentAttempts >= 3) {
+      await showErrorAlert({
+        title: "Cuenta bloqueada",
+        text: "Se ha bloqueado la cuenta por superar 3 intentos fallidos consecutivos. Contacte al administrador central."
+      });
       return {
         errors: {
-          userPassword: "Acceso denegado. Credenciales de administración no autorizadas."
+          userEmail: "Cuenta bloqueada por múltiples intentos fallidos."
         }
       };
     }
 
-    const adminSession = {
-      name: "Administrador General",
-      email: "admin@dpiero.com",
-      role: "Admin",
-      displayRole: "Administrador",
-      station: "Administración Central"
-    };
-    localStorage.setItem("auth_user", JSON.stringify(adminSession));
-    localStorage.setItem("auth_token", "token-admin-" + Date.now());
-    navigate("/dashboard/userList");
-    return { success: true };
+    try {
+      // 1. Intentamos autenticación con JWT contra el backend
+      const result = await loginApi({ email: emailClean, password: form.userPassword });
+
+      localStorage.removeItem(attemptsKey);
+      localStorage.setItem("auth_token", result.token);
+      localStorage.setItem("auth_user", JSON.stringify({
+        id: result.user?.id,
+        name: result.user?.name || "Administrador",
+        email: result.user?.email,
+        role: result.user?.role || "Admin",
+        displayRole: "Administrador"
+      }));
+
+      navigate("/dashboard/userList");
+      return { success: true };
+    } catch (err) {
+      console.warn("Backend login failed or unreachable, checking local credentials fallback:", err.message);
+
+      // Verificamos credenciales locales de contingencia
+      if (emailClean === "admin@dpiero.com" && form.userPassword === "12345678") {
+        localStorage.removeItem(attemptsKey);
+        const adminSession = {
+          name: "Administrador General",
+          email: "admin@dpiero.com",
+          role: "Admin",
+          displayRole: "Administrador",
+          station: "Administración Central"
+        };
+        localStorage.setItem("auth_user", JSON.stringify(adminSession));
+        localStorage.setItem("auth_token", "token-admin-" + Date.now());
+
+        navigate("/dashboard/userList");
+        return { success: true };
+      }
+
+      // Si falla, incrementar contador de intentos fallidos
+      const newAttempts = currentAttempts + 1;
+      localStorage.setItem(attemptsKey, String(newAttempts));
+
+      if (newAttempts >= 3) {
+        await showErrorAlert({
+          title: "Cuenta bloqueada",
+          text: "Ha alcanzado el límite de 3 intentos fallidos. Su cuenta ha sido bloqueada."
+        });
+        return {
+          errors: {
+            userEmail: "Cuenta bloqueada. Se superaron los 3 intentos permitidos."
+          }
+        };
+      }
+
+      const remaining = 3 - newAttempts;
+      return {
+        errors: {
+          userPassword: `Credenciales inválidas. Le quedan ${remaining} intento(s) antes del bloqueo de la cuenta.`
+        }
+      };
+    }
   };
 
   return (
@@ -79,8 +136,8 @@ export default function Login() {
         </p>
       </div>
 
-      <div className="w-full max-w-lg rounded-2xl border border-[var(--color-primary-800)] bg-[var(--color-primary-900)] p-6 sm:p-7 text-[var(--color-white)] shadow-none transition-all">
-        <div className="flex rounded-xl bg-[var(--color-primary-950)] p-1 border border-[var(--color-primary-800)] mb-5">
+      <div className="w-full max-w-lg rounded-2xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-6 sm:p-7 text-[var(--color-white)] shadow-none transition-all">
+        <div className="flex rounded-xl bg-[var(--color-secondary-950)] p-1 border border-[var(--color-secondary-800)] mb-5">
           <button
             type="button"
             onClick={() => {
@@ -89,11 +146,11 @@ export default function Login() {
             }}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               authMode === "pin"
-                ? "bg-[var(--color-primary-800)] text-[var(--color-white)] border border-[var(--color-primary-700)]"
+                ? "bg-[var(--color-secondary-800)] text-[var(--color-white)] border border-[var(--color-secondary-700)]"
                 : "text-[var(--color-gray-400)] hover:text-[var(--color-white)]"
             }`}
           >
-            <Users className="size-3.5 text-[var(--color-secondary-400)]" />
+            <Users className="size-3.5 text-[var(--color-primary-400)]" />
             <span>Acceso Rápido</span>
           </button>
 
@@ -105,11 +162,11 @@ export default function Login() {
             }}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               authMode === "admin"
-                ? "bg-[var(--color-primary-800)] text-[var(--color-white)] border border-[var(--color-primary-700)]"
+                ? "bg-[var(--color-secondary-800)] text-[var(--color-white)] border border-[var(--color-secondary-700)]"
                 : "text-[var(--color-gray-400)] hover:text-[var(--color-white)]"
             }`}
           >
-            <Shield className="size-3.5 text-[var(--color-secondary-400)]" />
+            <Shield className="size-3.5 text-[var(--color-primary-400)]" />
             <span>Administración</span>
           </button>
         </div>

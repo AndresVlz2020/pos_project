@@ -28,7 +28,7 @@ export default function Checkbox({
             checked={checked}
             onChange={onChange}
             disabled={disabled}
-            className="w-5 h-5"
+            className="w-4 h-4 rounded border border-[var(--color-secondary-600)] accent-[var(--color-primary-500)] bg-[var(--color-secondary-900)] cursor-pointer focus:ring-2 focus:ring-[var(--color-primary-400)]/40 transition-all"
         />
 
         {/* {Texto} */}

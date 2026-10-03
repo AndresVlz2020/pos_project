@@ -28,9 +28,12 @@ export function generateUserReport({
 
   // Validación: evita generar archivos vacíos
   if (!rows.length) {
-    alert("No hay datos para generar el reporte.");
-    return;
+    return {
+      success: false,
+      message: "No existen datos coincidentes para los filtros seleccionados."
+    };
   }
+
 
   // Generación de timestamp para nombres únicos de archivo (YYYY-MM-DD)
   const timestamp = new Date().toISOString().split("T")[0];
@@ -51,4 +54,7 @@ export function generateUserReport({
       fileName: `users-report-${timestamp}.pdf`
     });
   }
+
+  return { success: true };
 }
+

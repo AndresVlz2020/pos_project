@@ -98,7 +98,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-primary-950)] text-[var(--color-white)] flex flex-col font-[family-name:var(--main-font)]">
+    <div className="min-h-screen bg-[var(--color-secondary-950)] text-[var(--color-white)] flex flex-col font-[family-name:var(--main-font)]">
       {/* Barra de navegación superior */}
       <Navbar />
 
@@ -111,7 +111,7 @@ export default function HomePage() {
       />
 
       {/* Tab Bar Tradicional con las pestañas autorizadas para el rol del usuario */}
-      <div className="border-b border-[var(--color-primary-800)] bg-[var(--color-primary-950)] sticky top-16 z-40">
+      <div className="border-b border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] sticky top-16 z-40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 flex items-center justify-between gap-4">
           <nav className="flex items-center gap-6 overflow-x-auto scrollbar-none" aria-label="Pestañas autorizadas del POS">
             {availableTabs.map((tab) => {
@@ -125,12 +125,12 @@ export default function HomePage() {
                   className={`
                     inline-flex items-center gap-2 py-3 px-1 border-b-2 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap
                     ${isActive
-                      ? "border-[var(--color-secondary-500)] text-[var(--color-secondary-300)]"
-                      : "border-transparent text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:border-[var(--color-primary-700)]"
+                      ? "border-[var(--color-primary-500)] text-[var(--color-primary-300)]"
+                      : "border-transparent text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:border-[var(--color-secondary-700)]"
                     }
                   `}
                 >
-                  <Icon className={`size-3.5 ${isActive ? "text-[var(--color-secondary-400)]" : "text-[var(--color-gray-400)]"}`} />
+                  <Icon className={`size-3.5 ${isActive ? "text-[var(--color-primary-400)]" : "text-[var(--color-gray-400)]"}`} />
                   <span>{tab.label}</span>
                 </button>
               );

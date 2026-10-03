@@ -1,14 +1,38 @@
-// Importamos el repositorio de usuarios
-// El service depende del repositorio para acceder a la persistencia
-// Pero el repository no debe conocer el service
 import { userRepository } from "./user.repository.js";
+import bcrypt from "bcrypt";
 
-// Servicio encargado de la lógica de negocio de usuarios
 export const userService = {
     // Método para crear un usuario
     async create(data) {
-        // En este punto se aplican validaciones de negocio, transformaciones, etc.
-        return await userRepository.create(data);
+        const isAdmin = Boolean(
+            data.isSuperuser || 
+            data.isSuperUser || 
+            data.userType === "admin" || 
+            data.userType === "Admin"
+        );
+
+        if (isAdmin) {
+            // Administrador: cuenta con contraseña hasheada, sin PIN
+            const rawPassword = data.userPassword || "12345678";
+            const hashedPassword = await bcrypt.hash(rawPassword, 10);
+
+            return await userRepository.create({
+                ...data,
+                userPassword: hashedPassword,
+                pin: null,
+                isSuperuser: true,
+                isStaff: true,
+            });
+        }
+
+        // Personal operativo (mesero, cajero, cocina): acceso por PIN de terminal, sin contraseña
+        return await userRepository.create({
+            ...data,
+            userPassword: null,
+            pin: data.pin || "1234",
+            isSuperuser: false,
+            isStaff: true,
+        });
     },
 
     // Alias compatible

@@ -74,13 +74,13 @@ export default function FileInput({
           onDragStart={() => setDragIndex(i)}
           onDragOver={(e) => e.preventDefault()}
           onDrop={() => reorder(dragIndex, i)}
-          className="relative w-24 h-24 border border-[var(--color-primary-700)] rounded-xl overflow-hidden group bg-[var(--color-primary-950)]"
+          className="relative w-24 h-24 border border-[var(--color-secondary-700)] rounded-xl overflow-hidden group bg-[var(--color-secondary-950)]"
         >
           {/* Render condicional: imagen vs archivo genérico */}
           {isImage(file) ? (
-            <img src={previews[i]} className="w-full h-full object-contain bg-[var(--color-primary-950)]" />
+            <img src={previews[i]} className="w-full h-full object-contain bg-[var(--color-secondary-950)]" />
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-[var(--color-primary-800)] text-[var(--color-white)] text-[10px] px-1">
+            <div className="w-full h-full flex flex-col items-center justify-center bg-[var(--color-secondary-800)] text-[var(--color-white)] text-[10px] px-1">
               <span className="font-semibold">PDF</span>
               <span className="truncate w-full text-center">{file.name}</span>
             </div>
@@ -88,12 +88,18 @@ export default function FileInput({
 
           {/* Acciones hover: reorder visual + eliminar */}
           <div className="absolute top-1 right-1 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="w-6 h-6 bg-[var(--color-primary-800)] border border-[var(--color-primary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-primary-700)]">
+            <button
+              type="button"
+              aria-label="Reordenar archivo"
+              className="w-6 h-6 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-secondary-700)] cursor-grab"
+            >
               ↕
             </button>
             <button
+              type="button"
+              aria-label="Eliminar archivo"
               onClick={() => remove(i)}
-              className="w-6 h-6 bg-[var(--color-primary-800)] border border-[var(--color-primary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-primary-700)]"
+              className="w-6 h-6 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-red-700 cursor-pointer"
             >
               ✕
             </button>
@@ -104,7 +110,7 @@ export default function FileInput({
       {/* Trigger de input oculto + loader */}
       <div
         onClick={() => !isLoading && inputRef.current.click()}
-        className="w-24 h-24 border-2 border-dashed border-[var(--color-primary-700)] hover:border-[var(--color-secondary-400)] bg-[var(--color-primary-900)]/60 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
+        className="w-24 h-24 border-2 border-dashed border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] bg-[var(--color-secondary-900)]/60 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
       >
         {isLoading ? (
           <InfinityLoader
@@ -113,10 +119,10 @@ export default function FileInput({
             strokeLength="0.15"
             bgOpacity="0.1"
             speed="1.3"
-            color="var(--color-secondary-500)"
+            color="var(--color-primary-500)"
           />
         ) : (
-          <Plus className="text-[var(--color-secondary-400)]" size={24} />
+          <Plus className="text-[var(--color-primary-400)]" size={24} />
         )}
       </div>
       </div>

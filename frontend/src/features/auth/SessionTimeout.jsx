@@ -69,14 +69,14 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60">
-      <div className="w-full max-w-sm bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-lg p-6 shadow-xl text-[var(--color-white)] text-center">
+      <div className="w-full max-w-sm bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-6 shadow-xl text-[var(--color-white)] text-center">
         <div className="mx-auto w-12 h-12 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
           <AlertTriangle className="size-6" />
         </div>
         <h3 className="text-base font-bold mb-2">Sesión a punto de expirar</h3>
         <p className="text-xs text-[var(--color-gray-300)] mb-4">
           Por inactividad, tu sesión se cerrará automáticamente en{" "}
-          <strong className="text-[var(--color-secondary-400)] font-mono">{remainingSeconds}s</strong>.
+          <strong className="text-[var(--color-primary-400)] font-mono">{remainingSeconds}s</strong>.
         </p>
         <div className="flex gap-3 justify-center">
           <Button

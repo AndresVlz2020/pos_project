@@ -44,31 +44,31 @@ export const IconButton = React.forwardRef(function IconButton(
   const variants = {
     default: `
       text-[var(--color-white)]
-      hover:bg-[var(--color-primary-800)]
-      focus-visible:ring-[var(--color-primary-600)]
+      hover:bg-[var(--color-secondary-800)]
+      focus-visible:ring-[var(--color-secondary-600)]
       cursor-pointer
     `,
     ghost: `
       text-[var(--color-gray-300)]
       hover:text-[var(--color-white)]
-      hover:bg-[var(--color-primary-800)]
-      focus-visible:ring-[var(--color-primary-600)]
+      hover:bg-[var(--color-secondary-800)]
+      focus-visible:ring-[var(--color-secondary-600)]
       cursor-pointer
     `,
     primary: `
       text-[var(--color-white)]
-      bg-[var(--color-secondary-500)]
-      hover:bg-[var(--color-secondary-600)]
-      border border-[var(--color-secondary-600)]
-      focus-visible:ring-[var(--color-secondary-400)]
+      bg-[var(--color-primary-500)]
+      hover:bg-[var(--color-primary-600)]
+      border border-[var(--color-primary-600)]
+      focus-visible:ring-[var(--color-primary-400)]
       cursor-pointer
     `,
     secondary: `
       text-[var(--color-white)]
-      bg-[var(--color-primary-800)]
-      hover:bg-[var(--color-primary-700)]
-      border border-[var(--color-primary-700)]
-      focus-visible:ring-[var(--color-primary-600)]
+      bg-[var(--color-secondary-800)]
+      hover:bg-[var(--color-secondary-700)]
+      border border-[var(--color-secondary-700)]
+      focus-visible:ring-[var(--color-secondary-600)]
       cursor-pointer
     `,
   };
@@ -81,7 +81,7 @@ export const IconButton = React.forwardRef(function IconButton(
       disabled={disabled}
       onClick={onClick}
       className={clsx(baseStyles, variants[variant], className, {
-        "bg-[var(--color-primary-800)]": isActive,
+        "bg-[var(--color-secondary-800)]": isActive,
       })}
       style={{
         width: `${hitSize}px`,

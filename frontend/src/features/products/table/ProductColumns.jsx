@@ -1,4 +1,6 @@
+import { StatusSwitch } from "@/shared";
 import ProductRowActions from "../components/ProductRowActions";
+import { showSuccessAlert } from "@/shared/services/alertService";
 
 export const productColumns = [
   {
@@ -18,7 +20,26 @@ export const productColumns = [
     header: "Precio",
     cell: ({ row }) => {
       const product = row.original;
-      return `$${product.price.toLocaleString()}`;
+      return `$${Number(product.price || 0).toLocaleString("es-CO")}`;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Estado",
+    cell: ({ row }) => {
+      const product = row.original;
+      const isChecked = product.status !== "Inactivo" && product.status !== "inhabilitado";
+      const handleChange = (newVal) => {
+        product.status = newVal ? "Activo" : "Inactivo";
+        showSuccessAlert("El menú ha sido actualizado correctamente");
+      };
+
+      return (
+        <StatusSwitch
+          checked={isChecked}
+          onChange={handleChange}
+        />
+      );
     },
   },
   {
@@ -30,7 +51,7 @@ export const productColumns = [
     header: "Imagen",
     cell: ({ row }) => {
       const product = row.original;
-      return <img src={product.image} alt={product.title} className="h-10 w-10 rounded object-contain" />;
+      return <img src={product.image} alt={product.title} className="h-10 w-10 rounded object-cover" />;
     },
   },
   {

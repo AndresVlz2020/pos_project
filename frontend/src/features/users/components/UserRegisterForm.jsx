@@ -6,7 +6,9 @@ import {
     Checkbox,
     Button,
     IconButton,
-    FileInput, 
+    FileInput,
+    showSuccessAlert,
+    showErrorAlert,
  } from "@/shared";
  import { getDocumentTypes } from "../../../services/selectServices";
  import { createUser } from "../../../services/userService";
@@ -88,14 +90,20 @@ export default function UserRegisterForm() {
           const response = await createUser(result.data);
 
           console.log("✅ Usuario registrado exitosamente:", response);
-          alert("Usuario creado correctamente");
+          await showSuccessAlert({
+            title: "Usuario registrado",
+            text: "Usuario creado correctamente"
+          });
 
           // Volvemos a la lista de usuarios
           navigate(-1);
 
         } catch (error) {
           console.error("❌ Error al registrar usuario:", error.message);
-          alert(`Error: ${error.message}`);
+          await showErrorAlert({
+            title: "Error al registrar",
+            text: error.message || "Ocurrió un error inesperado al registrar el usuario."
+          });
         } finally {
           setIsSubmitting(false);
         }
@@ -120,7 +128,7 @@ export default function UserRegisterForm() {
 
     return(
         <div className="flex flex-col items-center justify-center my-6">
-           <div className="w-full max-w-md p-8 bg-[var(--color-primary-900)] rounded-lg border border-[var(--color-primary-800)] shadow-md text-[var(--color-white)]">
+           <div className="w-full max-w-md p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
              <h1 className="text-center mb-8 text-2xl font-bold text-[var(--color-white)]">Registro de Usuarios</h1>            
              <form
               action=""

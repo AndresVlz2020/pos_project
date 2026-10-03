@@ -1,52 +1,67 @@
 // Librería para generación de PDFs en el cliente
 import jsPDF from "jspdf";
-
-// Plugin para creación de tablas dentro del PDF
 import autoTable from "jspdf-autotable";
 
-// Función utilitaria para generar un reporte en PDF
-// Patrón: exportación de datos (dataset → documento estructurado)
-
+// Función utilitaria para generar un reporte institucional en PDF
+// Cumple con RFADMIN13, RFADMIN19, RFADMIN25 y RFADMIN31
 export function generatePdfReport({
-  headers,   // Encabezados de la tabla (columnas)
-  rows,      // Datos (array de filas)
-  fileName = "user-report.pdf" // Nombre del archivo de salida
+  headers,
+  rows,
+  title = "Reporte del Sistema",
+  fileName = "report.pdf"
 }) {
-
-  // Inicializa el documento PDF
   const doc = new jsPDF();
 
-  // Configuración del título
-  doc.setFontSize(16);
-  doc.text("Reporte de Usuarios", 14, 20); // Posición (x, y)
-
-  // Generación de tabla automática
-  autoTable(doc, {
-    startY: 30,      // Posición inicial debajo del título
-    head: [headers], // Encabezados (debe ser array de arrays)
-    body: rows,      // Filas del reporte
-
-    theme: "grid",   // Estilo visual de la tabla
-
-    // Estilos del encabezado
-    headStyles: {
-      fillColor: [33, 150, 243], // Color de fondo (RGB)
-      textColor: 255,            // Color del texto
-      fontSize: 11
-    },
-
-    // Estilos globales de las celdas
-    styles: {
-      fontSize: 10
-    },
-
-    // Márgenes del documento
-    margin: {
-      left: 14,
-      right: 14
+  const user = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("auth_user") || "null");
+    } catch {
+      return null;
     }
+  })();
+  const userName = user?.name || user?.userName || user?.email || "Administrador General";
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("es-CO", { year: "numeric", month: "2-digit", day: "2-digit" });
+  const timeStr = now.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+
+  // Encabezado institucional de marca
+  doc.setFillColor(11, 19, 43); // #0B132B
+  doc.rect(0, 0, 210, 26, "F");
+
+  doc.setFontSize(13);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.text("D'PIERO • RESTAURANTE, PARRILLA & POS", 14, 11);
+
+  doc.setFontSize(9);
+  doc.setTextColor(199, 124, 76); // Terracotta #C77C4C
+  doc.text(String(title).toUpperCase(), 14, 18);
+
+  doc.setFontSize(8);
+  doc.setTextColor(200, 200, 200);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Generado: ${dateStr} ${timeStr} | Operador: ${userName}`, 14, 23);
+
+  // Tabla con encabezado formal
+  autoTable(doc, {
+    startY: 32,
+    head: [headers],
+    body: rows,
+    theme: "striped",
+    headStyles: {
+      fillColor: [179, 103, 62], // #B3673E Brand Primary
+      textColor: 255,
+      fontSize: 9,
+      fontStyle: "bold"
+    },
+    styles: {
+      fontSize: 8.5,
+      cellPadding: 3
+    },
+    margin: { left: 14, right: 14 }
   });
 
-  // Genera y descarga el archivo PDF
   doc.save(fileName);
 }
+
+export default generatePdfReport;

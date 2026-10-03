@@ -63,7 +63,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
           size="sm"
           variant="dark"
           fullWidth={true}
-          className="w-full border-[var(--color-primary-700)] hover:border-[var(--color-secondary-400)] shadow-none"
+          className="w-full border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] shadow-none"
         />
       </div>
 
@@ -76,7 +76,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="text-[var(--color-secondary-400)] hover:underline cursor-pointer text-[11px]"
+              className="text-[var(--color-primary-400)] hover:underline cursor-pointer text-[11px]"
             >
               Limpiar filtro
             </button>
@@ -89,26 +89,26 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                   key={staff.id}
                   type="button"
                   onClick={() => onSelectStaff(staff)}
-                  className="w-full p-3 rounded-xl border border-[var(--color-primary-800)] bg-[var(--color-primary-950)] hover:bg-[var(--color-primary-800)] hover:border-[var(--color-secondary-400)] text-left transition-all cursor-pointer flex items-center justify-between gap-3 active:scale-[0.99] group"
+                  className="w-full p-3 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left transition-all cursor-pointer flex items-center justify-between gap-3 active:scale-[0.99] group"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-secondary-300)] transition-colors truncate">
+                    <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
                       {staff.userName}
                     </p>
                     <p className="text-[11px] text-[var(--color-gray-400)] truncate mt-0.5">
-                      <span className="text-[var(--color-secondary-300)] font-medium">
+                      <span className="text-[var(--color-primary-300)] font-medium">
                         {formatRole(staff.role)}
                       </span>{" "}
                       • Doc: {staff.document_type} {staff.document_number}
                     </p>
                   </div>
-                  <UserCheck className="size-4 text-[var(--color-gray-500)] group-hover:text-[var(--color-secondary-400)] shrink-0 transition-colors" />
+                  <UserCheck className="size-4 text-[var(--color-gray-500)] group-hover:text-[var(--color-primary-400)] shrink-0 transition-colors" />
                 </button>
               ))}
             </div>
           ) : (
-            <div className="py-8 text-center bg-[var(--color-primary-950)] border border-[var(--color-primary-800)] rounded-xl p-4">
-              <SearchX className="size-8 mx-auto text-[var(--color-secondary-400)] mb-2" />
+            <div className="py-8 text-center bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-xl p-4">
+              <SearchX className="size-8 mx-auto text-[var(--color-primary-400)] mb-2" />
               <p className="text-xs font-bold text-[var(--color-white)]">
                 Sin coincidencias en la plantilla
               </p>
@@ -118,7 +118,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="text-xs text-[var(--color-secondary-400)] hover:underline font-semibold cursor-pointer"
+                className="text-xs text-[var(--color-primary-400)] hover:underline font-semibold cursor-pointer"
               >
                 Restablecer búsqueda
               </button>
@@ -139,12 +139,12 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                 key={staff.id}
                 type="button"
                 onClick={() => onSelectStaff(staff)}
-                className="p-3.5 rounded-xl border border-[var(--color-primary-800)] bg-[var(--color-primary-950)] hover:bg-[var(--color-primary-800)] hover:border-[var(--color-secondary-400)] text-left transition-all cursor-pointer active:scale-[0.98] group"
+                className="p-3.5 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left transition-all cursor-pointer active:scale-[0.98] group"
               >
-                <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-secondary-300)] transition-colors truncate">
+                <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
                   {staff.userName}
                 </p>
-                <p className="text-[11px] text-[var(--color-secondary-400)] font-medium truncate mt-1">
+                <p className="text-[11px] text-[var(--color-primary-400)] font-medium truncate mt-1">
                   {formatRole(staff.role)}
                 </p>
               </button>

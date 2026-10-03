@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import { loginSchema } from "@/features/users/schemas/userSchema";
+import { Button } from "@/shared";
 
 export default function AdminLoginForm({ onSubmit }) {
   const [form, setForm] = useState({
@@ -27,7 +28,7 @@ export default function AdminLoginForm({ onSubmit }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const result = loginSchema.safeParse(form);
     if (!result.success) {
@@ -39,7 +40,7 @@ export default function AdminLoginForm({ onSubmit }) {
       return;
     }
 
-    const submitResult = onSubmit(form);
+    const submitResult = await onSubmit(form);
     if (submitResult?.errors) {
       setErrors(submitResult.errors);
     }
@@ -66,7 +67,7 @@ export default function AdminLoginForm({ onSubmit }) {
             value={form.userEmail}
             onChange={handleChange}
             placeholder="admin@dpiero.com"
-            className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-primary-950)] text-[var(--color-white)] text-xs border border-[var(--color-primary-800)] focus:border-[var(--color-secondary-500)] outline-none placeholder:text-[var(--color-gray-500)] transition-colors"
+            className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-white)] text-xs border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-500)] transition-colors"
           />
         </div>
         {errors.userEmail && (
@@ -86,7 +87,7 @@ export default function AdminLoginForm({ onSubmit }) {
             value={form.userPassword}
             onChange={handleChange}
             placeholder="••••••••"
-            className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-primary-950)] text-[var(--color-white)] text-xs border border-[var(--color-primary-800)] focus:border-[var(--color-secondary-500)] outline-none placeholder:text-[var(--color-gray-500)] transition-colors"
+            className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-white)] text-xs border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-500)] transition-colors"
           />
         </div>
         {errors.userPassword && (
@@ -101,26 +102,28 @@ export default function AdminLoginForm({ onSubmit }) {
             name="remember"
             checked={form.remember}
             onChange={handleChange}
-            className="rounded bg-[var(--color-primary-950)] border-[var(--color-primary-800)] text-[var(--color-secondary-500)] focus:ring-0 cursor-pointer"
+            className="rounded bg-[var(--color-secondary-950)] border-[var(--color-secondary-800)] text-[var(--color-primary-500)] focus:ring-0 cursor-pointer"
           />
           <span>Recordarme</span>
         </label>
 
         <Link
           to="/Auth/forgot-password"
-          className="text-[var(--color-secondary-400)] hover:underline"
+          className="text-[var(--color-primary-400)] hover:underline"
         >
           ¿Olvidó su contraseña?
         </Link>
       </div>
 
       <div className="pt-2">
-        <button
+        <Button
           type="submit"
-          className="w-full py-2.5 px-4 rounded-lg bg-[var(--color-secondary-500)] hover:bg-[var(--color-secondary-600)] text-[var(--color-white)] font-bold text-xs transition-colors cursor-pointer text-center"
+          variant="primary"
+          size="md"
+          className="w-full text-xs font-bold py-2.5"
         >
           Ingresar al Panel Administrativo
-        </button>
+        </Button>
       </div>
     </form>
   );

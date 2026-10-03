@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Input, Button, Select, Checkbox, BrandLogo } from "@/shared";
-import { Link } from "react-router-dom";
+import { Input, Button, Select, Checkbox, BrandLogo, showSuccessAlert, showErrorAlert } from "@/shared";
+import { Link, useNavigate } from "react-router-dom";
 import bgRegister from "@/assets/images/bg-register-restaurant.jpg";
 import { getDocumentTypes } from "../../services/selectServices";
 import { userSchema } from "@/features/users/schemas/userSchema";
 
 export default function Register() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     userName: "",
     surname: "",
@@ -37,7 +38,7 @@ export default function Register() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const result = userSchema.safeParse(form);
     if (!result.success) {
@@ -50,13 +51,17 @@ export default function Register() {
     }
 
     setErrors({});
-    alert("Registro (demo)");
+    await showSuccessAlert({
+      title: "Cuenta creada",
+      text: "Su cuenta ha sido registrada correctamente. Inicie sesión para continuar."
+    });
+    navigate("/Auth");
   };
 
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="w-full bg-[var(--color-primary-950)] text-[var(--color-text-inverse)] border-b border-[var(--color-primary-800)]">
+      <div className="w-full bg-[var(--color-secondary-950)] text-[var(--color-text-inverse)] border-b border-[var(--color-secondary-800)]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-3">
           <Link to="/" className="flex items-center gap-2">
             <BrandLogo className="h-9 w-auto object-contain drop-shadow" alt="D,PIERO" />
@@ -67,9 +72,9 @@ export default function Register() {
       {/* Content */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-6 py-10">
         {/* Left image */}
-        <div className="hidden md:block relative h-[60vh] md:h-[80vh] rounded-lg overflow-hidden border border-[var(--color-primary-800)] shadow-lg">
+        <div className="hidden md:block relative h-[60vh] md:h-[80vh] rounded-lg overflow-hidden border border-[var(--color-secondary-800)] shadow-lg">
           <img src={bgRegister} alt="D'Piero Registro" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary-950)] via-[var(--color-primary-950)]/40 to-transparent flex flex-col justify-end p-8">
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-secondary-950)] via-[var(--color-secondary-950)]/40 to-transparent flex flex-col justify-end p-8">
             <h2 className="text-2xl font-bold text-[var(--color-white)] mb-2">Únete al Equipo D'Piero</h2>
             <p className="text-sm text-[var(--color-gray-300)] leading-relaxed">
               Crea tu cuenta de acceso operativo para gestionar comandas, registrar pedidos y supervisar tu estación.
@@ -79,7 +84,7 @@ export default function Register() {
 
         {/* Right form */}
         <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto">
-          <div className="rounded-lg border border-[var(--color-primary-800)] bg-[var(--color-primary-900)] p-8 shadow-lg text-[var(--color-white)]">
+          <div className="rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-8 shadow-lg text-[var(--color-white)]">
             <h2 className="text-xl font-bold text-center mb-6 text-[var(--color-white)]">Registro de Cuenta</h2>
             <div className="grid gap-3">
               <Input
@@ -169,7 +174,7 @@ export default function Register() {
 
             <div className="mt-6 text-xs text-center text-[var(--color-gray-300)]">
               ¿Ya tienes cuenta?{" "}
-              <Link to="/Auth" className="font-semibold text-[var(--color-secondary-400)] hover:text-[var(--color-secondary-300)] hover:underline">Inicia Sesión</Link>
+              <Link to="/Auth" className="font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline">Inicia Sesión</Link>
             </div>
           </div>
         </form>

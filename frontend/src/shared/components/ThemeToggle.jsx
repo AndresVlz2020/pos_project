@@ -3,40 +3,28 @@ import { Sun, Moon } from "lucide-react";
 import { IconButton } from "@/shared";
 
 export function ThemeToggle({ className = "" }) {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("app_theme") || "dark";
-  });
+  const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
+  const isDark = theme === "dark";
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "light") {
-      root.classList.add("theme-light");
-      root.classList.remove("theme-dark");
-    } else {
-      root.classList.add("theme-dark");
-      root.classList.remove("theme-light");
-    }
+    document.documentElement.classList.toggle("theme-dark", isDark);
+    document.documentElement.classList.toggle("theme-light", !isDark);
     localStorage.setItem("app_theme", theme);
-  }, [theme]);
+  }, [theme, isDark]);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
+  const Icon = isDark ? Sun : Moon;
 
   return (
     <IconButton
-      ariaLabel={theme === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
-      onClick={toggleTheme}
-      className={`text-white hover:bg-[var(--color-primary-800)] border border-[var(--color-primary-700)] ${className}`}
+      ariaLabel={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className={`text-white hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] ${className}`}
     >
-      {theme === "dark" ? (
-        <Sun className="size-5 text-[var(--color-secondary-400)]" />
-      ) : (
-        <Moon className="size-5 text-[var(--color-secondary-400)]" />
-      )}
+      <Icon className="size-5 text-[var(--color-primary-400)]" />
     </IconButton>
   );
 }
 
 export default ThemeToggle;
+
 

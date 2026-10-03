@@ -46,7 +46,7 @@ export default function Navbar() {
   const getLinkClass = (isActive) =>
     `transition-all py-1 px-1 flex items-center gap-1.5 text-sm font-medium cursor-pointer ${
       isActive
-        ? "text-[var(--color-secondary-400)] font-bold border-b-2 border-[var(--color-secondary-400)]"
+        ? "text-[var(--color-primary-400)] font-bold border-b-2 border-[var(--color-primary-400)]"
         : "text-[var(--color-gray-300)] hover:text-[var(--color-white)]"
     }`;
 
@@ -57,7 +57,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full bg-[var(--color-primary-950)] border-b border-[var(--color-primary-800)] sticky top-0 z-50 shadow-sm">
+    <nav className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] sticky top-0 z-50 shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo de marca */}
@@ -111,9 +111,9 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             {/* Indicador sutil de rol activo */}
             {currentUser && (
-              <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-primary-900)] px-2.5 py-1 rounded border border-[var(--color-primary-800)]">
+              <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-2.5 py-1 rounded border border-[var(--color-secondary-800)]">
                 <span className="font-medium text-[var(--color-white)] truncate max-w-[120px]">{currentUser.name}</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-[var(--color-primary-800)] text-[var(--color-secondary-400)] font-semibold">
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-400)] font-semibold">
                   {currentUser.role}
                 </span>
               </div>
@@ -125,44 +125,47 @@ export default function Navbar() {
             <Dropdown>
               <div>
                 <DropdownTrigger>
-                  <IconButton ariaLabel="Menu" className="text-white hover:bg-[var(--color-primary-800)] border border-[var(--color-primary-700)]">
+                  <IconButton ariaLabel="Menu" className="text-white hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)]">
                     <Menu className="size-5" />
                   </IconButton>
                 </DropdownTrigger>
               </div>
 
               {/* Contenido: Opciones de navegación móvil y autenticación */}
-              <DropdownContent className="right-0 min-w-[210px] bg-[var(--color-primary-900)] border border-[var(--color-primary-700)] text-white shadow-lg">
-                <div className="lg:hidden pb-2 mb-2 border-b border-[var(--color-primary-800)]">
-                  <DropdownItem onClick={() => navigate("/")} className={`cursor-pointer ${isHome ? "text-[var(--color-secondary-400)] font-bold" : ""}`}>
+              <DropdownContent className="right-0 min-w-[210px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-white shadow-lg">
+                <div className="lg:hidden pb-2 mb-2 border-b border-[var(--color-secondary-800)]">
+                  <DropdownItem onClick={() => navigate("/")} className={`cursor-pointer ${isHome ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
                     Inicio
                   </DropdownItem>
-                  <DropdownItem onClick={() => navigate("/productList")} className={`cursor-pointer ${isProducts ? "text-[var(--color-secondary-400)] font-bold" : ""}`}>
+                  <DropdownItem onClick={() => navigate("/productList")} className={`cursor-pointer ${isProducts ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
                     Productos
                   </DropdownItem>
-                  <DropdownItem onClick={() => navigate("/CreateOrder")} className={`cursor-pointer ${isOrders ? "text-[var(--color-secondary-400)] font-bold" : ""}`}>
-                    Pedidos
+                  <DropdownItem onClick={() => navigate("/CreateOrder")} className={`cursor-pointer ${pathname === "/createorder" ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
+                    Crear Pedido
+                  </DropdownItem>
+                  <DropdownItem onClick={() => navigate("/orderList")} className={`cursor-pointer ${pathname === "/orderlist" ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
+                    Listado de Órdenes
                   </DropdownItem>
                   {canViewInventory && (
-                    <DropdownItem onClick={() => navigate("/inventoryList")} className={`cursor-pointer ${isInventory ? "text-[var(--color-secondary-400)] font-bold" : ""}`}>
+                    <DropdownItem onClick={() => navigate("/inventoryList")} className={`cursor-pointer ${isInventory ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
                       Inventario
                     </DropdownItem>
                   )}
                   {canViewSuppliers && (
-                    <DropdownItem onClick={() => navigate("/supplierList")} className={`cursor-pointer ${isSuppliers ? "text-[var(--color-secondary-400)] font-bold" : ""}`}>
+                    <DropdownItem onClick={() => navigate("/supplierList")} className={`cursor-pointer ${isSuppliers ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
                       Proveedores
                     </DropdownItem>
                   )}
                   {canViewUsers && (
-                    <DropdownItem onClick={() => navigate("/dashboard/userList")} className={`cursor-pointer ${isUsers ? "text-[var(--color-secondary-400)] font-bold" : ""}`}>
+                    <DropdownItem onClick={() => navigate("/dashboard/userList")} className={`cursor-pointer ${isUsers ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
                       Usuarios
                     </DropdownItem>
                   )}
                 </div>
-                <DropdownItem onClick={() => navigate("/Auth")} className="cursor-pointer hover:bg-[var(--color-primary-800)]">
+                <DropdownItem onClick={() => navigate("/Auth")} className="cursor-pointer hover:bg-[var(--color-secondary-800)]">
                   Cambiar operador / Iniciar sesión
                 </DropdownItem>
-                <DropdownItem onClick={handleLogout} className="cursor-pointer text-red-400 hover:text-red-300 hover:bg-[var(--color-primary-800)]">
+                <DropdownItem onClick={handleLogout} className="cursor-pointer text-red-400 hover:text-red-300 hover:bg-[var(--color-secondary-800)]">
                   Cerrar sesión
                 </DropdownItem>
               </DropdownContent>

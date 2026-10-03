@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Input, Button, Alert, BrandLogo } from "@/shared";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { resetPasswordApi } from "@/services/authService";
+import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get("token") || "valid-demo-token";
+  const token = searchParams.get("token");
 
   const [form, setForm] = useState({
     password: "",
@@ -13,7 +15,8 @@ export default function ResetPassword() {
   });
   const [errors, setErrors] = useState({});
   const [isSuccess, setIsSuccess] = useState(false);
-  const [tokenError, setTokenError] = useState(token === "expired");
+  const [tokenError, setTokenError] = useState(!token || token === "expired");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validate = () => {
     const errs = {};
@@ -41,21 +44,37 @@ export default function ResetPassword() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (tokenError) return;
     if (!validate()) return;
 
-    setIsSuccess(true);
-    setTimeout(() => {
+    setIsSubmitting(true);
+    try {
+      await resetPasswordApi(token, form.password);
+      await showSuccessAlert({
+        title: "Contraseña actualizada",
+        text: "Tu nueva contraseña ha sido guardada correctamente. Ya puedes iniciar sesión.",
+      });
       navigate("/Auth");
-    }, 2000);
+    } catch (err) {
+      if (err.message?.includes("expirado") || err.message?.includes("inválido")) {
+        setTokenError(true);
+      } else {
+        await showErrorAlert({
+          title: "Error inesperado",
+          text: err.message || "Error al actualizar la contraseña en el servidor.",
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (tokenError) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8">
-        <div className="w-full max-w-md bg-[var(--color-primary-900)] border border-red-500/50 rounded-lg p-8 shadow-lg text-[var(--color-white)] text-center">
+        <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-red-500/50 rounded-lg p-8 shadow-lg text-[var(--color-white)] text-center">
           <Alert
             type="error"
             title="Enlace vencido o inválido"
@@ -76,7 +95,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8">
-      <div className="w-full max-w-md bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-lg p-8 shadow-lg text-[var(--color-white)] relative z-10">
+      <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-8 shadow-lg text-[var(--color-white)] relative z-10">
         <div className="flex flex-col items-center text-center mb-6">
           <BrandLogo className="h-10 w-auto object-contain mb-3" alt="D,PIERO" />
           <h2 className="text-xl font-bold text-[var(--color-white)]">Nueva Contraseña</h2>
@@ -130,7 +149,7 @@ export default function ResetPassword() {
             <div className="text-center mt-4">
               <Link
                 to="/Auth"
-                className="text-xs text-[var(--color-secondary-400)] hover:text-[var(--color-secondary-300)] hover:underline"
+                className="text-xs text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline"
               >
                 ← Cancelar y volver al Login
               </Link>

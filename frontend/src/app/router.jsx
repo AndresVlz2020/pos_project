@@ -1,30 +1,29 @@
 // src/app/router.jsx
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { AuthLayout } from "@/shared";
-import { DashboardLayout} from "@/shared";
-import CreateOrder from "@/features/create/CreateOrder";
-import UsersManagement from "@/features/create/UsersManagement";
+import { AuthLayout, DashboardLayout } from "@/shared";
+import CreateOrder from "@/features/orders/pages/CreateOrderPage";
+import EditOrder from "@/features/orders/pages/EditOrderPage";
+import UsersManagement from "@/features/users/pages/UsersManagementPage";
 import Login from "@/features/auth/Login";
 import Register from "@/features/auth/Register";
 import ForgotPassword from "@/features/auth/ForgotPassword";
 import ResetPassword from "@/features/auth/ResetPassword";
-import CreateUser from "@/features/create/CreateUser";
-import CreateInventory from "@/features/create/CreateInventory";
-import CreateSuppliers from "../features/create/CreateSuppliers";
+import CreateUser from "@/features/users/pages/CreateUserPage";
+import EditUser1 from "@/features/users/pages/EditUserPage";
+import ReadUser1 from "@/features/users/pages/ReadUserPage";
+import CreateInventory from "@/features/inventory/pages/CreateInventoryPage";
+import CreateSuppliers from "@/features/suppliers/pages/CreateSupplierPage";
+import ReadSupplier1 from "@/features/suppliers/pages/ReadSupplierPage";
+import EditSupplier1 from "@/features/suppliers/pages/EditSupplierPage";
+import CreateProduct from "@/features/products/pages/CreateProductPage";
+import ReadProduct1 from "@/features/products/pages/ReadProductPage";
+import EditProduct1 from "@/features/products/pages/EditProductPage";
 import { UserListPage, UserRegisterForm } from "@/features/users";
 import { ProductListPage } from "@/features/products";
 import { SuppliersListPage } from "@/features/suppliers";
 import { InventoryListPage } from "@/features/inventory";
+import { OrderListPage } from "@/features/orders";
 import { HomePage } from "@/features/home";
-import ReadUser1 from "../features/read/users/ReadUser1";
-import EditUser1 from "../features/edit/user/EditUser1";
-import CreateProduct from "../features/create/CreateProduct";
-import ReadSupplier1 from "../features/read/suppliers/ReadSupplier1";
-import EditSupplier1 from "../features/edit/suppliers/EditSupplier1";
-import ReadProduct1 from "../features/read/products/ReadProduct1";
-import EditProduct1 from "../features/edit/products/EditProduct1";
-import EditOrder from "../features/edit/orders/EditOrder";
-// import DeleteCounter from "@/shared/components/DeleteCounter";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +53,7 @@ const router = createBrowserRouter([
       { path: "productList", element: <ProductListPage /> },
       { path: "inventoryList", element: <InventoryListPage /> },
       { path: "supplierList", element: <SuppliersListPage /> },
+      { path: "orderList", element: <OrderListPage /> },
       { path: "CreateOrder", element: <CreateOrder /> },
       { path: "editorder", element: <EditOrder /> },
       { path: "EditOrder", element: <EditOrder /> },
@@ -109,6 +109,20 @@ const router = createBrowserRouter([
     element: <DashboardLayout />,
     children: [
       { index: true, element: <InventoryListPage /> },
+    ],
+  },
+  {
+    path: "/orderList",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <OrderListPage /> },
+    ],
+  },
+  {
+    path: "/orders",
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <OrderListPage /> },
     ],
   },
   {

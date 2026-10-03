@@ -10,7 +10,7 @@ import { generateUserReport } from "../services/generateUserReport";
 
 
 // Componentes UI reutilizables (design system)
-import { Button, Input, Select, Checkbox } from "@/shared";
+import { Button, Input, Select, Checkbox, Alert } from "@/shared";
 
 // Componente modal para configuración de reportes
 export default function ReportConfigModal({ isOpen, onClose }) {
@@ -18,11 +18,14 @@ export default function ReportConfigModal({ isOpen, onClose }) {
   // Estado del formato de salida
   const [format, setFormat] = useState("pdf");
 
-  // Estado del alcance del reporte
+  // Estado del alcance del reporte: "all", "enabled", "disabled", "document"
   const [scope, setScope] = useState("all");
 
   // Estado para filtro por documento
   const [documentNumber, setDocumentNumber] = useState("");
+
+  // Mensaje de alerta en modal
+  const [alertMessage, setAlertMessage] = useState("");
 
   // Estado de campos seleccionados (inicialización lazy)
   const [selectedFields, setSelectedFields] = useState(() =>
@@ -31,6 +34,7 @@ export default function ReportConfigModal({ isOpen, onClose }) {
 
   // Control de render: si el modal no está abierto, no se monta en el DOM
   if (!isOpen) return null;
+
 
 
   // Handler para activar/desactivar campos del reporte
@@ -63,14 +67,30 @@ export default function ReportConfigModal({ isOpen, onClose }) {
 
   // Handler principal para generar el reporte
   const handleGenerateReport = () => {
+    setAlertMessage("");
+
+    if (!selectedFields.length) {
+      setAlertMessage("Debe seleccionar al menos un campo para incluir en el reporte.");
+      return;
+    }
+
+    if (scope === "document" && !documentNumber.trim()) {
+      setAlertMessage("Debe ingresar el número de documento para el reporte individual.");
+      return;
+    }
 
     // Invoca el caso de uso con la configuración actual
-    generateUserReport({
+    const result = generateUserReport({
       format,
       selectedFields,
       scope,
       documentNumber
     });
+
+    if (result && !result.success) {
+      setAlertMessage(result.message || "No existen datos coincidentes para los filtros seleccionados.");
+      return;
+    }
 
     // Cierra el modal después de generar el reporte
     onClose();
@@ -82,11 +102,23 @@ export default function ReportConfigModal({ isOpen, onClose }) {
     // Overlay del modal
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4">
       {/* Contenedor del modal */}
-      <div className="w-full max-w-md rounded-lg bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] text-[var(--color-white)] px-6 py-6 shadow-xl">
+      <div className="w-full max-w-md rounded-lg bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] px-6 py-6 shadow-xl">
         {/* Título */}
-        <h2 className="mb-6 text-xl font-semibold text-[var(--color-white)]">
+        <h2 className="mb-4 text-xl font-semibold text-[var(--color-white)]">
           Generar reporte de usuarios
         </h2>
+
+        {alertMessage && (
+          <div className="mb-4">
+            <Alert
+              type="warning"
+              title="Atención"
+              message={alertMessage}
+              autoClose={false}
+              onClose={() => setAlertMessage("")}
+            />
+          </div>
+        )}
 
         {/* Selección de formato */}
         <div className="mb-4">
@@ -153,13 +185,22 @@ export default function ReportConfigModal({ isOpen, onClose }) {
                 value: "all"
               },
               {
-                label: "Filtrar por documento",
+                label: "Usuarios habilitados",
+                value: "enabled"
+              },
+              {
+                label: "Usuarios deshabilitados",
+                value: "disabled"
+              },
+              {
+                label: "Individual (por documento)",
                 value: "document"
               }
             ]}
           />
 
         </div>
+
 
 
 

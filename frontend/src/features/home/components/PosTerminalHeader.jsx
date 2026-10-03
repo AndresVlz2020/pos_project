@@ -8,7 +8,7 @@ export default function PosTerminalHeader({
   role = "Cajero" 
 }) {
   return (
-    <header className="w-full bg-[var(--color-primary-950)] border-b border-[var(--color-primary-800)] py-3">
+    <header className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] py-3">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-3">
         {/* Barra superior del POS */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -17,18 +17,10 @@ export default function PosTerminalHeader({
               Punto de Venta
             </h1>
             <div className="flex items-center gap-1.5 text-[11px]">
-              <span className="px-2 py-0.5 rounded bg-[var(--color-primary-800)] text-[var(--color-gray-300)] font-medium border border-[var(--color-primary-700)]">
+              <span className="px-2 py-0.5 rounded bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] font-medium border border-[var(--color-secondary-700)]">
                 {station}
               </span>
-              <span className="px-2 py-0.5 rounded bg-[var(--color-primary-800)] text-[var(--color-secondary-300)] font-medium border border-[var(--color-primary-700)]">
-                Op: {operator}
-              </span>
-              {role && (
-                <span className="px-2 py-0.5 rounded bg-[var(--color-primary-900)] text-[var(--color-secondary-400)] font-semibold border border-[var(--color-primary-800)]">
-                  {role}
-                </span>
-              )}
-              <span className="hidden md:inline-block px-2 py-0.5 rounded bg-[var(--color-primary-900)] text-[var(--color-gray-400)] text-[10px]">
+              <span className="hidden md:inline-block px-2 py-0.5 rounded bg-[var(--color-secondary-900)] text-[var(--color-gray-400)] text-[10px]">
                 {activeShift}
               </span>
             </div>
@@ -38,7 +30,7 @@ export default function PosTerminalHeader({
 
         {/* Métricas Operativas Limpias (KPIs) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-md px-3.5 py-2.5">
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-md px-3.5 py-2.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Venta de Turno
             </p>
@@ -47,7 +39,7 @@ export default function PosTerminalHeader({
             </p>
           </div>
 
-          <div className="bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-md px-3.5 py-2.5">
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-md px-3.5 py-2.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Comandas Cocina
             </p>
@@ -56,7 +48,7 @@ export default function PosTerminalHeader({
             </p>
           </div>
 
-          <div className="bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-md px-3.5 py-2.5">
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-md px-3.5 py-2.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Mesas Ocupadas
             </p>
@@ -65,7 +57,7 @@ export default function PosTerminalHeader({
             </p>
           </div>
 
-          <div className="bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-md px-3.5 py-2.5">
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-md px-3.5 py-2.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Personal Turno
             </p>

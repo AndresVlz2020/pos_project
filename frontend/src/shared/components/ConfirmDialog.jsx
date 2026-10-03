@@ -33,11 +33,11 @@ export function ConfirmDialog({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-fade-in">
-      <div className="w-full max-w-md bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] rounded-lg p-6 shadow-xl text-[var(--color-white)]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+      <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] rounded-xl p-6 shadow-2xl text-[var(--color-white)]">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-lg ${isDestructive ? "bg-red-500/20 text-red-400" : "bg-[var(--color-secondary-500)]/20 text-[var(--color-secondary-400)]"}`}>
+            <div className={`p-2.5 rounded-lg ${isDestructive ? "bg-red-500/20 text-red-400" : "bg-[var(--color-primary-500)]/20 text-[var(--color-primary-400)]"}`}>
               <AlertTriangle className="size-5" />
             </div>
             <h3 className="text-base font-bold text-[var(--color-white)]">{title}</h3>

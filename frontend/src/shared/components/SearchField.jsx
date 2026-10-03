@@ -14,13 +14,13 @@ const sizeStyles = {
 
 const variantStyles = {
     filled: 
-    "bg-[var(--color-primary-900)] text-[var(--color-white)] border border-[var(--color-primary-700)] hover:border-[var(--color-secondary-400)] focus-within:border-[var(--color-secondary-400)] focus-within:ring-2 focus-within:ring-[var(--color-secondary-400)]/30",
+    "bg-[var(--color-secondary-900)] text-[var(--color-white)] border border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] focus-within:border-[var(--color-primary-400)] focus-within:ring-2 focus-within:ring-[var(--color-primary-400)]/30",
 
     outlined: 
-    "bg-[var(--color-primary-950)] text-[var(--color-white)] border border-[var(--color-primary-700)] hover:border-[var(--color-secondary-400)] focus-within:border-[var(--color-secondary-400)]",
+    "bg-[var(--color-secondary-950)] text-[var(--color-white)] border border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] focus-within:border-[var(--color-primary-400)]",
 
     dark:
-    "bg-[var(--color-primary-950)] text-[var(--color-white)] border border-[var(--color-primary-700)] hover:border-[var(--color-secondary-400)] focus-within:border-[var(--color-secondary-400)] focus-within:ring-2 focus-within:ring-[var(--color-secondary-400)]/40 shadow-inner",
+    "bg-[var(--color-secondary-950)] text-[var(--color-white)] border border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] focus-within:border-[var(--color-primary-400)] focus-within:ring-2 focus-within:ring-[var(--color-primary-400)]/40 shadow-inner",
 };
 
 const SearchField = forwardRef(
@@ -71,17 +71,17 @@ const SearchField = forwardRef(
                     disabled && "opacity-60 pointer-events-none",
                     error
                         ? "border-red-500 focus-within:ring-2 focus-within:ring-red-500"
-                        : "focus-within:ring-2 focus-within:ring-[var(--color-secondary-400)]/30",
+                        : "focus-within:ring-2 focus-within:ring-[var(--color-primary-400)]/30",
                     className
                 )}
 
             >
 
                 {loading ? (
-                    <LoaderCircle className="size-5 shrink-0 animate-spin text-[var(--color-secondary-400)]" />
+                    <LoaderCircle className="size-5 shrink-0 animate-spin text-[var(--color-primary-400)]" />
                 ) : (
                     <SearchIcon
-                        className="size-5 shrink-0 text-[var(--color-secondary-400)]"
+                        className="size-5 shrink-0 text-[var(--color-primary-400)]"
                     />
                 )}
 
@@ -103,7 +103,7 @@ const SearchField = forwardRef(
                         type="button"
                         onClick={handleClear}
                         aria-label="Limpia búsqueda"
-                        className="search__clear rounded-full p-1 transition-colors hover:bg-[var(--color-primary-800)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] cursor-pointer"
+                        className="search__clear rounded-full p-1 transition-colors hover:bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] cursor-pointer"
                     >
                         <X className="size-4" />
                     </button>

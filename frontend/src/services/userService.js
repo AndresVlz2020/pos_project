@@ -7,21 +7,28 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api"
  * @returns {Promise<Object>} Respuesta del backend
  */
 export async function createUser(userData) {
-  const response = await fetch(`${API_BASE_URL}/users`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
 
-  const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    throw new Error(data.message || data.error || `Error en el servidor (${response.status})`);
+    if (!response.ok) {
+      throw new Error(data.message || data.error || `Error en el servidor (${response.status})`);
+    }
+
+    return data;
+  } catch (err) {
+    if (err.name === "TypeError" || err.message?.includes("fetch") || err.message?.includes("NetworkError")) {
+      throw new Error("Error inesperado de conexión con el servidor backend.");
+    }
+    throw err;
   }
-
-  return data;
 }
 
 /**
@@ -29,18 +36,25 @@ export async function createUser(userData) {
  * @returns {Promise<Array>} Lista de usuarios
  */
 export async function getUsers() {
-  const response = await fetch(`${API_BASE_URL}/users`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    throw new Error(data.message || data.error || `Error al obtener usuarios (${response.status})`);
+    if (!response.ok) {
+      throw new Error(data.message || data.error || `Error al obtener usuarios (${response.status})`);
+    }
+
+    return data.data || data;
+  } catch (err) {
+    if (err.name === "TypeError" || err.message?.includes("fetch") || err.message?.includes("NetworkError")) {
+      throw new Error("Error inesperado de conexión con el servidor backend.");
+    }
+    throw err;
   }
-
-  return data.data || data;
 }

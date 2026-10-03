@@ -64,8 +64,8 @@ export const TextArea = forwardRef(function TextArea(
         onBlur={onBlur}
         className={clsx(
           "w-full rounded-md px-3.5 py-2.5 text-sm transition-all outline-none resize-none",
-          "bg-[var(--color-primary-950)] text-[var(--color-white)] placeholder:text-[var(--color-gray-400)]",
-          "border border-[var(--color-primary-700)] focus:border-[var(--color-secondary-400)] focus:ring-1 focus:ring-[var(--color-secondary-400)]",
+          "bg-[var(--color-secondary-950)] text-[var(--color-white)] placeholder:text-[var(--color-gray-400)]",
+          "border border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] focus:ring-1 focus:ring-[var(--color-primary-400)]",
           error && "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500",
           disabled && "opacity-50 cursor-not-allowed",
           className

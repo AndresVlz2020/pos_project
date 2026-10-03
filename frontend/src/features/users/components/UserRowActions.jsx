@@ -1,42 +1,23 @@
-// Iconos usados en los botones de acciones
-import { Pencil, Trash2, Eye } from "lucide-react";
-
-// Hook de react router para navegar programáticamente entre rutas
+import { Pencil, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// Componente que renderiza las acciones de cada fila de usuario
-// Recibe como prop el objeto user
 export default function UserRowActions({ user }) {
     const navigate = useNavigate();
-    
-    // Acción para eliminar el usuario
-    const handleDelete = () => {       
-        console.log("Eliminar usuario", user?.id);
-    };
 
     return (
-        // Contenedor de botones de acciones
         <div className="flex gap-2">
             {/* Botón de edición */}
             <button
-                onClick={() => navigate("/edituser")}
-                className="p-2 rounded-lg bg-[var(--color-primary-800)] hover:bg-[var(--color-secondary-500)] text-[var(--color-white)] transition cursor-pointer border border-[var(--color-primary-700)]"
+                onClick={() => navigate("/edituser", { state: { user } })}
+                className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-500)] text-[var(--color-white)] transition cursor-pointer border border-[var(--color-secondary-700)]"
                 title="Editar usuario"
             >
                 <Pencil size={15}/>
             </button>
-            {/* Botón de eliminación */}
-            <button
-                onClick={handleDelete}
-                className="p-2 rounded-lg bg-[var(--color-primary-800)] hover:bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] transition cursor-pointer border border-[var(--color-primary-700)]"
-                title="Eliminar usuario"
-            >     
-                <Trash2 size={15}/>
-            </button>
             {/* Botón de visualización */}
             <button
-                onClick={() => navigate("/readuser")}
-                className="p-2 rounded-lg bg-[var(--color-primary-800)] hover:bg-[var(--color-secondary-600)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] transition cursor-pointer border border-[var(--color-primary-700)]"
+                onClick={() => navigate("/readuser", { state: { user } })}
+                className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-600)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] transition cursor-pointer border border-[var(--color-secondary-700)]"
                 title="Ver usuario"
             >     
                 <Eye size={15}/>

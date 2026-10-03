@@ -21,7 +21,7 @@ export default function PosSectionHeader({
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
         <h2 className="text-lg font-bold text-[var(--color-white)] flex items-center gap-2 font-[family-name:var(--main-font)]">
-          {Icon && <Icon className="size-5 text-[var(--color-secondary-400)] shrink-0" />}
+          {Icon && <Icon className="size-5 text-[var(--color-primary-400)] shrink-0" />}
           <span>{title}</span>
         </h2>
         {subtitle && (
@@ -40,7 +40,7 @@ export default function PosSectionHeader({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder={searchPlaceholder}
-              className="pl-8 pr-3 py-1.5 rounded-md bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] text-xs text-white placeholder:text-[var(--color-gray-400)] outline-none focus:border-[var(--color-secondary-400)] w-60 font-[family-name:var(--main-font)] transition-colors"
+              className="pl-8 pr-3 py-1.5 rounded-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-xs text-white placeholder:text-[var(--color-gray-400)] outline-none focus:border-[var(--color-primary-400)] w-60 font-[family-name:var(--main-font)] transition-colors"
             />
           </div>
         )}
@@ -48,7 +48,7 @@ export default function PosSectionHeader({
         {actionLabel && actionLink && (
           <Link
             to={actionLink}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-primary-800)] hover:bg-[var(--color-primary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-primary-700)] transition-colors font-[family-name:var(--main-font)]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-secondary-700)] transition-colors font-[family-name:var(--main-font)]"
           >
             {ActionIcon && <ActionIcon className="size-3.5" />}
             <span>{actionLabel}</span>
@@ -59,7 +59,7 @@ export default function PosSectionHeader({
           <button
             type="button"
             onClick={onActionClick}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-primary-800)] hover:bg-[var(--color-primary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-primary-700)] transition-colors font-[family-name:var(--main-font)] cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-secondary-700)] transition-colors font-[family-name:var(--main-font)] cursor-pointer"
           >
             {ActionIcon && <ActionIcon className="size-3.5" />}
             <span>{actionLabel}</span>

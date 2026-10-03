@@ -59,22 +59,22 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
             size="md"
             variant="dark"
             fullWidth={true}
-            className="w-full border-[var(--color-primary-700)] hover:border-[var(--color-secondary-400)] shadow-none"
+            className="w-full border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] shadow-none"
           />
         </div>
 
         <div className="flex items-center justify-between sm:justify-end gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-[var(--color-gray-300)] bg-[var(--color-primary-900)] px-3 py-2 rounded-md border border-[var(--color-primary-800)]">
-            <Filter className="size-3.5 text-[var(--color-secondary-400)]" />
+          <div className="flex items-center gap-1.5 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-3 py-2 rounded-md border border-[var(--color-secondary-800)]">
+            <Filter className="size-3.5 text-[var(--color-primary-400)]" />
             <span>Ordenar:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="bg-transparent text-[var(--color-white)] text-xs font-semibold outline-none cursor-pointer"
             >
-              <option value="default" className="bg-[var(--color-primary-950)] text-white">Por Defecto</option>
-              <option value="price-asc" className="bg-[var(--color-primary-950)] text-white">Menor Precio</option>
-              <option value="price-desc" className="bg-[var(--color-primary-950)] text-white">Mayor Precio</option>
+              <option value="default" className="bg-[var(--color-secondary-950)] text-white">Por Defecto</option>
+              <option value="price-asc" className="bg-[var(--color-secondary-950)] text-white">Menor Precio</option>
+              <option value="price-desc" className="bg-[var(--color-secondary-950)] text-white">Mayor Precio</option>
             </select>
           </div>
         </div>
@@ -91,16 +91,16 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
 
       {/* Indicador de Filtro o Búsqueda Activa */}
       {(searchQuery || selectedCategory !== "all") && (
-        <div className="flex items-center justify-between p-2.5 rounded-md bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] text-xs">
+        <div className="flex items-center justify-between p-2.5 rounded-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-xs">
           <span className="text-[var(--color-gray-300)]">
             Mostrando <strong className="text-[var(--color-white)] font-bold">{filteredProducts.length}</strong> productos
-            {searchQuery && <> para <strong className="text-[var(--color-secondary-300)] font-semibold">"{searchQuery}"</strong></>}
-            {selectedCategory !== "all" && <> en categoría <strong className="text-[var(--color-secondary-300)] font-semibold">"{selectedCategory}"</strong></>}
+            {searchQuery && <> para <strong className="text-[var(--color-primary-300)] font-semibold">"{searchQuery}"</strong></>}
+            {selectedCategory !== "all" && <> en categoría <strong className="text-[var(--color-primary-300)] font-semibold">"{selectedCategory}"</strong></>}
           </span>
           <button
             type="button"
             onClick={handleResetFilters}
-            className="text-[var(--color-secondary-300)] hover:text-[var(--color-secondary-200)] hover:underline cursor-pointer font-semibold"
+            className="text-[var(--color-primary-300)] hover:text-[var(--color-primary-200)] hover:underline cursor-pointer font-semibold"
           >
             Restablecer filtros
           </button>
@@ -117,7 +117,7 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
       ) : (
         /* Estado vacío si no hay coincidencias */
         <div className="py-14 text-center max-w-md mx-auto">
-          <div className="size-16 mx-auto rounded-md bg-[var(--color-primary-900)] border border-[var(--color-primary-800)] flex items-center justify-center text-[var(--color-secondary-400)] mb-3">
+          <div className="size-16 mx-auto rounded-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] flex items-center justify-center text-[var(--color-primary-400)] mb-3">
             <SearchX className="size-8" />
           </div>
           <h3 className="text-base font-bold text-[var(--color-white)] mb-1">
@@ -129,7 +129,7 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[var(--color-secondary-500)] hover:bg-[var(--color-secondary-600)] text-xs font-semibold text-[var(--color-white)] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-xs font-semibold text-[var(--color-white)] transition-colors cursor-pointer"
           >
             Ver todos los productos
           </button>

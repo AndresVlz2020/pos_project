@@ -39,12 +39,12 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between pb-3 border-b border-[var(--color-primary-800)]">
+      <div className="flex items-center justify-between pb-3 border-b border-[var(--color-secondary-800)]">
         <div>
           <p className="text-xs font-bold text-[var(--color-white)] leading-tight">
             {selectedStaff.userName || selectedStaff.name}
           </p>
-          <p className="text-[11px] text-[var(--color-secondary-400)] font-medium mt-0.5">
+          <p className="text-[11px] text-[var(--color-primary-400)] font-medium mt-0.5">
             {formatRole(selectedStaff.role)}
           </p>
         </div>
@@ -52,7 +52,7 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-secondary-400)] hover:underline cursor-pointer"
+          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-primary-400)] hover:underline cursor-pointer"
         >
           <ArrowLeft className="size-3" />
           <span>Cambiar</span>
@@ -69,8 +69,8 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
                 key={index}
                 className={`size-3.5 rounded-full transition-all duration-150 ${
                   isFilled
-                    ? "bg-[var(--color-secondary-500)] scale-110"
-                    : "border-2 border-[var(--color-primary-700)] bg-[var(--color-primary-950)]"
+                    ? "bg-[var(--color-primary-500)] scale-110"
+                    : "border-2 border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)]"
                 }`}
               />
             );
@@ -90,7 +90,7 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
             key={num}
             type="button"
             onClick={() => handleNumpadPress(num.toString())}
-            className="bg-[var(--color-primary-800)] hover:bg-[var(--color-primary-700)] border border-[var(--color-primary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
+            className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
           >
             {num}
           </button>
@@ -100,7 +100,7 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
           type="button"
           onClick={handleNumpadDelete}
           aria-label="Borrar dígito"
-          className="bg-[var(--color-primary-800)] hover:bg-[var(--color-primary-700)] border border-[var(--color-primary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
+          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
         >
           <Delete className="size-5" />
         </button>
@@ -108,7 +108,7 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
         <button
           type="button"
           onClick={() => handleNumpadPress("0")}
-          className="bg-[var(--color-primary-800)] hover:bg-[var(--color-primary-700)] border border-[var(--color-primary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
+          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
         >
           0
         </button>
@@ -117,7 +117,7 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
           type="button"
           onClick={handleConfirm}
           aria-label="Confirmar PIN"
-          className="bg-[var(--color-secondary-500)] hover:bg-[var(--color-secondary-600)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
+          className="bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
         >
           <Check className="size-6" />
         </button>

@@ -60,15 +60,18 @@ export default function StatusSwitch({
 
   return (
 
-    // Botón que funciona como switch
+    // Botón que funciona como switch con accesibilidad Material Design
     <button
       type="button"
+      role="switch"
+      aria-checked={isActive}
+      aria-label={isActive ? "Habilitado / Activo" : "Inhabilitado / Inactivo"}
       onClick={handleToggle}    // Evento que cambia el estado
       disabled={disabled}       // Permite deshabilitar el botón
       className={`
-        relative inline-flex items-center rounded-full transition-colors
+        relative inline-flex items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/40
         ${sizes[size]}
-        ${isActive ? "bg-[var(--color-secondary-500)]" : "bg-[var(--color-primary-700)]"}
+        ${isActive ? "bg-[var(--color-primary-500)]" : "bg-[var(--color-secondary-700)]"}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
     >
@@ -90,9 +93,9 @@ export default function StatusSwitch({
           ✕ inactivo
         */}
         {isActive ? (
-          <Check size={12} className="text-[var(--color-primary-950)]" />
+          <Check size={12} className="text-[var(--color-secondary-950)]" />
         ) : (
-          <X size={12} className="text-[var(--color-primary-700)]" />
+          <X size={12} className="text-[var(--color-secondary-700)]" />
         )}
       </span>
 

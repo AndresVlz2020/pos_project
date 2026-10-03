@@ -1,0 +1,10 @@
+export * from "../layouts/AuthLayout";
+export * from "../layouts/DashboardLayout";
+export * from "../layouts/MainLayout";
+export * from "../layouts/Navbar";
+export * from "../layouts/Footer";
+export { default as AuthLayout } from "../layouts/AuthLayout";
+export { default as DashboardLayout } from "../layouts/DashboardLayout";
+export { default as MainLayout } from "../layouts/MainLayout";
+export { default as Navbar } from "../layouts/Navbar";
+export { default as Footer } from "../layouts/Footer";
