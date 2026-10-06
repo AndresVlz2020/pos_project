@@ -3,9 +3,20 @@ import { pool } from "../../config/db.js";
 export const authRepository = {
   async findByEmail(userEmail) {
     const query = `
-      SELECT id, user_name, user_email, COALESCE(user_password, '') AS password, is_active, is_staff, is_superuser
+      SELECT 
+        id, 
+        user_name, 
+        user_email, 
+        corporate_email,
+        COALESCE(user_password, '') AS password, 
+        pin,
+        user_type,
+        is_active, 
+        is_staff, 
+        is_superuser
       FROM users
-      WHERE user_email = $1
+      WHERE LOWER(TRIM(user_email)) = LOWER(TRIM($1))
+         OR LOWER(TRIM(COALESCE(corporate_email, ''))) = LOWER(TRIM($1))
       LIMIT 1;
     `;
     const result = await pool.query(query, [userEmail]);
@@ -21,5 +32,43 @@ export const authRepository = {
     `;
     const result = await pool.query(query, [hashedPassword, userId]);
     return result.rows[0];
+  },
+
+  async saveResetCode(userId, email, code, expiresAt) {
+    // Invalida códigos anteriores no usados para este usuario
+    await pool.query(
+      `UPDATE password_reset_codes SET used = true WHERE user_id = $1 AND used = false`,
+      [userId]
+    );
+
+    const query = `
+      INSERT INTO password_reset_codes (user_id, email, code, expires_at)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, code, expires_at;
+    `;
+    const result = await pool.query(query, [userId, email, code, expiresAt]);
+    return result.rows[0];
+  },
+
+  async findValidResetCode(email, code) {
+    const query = `
+      SELECT id, user_id, email, code, expires_at
+      FROM password_reset_codes
+      WHERE LOWER(TRIM(email)) = LOWER(TRIM($1))
+        AND code = $2
+        AND used = false
+        AND expires_at > NOW()
+      ORDER BY id DESC
+      LIMIT 1;
+    `;
+    const result = await pool.query(query, [email, String(code).trim()]);
+    return result.rows[0];
+  },
+
+  async markCodeAsUsed(codeId) {
+    await pool.query(
+      `UPDATE password_reset_codes SET used = true WHERE id = $1`,
+      [codeId]
+    );
   }
 };

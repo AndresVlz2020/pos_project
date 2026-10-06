@@ -81,9 +81,9 @@ export default function Login() {
       navigate("/dashboard/userList");
       return { success: true };
     } catch (err) {
-      console.warn("Backend login failed or unreachable, checking local credentials fallback:", err.message);
+      console.warn("Backend login failed or unreachable:", err.message);
 
-      // Verificamos credenciales locales de contingencia
+      // Verificamos credenciales locales de contingencia en caso de que el backend esté offline
       if (emailClean === "admin@dpiero.com" && form.userPassword === "12345678") {
         localStorage.removeItem(attemptsKey);
         const adminSession = {
@@ -100,7 +100,20 @@ export default function Login() {
         return { success: true };
       }
 
-      // Si falla, incrementar contador de intentos fallidos
+      // Si fue error de red/servidor apagado, NO penalizar el contador de intentos de contraseña
+      if (err.isNetworkError) {
+        await showErrorAlert({
+          title: "Servidor Desconectado",
+          text: "No se pudo conectar con el servidor backend en http://localhost:4000. Por favor, inicia el backend en una terminal ('npm run dev')."
+        });
+        return {
+          errors: {
+            userEmail: "Servidor backend no disponible en el puerto 4000."
+          }
+        };
+      }
+
+      // Si falla por credenciales inválidas (401), incrementar contador de intentos fallidos
       const newAttempts = currentAttempts + 1;
       localStorage.setItem(attemptsKey, String(newAttempts));
 

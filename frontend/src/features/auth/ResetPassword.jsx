@@ -1,37 +1,52 @@
 import { useState } from "react";
 import { Input, Button, Alert, BrandLogo } from "@/shared";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { resetPasswordApi } from "@/services/authService";
+import { resetPasswordApi, forgotPasswordApi } from "@/services/authService";
 import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
+import { KeyRound, Mail, ShieldCheck } from "lucide-react";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
+  const initialEmail = searchParams.get("email") || "";
 
   const [form, setForm] = useState({
+    email: initialEmail,
+    code: "",
     password: "",
     confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [tokenError, setTokenError] = useState(!token || token === "expired");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
 
   const validate = () => {
     const errs = {};
+
+    if (!form.email || !form.email.trim()) {
+      errs.email = "El correo electrónico es requerido";
+    }
+
+    const cleanCode = form.code.trim();
+    if (!cleanCode) {
+      errs.code = "Ingresa el código de 6 dígitos que llegó a tu correo";
+    } else if (!/^\d{6}$/.test(cleanCode)) {
+      errs.code = "El código debe contener exactamente 6 números";
+    }
+
     if (!form.password) {
-      errs.password = "La contraseña es requerida";
+      errs.password = "La nueva contraseña es requerida";
     } else if (form.password.length < 10) {
       errs.password = "Debe tener al menos 10 caracteres";
     } else if (!/[A-Z]/.test(form.password)) {
-      errs.password = "Debe incluir al menos una mayúscula";
+      errs.password = "Debe incluir al menos una letra mayúscula";
     } else if (!/[a-z]/.test(form.password)) {
-      errs.password = "Debe incluir al menos una minúscula";
+      errs.password = "Debe incluir al menos una letra minúscula";
     } else if (!/[0-9]/.test(form.password)) {
       errs.password = "Debe incluir al menos un número";
     } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(form.password)) {
-      errs.password = "Debe incluir un símbolo especial (!@#$...)";
+      errs.password = "Debe incluir al menos un símbolo especial (!@#$...)";
     }
 
     if (!form.confirmPassword) {
@@ -44,118 +59,183 @@ export default function ResetPassword() {
     return Object.keys(errs).length === 0;
   };
 
+  const handleResendCode = async () => {
+    if (!form.email || !form.email.trim()) {
+      setErrors((prev) => ({ ...prev, email: "Ingresa tu correo para reenviar el código" }));
+      return;
+    }
+
+    setIsResending(true);
+    setResendMessage("");
+    try {
+      await forgotPasswordApi(form.email.trim().toLowerCase());
+      setResendMessage("¡Nuevo código de 6 dígitos enviado! Revisa tu bandeja de entrada.");
+    } catch (err) {
+      setResendMessage("");
+      await showErrorAlert({
+        title: "Error al reenviar",
+        text: err.message || "No se pudo reenviar el código."
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (tokenError) return;
     if (!validate()) return;
 
     setIsSubmitting(true);
     try {
-      await resetPasswordApi(token, form.password);
-      await showSuccessAlert({
-        title: "Contraseña actualizada",
-        text: "Tu nueva contraseña ha sido guardada correctamente. Ya puedes iniciar sesión.",
+      await resetPasswordApi({
+        email: form.email.trim().toLowerCase(),
+        code: form.code.trim(),
+        newPassword: form.password,
       });
+
+      await showSuccessAlert({
+        title: "¡Contraseña Actualizada!",
+        text: "Tu nueva clave de acceso ha sido guardada en la base de datos. Ya puedes iniciar sesión.",
+      });
+
       navigate("/Auth");
     } catch (err) {
-      if (err.message?.includes("expirado") || err.message?.includes("inválido")) {
-        setTokenError(true);
-      } else {
-        await showErrorAlert({
-          title: "Error inesperado",
-          text: err.message || "Error al actualizar la contraseña en el servidor.",
-        });
-      }
+      await showErrorAlert({
+        title: "Código o Datos Inválidos",
+        text: err.message || "El código de verificación no coincide o ha expirado.",
+      });
+      setErrors((prev) => ({
+        ...prev,
+        code: err.message || "Código inválido o expirado",
+      }));
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (tokenError) {
-    return (
-      <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8">
-        <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-red-500/50 rounded-lg p-8 shadow-lg text-[var(--color-white)] text-center">
-          <Alert
-            type="error"
-            title="Enlace vencido o inválido"
-            message="El enlace de recuperación ha caducado o no es válido. Por favor solicita uno nuevo."
-            autoClose={false}
-          />
-          <div className="mt-6">
-            <Link to="/Auth/forgot-password">
-              <Button variant="primary" size="md" className="w-full">
-                Solicitar Nuevo Enlace
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8">
-      <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-8 shadow-lg text-[var(--color-white)] relative z-10">
+      <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-2xl p-8 shadow-2xl text-[var(--color-white)] relative z-10">
         <div className="flex flex-col items-center text-center mb-6">
           <BrandLogo className="h-10 w-auto object-contain mb-3" alt="D,PIERO" />
-          <h2 className="text-xl font-bold text-[var(--color-white)]">Nueva Contraseña</h2>
+          <div className="flex items-center gap-2 justify-center mb-1">
+            <ShieldCheck className="size-5 text-[var(--color-primary-400)]" />
+            <h2 className="text-xl font-bold text-[var(--color-white)]">Verificación de Código</h2>
+          </div>
           <p className="text-xs text-[var(--color-gray-400)] mt-1">
-            Ingresa tu nueva clave de acceso de mínimo 10 caracteres con mayúscula, minúscula, número y símbolo.
+            Revisa tu correo electrónico e ingresa el código de 6 dígitos junto con tu nueva contraseña.
           </p>
         </div>
 
-        {isSuccess ? (
-          <div className="space-y-4 text-center">
-            <Alert
-              type="success"
-              title="Contraseña actualizada"
-              message="Tu contraseña ha sido restablecida exitosamente. Redirigiendo al login..."
-              autoClose={false}
-            />
+        {resendMessage && (
+          <div className="mb-4">
+            <Alert type="success" title="Código Reenviado" message={resendMessage} autoClose={true} />
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-[var(--color-gray-300)] mb-1.5">
+              Correo Electrónico
+            </label>
+            <div className="relative">
+              <Mail className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-gray-400)]" />
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => {
+                  setForm({ ...form, email: e.target.value });
+                  if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+                }}
+                placeholder="correo@ejemplo.com"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-white)] text-xs border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-500)]"
+              />
+            </div>
+            {errors.email && <p className="text-[11px] text-red-400 mt-1">{errors.email}</p>}
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--color-gray-300)] mb-1.5">
+              Código de Seguridad (6 dígitos del correo)
+            </label>
+            <div className="relative">
+              <KeyRound className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-primary-400)]" />
+              <input
+                type="text"
+                maxLength={6}
+                value={form.code}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  setForm({ ...form, code: val });
+                  if (errors.code) setErrors((prev) => ({ ...prev, code: "" }));
+                }}
+                placeholder="123456"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-primary-400)] font-mono text-base font-bold tracking-[0.3em] border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-600)] placeholder:tracking-normal placeholder:font-sans"
+              />
+            </div>
+            {errors.code && <p className="text-[11px] text-red-400 mt-1">{errors.code}</p>}
+          </div>
+
+          <div>
             <Input
               label="Nueva Contraseña"
               name="password"
               type="password"
               value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, password: e.target.value });
+                if (errors.password) setErrors((prev) => ({ ...prev, password: "" }));
+              }}
               placeholder="Mínimo 10 caracteres seguros"
               htmlFor="reset-password"
               error={errors.password}
             />
+          </div>
 
+          <div>
             <Input
               label="Confirmar Contraseña"
               name="confirmPassword"
               type="password"
               value={form.confirmPassword}
-              onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, confirmPassword: e.target.value });
+                if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: "" }));
+              }}
               placeholder="Repite la contraseña"
               htmlFor="reset-confirm-password"
               error={errors.confirmPassword}
             />
+          </div>
 
-            <Button
-              variant="primary"
-              size="md"
-              type="submit"
-              className="w-full mt-2"
+          <Button
+            variant="primary"
+            size="md"
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full mt-2"
+          >
+            {isSubmitting ? "Verificando y Guardando..." : "Validar Código y Guardar Contraseña"}
+          </Button>
+
+          <div className="flex items-center justify-between pt-2 text-xs">
+            <button
+              type="button"
+              onClick={handleResendCode}
+              disabled={isResending}
+              className="text-[var(--color-primary-400)] hover:underline cursor-pointer disabled:opacity-50"
             >
-              Guardar Nueva Contraseña
-            </Button>
+              {isResending ? "Reenviando..." : "¿No recibiste el código? Reenviar"}
+            </button>
 
-            <div className="text-center mt-4">
-              <Link
-                to="/Auth"
-                className="text-xs text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline"
-              >
-                ← Cancelar y volver al Login
-              </Link>
-            </div>
-          </form>
-        )}
+            <Link
+              to="/Auth"
+              className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] transition-colors"
+            >
+              Volver al Login
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );

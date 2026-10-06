@@ -9,21 +9,32 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api"
  * @returns {Promise<Object>} { message, token, user }
  */
 export async function loginApi({ email, password }) {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-  const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    throw new Error(data.error || data.message || `Error al iniciar sesión (${response.status})`);
+    if (!response.ok) {
+      const err = new Error(data.error || data.message || `Error al iniciar sesión (${response.status})`);
+      err.status = response.status;
+      throw err;
+    }
+
+    return data;
+  } catch (err) {
+    if (err.name === "TypeError" || err.message?.includes("fetch")) {
+      const netErr = new Error("No se pudo conectar con el servidor backend (puerto 4000).");
+      netErr.isNetworkError = true;
+      throw netErr;
+    }
+    throw err;
   }
-
-  return data;
 }
 
 /**
@@ -57,19 +68,23 @@ export async function forgotPasswordApi(email) {
 }
 
 /**
- * Establece la nueva contraseña usando el token seguro
- * @param {string} token
- * @param {string} newPassword
+ * Establece la nueva contraseña usando el código de 6 dígitos enviado por correo
+ * @param {Object|string} params - { email, code, newPassword } o token
+ * @param {string} [maybePassword] - newPassword si params es token
  * @returns {Promise<Object>}
  */
-export async function resetPasswordApi(token, newPassword) {
+export async function resetPasswordApi(params, maybePassword) {
   try {
+    const payload = typeof params === "object"
+      ? params
+      : { token: params, newPassword: maybePassword };
+
     const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ token, newPassword }),
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json().catch(() => ({}));

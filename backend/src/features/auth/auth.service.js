@@ -7,31 +7,45 @@ import { sendPasswordResetEmail } from "./email.service.js";
 
 export const authService = {
   async login({ email, password }) {
-    const user = await authRepository.findByEmail(email);
-    console.log("USER ENCONTRADO:", user);
+    if (!email || !password) {
+      throw new Error("El correo y la contraseña son requeridos");
+    }
+
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanPassword = String(password).trim();
+
+    const user = await authRepository.findByEmail(cleanEmail);
+    console.log("USER ENCONTRADO:", user ? { id: user.id, email: user.user_email, type: user.user_type } : null);
 
     if (!user) {
       throw new Error("Credenciales inválidas");
     }
 
-    // Comparar password con bcrypt (soporta hashes y fallback a texto plano si fue sembrado directo)
-    let isMatch = false;
-    try {
-      isMatch = await bcrypt.compare(password, user.password);
-    } catch {
-      isMatch = false;
+    if (!user.is_active) {
+      throw new Error("Usuario inactivo");
     }
 
-    if (!isMatch && password === user.password) {
+    // 1. Comparar password con bcrypt (soporta hashes y fallback a texto plano si fue sembrado directo)
+    let isMatch = false;
+    if (user.password && user.password.length > 0) {
+      try {
+        isMatch = await bcrypt.compare(cleanPassword, user.password);
+      } catch {
+        isMatch = false;
+      }
+
+      if (!isMatch && cleanPassword === user.password) {
+        isMatch = true;
+      }
+    }
+
+    // 2. Soporte para personal operativo (mesero, cajero, cocina) cuyo acceso principal es por PIN
+    if (!isMatch && user.pin && cleanPassword === String(user.pin).trim()) {
       isMatch = true;
     }
 
     if (!isMatch) {
       throw new Error("Credenciales inválidas");
-    }
-
-    if (!user.is_active) {
-      throw new Error("Usuario inactivo");
     }
 
     const token = jwt.sign(
@@ -40,13 +54,23 @@ export const authService = {
       { expiresIn: process.env.JWT_EXPIRES || "1h" }
     );
 
+    // Formatear rol según user_type real de la BD
+    let role = "Staff";
+    if (user.is_superuser || user.user_type === "admin" || user.user_type === "Admin") {
+      role = "Admin";
+    } else if (user.user_type) {
+      role = user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1).toLowerCase();
+    } else if (user.is_staff) {
+      role = "Mesero";
+    }
+
     return {
       token,
       user: {
         id: user.id,
         email: user.user_email,
         name: user.user_name,
-        role: user.is_superuser ? "Admin" : (user.is_staff ? "Mesero" : "Cajero"),
+        role,
       },
     };
   },
@@ -56,55 +80,81 @@ export const authService = {
       throw new Error("El correo electrónico es requerido");
     }
 
-    const user = await authRepository.findByEmail(email.trim().toLowerCase());
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await authRepository.findByEmail(cleanEmail);
     if (!user) {
       throw new Error("No existe ningún usuario registrado con ese correo");
     }
 
-    const resetToken = jwt.sign(
-      { id: user.id, email: user.user_email, purpose: "reset_password" },
-      process.env.JWT_SECRET || "mi_clave_super_segura",
-      { expiresIn: "15m" }
-    );
+    // Generar código numérico seguro de 6 dígitos
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
 
-    const frontendBase = process.env.FRONTEND_URL || "http://localhost:5173";
-    const fullResetUrl = `${frontendBase}/Auth/reset-password?token=${resetToken}`;
+    await authRepository.saveResetCode(user.id, user.user_email, code, expiresAt);
 
     await sendPasswordResetEmail({
       to: user.user_email,
-      resetUrl: fullResetUrl,
+      code,
     });
 
     return {
-      message: `Enlace de restablecimiento generado y enviado a ${user.user_email}`,
-      resetToken,
-      resetUrl: `/Auth/reset-password?token=${resetToken}`
+      success: true,
+      message: `Código de verificación de 6 dígitos enviado a ${user.user_email}.`,
+      email: user.user_email,
     };
   },
 
-  async resetPassword({ token, newPassword }) {
-    if (!token) {
-      throw new Error("Token de recuperación no proporcionado");
-    }
+  async resetPassword({ email, code, token, newPassword }) {
     if (!newPassword || newPassword.length < 10) {
       throw new Error("La nueva contraseña debe tener al menos 10 caracteres");
     }
 
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || "mi_clave_super_segura");
-    } catch {
-      throw new Error("El enlace de recuperación es inválido o ha expirado");
-    }
+    let targetUserId = null;
+    let codeRecordId = null;
 
-    if (decoded.purpose !== "reset_password") {
-      throw new Error("Token no válido para restablecimiento");
+    // Método principal: Código de verificación de 6 dígitos
+    if (email && code) {
+      const cleanEmail = String(email).trim().toLowerCase();
+      const cleanCode = String(code).trim();
+
+      if (cleanCode.length !== 6) {
+        throw new Error("El código de verificación debe tener exactamente 6 dígitos");
+      }
+
+      const validCodeRecord = await authRepository.findValidResetCode(cleanEmail, cleanCode);
+      if (!validCodeRecord) {
+        throw new Error("Código de verificación inválido o expirado. Solicita un nuevo código.");
+      }
+
+      targetUserId = validCodeRecord.user_id;
+      codeRecordId = validCodeRecord.id;
+    } else if (token) {
+      // Método de compatibilidad por token
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET || "mi_clave_super_segura");
+      } catch {
+        throw new Error("El enlace o token de recuperación es inválido o ha expirado");
+      }
+
+      if (decoded.purpose !== "reset_password") {
+        throw new Error("Token no válido para restablecimiento");
+      }
+
+      targetUserId = decoded.id;
+    } else {
+      throw new Error("Debes proporcionar tu correo y el código de verificación de 6 dígitos");
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const updatedUser = await authRepository.updatePassword(decoded.id, hashedPassword);
+    const updatedUser = await authRepository.updatePassword(targetUserId, hashedPassword);
+
+    if (codeRecordId) {
+      await authRepository.markCodeAsUsed(codeRecordId);
+    }
 
     return {
+      success: true,
       message: "Contraseña actualizada exitosamente",
       user: updatedUser
     };

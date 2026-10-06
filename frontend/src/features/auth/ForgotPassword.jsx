@@ -28,8 +28,7 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      const data = await forgotPasswordApi(email.trim().toLowerCase());
-      setResetToken(data.resetToken || "");
+      await forgotPasswordApi(email.trim().toLowerCase());
       setIsSubmitted(true);
     } catch (err) {
       setError(err.message || "Error al procesar la solicitud.");
@@ -46,7 +45,7 @@ export default function ForgotPassword() {
           <BrandLogo className="h-10 w-auto object-contain mb-3" alt="D,PIERO" />
           <h2 className="text-xl font-bold text-[var(--color-white)]">Recuperar Contraseña</h2>
           <p className="text-xs text-[var(--color-gray-400)] mt-1">
-            Ingresa tu correo registrado para restablecer tu clave de acceso en el sistema.
+            Ingresa tu correo registrado para recibir un código de seguridad de 6 dígitos.
           </p>
         </div>
 
@@ -54,14 +53,14 @@ export default function ForgotPassword() {
           <div className="space-y-4">
             <Alert
               type="success"
-              title="¡Correo Enviado Exitosamente!"
-              message={`Hemos enviado un correo a ${email} con el enlace de recuperación. Revisa tu bandeja de entrada o haz clic abajo para continuar.`}
+              title="¡Código de 6 Dígitos Enviado!"
+              message={`Hemos enviado un código de verificación a ${email}. Abre tu bandeja de entrada de correo y cópialo para continuar.`}
               autoClose={false}
             />
 
-            <Link to={`/Auth/reset-password?token=${resetToken}`}>
+            <Link to={`/Auth/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}`}>
               <Button variant="primary" size="md" className="w-full">
-                Continuar y Crear Nueva Contraseña
+                Ingresar Código de 6 Dígitos →
               </Button>
             </Link>
 
@@ -94,7 +93,7 @@ export default function ForgotPassword() {
               disabled={isLoading}
               className="w-full mt-2"
             >
-              {isLoading ? "Enviando enlace..." : "Enviar Enlace de Recuperación"}
+              {isLoading ? "Enviando código..." : "Enviar Código de Seguridad al Correo"}
             </Button>
 
             <div className="text-center mt-4">

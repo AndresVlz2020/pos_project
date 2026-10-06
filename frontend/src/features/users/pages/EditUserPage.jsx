@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Input, Select, Button, FileInput, showSuccessAlert, showErrorAlert } from "@/shared";
 import { getDocumentTypes } from "../../../services/selectServices";
+import { updateUser } from "../../../services/userService";
 import { createUserSchema } from "../schemas/userSchema";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
@@ -100,12 +101,22 @@ export default function EditUser1() {
       return;
     }
 
-    setErrors({});
-    await showSuccessAlert({
-      title: "Usuario actualizado",
-      text: "La información del colaborador ha sido actualizada correctamente."
-    });
-    navigate("/dashboard/userList");
+    try {
+      if (editUser?.id) {
+        await updateUser(editUser.id, formToValidate);
+      }
+      setErrors({});
+      await showSuccessAlert({
+        title: "Usuario actualizado",
+        text: "La información del colaborador ha sido actualizada correctamente en el sistema."
+      });
+      navigate("/dashboard/userList");
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error al actualizar",
+        text: err.message || "No se pudo actualizar el usuario en el servidor."
+      });
+    }
   };
 
   if (!isAdmin) {

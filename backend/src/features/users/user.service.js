@@ -35,6 +35,19 @@ export const userService = {
         });
     },
 
+    // Método para actualizar un usuario
+    async update(id, data) {
+        let hashedPassword = null;
+        if (data.userPassword && data.userPassword.trim() !== "" && data.userPassword !== "Password12345#") {
+            hashedPassword = await bcrypt.hash(data.userPassword, 10);
+        }
+
+        return await userRepository.update(id, {
+            ...data,
+            userPassword: hashedPassword,
+        });
+    },
+
     // Alias compatible
     async createUser(data) {
         return await this.create(data);

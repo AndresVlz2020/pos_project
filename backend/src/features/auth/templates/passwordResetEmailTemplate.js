@@ -74,6 +74,35 @@ export function EmailButton({
 }
 
 /**
+ * Componente: Cuadro destacado del código de 6 dígitos
+ */
+export function EmailVerificationCode({ code } = {}) {
+  const { colors } = EMAIL_DESIGN_TOKENS;
+  return `
+    <div style="text-align: center; margin: 28px 0; padding: 22px 16px; background-color: rgba(234, 88, 12, 0.08); border: 2px dashed ${colors.primaryLight}; border-radius: 12px;">
+      <p style="color: ${colors.textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 10px 0;">
+        Tu Código de Verificación
+      </p>
+      <div style="
+        font-family: 'Courier New', Courier, monospace, sans-serif;
+        font-size: 38px;
+        font-weight: 800;
+        letter-spacing: 12px;
+        color: ${colors.primaryLight};
+        text-shadow: 0 2px 10px rgba(249, 115, 22, 0.3);
+        margin: 0;
+        padding-left: 12px;
+      ">
+        ${code}
+      </div>
+      <p style="color: ${colors.textFooter}; font-size: 11px; margin: 10px 0 0 0;">
+        Ingresa este código de 6 dígitos en la pantalla de recuperación
+      </p>
+    </div>
+  `;
+}
+
+/**
  * Componente: Pie de página con vigencia y nota de seguridad
  */
 export function EmailFooter({
@@ -83,7 +112,7 @@ export function EmailFooter({
   return `
     <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid ${colors.borderCard};">
       <p style="color: ${colors.textFooter}; font-size: 11px; line-height: 1.5; margin: 0 0 6px 0;">
-        ⏱️ Este enlace es de un solo uso y vencerá en <strong>${expirationMinutes} minutos</strong> por seguridad.
+        ⏱️ Este código es de un solo uso y vencerá en <strong>${expirationMinutes} minutos</strong> por seguridad.
       </p>
       <p style="color: ${colors.textFooter}; font-size: 11px; line-height: 1.5; margin: 0;">
         Si no solicitaste este cambio, puedes ignorar este mensaje de forma segura; tu cuenta no sufrirá modificaciones.
@@ -97,14 +126,14 @@ export function EmailFooter({
  */
 export function generatePasswordResetEmailHtml({
   to,
-  resetUrl,
+  code,
   brandName = EMAIL_DESIGN_TOKENS.brandName,
   expirationMinutes = EMAIL_DESIGN_TOKENS.config.expirationMinutes,
 } = {}) {
   const { colors, typography } = EMAIL_DESIGN_TOKENS;
 
   const header = EmailHeader({ brandName });
-  const button = EmailButton({ href: resetUrl });
+  const codeBox = EmailVerificationCode({ code });
   const footer = EmailFooter({ expirationMinutes });
 
   return `
@@ -113,7 +142,7 @@ export function generatePasswordResetEmailHtml({
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Restablecer Contraseña - ${brandName}</title>
+      <title>Código de Recuperación - ${brandName}</title>
     </head>
     <body style="margin: 0; padding: 24px 12px; background-color: ${colors.bgApp}; font-family: ${typography.fontFamily};">
       <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -125,11 +154,11 @@ export function generatePasswordResetEmailHtml({
                   ${header}
 
                   <h3 style="color: ${colors.textWhite}; font-size: 16px; margin: 0 0 10px 0; font-weight: 600;">
-                    Recuperación de Contraseña
+                    Código para Restablecer Contraseña
                   </h3>
 
                   <p style="color: ${colors.textMuted}; font-size: 13.5px; line-height: 1.6; margin: 0 0 8px 0;">
-                    Hemos recibido una solicitud para restablecer la contraseña de acceso asociada a tu cuenta:
+                    Hemos recibido una solicitud para cambiar la contraseña de tu cuenta:
                   </p>
 
                   <div style="background-color: rgba(27, 34, 70, 0.5); border-left: 3px solid ${colors.primaryLight}; padding: 8px 12px; margin: 12px 0; border-radius: 4px;">
@@ -139,10 +168,10 @@ export function generatePasswordResetEmailHtml({
                   </div>
 
                   <p style="color: ${colors.textMuted}; font-size: 13px; line-height: 1.5; margin: 0;">
-                    Para continuar y configurar una nueva clave de acceso en el sistema, pulsa el siguiente botón:
+                    Usa el siguiente código de seguridad en el sistema para autorizar el cambio de tu contraseña:
                   </p>
 
-                  ${button}
+                  ${codeBox}
 
                   ${footer}
                 </td>

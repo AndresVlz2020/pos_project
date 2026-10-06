@@ -58,3 +58,34 @@ export async function getUsers() {
     throw err;
   }
 }
+
+/**
+ * Actualiza un usuario existente en el backend
+ * @param {number|string} id - ID del usuario
+ * @param {Object} userData - Datos a actualizar
+ * @returns {Promise<Object>} Respuesta del backend
+ */
+export async function updateUser(id, userData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || data.error || `Error al actualizar usuario (${response.status})`);
+    }
+
+    return data.data || data;
+  } catch (err) {
+    if (err.name === "TypeError" || err.message?.includes("fetch") || err.message?.includes("NetworkError")) {
+      throw new Error("Error inesperado de conexión con el servidor backend.");
+    }
+    throw err;
+  }
+}

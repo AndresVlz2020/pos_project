@@ -19,5 +19,9 @@ router.post("/", userController.create);
 // GET /api/users
 router.get("/", userController.getAll);
 
+// Definimos la ruta para actualizar un usuario
+// PUT /api/users/:id
+router.put("/:id", userController.update);
+
 // Exportamos el router para ser registrado en la aplicación principal
 export default router;

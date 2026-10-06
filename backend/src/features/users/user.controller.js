@@ -31,6 +31,30 @@ export const userController = {
         }
     },
 
+    // Método encargado de actualizar un usuario existente
+    async update(req, res) {
+        const { id } = req.params;
+        console.log(`📥 [Backend] PUT /api/users/${id} - Datos recibidos:`, req.body);
+
+        try {
+            const user = await userService.update(id, req.body);
+
+            res.status(200).json({
+                success: true,
+                message: "Usuario actualizado correctamente",
+                data: user,
+            });
+        } catch (err) {
+            console.error("❌ [Backend Error]:", err.message);
+
+            res.status(500).json({
+                success: false,
+                message: "Error al actualizar el usuario",
+                error: err.message,
+            });
+        }
+    },
+
     // Método encargado de listar todos los usuarios
     async getAll(req, res) {
         console.log("📥 [Backend] GET /api/users");
