@@ -2,13 +2,51 @@
 // Este pool es una instancia compartida configurada en la capa de infraestructura.
 import { pool } from "../../config/db.js";
 
+function resolveGroupNameFromUserType(userType, isSuper) {
+    if (isSuper) return "Administrador";
+    const t = String(userType || "").toLowerCase();
+    if (t.includes("admin")) return "Administrador";
+    if (t.includes("caj")) return "Cajero";
+    if (t.includes("cocin") || t.includes("parrill")) return "Cocina";
+    return "Mesero";
+}
+
 // Exportamos el repositorio de usuarios
 // El repository encapsula todas las consultas SQL relacionadas con users.
 export const userRepository = {
+    async syncUserGroup(userId, userType, isSuper) {
+        try {
+            const groupName = resolveGroupNameFromUserType(userType, isSuper);
+            const groupRes = await pool.query(
+                `SELECT group_id FROM groups WHERE group_name = $1 LIMIT 1`,
+                [groupName]
+            );
+            const groupId = groupRes.rows[0]?.group_id;
+            if (!groupId) return;
+
+            await pool.query(`DELETE FROM user_groups WHERE user_id = $1`, [userId]);
+            await pool.query(
+                `INSERT INTO user_groups (user_id, group_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+                [userId, groupId]
+            );
+            await pool.query(
+                `
+                INSERT INTO user_permissions (user_id, permission_id)
+                SELECT $1, gp.permission_id
+                FROM group_permissions gp
+                WHERE gp.group_id = $2
+                ON CONFLICT DO NOTHING
+                `,
+                [userId, groupId]
+            );
+        } catch (err) {
+            console.warn("Aviso sincronizando grupo de usuario:", err.message);
+        }
+    },
+
     // Método para crear un nuevo usuario en la base de datos
     // Recibe un objeto con los datos ya validados y procesados por el service.
     async create(userData) {
-        // Desestructuramos explícitamente las propiedades esperadas
         const {
             userName,
             userEmail,
@@ -35,7 +73,6 @@ export const userRepository = {
         const parsedStartDate = startDate && startDate.trim() !== '' ? startDate : null;
         const parsedEndDate = endDate && endDate.trim() !== '' ? endDate : null;
 
-        // Usar placeholders ($1, $2, ...) en la consulta SQL evita inyecciones SQL
         const query = `
             INSERT INTO users (
                 user_name,
@@ -87,13 +124,17 @@ export const userRepository = {
             parsedStartDate,
             parsedEndDate,
             avatar,
-            staff,
-            isActive,
-            isSuper,
+            Boolean(staff),
+            isActive !== undefined ? Boolean(isActive) : true,
+            Boolean(isSuper),
         ];
 
         const result = await pool.query(query, values);
-        return result.rows[0];
+        const created = result.rows[0];
+        if (created?.id) {
+            await this.syncUserGroup(created.id, userType, isSuper);
+        }
+        return created;
     },
 
     // Método para actualizar un usuario existente
@@ -170,9 +211,9 @@ export const userRepository = {
                 parsedStartDate,
                 parsedEndDate,
                 avatar,
-                staff,
-                isActive,
-                isSuper,
+                Boolean(staff),
+                Boolean(isActive),
+                Boolean(isSuper),
                 id,
             ];
         } else {
@@ -216,42 +257,145 @@ export const userRepository = {
                 parsedStartDate,
                 parsedEndDate,
                 avatar,
-                staff,
-                isActive,
-                isSuper,
+                Boolean(staff),
+                Boolean(isActive),
+                Boolean(isSuper),
                 id,
             ];
         }
 
         const result = await pool.query(query, values);
-        return result.rows[0];
+        const updated = result.rows[0];
+        if (updated?.id) {
+            await this.syncUserGroup(updated.id, userType, isSuper);
+        }
+        return updated;
     },
 
     // Método para listar todos los usuarios
-    async findAll() {
+    async findAll({ activeOnly = false } = {}) {
         const query = `
             SELECT 
                 id,
                 user_name AS "userName",
                 user_name AS "name",
                 user_email AS "userEmail",
+                user_email AS "email",
                 corporate_email AS "corporateEmail",
                 user_phone AS "userPhone",
+                user_phone AS "phone",
                 user_document_types AS "userDocumentTypes",
+                user_document_types AS "document_type",
                 user_document_number AS "userDocumentNumber",
+                user_document_number AS "document_number",
                 pin,
                 user_type AS "userType",
+                CASE
+                    WHEN is_superuser = TRUE OR LOWER(COALESCE(user_type, '')) IN ('admin', 'administrador') THEN 'Administrador'
+                    WHEN LOWER(COALESCE(user_type, '')) IN ('cajero', 'caja') THEN 'Cajero'
+                    WHEN LOWER(COALESCE(user_type, '')) IN ('cocina', 'cocinero', 'parrilla') THEN 'Cocina'
+                    ELSE 'Mesero'
+                END AS "role",
                 start_date AS "startDate",
                 end_date AS "endDate",
                 user_avatar_url AS "userAvatarUrl",
                 is_staff AS "isStaff",
-                is_active AS "isActive",
+                COALESCE(is_active, TRUE) AS "isActive",
                 is_superuser AS "isSuperUser",
                 created_at AS "createdAt"
             FROM users
+            WHERE ($1::boolean IS FALSE OR COALESCE(is_active, TRUE) = TRUE)
             ORDER BY id ASC;
         `;
-        const result = await pool.query(query);
+        const result = await pool.query(query, [Boolean(activeOnly)]);
         return result.rows;
-    }
+    },
+
+    // Actualizar estado activo/inactivo del usuario en PostgreSQL en tiempo real
+    async updateStatus(userId, isActive) {
+        const query = `
+            UPDATE users
+            SET is_active = $1,
+                updated_at = NOW()
+            WHERE id = $2
+            RETURNING id, is_active AS "isActive";
+        `;
+        const result = await pool.query(query, [Boolean(isActive), userId]);
+        return result.rows[0];
+    },
+
+    // Obtener permisos directos del usuario por ID
+    async getPermissionsByUserId(userId) {
+        const directQuery = `
+            SELECT
+                p.permission_id,
+                p.permission_name,
+                p.permission_codename
+            FROM user_permissions up
+            INNER JOIN permissions p
+                ON p.permission_id = up.permission_id
+            WHERE up.user_id = $1
+            ORDER BY p.permission_name;
+        `;
+
+        const directResult = await pool.query(directQuery, [userId]);
+
+        if (directResult.rows.length > 0) {
+            return directResult.rows;
+        }
+
+        // Si aún no tiene permisos directos en user_permissions, consultar los heredados de su grupo
+        const groupQuery = `
+            SELECT DISTINCT
+                p.permission_id,
+                p.permission_name,
+                p.permission_codename
+            FROM group_permissions gp
+            INNER JOIN user_groups ug
+                ON ug.group_id = gp.group_id
+            INNER JOIN permissions p
+                ON p.permission_id = gp.permission_id
+            WHERE ug.user_id = $1
+            ORDER BY p.permission_name;
+        `;
+        const groupResult = await pool.query(groupQuery, [userId]);
+        return groupResult.rows;
+    },
+
+    // Actualizar permisos directos del usuario
+    async updatePermissions(userId, permissionIds) {
+        const client = await pool.connect();
+
+        try {
+            await client.query("BEGIN");
+
+            await client.query(
+                `
+                DELETE FROM user_permissions
+                WHERE user_id = $1
+                `,
+                [userId],
+            );
+
+            for (const permissionId of permissionIds) {
+                await client.query(
+                    `
+                    INSERT INTO user_permissions (
+                        user_id,
+                        permission_id
+                    )
+                    VALUES ($1, $2)
+                    `,
+                    [userId, permissionId],
+                );
+            }
+
+            await client.query("COMMIT");
+        } catch (error) {
+            await client.query("ROLLBACK");
+            throw error;
+        } finally {
+            client.release();
+        }
+    },
 };

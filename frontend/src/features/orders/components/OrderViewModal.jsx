@@ -4,22 +4,8 @@ import { Receipt, Calendar, User, Hash, Utensils } from "lucide-react";
 export default function OrderViewModal({ order, isOpen, onClose }) {
   if (!order) return null;
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "Abierta":
-        return "bg-emerald-950 text-emerald-400 border-emerald-800";
-      case "En preparación":
-        return "bg-amber-950 text-amber-400 border-amber-800";
-      case "Pagada":
-        return "bg-blue-950 text-blue-400 border-blue-800";
-      case "Cerrada":
-        return "bg-purple-950 text-purple-400 border-purple-800";
-      case "Anulada":
-        return "bg-red-950 text-red-400 border-red-800";
-      default:
-        return "bg-gray-800 text-gray-300 border-gray-700";
-    }
-  };
+  const getStatusBadge = () =>
+    "bg-[var(--color-secondary-800)] text-[var(--color-white)] border-[var(--color-secondary-700)]";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`Comanda ${order.id}`}>

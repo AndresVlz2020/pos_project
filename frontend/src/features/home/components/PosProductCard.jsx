@@ -15,7 +15,7 @@ export default function PosProductCard({ product }) {
     <div
       className={`group rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] text-[var(--color-white)] transition-colors duration-150 overflow-hidden flex flex-col justify-between ${
         isInhabilitado
-          ? "opacity-75 border-red-500/30"
+          ? "opacity-75"
           : "hover:border-[var(--color-primary-500)]"
       }`}
     >
@@ -26,12 +26,12 @@ export default function PosProductCard({ product }) {
             src={image}
             alt={title}
             className={`w-full h-full object-cover transition-transform duration-200 ${
-              isInhabilitado ? "grayscale-50" : "group-hover:scale-102"
+              isInhabilitado ? "grayscale" : "group-hover:scale-102"
             }`}
             loading="lazy"
           />
           {isInhabilitado && (
-            <div className="absolute top-2.5 right-2.5 bg-red-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-400 shadow-md flex items-center gap-1">
+            <div className="absolute top-2.5 right-2.5 bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[var(--color-secondary-700)] shadow-md flex items-center gap-1">
               <Ban className="size-3" />
               Inhabilitado
             </div>
@@ -62,7 +62,7 @@ export default function PosProductCard({ product }) {
           </div>
 
           {isInhabilitado ? (
-            <span className="inline-flex items-center text-[11px] font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-md border border-red-500/20">
+            <span className="inline-flex items-center text-[11px] font-semibold text-[var(--color-gray-400)] bg-[var(--color-secondary-800)] px-2 py-1 rounded-md border border-[var(--color-secondary-700)]">
               No disponible
             </span>
           ) : (

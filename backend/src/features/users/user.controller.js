@@ -10,16 +10,14 @@ export const userController = {
         console.log("📥 [Backend] POST /api/users - Datos recibidos:", req.body);
 
         try {
-            // Llamamos al servicio de usuario con los datos recibidos
             const user = await userService.create(req.body);
 
-            // Respuesta HTTP 201 (Created)
             res.status(201).json({
                 success: true,
                 message: "Usuario creado correctamente",
+                userID: user.id,
                 data: user,
             });
-
         } catch (err) {
             console.error("❌ [Backend Error]:", err.message);
 
@@ -60,13 +58,11 @@ export const userController = {
         console.log("📥 [Backend] GET /api/users");
 
         try {
-            const users = await userService.getAll();
+            const activeOnly =
+                req.query.active === "true" || req.query.activeOnly === "true";
+            const users = await userService.getAll({ activeOnly });
 
-            res.status(200).json({
-                success: true,
-                data: users,
-            });
-
+            res.status(200).json(users);
         } catch (err) {
             console.error("❌ [Backend Error]:", err.message);
 
@@ -76,5 +72,70 @@ export const userController = {
                 error: err.message,
             });
         }
-    }
+    },
+
+    // Actualizar estado activo/inactivo de usuario en tiempo real
+    async updateStatus(req, res) {
+        try {
+            const userId = Number(req.params.userId || req.params.id);
+            const { isActive } = req.body;
+
+            if (!userId || Number.isNaN(userId)) {
+                return res.status(400).json({
+                    error: "ID de usuario inválido",
+                });
+            }
+
+            const updated = await userService.updateStatus(userId, Boolean(isActive));
+
+            if (!updated) {
+                return res.status(404).json({
+                    error: "Usuario no encontrado",
+                });
+            }
+
+            res.status(200).json({
+                message: "Estado del usuario actualizado correctamente",
+                user: updated,
+            });
+        } catch (error) {
+            console.error("❌ [Backend Error UPDATE STATUS]:", error);
+            res.status(500).json({
+                error: "Error actualizando el estado del usuario",
+            });
+        }
+    },
+
+    // Permisos de usuario
+    async getPermissionsByUserId(req, res) {
+        try {
+            const userId = Number(req.params.userId || req.params.id);
+            const permissions = await userService.getPermissionsByUserId(userId);
+            res.json(permissions);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                error: "Error obteniendo permisos del usuario",
+            });
+        }
+    },
+
+    // Actualizar permisos de usuario
+    async updatePermissions(req, res) {
+        try {
+            const userId = Number(req.params.userId || req.params.id);
+            const { permissionIds } = req.body;
+
+            await userService.updatePermissions(userId, permissionIds);
+
+            res.status(200).json({
+                message: "Permisos del usuario actualizados correctamente",
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                error: "Error actualizando permisos del usuario",
+            });
+        }
+    },
 };

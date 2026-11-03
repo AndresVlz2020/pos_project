@@ -54,7 +54,23 @@ export const userService = {
     },
 
     // Método para listar usuarios
-    async getAll() {
-        return await userRepository.findAll();
-    }
+    async getAll(options = {}) {
+        return await userRepository.findAll(options);
+    },
+
+    async getAllUsers(options = {}) {
+        return await userRepository.findAll(options);
+    },
+
+    async updateStatus(userId, isActive) {
+        return await userRepository.updateStatus(userId, isActive);
+    },
+
+    async getPermissionsByUserId(userId) {
+        return await userRepository.getPermissionsByUserId(userId);
+    },
+
+    async updatePermissions(userId, permissionIds) {
+        return await userRepository.updatePermissions(userId, permissionIds);
+    },
 };

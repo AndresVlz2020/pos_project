@@ -4,18 +4,18 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 /**
- * Autentica un usuario contra el backend con email y password
- * @param {Object} credentials - { email, password }
+ * Autentica un usuario contra el backend con email/password o userId/pin
+ * @param {Object} credentials - { email, password, userId, pin }
  * @returns {Promise<Object>} { message, token, user }
  */
-export async function loginApi({ email, password }) {
+export async function loginApi({ email, password, userId, pin }) {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, userId, pin }),
     });
 
     const data = await response.json().catch(() => ({}));
@@ -102,8 +102,16 @@ export async function resetPasswordApi(params, maybePassword) {
   }
 }
 
+export function logout() {
+  localStorage.removeItem("auth_user");
+  localStorage.removeItem("auth_token");
+  sessionStorage.removeItem("user");
+  sessionStorage.removeItem("token");
+}
+
 export default {
   loginApi,
   forgotPasswordApi,
   resetPasswordApi,
+  logout,
 };

@@ -1,8 +1,9 @@
 // Componente reutilizable que muestra un switch para activar o desactivar estados
 import { StatusSwitch } from "@/shared";
 
-// Componente que contiene los botones de acciones (editar, eliminar y ver) para cada usuario
+// Componente que contiene los botones de acciones (editar y ver) para cada usuario
 import UserRowActions from "../components/UserRowActions";
+import { updateUserStatus } from "@/services/userService";
 
 // Definición de las columnas de la tabla de usuarios
 export const userColumns = [
@@ -16,6 +17,10 @@ export const userColumns = [
   {
     accessorKey: "userName",
     header: "Nombre",
+    cell: ({ row }) => {
+      const user = row.original;
+      return user.userName || user.name || "";
+    },
   },
 
   // Columna Rol
@@ -36,22 +41,36 @@ export const userColumns = [
   {
     accessorKey: "userEmail",
     header: "Email",
+    cell: ({ row }) => {
+      const user = row.original;
+      return user.userEmail || user.email || "—";
+    },
   },
 
   // Columna Teléfono
   {
     accessorKey: "userPhone",
     header: "Teléfono",
+    cell: ({ row }) => {
+      const user = row.original;
+      return user.userPhone || user.phone || "—";
+    },
   },
 
-  // Columna Estado (activo / inactivo)
+  // Columna Estado (activo / inactivo) sincronizada en tiempo real con PostgreSQL
   {
     accessorKey: "isActive",
     header: "Estado",
     cell: ({ row }) => {
       const user = row.original;
-      const handleChange = (value) => {
-        console.log("Actualizar estado usuario:", user.id, value);
+      const handleChange = async (value) => {
+        try {
+          await updateUserStatus(user.id, value);
+          user.isActive = value;
+          console.log("Estado actualizado en PostgreSQL:", user.id, value);
+        } catch (error) {
+          console.error("Error al actualizar el estado del usuario:", error);
+        }
       };
 
       return (
@@ -63,7 +82,7 @@ export const userColumns = [
     },
   },
 
-  // Columna de acciones (editar / eliminar / ver)
+  // Columna de acciones (editar / ver, sin botón de eliminar)
   {
     id: "actions",
     cell: ({ row }) => <UserRowActions user={row.original} />,

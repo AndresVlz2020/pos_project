@@ -6,6 +6,14 @@ import QuickAccessSelector, { formatRole } from "./components/QuickAccessSelecto
 import PinKeypad from "./components/PinKeypad";
 import AdminLoginForm from "./components/AdminLoginForm";
 import { loginApi } from "@/services/authService";
+import { hasPermission } from "@/features/access/services/accessService";
+
+function saveSession(token, userObj) {
+  localStorage.setItem("auth_token", token);
+  localStorage.setItem("auth_user", JSON.stringify(userObj));
+  sessionStorage.setItem("token", token);
+  sessionStorage.setItem("user", JSON.stringify(userObj));
+}
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,22 +32,52 @@ export default function Login() {
   };
 
   const handleValidatePin = async (pin, onResetPin) => {
-    if (pin === selectedStaff?.pin || pin === "1234") {
-      const normalizedRole = formatRole(selectedStaff.role || selectedStaff.baseRole || "");
+    try {
+      const result = await loginApi({
+        userId: selectedStaff.id,
+        email: selectedStaff.userEmail || selectedStaff.email,
+        pin,
+      });
+
+      const normalizedRole = formatRole(
+        result.user?.role || selectedStaff.role || selectedStaff.userType || ""
+      );
       const baseRole = normalizedRole === "Administrador" ? "Admin" : normalizedRole;
 
       const sessionUser = {
-        id: selectedStaff.id,
-        name: selectedStaff.userName || selectedStaff.name,
+        id: result.user?.id || selectedStaff.id,
+        name: result.user?.name || selectedStaff.userName || selectedStaff.name,
         role: baseRole,
         displayRole: normalizedRole,
-        email: selectedStaff.userEmail || `${selectedStaff.id}@dpiero.com`
+        email: result.user?.email || selectedStaff.userEmail,
+        isAdmin: Boolean(result.user?.isAdmin),
+        isSuperuser: Boolean(result.user?.isSuperuser),
       };
-      localStorage.setItem("auth_user", JSON.stringify(sessionUser));
-      localStorage.setItem("auth_token", "token-pin-" + selectedStaff.id + "-" + Date.now());
+
+      saveSession(result.token, sessionUser);
       navigate("/");
-    } else {
-      setPinError("PIN incorrecto. Inténtalo de nuevo.");
+    } catch (err) {
+      if (err.isNetworkError && (pin === selectedStaff?.pin || pin === "1234")) {
+        const normalizedRole = formatRole(
+          selectedStaff.role || selectedStaff.userType || ""
+        );
+        const baseRole = normalizedRole === "Administrador" ? "Admin" : normalizedRole;
+
+        const sessionUser = {
+          id: selectedStaff.id,
+          name: selectedStaff.userName || selectedStaff.name,
+          role: baseRole,
+          displayRole: normalizedRole,
+          email: selectedStaff.userEmail || `${selectedStaff.id}@dpiero.com`,
+          isAdmin: false,
+          isSuperuser: false,
+        };
+        saveSession("token-pin-" + selectedStaff.id + "-" + Date.now(), sessionUser);
+        navigate("/");
+        return;
+      }
+
+      setPinError(err.message || "PIN incorrecto. Inténtalo de nuevo.");
       setTimeout(() => {
         if (onResetPin) onResetPin();
       }, 700);
@@ -55,12 +93,12 @@ export default function Login() {
     if (currentAttempts >= 3) {
       await showErrorAlert({
         title: "Cuenta bloqueada",
-        text: "Se ha bloqueado la cuenta por superar 3 intentos fallidos consecutivos. Contacte al administrador central."
+        text: "Se ha bloqueado la cuenta por superar 3 intentos fallidos consecutivos. Contacte al administrador central.",
       });
       return {
         errors: {
-          userEmail: "Cuenta bloqueada por múltiples intentos fallidos."
-        }
+          userEmail: "Cuenta bloqueada por múltiples intentos fallidos.",
+        },
       };
     }
 
@@ -69,16 +107,30 @@ export default function Login() {
       const result = await loginApi({ email: emailClean, password: form.userPassword });
 
       localStorage.removeItem(attemptsKey);
-      localStorage.setItem("auth_token", result.token);
-      localStorage.setItem("auth_user", JSON.stringify({
+      const isAdmin = Boolean(
+        result.user?.isAdmin ||
+          result.user?.isSuperuser ||
+          result.user?.role === "Admin"
+      );
+
+      saveSession(result.token, {
         id: result.user?.id,
         name: result.user?.name || "Administrador",
         email: result.user?.email,
         role: result.user?.role || "Admin",
-        displayRole: "Administrador"
-      }));
+        displayRole: isAdmin ? "Administrador" : result.user?.role || "Personal",
+        isAdmin,
+        isSuperuser: Boolean(result.user?.isSuperuser),
+      });
 
-      navigate("/dashboard/userList");
+      const listPerm = await hasPermission("list_user").catch(() => ({
+        granted: isAdmin,
+      }));
+      if (isAdmin || listPerm?.granted) {
+        navigate("/dashboard/userList");
+      } else {
+        navigate("/");
+      }
       return { success: true };
     } catch (err) {
       console.warn("Backend login failed or unreachable:", err.message);
@@ -87,14 +139,16 @@ export default function Login() {
       if (emailClean === "admin@dpiero.com" && form.userPassword === "12345678") {
         localStorage.removeItem(attemptsKey);
         const adminSession = {
+          id: 1,
           name: "Administrador General",
           email: "admin@dpiero.com",
           role: "Admin",
           displayRole: "Administrador",
-          station: "Administración Central"
+          station: "Administración Central",
+          isAdmin: true,
+          isSuperuser: true,
         };
-        localStorage.setItem("auth_user", JSON.stringify(adminSession));
-        localStorage.setItem("auth_token", "token-admin-" + Date.now());
+        saveSession("token-admin-" + Date.now(), adminSession);
 
         navigate("/dashboard/userList");
         return { success: true };
@@ -104,12 +158,12 @@ export default function Login() {
       if (err.isNetworkError) {
         await showErrorAlert({
           title: "Servidor Desconectado",
-          text: "No se pudo conectar con el servidor backend en http://localhost:4000. Por favor, inicia el backend en una terminal ('npm run dev')."
+          text: "No se pudo conectar con el servidor backend en http://localhost:4000. Por favor, inicia el backend en una terminal ('npm run dev').",
         });
         return {
           errors: {
-            userEmail: "Servidor backend no disponible en el puerto 4000."
-          }
+            userEmail: "Servidor backend no disponible en el puerto 4000.",
+          },
         };
       }
 
@@ -120,20 +174,20 @@ export default function Login() {
       if (newAttempts >= 3) {
         await showErrorAlert({
           title: "Cuenta bloqueada",
-          text: "Ha alcanzado el límite de 3 intentos fallidos. Su cuenta ha sido bloqueada."
+          text: "Ha alcanzado el límite de 3 intentos fallidos. Su cuenta ha sido bloqueada.",
         });
         return {
           errors: {
-            userEmail: "Cuenta bloqueada. Se superaron los 3 intentos permitidos."
-          }
+            userEmail: "Cuenta bloqueada. Se superaron los 3 intentos permitidos.",
+          },
         };
       }
 
       const remaining = 3 - newAttempts;
       return {
         errors: {
-          userPassword: `Credenciales inválidas. Le quedan ${remaining} intento(s) antes del bloqueo de la cuenta.`
-        }
+          userPassword: `Credenciales inválidas. Le quedan ${remaining} intento(s) antes del bloqueo de la cuenta.`,
+        },
       };
     }
   };

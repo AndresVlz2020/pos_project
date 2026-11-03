@@ -6,16 +6,26 @@ import { authRepository } from "./auth.repository.js";
 import { sendPasswordResetEmail } from "./email.service.js";
 
 export const authService = {
-  async login({ email, password }) {
-    if (!email || !password) {
-      throw new Error("El correo y la contraseña son requeridos");
+  async login({ email, password, userId, pin }) {
+    let user = null;
+
+    if (userId) {
+      user = await authRepository.findById(Number(userId));
+    } else if (email) {
+      const cleanEmail = String(email).trim().toLowerCase();
+      user = await authRepository.findByEmail(cleanEmail);
     }
 
-    const cleanEmail = String(email).trim().toLowerCase();
-    const cleanPassword = String(password).trim();
+    const secretInput = String(password || pin || "").trim();
 
-    const user = await authRepository.findByEmail(cleanEmail);
-    console.log("USER ENCONTRADO:", user ? { id: user.id, email: user.user_email, type: user.user_type } : null);
+    if ((!email && !userId) || !secretInput) {
+      throw new Error("El correo/usuario y la contraseña/PIN son requeridos");
+    }
+
+    console.log(
+      "USER ENCONTRADO:",
+      user ? { id: user.id, email: user.user_email, type: user.user_type } : null
+    );
 
     if (!user) {
       throw new Error("Credenciales inválidas");
@@ -29,18 +39,18 @@ export const authService = {
     let isMatch = false;
     if (user.password && user.password.length > 0) {
       try {
-        isMatch = await bcrypt.compare(cleanPassword, user.password);
+        isMatch = await bcrypt.compare(secretInput, user.password);
       } catch {
         isMatch = false;
       }
 
-      if (!isMatch && cleanPassword === user.password) {
+      if (!isMatch && secretInput === user.password) {
         isMatch = true;
       }
     }
 
     // 2. Soporte para personal operativo (mesero, cajero, cocina) cuyo acceso principal es por PIN
-    if (!isMatch && user.pin && cleanPassword === String(user.pin).trim()) {
+    if (!isMatch && user.pin && secretInput === String(user.pin).trim()) {
       isMatch = true;
     }
 
@@ -48,21 +58,39 @@ export const authService = {
       throw new Error("Credenciales inválidas");
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.user_email },
-      process.env.JWT_SECRET || "mi_clave_super_segura",
-      { expiresIn: process.env.JWT_EXPIRES || "1h" }
+    const isSuperuser = Boolean(user.is_superuser);
+    const isAdmin = Boolean(
+      user.is_superuser ||
+      user.is_admin_group ||
+      String(user.user_type || "").toLowerCase() === "admin" ||
+      String(user.user_type || "").toLowerCase() === "administrador"
     );
 
     // Formatear rol según user_type real de la BD
     let role = "Staff";
-    if (user.is_superuser || user.user_type === "admin" || user.user_type === "Admin") {
+    if (isAdmin) {
       role = "Admin";
     } else if (user.user_type) {
-      role = user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1).toLowerCase();
+      const rawType = user.user_type.toLowerCase();
+      if (rawType.includes("caj")) role = "Cajero";
+      else if (rawType.includes("meser")) role = "Mesero";
+      else if (rawType.includes("cocin")) role = "Cocina";
+      else role = user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1).toLowerCase();
     } else if (user.is_staff) {
       role = "Mesero";
     }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.user_email,
+        role,
+        isSuperuser,
+        isAdmin,
+      },
+      process.env.JWT_SECRET || "mi_clave_super_segura",
+      { expiresIn: process.env.JWT_EXPIRES || "1h" }
+    );
 
     return {
       token,
@@ -71,6 +99,8 @@ export const authService = {
         email: user.user_email,
         name: user.user_name,
         role,
+        isSuperuser,
+        isAdmin,
       },
     };
   },

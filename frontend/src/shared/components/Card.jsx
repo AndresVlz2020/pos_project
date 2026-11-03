@@ -77,7 +77,7 @@ const Card = ({
               <span
                 className={`absolute bottom-2 left-2.5 text-[length:var(--fs-xxxs)] font-semibold px-2 py-0.5 rounded-md border ${
                   status === "Inactivo" || status === "inhabilitado" || status === "No disponible"
-                    ? "bg-red-950 text-red-300 border-red-800"
+                    ? "bg-[var(--color-secondary-800)] text-[var(--color-gray-400)] border-[var(--color-secondary-700)]"
                     : "bg-[var(--color-secondary-950)] text-[var(--color-white)] border-[var(--color-secondary-700)]"
                 }`}
               >
@@ -125,7 +125,7 @@ const Card = ({
       {typeof qty === "number" && (onIncrement || onDecrement) && (
         <div className="p-4 pt-0">
           {status === "Inactivo" || status === "inhabilitado" || status === "No disponible" ? (
-            <div className="bg-red-950/70 border border-red-800 text-red-300 text-[11px] py-2 px-3 rounded-lg text-center font-semibold">
+            <div className="bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-gray-400)] text-[11px] py-2 px-3 rounded-lg text-center font-semibold">
               Inhabilitado • Excluido de órdenes
             </div>
           ) : (

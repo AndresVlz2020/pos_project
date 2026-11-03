@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   IconButton,
   Dropdown,
@@ -8,32 +9,69 @@ import {
   BrandLogo,
 } from "@/shared";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, UtensilsCrossed } from "lucide-react";
+import { Menu } from "lucide-react";
+import { logout } from "@/services/authService";
+import { hasPermission } from "@/features/access/services/accessService";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Obtener usuario autenticado actual desde localStorage
+  // Obtener usuario autenticado actual desde localStorage / sessionStorage
   const currentUser = (() => {
     try {
-      return JSON.parse(localStorage.getItem("auth_user") || "null");
+      return JSON.parse(
+        localStorage.getItem("auth_user") ||
+          sessionStorage.getItem("user") ||
+          "null"
+      );
     } catch {
       return null;
     }
   })();
 
   const role = currentUser?.role || "";
-  const isAdmin = role === "Admin" || role === "Administrador";
+  const initialIsAdmin =
+    Boolean(currentUser?.isAdmin || currentUser?.isSuperuser) ||
+    role === "Admin" ||
+    role === "Administrador";
   const isCajero = role === "Cajero";
 
-  // Permisos según el rol:
-  // - Admin (admin@dpiero.com): Acceso total (Menú, POS, Inventario, Proveedores, Usuarios)
-  // - Cajero: Menú, POS, Inventario (NO Proveedores, NO Usuarios)
-  // - Mesero / Cocinero: Menú, POS (NO Inventario, NO Proveedores, NO Usuarios)
-  const canViewInventory = isAdmin || isCajero;
-  const canViewSuppliers = isAdmin;
-  const canViewUsers = isAdmin; // Únicamente admin@dpiero.com tiene permiso de ver usuarios
+  const [isAdmin, setIsAdmin] = useState(initialIsAdmin);
+  const [canViewUsers, setCanViewUsers] = useState(initialIsAdmin);
+  const [canViewInventory, setCanViewInventory] = useState(
+    initialIsAdmin || isCajero
+  );
+  const [canViewSuppliers, setCanViewSuppliers] = useState(initialIsAdmin);
+
+  useEffect(() => {
+    const token =
+      localStorage.getItem("auth_token") || sessionStorage.getItem("token");
+
+    if (!token) {
+      setIsAdmin(false);
+      setCanViewUsers(false);
+      setCanViewInventory(false);
+      setCanViewSuppliers(false);
+      return;
+    }
+
+    hasPermission("admin")
+      .then((res) => setIsAdmin(Boolean(res.granted)))
+      .catch(() => setIsAdmin(initialIsAdmin));
+
+    hasPermission("list_user")
+      .then((res) => setCanViewUsers(Boolean(res.granted)))
+      .catch(() => setCanViewUsers(initialIsAdmin));
+
+    hasPermission("list_inventory")
+      .then((res) => setCanViewInventory(Boolean(res.granted)))
+      .catch(() => setCanViewInventory(initialIsAdmin || isCajero));
+
+    hasPermission("list_supplier")
+      .then((res) => setCanViewSuppliers(Boolean(res.granted)))
+      .catch(() => setCanViewSuppliers(initialIsAdmin));
+  }, [location.pathname, initialIsAdmin, isCajero]);
 
   const pathname = location.pathname.toLowerCase();
   const isHome = pathname === "/";
@@ -41,7 +79,9 @@ export default function Navbar() {
   const isOrders = pathname.includes("order");
   const isInventory = pathname.includes("inventory");
   const isSuppliers = pathname.includes("supplier");
-  const isUsers = pathname.includes("user");
+  const isUsers = pathname.includes("user") && !pathname.includes("usersmanagement");
+  const isAccess =
+    pathname.includes("access") || pathname.includes("usersmanagement");
 
   const getLinkClass = (isActive) =>
     `transition-all py-1 px-1 flex items-center gap-1.5 text-sm font-medium cursor-pointer ${
@@ -51,8 +91,7 @@ export default function Navbar() {
     }`;
 
   const handleLogout = () => {
-    localStorage.removeItem("auth_user");
-    localStorage.removeItem("auth_token");
+    logout();
     navigate("/Auth");
   };
 
@@ -62,8 +101,14 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo de marca */}
           <div className="flex items-center shrink-0">
-            <Link to={"/"} className="flex items-center gap-2 group transition-transform hover:scale-105">
-              <BrandLogo className="h-10 sm:h-12 w-auto object-contain drop-shadow" alt="D'Piero Logo" />
+            <Link
+              to={"/"}
+              className="flex items-center gap-2 group transition-transform hover:scale-105"
+            >
+              <BrandLogo
+                className="h-10 sm:h-12 w-auto object-contain drop-shadow"
+                alt="D'Piero Logo"
+              />
             </Link>
           </div>
 
@@ -84,23 +129,29 @@ export default function Navbar() {
                 Pedidos
               </Link>
             </li>
-            {canViewInventory && (
+            {(isAdmin || canViewInventory) && (
               <li>
-                <Link to={"/inventoryList"} className={getLinkClass(isInventory)}>
+                <Link
+                  to={"/inventoryList"}
+                  className={getLinkClass(isInventory)}
+                >
                   Inventario
                 </Link>
               </li>
             )}
-            {canViewSuppliers && (
+            {(isAdmin || canViewSuppliers) && (
               <li>
                 <Link to={"/supplierList"} className={getLinkClass(isSuppliers)}>
                   Proveedores
                 </Link>
               </li>
             )}
-            {canViewUsers && (
+            {(isAdmin || canViewUsers) && (
               <li>
-                <Link to={"/dashboard/userList"} className={getLinkClass(isUsers)}>
+                <Link
+                  to={"/dashboard/userList"}
+                  className={getLinkClass(isUsers)}
+                >
                   Usuarios
                 </Link>
               </li>
@@ -112,7 +163,9 @@ export default function Navbar() {
             {/* Indicador sutil de rol activo */}
             {currentUser && (
               <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-2.5 py-1 rounded border border-[var(--color-secondary-800)]">
-                <span className="font-medium text-[var(--color-white)] truncate max-w-[120px]">{currentUser.name}</span>
+                <span className="font-medium text-[var(--color-white)] truncate max-w-[120px]">
+                  {currentUser.name}
+                </span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-400)] font-semibold">
                   {currentUser.role}
                 </span>
@@ -125,47 +178,118 @@ export default function Navbar() {
             <Dropdown>
               <div>
                 <DropdownTrigger>
-                  <IconButton ariaLabel="Menu" className="text-white hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)]">
+                  <IconButton
+                    ariaLabel="Menu"
+                    className="text-white hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)]"
+                  >
                     <Menu className="size-5" />
                   </IconButton>
                 </DropdownTrigger>
               </div>
 
-              {/* Contenido: Opciones de navegación móvil y autenticación */}
+              {/* Contenido: Opciones de navegación móvil, Admin y autenticación */}
               <DropdownContent className="right-0 min-w-[210px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-white shadow-lg">
                 <div className="lg:hidden pb-2 mb-2 border-b border-[var(--color-secondary-800)]">
-                  <DropdownItem onClick={() => navigate("/")} className={`cursor-pointer ${isHome ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
+                  <DropdownItem
+                    onClick={() => navigate("/")}
+                    className={`cursor-pointer ${
+                      isHome ? "text-[var(--color-primary-400)] font-bold" : ""
+                    }`}
+                  >
                     Inicio
                   </DropdownItem>
-                  <DropdownItem onClick={() => navigate("/productList")} className={`cursor-pointer ${isProducts ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
+                  <DropdownItem
+                    onClick={() => navigate("/productList")}
+                    className={`cursor-pointer ${
+                      isProducts
+                        ? "text-[var(--color-primary-400)] font-bold"
+                        : ""
+                    }`}
+                  >
                     Productos
                   </DropdownItem>
-                  <DropdownItem onClick={() => navigate("/CreateOrder")} className={`cursor-pointer ${pathname === "/createorder" ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
+                  <DropdownItem
+                    onClick={() => navigate("/CreateOrder")}
+                    className={`cursor-pointer ${
+                      pathname === "/createorder"
+                        ? "text-[var(--color-primary-400)] font-bold"
+                        : ""
+                    }`}
+                  >
                     Crear Pedido
                   </DropdownItem>
-                  <DropdownItem onClick={() => navigate("/orderList")} className={`cursor-pointer ${pathname === "/orderlist" ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
+                  <DropdownItem
+                    onClick={() => navigate("/orderList")}
+                    className={`cursor-pointer ${
+                      pathname === "/orderlist"
+                        ? "text-[var(--color-primary-400)] font-bold"
+                        : ""
+                    }`}
+                  >
                     Listado de Órdenes
                   </DropdownItem>
-                  {canViewInventory && (
-                    <DropdownItem onClick={() => navigate("/inventoryList")} className={`cursor-pointer ${isInventory ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
+                  {(isAdmin || canViewInventory) && (
+                    <DropdownItem
+                      onClick={() => navigate("/inventoryList")}
+                      className={`cursor-pointer ${
+                        isInventory
+                          ? "text-[var(--color-primary-400)] font-bold"
+                          : ""
+                      }`}
+                    >
                       Inventario
                     </DropdownItem>
                   )}
-                  {canViewSuppliers && (
-                    <DropdownItem onClick={() => navigate("/supplierList")} className={`cursor-pointer ${isSuppliers ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
+                  {(isAdmin || canViewSuppliers) && (
+                    <DropdownItem
+                      onClick={() => navigate("/supplierList")}
+                      className={`cursor-pointer ${
+                        isSuppliers
+                          ? "text-[var(--color-primary-400)] font-bold"
+                          : ""
+                      }`}
+                    >
                       Proveedores
                     </DropdownItem>
                   )}
-                  {canViewUsers && (
-                    <DropdownItem onClick={() => navigate("/dashboard/userList")} className={`cursor-pointer ${isUsers ? "text-[var(--color-primary-400)] font-bold" : ""}`}>
+                  {(isAdmin || canViewUsers) && (
+                    <DropdownItem
+                      onClick={() => navigate("/dashboard/userList")}
+                      className={`cursor-pointer ${
+                        isUsers
+                          ? "text-[var(--color-primary-400)] font-bold"
+                          : ""
+                      }`}
+                    >
                       Usuarios
                     </DropdownItem>
                   )}
                 </div>
-                <DropdownItem onClick={() => navigate("/Auth")} className="cursor-pointer hover:bg-[var(--color-secondary-800)]">
+
+                {/* Opciones de Administración exclusivas para Administradores */}
+                {isAdmin && (
+                  <DropdownItem
+                    onClick={() => navigate("/dashboard/access")}
+                    className={`cursor-pointer hover:bg-[var(--color-secondary-800)] ${
+                      isAccess
+                        ? "text-[var(--color-primary-400)] font-bold"
+                        : ""
+                    }`}
+                  >
+                    Admin (Gestión de permisos)
+                  </DropdownItem>
+                )}
+
+                <DropdownItem
+                  onClick={() => navigate("/Auth")}
+                  className="cursor-pointer hover:bg-[var(--color-secondary-800)]"
+                >
                   Cambiar operador / Iniciar sesión
                 </DropdownItem>
-                <DropdownItem onClick={handleLogout} className="cursor-pointer text-red-400 hover:text-red-300 hover:bg-[var(--color-secondary-800)]">
+                <DropdownItem
+                  onClick={handleLogout}
+                  className="cursor-pointer text-red-400 hover:text-red-300 hover:bg-[var(--color-secondary-800)]"
+                >
                   Cerrar sesión
                 </DropdownItem>
               </DropdownContent>

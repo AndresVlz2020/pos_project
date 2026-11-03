@@ -1,7 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { SearchX, UserCheck } from "lucide-react";
 import { SearchField } from "@/shared";
-import { users } from "@/features/users/data/users";
+import { users as fallbackUsers } from "@/features/users/data/users";
+import { getUsers } from "@/services/userService";
 
 const normalizeText = (text = "") =>
   text
@@ -14,31 +15,54 @@ export const formatRole = (role = "") => {
   const r = role.toLowerCase();
   if (r.includes("caj")) return "Cajero";
   if (r.includes("meser") || r.includes("salon")) return "Mesero";
-  if (r.includes("cocin") || r.includes("parrill") || r.includes("brasa")) return "Cocinero";
+  if (r.includes("cocin") || r.includes("parrill") || r.includes("brasa")) return "Cocina";
   if (r.includes("admin")) return "Administrador";
-  return role;
+  return role || "Mesero";
 };
-
-const QUICK_STAFF_IDS = [2, 3, 4, 5, 9, 11];
 
 export default function QuickAccessSelector({ onSelectStaff }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [staffUsers, setStaffUsers] = useState([]);
+
+  useEffect(() => {
+    getUsers({ activeOnly: true })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const operationalActive = data.filter((u) => {
+            const isActive = Boolean(u.isActive ?? u.is_active ?? true);
+            const roleText = (u.userType || u.role || "").toLowerCase();
+            const isAdmin = Boolean(u.isSuperUser || u.is_superuser || roleText === "admin" || roleText === "administrador");
+            return isActive && !isAdmin;
+          });
+          setStaffUsers(operationalActive);
+        } else {
+          setStaffUsers(
+            fallbackUsers.filter((u) => u.isActive !== false && u.role !== "Administrador")
+          );
+        }
+      })
+      .catch(() => {
+        setStaffUsers(
+          fallbackUsers.filter((u) => u.isActive !== false && u.role !== "Administrador")
+        );
+      });
+  }, []);
 
   const quickStaffList = useMemo(() => {
-    return users.filter((u) => QUICK_STAFF_IDS.includes(u.id));
-  }, []);
+    return staffUsers.slice(0, 6);
+  }, [staffUsers]);
 
   const filteredStaffList = useMemo(() => {
     const query = normalizeText(searchQuery);
     if (!query) return [];
 
-    return users.filter((u) => {
-      const nameMatch = normalizeText(u.userName).includes(query);
-      const roleMatch = normalizeText(formatRole(u.role)).includes(query);
-      const docMatch = normalizeText(u.document_number).includes(query);
+    return staffUsers.filter((u) => {
+      const nameMatch = normalizeText(u.userName || u.name).includes(query);
+      const roleMatch = normalizeText(formatRole(u.role || u.userType)).includes(query);
+      const docMatch = normalizeText(u.userDocumentNumber || u.document_number).includes(query);
       return nameMatch || roleMatch || docMatch;
     });
-  }, [searchQuery]);
+  }, [searchQuery, staffUsers]);
 
   const isSearching = Boolean(searchQuery.trim());
 
@@ -93,13 +117,14 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
-                      {staff.userName}
+                      {staff.userName || staff.name}
                     </p>
                     <p className="text-[11px] text-[var(--color-gray-400)] truncate mt-0.5">
                       <span className="text-[var(--color-primary-300)] font-medium">
-                        {formatRole(staff.role)}
+                        {formatRole(staff.role || staff.userType)}
                       </span>{" "}
-                      • Doc: {staff.document_type} {staff.document_number}
+                      • Doc: {staff.userDocumentTypes || staff.document_type}{" "}
+                      {staff.userDocumentNumber || staff.document_number}
                     </p>
                   </div>
                   <UserCheck className="size-4 text-[var(--color-gray-500)] group-hover:text-[var(--color-primary-400)] shrink-0 transition-colors" />
@@ -113,7 +138,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                 Sin coincidencias en la plantilla
               </p>
               <p className="text-[11px] text-[var(--color-gray-400)] mt-0.5 mb-3">
-                No se encontró ningún colaborador con "{searchQuery}".
+                No se encontró ningún colaborador activo con "{searchQuery}".
               </p>
               <button
                 type="button"
@@ -142,10 +167,10 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                 className="p-3.5 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left transition-all cursor-pointer active:scale-[0.98] group"
               >
                 <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
-                  {staff.userName}
+                  {staff.userName || staff.name}
                 </p>
                 <p className="text-[11px] text-[var(--color-primary-400)] font-medium truncate mt-1">
-                  {formatRole(staff.role)}
+                  {formatRole(staff.role || staff.userType)}
                 </p>
               </button>
             ))}

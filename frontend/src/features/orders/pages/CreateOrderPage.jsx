@@ -307,9 +307,6 @@ export default function CreateOrder() {
               <h2 className="text-[length:var(--fs-sm)] font-bold text-[var(--color-white)]">
                 Datos de la Mesa y Mesero
               </h2>
-              <span className="text-xs text-[var(--color-gray-400)]">
-                * Estado inicial automático: <strong className="text-emerald-400">Abierta</strong>
-              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start w-full">
@@ -403,15 +400,10 @@ export default function CreateOrder() {
       {activeTab === "list" && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
           <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-6 shadow-md text-[var(--color-white)]">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-bold text-white">Comandas Registradas</h2>
-                <p className="text-xs text-[var(--color-gray-400)]">
-                  Consulta de pedidos en cocina, edición de comandas activas y anulación con confirmación.
-                </p>
-              </div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-[var(--color-white)]">Listado de Órdenes</h2>
               <Button variant="primary" size="sm" onClick={() => setActiveTab("create")}>
-                + Crear Otra Orden
+                Crear comanda
               </Button>
             </div>
 

@@ -1,9 +1,15 @@
+// Esquemas
+export { fileSchema } from "./schemas/fileSchema";
+
 // Layouts
 export { default as AuthLayout } from "./layouts/AuthLayout";
 export { default as DashboardLayout } from "./layouts/DashboardLayout";
 export { default as MainLayout } from "./layouts/MainLayout";
 export { default as Footer } from "./layouts/Footer";
 export { default as Navbar } from "./layouts/Navbar";
+
+// Auth
+export { default as ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 // Componentes
 export { default as Input } from "./components/Input";
@@ -26,12 +32,11 @@ export { default as ConfirmDialog } from "./components/ConfirmDialog";
 export { default as Modal } from "./components/Modal";
 export { default as SearchField } from "./components/SearchField";
 
-
-export { 
-    Dropdown,
-    DropdownTrigger, 
-    DropdownItem, 
-    DropdownContent, 
+export {
+  Dropdown,
+  DropdownTrigger,
+  DropdownItem,
+  DropdownContent,
 } from "./components/Dropdown";
 
 // Servicios de alertas (SweetAlert2)
@@ -43,4 +48,4 @@ export {
 } from "./services/alertService";
 
 // Hooks
-export { useInactivityTimeout } from "./hooks/useInactivityTimeout";
+export { useInactivityTimeout } from "./hooks/useInactivityTimeout";
