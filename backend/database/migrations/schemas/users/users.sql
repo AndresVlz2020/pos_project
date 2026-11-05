@@ -13,4 +13,4 @@ CREATE TABLE IF NOT EXISTS users (
     is_active BOOLEAN DEFAULT TRUE,
     is_superuser BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW()
-);
+    );

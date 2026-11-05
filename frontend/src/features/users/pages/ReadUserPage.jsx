@@ -1,4 +1,5 @@
-import { Mail, Phone, Shield} from "lucide-react";
+import userPhoto from "@/assets/images/worker-carlos.jpg";
+import { Mail, Phone, Shield, Calendar, KeyRound } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/shared";
 
@@ -16,7 +17,6 @@ export default function ReadUser1() {
         status: "Activo",
     };
 
-    const userPhoto = user?.photo || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.userName || 'Usuario'}`;
     const roleName = user.role || user.userType || (user.isSuperUser ? "Administrador" : "Mesero");
     const statusText = user.status || (user.isActive ?? true ? "Activo" : "Inactivo");
 
@@ -29,10 +29,7 @@ export default function ReadUser1() {
                 <div className="flex flex-col sm:flex-row justify-center items-center mt-6 gap-8">
 
                     <div>
-                        <img 
-                            src={userPhoto} 
-                            alt={user.userName} 
-                            className="rounded-full border-2 border-[var(--color-secondary-700)] size-44 object-cover shadow-md" />
+                        <img src={userPhoto} alt={user.userName} className="rounded-full border-2 border-[var(--color-secondary-700)] size-44 object-cover shadow-md" />
                     </div>
 
                     <div className="flex flex-col px-8 py-6 gap-y-2.5 bg-[var(--color-secondary-800)]/70 border border-[var(--color-secondary-700)] rounded-md flex-1">

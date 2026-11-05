@@ -12,7 +12,6 @@ import authRoutes from "./features/auth/auth.routes.js";
 import accessRoutes from "./features/access/access.routes.js";
 import groupsRoutes from "./features/groups/groups.routes.js";
 import permissionsRoutes from "./features/permissions/permissions.routes.js";
-import supplierRoutes from "./features/suppliers/supplier.routes.js";
 
 // Creamos la instancia principal de la aplicación Express
 const app = express();
@@ -30,7 +29,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/access", accessRoutes);
 app.use("/api/groups", groupsRoutes);
 app.use("/api/permissions", permissionsRoutes);
-app.use("/api/suppliers", supplierRoutes);
 
 // Exportamos la aplicación configurada
 // El arranque del servidor se realiza desde el archivo server.js

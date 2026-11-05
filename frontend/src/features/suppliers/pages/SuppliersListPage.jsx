@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { DataTable, Button, ListReportModal, ConfirmDialog, Alert } from "@/shared";
 import { getSuppliersColumns } from "../table/SuppliersColumns";
-import { getAllSuppliers, updateSupplierStatus } from "../services/suppliersServices";
+import { suppliers } from "../data/suppliers";
 import { Link } from "react-router-dom";
 
 const suppliersReportFields = [
@@ -13,42 +13,17 @@ const suppliersReportFields = [
 ];
 
 export default function SuppliersListPage() {
-  const [suppliersList, setSuppliersList] = useState([]);
+  const [suppliersList, setSuppliersList] = useState(() =>
+    [...suppliers].map((s, idx) => ({ ...s, isActive: idx % 3 !== 0 }))
+  );
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [pendingChange, setPendingChange] = useState(null);
   const [feedback, setFeedback] = useState(null);
 
-  useEffect(() => {
-    async function loadSuppliers() {
-      try {
-        const data = await getAllSuppliers();
-
-        const formattedData = data.map(s => ({
-          ...s,
-          companyName: s.companyName || s.company_name,
-          supplierEmail: s.supplierEmail || s.email,
-          supplierPhone: s.supplierPhone || s.phone,
-          isActive: s.isActive ?? s.is_active ?? true
-        }));
-
-        setSuppliersList(formattedData);
-      } catch (error) {
-        console.error("Error al cargar proveedores", error);
-        setFeedback({
-          type: "error",
-          title: "Error de conexión",
-          message: error.message || "No se pudieron cargar los proveedores"
-        });
-      }
-    }
-
-    loadSuppliers();
-  }, []);
-
   // Ordenar alfabéticamente por defecto (RFADMIN17, RFADMIN18)
   const sortedSuppliers = useMemo(() => {
     return [...suppliersList].sort((a, b) =>
-      (a.companyName || "").localeCompare(b.companyName || "")
+      a.companyName.localeCompare(b.companyName)
     );
   }, [suppliersList]);
 
@@ -65,34 +40,23 @@ export default function SuppliersListPage() {
     });
   };
 
-  const handleConfirmStatusChange = async () => {
+  const handleConfirmStatusChange = () => {
     if (!pendingChange) return;
     const { supplier, targetState } = pendingChange;
 
-    try {
-      
-      await updateSupplierStatus(supplier.id, targetState);
+    setSuppliersList((prev) =>
+      prev.map((s) =>
+        s.id === supplier.id ? { ...s, isActive: targetState } : s
+      )
+    );
 
-      setSuppliersList((prev) =>
-        prev.map((s) =>
-          s.id === supplier.id ? { ...s, isActive: targetState, is_active: targetState } : s
-        )
-      );
-
-      setFeedback({
-        type: "success",
-        title: "Estado actualizado",
-        message: `El proveedor ${supplier.companyName} fue ${
-          targetState ? "habilitado" : "inhabilitado"
-          } exitosamente.`,
-        });
-    } catch (error) {
-      setFeedback({
-        type: "error",
-        title: "Error",
-        message: error.message || "No se pudo actualizar el estado"
-      });
-    }
+    setFeedback({
+      type: "success",
+      title: "Estado actualizado",
+      message: `El proveedor ${supplier.companyName} fue ${
+        targetState ? "habilitado" : "inhabilitado"
+      } exitosamente sin perder información histórica.`,
+    });
 
     setPendingChange(null);
   };
