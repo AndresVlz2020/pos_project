@@ -2,7 +2,7 @@
 import { StatusSwitch } from "@/shared";
 import SuppliersRowActions from "../components/SuppliersRowActions";
 
-export const getSuppliersColumns = ({ onRequestStatusChange } = {}) => [
+export const getSuppliersColumns = ({ onRequestStatusChange }) => [
   {
     accessorKey: "id",
     header: "NIT",
@@ -19,25 +19,21 @@ export const getSuppliersColumns = ({ onRequestStatusChange } = {}) => [
     accessorKey: "supplierPhone",
     header: "Teléfono",
   },
+  // Columna Estado (activo / inactivo)
   {
-    accessorKey: "isActive",
+    accessorKey: "is_active", // Busca el valor de cada usuario en la bd
     header: "Estado",
     cell: ({ row }) => {
       const supplier = row.original;
-      const isChecked = supplier.isActive ?? true;
-
-      const handleChange = (newVal) => {
-        if (onRequestStatusChange) {
-          onRequestStatusChange(supplier, newVal);
-        }
-      };
-
+      const isActiveValue = supplier.isActive ?? supplier.is_active ?? false
       return (
         <StatusSwitch
-          checked={isChecked}
-          onChange={handleChange}
+        checked={Boolean(isActiveValue)} // Define como debe verse el icono segun su valor
+        onChange={(value) => {
+          onRequestStatusChange(supplier, value); // Cuando se hace click atrapa el nuevo valor junto a la id, llama a la funcion guarda todo y actualiza la bd
+        }}  // Función que maneja el cambio
         />
-      );
+      )
     },
   },
   {
@@ -46,4 +42,3 @@ export const getSuppliersColumns = ({ onRequestStatusChange } = {}) => [
   },
 ];
 
-export const suppliersColumns = getSuppliersColumns();
