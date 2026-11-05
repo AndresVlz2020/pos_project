@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { supplierSchema } from "../schemas/supplierSchema";
-import { Input, Checkbox, Button, FileInput, Alert, showSuccessAlert, showErrorAlert } from "@/shared";
+import { Input, Button, FileInput, Alert, showSuccessAlert, showErrorAlert } from "@/shared";
 import { Link, useNavigate } from "react-router-dom";
-
-
+import { createSupplier } from "../services/suppliersServices";
 
 export default function CreateSuppliers() {
 
@@ -19,8 +18,7 @@ export default function CreateSuppliers() {
         supplierPhone:"",
         supplierDirection:"",
         supplierObservation:"",
-        isStaff: false,
-        isSuperUser: false,
+        isStaff: true,
     })
 
     const handleChange = (e) => {
@@ -65,12 +63,21 @@ export default function CreateSuppliers() {
             return;
         }
 
-        await showSuccessAlert({
-            title: "Proveedor registrado",
-            text: "Proveedor registrado correctamente"
-        });
-
-        navigate("/supplierList");
+        try {
+            await createSupplier(formSupliers);
+            
+            await showSuccessAlert({
+                title: "Proveedor registrado",
+                text: "Proveedor registrado correctamente"
+            });
+            
+            navigate("/supplierList");
+        } catch (error) {
+            await showErrorAlert({
+                title: "Error al registrar",
+                text: error.message || "No se pudo conectar al servidor"
+            })
+        }
     };
 
 
@@ -169,23 +176,6 @@ export default function CreateSuppliers() {
                             onChange={handleChange}
                             error={errors.supplierObservation} 
                         />
-                        <div className="flex gap-6 mt-4 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-white)] w-48 p-2 rounded-lg">
-                            <Checkbox
-                                className="cursor-pointer text-[var(--color-white)]"
-                                id="isSuperUser"
-                                name="isSuperUser"
-                                label="Activo"
-                                checked={formSupliers.isSuperUser}
-                                onChange={handleChange}
-                            />
-                            <Checkbox
-                                id="isStaff"
-                                name="isStaff"
-                                label="Inactivo"
-                                checked={formSupliers.isStaff}
-                                onChange={handleChange}
-                            />                    
-                        </div>
                     </div>
                 </div>
 
