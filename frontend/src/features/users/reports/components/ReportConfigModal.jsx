@@ -13,7 +13,7 @@ import { generateUserReport } from "../services/generateUserReport";
 import { Button, Input, Select, Checkbox, Alert } from "@/shared";
 
 // Componente modal para configuración de reportes
-export default function ReportConfigModal({ isOpen, onClose }) {
+export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
 
   // Estado del formato de salida
   const [format, setFormat] = useState("pdf");
@@ -84,7 +84,8 @@ export default function ReportConfigModal({ isOpen, onClose }) {
       format,
       selectedFields,
       scope,
-      documentNumber
+      documentNumber,
+      data
     });
 
     if (result && !result.success) {

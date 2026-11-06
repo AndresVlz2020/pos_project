@@ -116,6 +116,9 @@ export default function UserListPage() {
       <ReportConfigModal
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
+        title="Usuarios del sistema"
+        data={userList}
+        filePrefix="usuarios"
       />
     </div>
   );

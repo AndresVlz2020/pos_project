@@ -13,7 +13,7 @@ export default function ReadUser1() {
         userDocumentTypes: "CC",
         userEmail: "andres.velez@dpiero.com",
         role: "Administrador",
-        status: "Activo",
+        isActive: "Activo",
     };
 
     const userPhoto = user?.photo || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.userName || 'Usuario'}`;
@@ -38,7 +38,7 @@ export default function ReadUser1() {
                     <div className="flex flex-col px-8 py-6 gap-y-2.5 bg-[var(--color-secondary-800)]/70 border border-[var(--color-secondary-700)] rounded-md flex-1">
                         <h3 className="text-lg font-bold text-[var(--color-white)] mb-1">{user.userName}</h3>
                         <div className="text-sm flex flex-col gap-2 text-[var(--color-gray-300)]">
-                            <p>ID: <span className="font-bold text-[var(--color-white)] font-mono">#{user.id}</span></p>
+                            <p>ID: <span className="font-bold text-[var(--color-white)] font-mono">{user.id}</span></p>
                             <p>Documento ({user.userDocumentTypes}): <span className="font-bold text-[var(--color-white)] font-mono">{user.userDocumentNumber}</span></p>
                             <p className="flex items-center gap-2"><Shield className="size-4 text-[var(--color-primary-400)]" />Rol: <span className="font-semibold text-[var(--color-white)]">{roleName}</span></p>
                             <p className="flex items-center gap-2"><Phone className="size-4 text-[var(--color-primary-400)]" />Teléfono: <span className="font-mono text-[var(--color-gray-200)]">{user.userPhone || "No registrado"}</span></p>

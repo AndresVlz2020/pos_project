@@ -22,11 +22,11 @@ export const userReportFields = [
   {
     key: "userPhone",
     label: "Teléfono",
-    default: false
+    default: true
   },
   {
-    key: "address",
-    label: "Dirección",
-    default: false
+    key: "isActive",
+    label: "Estado",
+    default: true
   }
 ];
