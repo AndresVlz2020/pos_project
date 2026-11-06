@@ -1,23 +1,31 @@
-import image from "@/assets/images/supplier-lacteos.jpg";
-import { Mail, Phone, MapPin, Building2, FileText, CheckCircle2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Mail, Phone, MapPin, Building2, FileText, CheckCircle2, XCircle } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/shared";
 
 export default function ReadSupplierPage() {
-  const supplier = {
+  const location = useLocation();
+
+  const supplier = location.state?.supplier || {
     nit: "900.123.456-1",
-    supplierName: "Distribuidora Lácteos del Campo S.A.S.",
+    companyName: "Distribuidora Lácteos del Campo S.A.S.",
     supplierEmail: "ventas@lacteosdelcampo.co",
     supplierPhone: "3001234567",
-    supplierDirection: "Calle 45 # 12-34, Zona Industrial, Medellín",
-    category: "Lácteos y Derivados",
-    paymentTerms: "Crédito a 30 días",
-    status: "Activo",
+    address: "Calle 45 # 12-34, Zona Industrial, Medellín",
+    isActive: true,
     observation: "Proveedor principal de quesos mozzarella y leche entera para cocina y barra de preparación.",
   };
 
+  const supplierPhoto = supplier?.photo || `https://api.dicebear.com/7.x/initials/svg?seed=${supplier?.companyName || 'Usuario'}`;
+
+  const status = supplier.isActive ?? supplier.is_active ?? supplier.status;
+  const isActivo =
+    typeof status === "boolean"
+      ? status
+      : status == "Activo" || status === "enabled";
+  const statusText = isActivo ? "Activo" : "Inactivo"
+
   return (
-    <div className="max-w-4xl mx-auto my-6 px-4">
+    <div className="max-w-4xl mx-auto my-6 px-4 pb-12">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-[var(--color-white)]">Ficha del Proveedor</h1>
@@ -37,19 +45,26 @@ export default function ReadSupplierPage() {
         {/* Cabecera del proveedor */}
         <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-[var(--color-secondary-800)]">
           <img
-            src={image}
-            alt={supplier.supplierName}
+            src={supplierPhoto}
+            alt={supplier.companyName}
             className="rounded-xl border-2 border-[var(--color-secondary-700)] size-28 object-cover shadow-md"
           />
           <div className="flex-1 text-center sm:text-left">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-              <h2 className="text-lg font-bold text-[var(--color-white)]">{supplier.supplierName}</h2>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                <CheckCircle2 className="size-3" />
-                {supplier.status}
+              <h2 className="text-lg font-bold text-[var(--color-white)]">{supplier.companyName}</h2>
+              <span className={`inline-flex items-center gap-1 px-2.5 py-0-5 rounded-full text-xs font-semibold border ${
+                isActivo
+                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                  : "bg-rose-500/10 text-rose-400 border-rose-500/30"
+              }`}
+              >
+                {isActivo ? (
+                  <CheckCircle2 className="size-3" />
+                ) : (
+                  <XCircle className="size-3" />
+                )}
               </span>
             </div>
-            <p className="text-xs text-[var(--color-gray-400)] font-mono">NIT: {supplier.nit}</p>
           </div>
         </div>
 
@@ -61,20 +76,15 @@ export default function ReadSupplierPage() {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
             <div>
-              <span className="text-[var(--color-gray-400)] block">Razón Social:</span>
-              <span className="font-semibold text-[var(--color-white)] text-sm">{supplier.supplierName}</span>
-            </div>
-            <div>
               <span className="text-[var(--color-gray-400)] block">Número de Identificación Tributaria (NIT):</span>
               <span className="font-semibold text-[var(--color-white)] font-mono">{supplier.nit}</span>
             </div>
-            <div>
-              <span className="text-[var(--color-gray-400)] block">Línea de Suministro:</span>
-              <span className="font-semibold text-[var(--color-gray-200)]">{supplier.category}</span>
-            </div>
+
             <div>
               <span className="text-[var(--color-gray-400)] block">Estado Operativo:</span>
-              <span className="font-semibold text-emerald-400">{supplier.status}</span>
+              <span className={`font-semibold ${
+                isActivo ? "text-emerald-400" : "text-rose-400"
+              }`}>{statusText}</span>
             </div>
           </div>
         </div>
@@ -104,7 +114,7 @@ export default function ReadSupplierPage() {
               <span className="text-[var(--color-gray-400)] block">Dirección de Despacho:</span>
               <span className="font-medium text-[var(--color-gray-200)] flex items-center gap-1.5 mt-0.5">
                 <MapPin className="size-3.5 text-[var(--color-primary-400)]" />
-                {supplier.supplierDirection}
+                {supplier.address}
               </span>
             </div>
           </div>

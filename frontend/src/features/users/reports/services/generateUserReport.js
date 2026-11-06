@@ -1,5 +1,4 @@
 // Fuente de datos de usuarios (mock o fuente centralizada)
-import { users } from "../../data/users";
 
 // Utilidad para transformar datos en dataset de reporte
 import { buildReportDataset } from "../utils/buildReportDataset";
@@ -15,12 +14,13 @@ export function generateUserReport({
   format,        // "excel" o "pdf"
   selectedFields,// Campos seleccionados por el usuario
   scope,         // Alcance del reporte
-  documentNumber // Filtro opcional
+  documentNumber,
+  data = [] // Filtro opcional
 }) {
 
   // Construcción del dataset (desacoplado de la UI)
   const { headers, rows } = buildReportDataset({
-    users,
+    users: data,
     selectedFields,
     scope,
     documentNumber
@@ -33,7 +33,6 @@ export function generateUserReport({
       message: "No existen datos coincidentes para los filtros seleccionados."
     };
   }
-
 
   // Generación de timestamp para nombres únicos de archivo (YYYY-MM-DD)
   const timestamp = new Date().toISOString().split("T")[0];

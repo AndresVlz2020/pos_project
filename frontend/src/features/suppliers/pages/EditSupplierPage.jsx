@@ -7,7 +7,6 @@ export default function EditSupplier1() {
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
-    
 
     const[formSupliers, setFormSupliers] = useState({
         supplierNit:"",

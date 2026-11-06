@@ -27,6 +27,13 @@ export default function SuppliersListPage() {
     );
   }, [suppliersList]);
 
+  const reportSuppliers = useMemo(() => {
+    return sortedSuppliers.map((s) => ({
+      ...s,
+      isActive: s.isActive ? "Activo" : "Inactivo"
+    }));
+  }, [sortedSuppliers])
+
   // Manejo de solicitud de cambio de estado con confirmación previa (RFADMIN17)
   const handleRequestStatusChange = (supplier, targetState) => {
     setPendingChange({
@@ -97,7 +104,7 @@ export default function SuppliersListPage() {
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         title="proveedores y distribuidores"
-        data={sortedSuppliers}
+        data={reportSuppliers}
         fields={suppliersReportFields}
         filePrefix="proveedores"
       />
