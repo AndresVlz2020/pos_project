@@ -22,6 +22,7 @@ export default function ProductListPage() {
   const [pendingChange, setPendingChange] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const { granted: canToggleStatus } = usePermission("disable_product");
+  const { granted: canEdit } = usePermission("update_product");
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -95,8 +96,8 @@ export default function ProductListPage() {
   };
 
   const columns = useMemo(
-    () => getProductColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus }),
-    [canToggleStatus]
+    () => getProductColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus, canEdit }),
+    [canToggleStatus, canEdit]
   );
 
   return (

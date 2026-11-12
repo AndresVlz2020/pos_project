@@ -11,6 +11,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getProducts } from "@/features/products/services/productServices";
 import { getOrderById, updateOrder, cancelOrder, getTablesAvailability } from "../services/orderServices";
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
+import OrderViewModal from "../components/OrderViewModal";
 
 export default function EditOrder() {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ export default function EditOrder() {
   const [tablesList, setTablesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [paidOrderForPrint, setPaidOrderForPrint] = useState(null);
   const [errors, setErrors] = useState({});
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
   const [qty, setQty] = useState({});
@@ -243,6 +245,33 @@ export default function EditOrder() {
         title: "Comanda Actualizada",
         text: `La comanda ${formOrder.id} ha sido actualizada exitosamente.`,
       });
+
+      if (formOrder.orderStatus === "Pagada") {
+        const totalComanda = selectedItems.reduce(
+          (acc, it) => acc + Number(it.unitPrice || 0) * Number(it.quantity || 0),
+          0
+        );
+        setPaidOrderForPrint({
+          id: formOrder.numericId || formOrder.id,
+          idCode: formOrder.id,
+          tableNumber: formOrder.tableNumber,
+          waiter: formOrder.waiter,
+          status: "pagada",
+          paymentMethod: formOrder.paymentMethod,
+          createdAt: editData?.createdAt || new Date().toISOString(),
+          observations: formOrder.observations,
+          total: totalComanda,
+          items: selectedItems.map((it) => {
+            const dish = dishes.find((d) => d.id === it.productId);
+            return {
+              name: dish?.title || "Producto",
+              price: it.unitPrice,
+              qty: it.quantity,
+            };
+          }),
+        });
+        return;
+      }
 
       navigate("/OrderListPage");
     } catch (err) {
@@ -490,6 +519,15 @@ export default function EditOrder() {
         isDestructive={true}
         onConfirm={handleConfirmCancel}
         onCancel={() => setIsCancelConfirmOpen(false)}
+      />
+
+      <OrderViewModal
+        order={paidOrderForPrint}
+        isOpen={Boolean(paidOrderForPrint)}
+        onClose={() => {
+          setPaidOrderForPrint(null);
+          navigate("/OrderListPage");
+        }}
       />
     </div>
   );

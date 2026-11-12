@@ -1,4 +1,9 @@
+import documentTypes from "../selects/documentTypes.json";
+
 export async function getDocumentTypes() {
-    const response = await fetch(`src/selects/documentTypes.json`)
-    return(response.json());
+  return documentTypes.map((doc) => ({
+    id: doc.id,
+    value: doc.id,
+    label: doc.label,
+  }));
 }

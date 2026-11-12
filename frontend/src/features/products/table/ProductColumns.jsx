@@ -4,7 +4,7 @@ import { updateProductStatus } from "../services/productServices";
 import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
 
-export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = false } = {}) => [
+export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = false, canEdit = true } = {}) => [
   {
     accessorKey: "code",
     header: "Código",
@@ -100,7 +100,7 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
   },
   {
     id: "actions",
-    cell: ({ row }) => <ProductRowActions product={row.original} />,
+    cell: ({ row }) => <ProductRowActions product={row.original} canEdit={canEdit} />,
   },
 ];
 

@@ -5,10 +5,12 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { updateProduct } from "../services/productServices";
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
 import resizeImageFile from "@/utils/imageFile";
+import usePermission from "@/features/access/services/usePermission";
 
 export default function EditProductPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { granted: canToggleStatus } = usePermission("disable_product");
 
   const productToEdit =
     location.state?.product ||
@@ -131,16 +133,21 @@ export default function EditProductPage() {
         imageUrl = await resizeImageFile(userImage[0]);
       }
 
-      await updateProduct(productId, {
+      const payload = {
         name: formProduct.productName,
         title: formProduct.productName,
         price: Number(formProduct.productPrice),
         category: selectedCat,
         description: formProduct.productDescription,
-        status: formProduct.productStatus === "habilitado" ? "Activo" : "Inactivo",
-        isActive: formProduct.productStatus === "habilitado",
         imageUrl,
-      });
+      };
+
+      if (canToggleStatus) {
+        payload.status = formProduct.productStatus === "habilitado" ? "Activo" : "Inactivo";
+        payload.isActive = formProduct.productStatus === "habilitado";
+      }
+
+      await updateProduct(productId, payload);
 
       sessionStorage.removeItem("last_edited_product");
 
@@ -243,6 +250,7 @@ export default function EditProductPage() {
               options={statusOptions}
               value={formProduct.productStatus}
               onChange={handleChange}
+              disabled={!canToggleStatus}
               error={errors.productStatus}
             />
             <div className="md:col-span-2">
