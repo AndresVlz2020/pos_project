@@ -1,23 +1,21 @@
-// Importamos la instancia de la aplicacion Express ya configurada
-// app.js debe encargarse de middlewares, rutas y configuraciones generales
+import { validateEnv, NODE_ENV } from "./config/env.js";
 import app from "./app.js";
 
-// Importamos dotenv para cargar variables de entorno desde un archivo .env
-import dotenv from "dotenv";
+// Fallar rápido si falta algún secreto crítico — nunca operar con valores por defecto
+validateEnv();
+console.log(`[env] NODE_ENV=${NODE_ENV} — configuración validada`);
 
-// Ejecutamos la carga de variables de entorno
-// Esto debe hacerse antes de usar process.env  
+// Prevención de caídas del proceso Node ante excepciones no capturadas
+process.on("uncaughtException", (err) => {
+  console.error("⚠️ [CRITICAL GUARD] Excepción no capturada evitada:", err.message);
+});
 
-dotenv.config();
-
-// Definimos el puerto del servidor
-// Se prioriza el valor definido en el entorno (producción)
-// Y se usa 4000 como valor por defecto en desarrollo
+process.on("unhandledRejection", (reason) => {
+  console.error("⚠️ [CRITICAL GUARD] Promesa rechazada evitada:", reason);
+});
 
 const PORT = process.env.PORT || 4000;
 
-// Iniciamos el servidor HTTP usando la app Express
-// Listen levanta el servidor y queda a la espera de las peticiones
 app.listen(PORT, () => {
-    console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
-}); 
+  console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+});

@@ -1,6 +1,7 @@
 // frontend/src/features/access/services/groupService.js
+import { API_URL } from "@/features/config";
 
-const API_URL = "http://localhost:4000/api/groups";
+const GROUPS_API_URL = `${API_URL}/groups`;
 
 function getStoredToken() {
   return (
@@ -10,8 +11,19 @@ function getStoredToken() {
   );
 }
 
+function getAuthHeaders() {
+  const token = getStoredToken();
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 export async function getGroups() {
-  const response = await fetch(API_URL);
+  const response = await fetch(GROUPS_API_URL, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
 
   if (!response.ok) {
     throw new Error("Error obteniendo grupos");
@@ -24,11 +36,11 @@ export async function getGroups() {
 export async function updateGroupPermissions(groupId, permissionIds) {
   const token = getStoredToken();
 
-  const response = await fetch(`${API_URL}/${groupId}/permissions`, {
+  const response = await fetch(`${GROUPS_API_URL}/${groupId}/permissions`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      ...getAuthHeaders(),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({
       permissionIds,

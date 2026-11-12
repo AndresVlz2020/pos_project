@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { DataTable, Button, ListReportModal, ConfirmDialog, Alert } from "@/shared";
 import { getOrderColumns } from "../table/OrderColumns";
-import { getStoredOrders, saveStoredOrders } from "../data/orders";
+import { getOrders, cancelOrder } from "../services/orderServices";
 import OrderViewModal from "../components/OrderViewModal";
 import { Link } from "react-router-dom";
 
@@ -16,18 +16,40 @@ const orderReportFields = [
 ];
 
 export default function OrderListPage() {
-  const [orders, setOrders] = useState(() => getStoredOrders());
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState(null);
   const [feedback, setFeedback] = useState(null);
 
+  const fetchOrders = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getOrders();
+      setOrders(data || []);
+    } catch (error) {
+      console.error("Error al cargar comandas desde PostgreSQL:", error);
+      setFeedback({
+        type: "error",
+        title: "Error de conexión",
+        message: "No se pudieron cargar las órdenes desde la base de datos.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
   // Ordenar por fecha descendente (RFADMIN28)
   const sortedOrders = useMemo(() => {
     return [...orders].sort((a, b) => {
-      const dateA = new Date(a.createdAt || 0);
-      const dateB = new Date(b.createdAt || 0);
+      const dateA = new Date(a.createdAt || a.created_at || 0);
+      const dateB = new Date(b.createdAt || b.created_at || 0);
       return dateB - dateA;
     });
   }, [orders]);
@@ -41,24 +63,37 @@ export default function OrderListPage() {
     setOrderToCancel(order);
   };
 
-  // Confirmación explícita antes de anular (RFADMIN30)
-  const handleConfirmCancel = () => {
+  // Confirmación explícita antes de anular (RFADMIN30) y actualización en PostgreSQL
+  const handleConfirmCancel = async () => {
     if (!orderToCancel) return;
 
-    const updated = orders.map((o) =>
-      o.id === orderToCancel.id ? { ...o, status: "Anulada" } : o
-    );
+    try {
+      const identifier = orderToCancel.numericId || orderToCancel.id;
+      await cancelOrder(identifier, "Cancelada por usuario en pantalla de administración");
 
-    setOrders(updated);
-    saveStoredOrders(updated);
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderToCancel.id
+            ? { ...o, status: "Anulada", orderStatus: "Anulada" }
+            : o
+        )
+      );
 
-    setFeedback({
-      type: "success",
-      title: "Orden Anulada",
-      message: `La orden ${orderToCancel.id} de la ${orderToCancel.tableNumber} ha sido anulada correctamente.`,
-    });
-
-    setOrderToCancel(null);
+      setFeedback({
+        type: "success",
+        title: "Orden Anulada",
+        message: `La comanda ${orderToCancel.id} (${orderToCancel.tableNumber}) ha sido anulada en PostgreSQL y su stock fue restaurado.`,
+      });
+    } catch (error) {
+      console.error("Error al anular orden:", error);
+      setFeedback({
+        type: "error",
+        title: "Error al anular",
+        message: error.message || "No se pudo anular la orden en la base de datos.",
+      });
+    } finally {
+      setOrderToCancel(null);
+    }
   };
 
   const columns = useMemo(
@@ -67,17 +102,25 @@ export default function OrderListPage() {
         onViewOrder: handleViewOrder,
         onRequestCancel: handleRequestCancel,
       }),
-    [orders]
+    []
   );
 
   return (
     <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-6 shadow-md text-[var(--color-white)]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-xl font-bold text-[var(--color-white)]">
-          Listado de Órdenes
-        </h1>
+        <div>
+          <h1 className="text-xl font-bold text-[var(--color-white)]">
+            Listado de Órdenes y Comandas
+          </h1>
+          <p className="text-xs text-[var(--color-gray-400)] mt-1">
+            Sincronizado en tiempo real con PostgreSQL ({orders.length} comandas registradas)
+          </p>
+        </div>
 
         <div className="flex gap-2.5">
+          <Button variant="secondary" onClick={fetchOrders} disabled={loading}>
+            {loading ? "Sincronizando..." : "Refrescar"}
+          </Button>
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
             Generar reporte
           </Button>
@@ -98,8 +141,13 @@ export default function OrderListPage() {
         </div>
       )}
 
-      {/* Tabla de órdenes con filtros integrados en DataTable */}
-      <DataTable data={sortedOrders} columns={columns} />
+      {loading && orders.length === 0 ? (
+        <div className="py-12 text-center text-[var(--color-gray-400)]">
+          Cargando comandas desde PostgreSQL...
+        </div>
+      ) : (
+        <DataTable data={sortedOrders} columns={columns} />
+      )}
 
       {/* Modal de consulta de orden */}
       <OrderViewModal
@@ -116,7 +164,7 @@ export default function OrderListPage() {
         <ConfirmDialog
           isOpen={Boolean(orderToCancel)}
           title="Anular Orden del Sistema"
-          description={`¿Estás seguro de que deseas anular la comanda ${orderToCancel.id} perteneciente a la ${orderToCancel.tableNumber}? Esta acción marcará la orden como ANULADA.`}
+          description={`¿Estás seguro de que deseas anular la comanda ${orderToCancel.id} perteneciente a la ${orderToCancel.tableNumber}? Esta acción marcará la orden como ANULADA en PostgreSQL.`}
           confirmText="Sí, anular orden"
           cancelText="No, conservar"
           isDestructive={true}

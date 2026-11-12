@@ -1,4 +1,5 @@
 import React from "react";
+import { getProductImage, imgPunta } from "@/utils/imageHelper";
 
 const Card = ({
   product,
@@ -15,6 +16,7 @@ const Card = ({
   const displayPrice = price || productPrice;
   const displayDesc = description || productCategory;
   const displayCategory = category || productCategory;
+  const imageSrc = getProductImage(product);
 
   const parsePrice = (val) => parseFloat(String(val || 0).replace(/\$/g, "").replace(/\./g, "").trim()) || 0;
   const numericPrice = parsePrice(displayPrice);
@@ -44,15 +46,18 @@ const Card = ({
       `}
     >
       <div>
-        {image && (
-          <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-[var(--color-secondary-950)]">
-            <img
-              src={image}
-              alt={displayTitle}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-secondary-950)]/80 via-transparent to-transparent pointer-events-none" />
+        <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-[var(--color-secondary-950)]">
+          <img
+            src={imageSrc}
+            alt={displayTitle}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = imgPunta;
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-secondary-950)]/80 via-transparent to-transparent pointer-events-none" />
             
             {/* Badges superiores tipo Material Chips */}
             <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1 pointer-events-none">
@@ -85,7 +90,6 @@ const Card = ({
               </span>
             )}
           </div>
-        )}
 
         <div className="p-4 space-y-2">
           {displayTitle && (

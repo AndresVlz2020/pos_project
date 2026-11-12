@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Navbar } from "@/shared";
-import { products } from "@/features/products/data/products";
+import { products as fallbackProducts } from "@/features/products/data/products";
+import { getProducts } from "@/features/products/services/productServices";
 import { useSearchParams } from "react-router-dom";
 import { 
   UtensilsCrossed, 
@@ -28,6 +29,9 @@ export default function HomePage() {
   const urlSearch = searchParams.get("search") || "";
   const tabParam = searchParams.get("tab") || "menu";
 
+  const [dbProducts, setDbProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
   // Obtener usuario autenticado actual y sus permisos
   const currentUser = (() => {
     try {
@@ -41,8 +45,30 @@ export default function HomePage() {
   const isAdmin = role === "Admin" || role === "Administrador";
   const isCajero = role === "Cajero";
 
+  // Cargar productos en tiempo real desde PostgreSQL
+  const fetchPosProducts = useCallback(async () => {
+    try {
+      setLoadingProducts(true);
+      const data = await getProducts({ activeOnly: true });
+      if (Array.isArray(data) && data.length > 0) {
+        setDbProducts(data);
+      } else {
+        setDbProducts(fallbackProducts);
+      }
+    } catch (err) {
+      console.warn("Usando catálogo de respaldo en HomePage:", err);
+      setDbProducts(fallbackProducts);
+    } finally {
+      setLoadingProducts(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPosProducts();
+  }, [fetchPosProducts]);
+
   // Definir pestañas permitidas según rol:
-  // - Admin (admin@dpiero.com): Todas las pestañas
+  // - Admin: Todas las pestañas
   // - Cajero: Catálogo & Comandas, Clientes & Facturación (no personal ni proveedores)
   // - Mesero / Cocinero: Catálogo & Comandas exclusivamente
   const availableTabs = PRIMARY_TABS.filter((tab) => {
@@ -97,16 +123,16 @@ export default function HomePage() {
     handleSearchChange("");
   };
 
+  const productsToDisplay = dbProducts.length > 0 ? dbProducts : fallbackProducts;
+
   return (
     <div className="min-h-screen bg-[var(--color-secondary-950)] text-[var(--color-white)] flex flex-col font-[family-name:var(--main-font)]">
       {/* Barra de navegación superior */}
       <Navbar />
 
-      {/* Cabecera operativa del POS con datos dinámicos del usuario activo */}
-      <PosTerminalHeader 
-        activeShift="Tarde / Noche" 
-        station={currentUser?.station || "Estación #01"} 
-        operator={currentUser?.name || "Operador en Turno"} 
+      {/* Cabecera operativa del POS con datos del usuario autenticado y KPIs en tiempo real */}
+      <PosTerminalHeader
+        operator={currentUser?.name || "Operador en Turno"}
         role={currentUser?.role || "Personal"}
       />
 
@@ -143,7 +169,7 @@ export default function HomePage() {
       <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 py-5">
         {activeTab === "menu" && (
           <PosProductsSection
-            products={products}
+            products={productsToDisplay}
             searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
             onClearSearch={handleClearSearch}

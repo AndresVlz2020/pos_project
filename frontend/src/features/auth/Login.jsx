@@ -158,7 +158,7 @@ export default function Login() {
       if (err.isNetworkError) {
         await showErrorAlert({
           title: "Servidor Desconectado",
-          text: "No se pudo conectar con el servidor backend en http://localhost:4000. Por favor, inicia el backend en una terminal ('npm run dev').",
+          text: "No se pudo conectar con el servidor backend. Verifica que el servidor esté iniciado e inténtalo de nuevo.",
         });
         return {
           errors: {

@@ -78,7 +78,7 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
         </div>
 
         {pinError && (
-          <p className="text-xs text-red-400 mt-2 font-medium">
+          <p className="text-xs text-[var(--color-error)] mt-2 font-medium">
             {pinError}
           </p>
         )}

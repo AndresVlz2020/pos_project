@@ -12,15 +12,15 @@ const icons = {
 
 const styles = {
   success: "bg-[var(--color-secondary-900)] border-[var(--color-primary-500)] text-[var(--color-white)]",
-  warning: "bg-[var(--color-secondary-900)] border-amber-500 text-[var(--color-white)]",
-  error: "bg-[var(--color-secondary-900)] border-red-500 text-[var(--color-white)]",
+  warning: "bg-[var(--color-warning-bg)] border-[var(--color-warning-border)] text-[var(--color-white)]",
+  error: "bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-white)]",
   info: "bg-[var(--color-secondary-900)] border-[var(--color-primary-400)] text-[var(--color-white)]",
 };
 
 const iconColors = {
   success: "text-[var(--color-primary-400)]",
-  warning: "text-amber-400",
-  error: "text-red-400",
+  warning: "text-[var(--color-warning)]",
+  error: "text-[var(--color-error)]",
   info: "text-[var(--color-primary-300)]",
 };
 

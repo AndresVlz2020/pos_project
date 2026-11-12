@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { fileSchema } from "../../../shared/schemas/fileSchema";
+import { optionalFiles } from "../../../shared/schemas/fileSchema";
 
 // Esquema para la vista Crear y Editar Usuario (CreateUserPage.jsx / EditUserPage.jsx)
 export const createUserSchema = z
@@ -42,7 +42,7 @@ export const createUserSchema = z
 
     userPassword: z.string().optional().or(z.literal("")),
 
-    userImage: fileSchema.shape.files.optional(),
+    userImage: optionalFiles,
   })
   .superRefine((data, ctx) => {
     const isAdmin = ["admin", "Admin", "Administrador"].includes(data.userType);
@@ -129,7 +129,7 @@ export const userSchema = z.object({
   isActive: z.boolean().optional(),
   isSuperUser: z.boolean().optional(),
 
-  userImage: fileSchema.shape.files.optional(),
+  userImage: optionalFiles,
 });
 
 // Esquema específico para el login (solo email y contraseña)

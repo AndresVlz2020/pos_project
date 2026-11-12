@@ -3,7 +3,7 @@ export const initialOrders = [
     id: "ORD-001",
     tableNumber: "Mesa 1",
     waiter: "Carlos Pérez",
-    status: "Abierta",
+    status: "No Pagada",
     items: [
       { id: "1", name: "Punta de Anca Angus 400g", price: 56000, qty: 2 },
       { id: "3", name: "Limonada Natural", price: 8500, qty: 2 },
@@ -16,7 +16,7 @@ export const initialOrders = [
     id: "ORD-002",
     tableNumber: "Mesa 3",
     waiter: "María Rodríguez",
-    status: "En preparación",
+    status: "No Pagada",
     items: [
       { id: "2", name: "Costillas BBQ Campestres", price: 48000, qty: 1 },
       { id: "4", name: "Postre de la Casa", price: 14000, qty: 1 },
@@ -30,6 +30,7 @@ export const initialOrders = [
     tableNumber: "Mesa 7",
     waiter: "Juan Gómez",
     status: "Pagada",
+    paymentMethod: "Efectivo",
     items: [
       { id: "1", name: "Punta de Anca Angus 400g", price: 56000, qty: 1 },
       { id: "3", name: "Limonada Natural", price: 8500, qty: 1 },
@@ -42,7 +43,8 @@ export const initialOrders = [
     id: "ORD-004",
     tableNumber: "Mesa 4",
     waiter: "Ana Martínez",
-    status: "Cerrada",
+    status: "Pagada",
+    paymentMethod: "Tarjeta crédito",
     items: [
       { id: "2", name: "Costillas BBQ Campestres", price: 48000, qty: 2 },
       { id: "3", name: "Limonada Natural", price: 8500, qty: 2 },

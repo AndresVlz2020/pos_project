@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { fileSchema } from "../../../shared/schemas/fileSchema";
+import { optionalFiles } from "../../../shared/schemas/fileSchema";
 
 export const productSchema = z.object({
   productName: z
@@ -28,5 +28,5 @@ export const productSchema = z.object({
     .string()
     .min(1, "Debe seleccionar un estado operativo"),
 
-  userImage: fileSchema.shape.files.optional(),
+  userImage: optionalFiles,
 });

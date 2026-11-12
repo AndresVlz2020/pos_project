@@ -1,92 +1,182 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
-  Input,
   Select,
   Button,
-  IconButton,
-  Card,
   DataTable,
   ConfirmDialog,
   showSuccessAlert,
   showErrorAlert,
+  Input,
 } from "@/shared";
-import { Pencil, List, PlusCircle } from "lucide-react";
-import { useNavigate, Link } from "react-router-dom";
-import { products } from "@/features/products/data/products";
-import { getStoredOrders, saveStoredOrders } from "../data/orders";
+import { List, PlusCircle, CheckCircle2, Ban } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { getProducts } from "@/features/products/services/productServices";
+import { getOrders, createOrder, cancelOrder, getTablesAvailability } from "../services/orderServices";
 import { getOrderColumns } from "../table/OrderColumns";
 import OrderViewModal from "../components/OrderViewModal";
+import { getProductImage, imgPunta } from "@/utils/imageHelper";
 
 export default function CreateOrder() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("create"); // 'create' | 'list'
-  const [orders, setOrders] = useState(() => getStoredOrders());
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState(null);
 
+  const [productsList, setProductsList] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  const [tablesList, setTablesList] = useState([]);
+  const [loadingTables, setLoadingTables] = useState(true);
+
   const [form, setForm] = useState({
     tableNumber: "",
-    waiter: "",
+    waiter: "Carlos Pérez",
     observations: "",
   });
 
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
-  // Regla RFADMIN29 / RFADMIN24: Mantiene visible el platillo inhabilitado y lo excluye de órdenes
-  const dishes = products.map((p) => ({
-    id: p.id,
-    name: p.title,
-    price: p.price,
-    status: p.status === "Inactivo" || p.status === "inhabilitado" ? "Inactivo" : "Disponible",
-    image: p.image,
-  }));
+  // Cargar productos, órdenes y disponibilidad de mesas en tiempo real
+  const fetchInitialData = useCallback(async () => {
+    try {
+      setLoadingProducts(true);
+      setLoadingTables(true);
+      const [prods, ords, tbls] = await Promise.all([
+        getProducts({ activeOnly: false }),
+        getOrders(),
+        getTablesAvailability().catch((err) => {
+          console.warn("Error cargando mesas:", err);
+          return [];
+        }),
+      ]);
+      setProductsList(prods || []);
+      setOrders(ords || []);
+      setTablesList(tbls || []);
+
+      // Si no hay mesa seleccionada, preseleccionar la primera disponible
+      setForm((prev) => {
+        if (prev.tableNumber) return prev;
+        const firstAvailable = (tbls || []).find((t) => t.isAvailable);
+        return {
+          ...prev,
+          tableNumber: firstAvailable ? firstAvailable.tableNumber : "",
+        };
+      });
+    } catch (err) {
+      console.error("Error al cargar datos en CreateOrder:", err);
+    } finally {
+      setLoadingProducts(false);
+      setLoadingTables(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchInitialData();
+  }, [fetchInitialData]);
+
+  // Regla RFADMIN29 / RFADMIN24: Platillos inhabilitados excluidos de órdenes
+  const dishes = useMemo(() => {
+    return productsList.map((p) => ({
+      id: p.id,
+      code: p.code,
+      name: p.title || p.name,
+      price: Number(p.price) || 0,
+      stock: Number(p.stock) || 0,
+      status: p.is_active ? "Disponible" : "Inactivo",
+      image: p.image,
+    }));
+  }, [productsList]);
+
+  const [qty, setQty] = useState({});
 
   const waiterOptions = [
-    { value: "Carlos Pérez", label: "Carlos Pérez" },
-    { value: "María Rodríguez", label: "María Rodríguez" },
-    { value: "Juan Gómez", label: "Juan Gómez" },
-    { value: "Ana Martínez", label: "Ana Martínez" },
+    { value: "Carlos Pérez", label: "Carlos Pérez (Mesero)" },
+    { value: "María Rodríguez", label: "María Rodríguez (Mesera)" },
+    { value: "Juan Gómez", label: "Juan Gómez (Mesero)" },
+    { value: "Ana Martínez", label: "Ana Martínez (Cajera / Turno)" },
   ];
 
-  const [qty, setQty] = useState(
-    dishes.reduce((acc, d) => ({ ...acc, [d.id]: 0 }), {})
-  );
+  // Opciones de mesas dinámicas según disponibilidad
+  const tableSelectOptions = useMemo(() => {
+    return tablesList.map((t) => ({
+      value: t.tableNumber,
+      label: t.isAvailable
+        ? `${t.tableNumber} - Disponible (Cap. ${t.capacity} pers.)`
+        : `${t.tableNumber} - Ocupada (${t.activeOrderNumber || "Comanda en curso"})`,
+      disabled: !t.isAvailable,
+    }));
+  }, [tablesList]);
 
-  const parsePrice = (val) =>
-    parseFloat(String(val || 0).replace(/\$/g, "").replace(/\./g, "").trim()) || 0;
+  const totalAmount = useMemo(() => {
+    return dishes.reduce(
+      (sum, d) => sum + d.price * (qty[d.id] || 0),
+      0
+    );
+  }, [dishes, qty]);
 
-  const totalAmount = dishes.reduce(
-    (sum, d) => sum + parsePrice(d.price) * (qty[d.id] || 0),
-    0
-  );
-
-  const totalItems = Object.values(qty).reduce((a, b) => a + b, 0);
+  const totalItems = useMemo(() => {
+    return Object.values(qty).reduce((a, b) => a + b, 0);
+  }, [qty]);
 
   const handleIncrement = (dish) => {
-    // Regla RFADMIN29: Bloquea agregar platillos inhabilitados
-    if (dish.status === "Inactivo" || dish.status === "inhabilitado") {
+    if (dish.status === "Inactivo") {
       showErrorAlert({
         title: "Platillo inhabilitado",
-        text: `El platillo "${dish.name}" está inhabilitado en el menú y no puede ser agregado a las órdenes.`,
+        text: `El platillo "${dish.name}" se encuentra inhabilitado y no puede ser agregado a ninguna comanda.`,
       });
       return;
     }
-    setQty((q) => ({ ...q, [dish.id]: (q[dish.id] || 0) + 1 }));
+
+    setQty((prev) => ({
+      ...prev,
+      [dish.id]: (prev[dish.id] || 0) + 1,
+    }));
   };
 
   const handleDecrement = (dish) => {
-    setQty((q) => ({ ...q, [dish.id]: Math.max(0, (q[dish.id] || 0) - 1) }));
+    setQty((prev) => {
+      const current = prev[dish.id] || 0;
+      if (current <= 1) {
+        const next = { ...prev };
+        delete next[dish.id];
+        return next;
+      }
+      return { ...prev, [dish.id]: current - 1 };
+    });
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+  const handleChangeForm = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
 
     if (errors[name]) {
-      const nextErrors = { ...errors };
-      delete nextErrors[name];
-      setErrors(nextErrors);
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
+  };
+
+  const handleSelectTablePill = (table) => {
+    if (!table.isAvailable) {
+      showErrorAlert({
+        title: "Mesa Ocupada",
+        text: `La ${table.tableNumber} está actualmente ocupada con la orden ${table.activeOrderNumber || "activa"}. Seleccione otra mesa disponible.`,
+      });
+      return;
+    }
+    setForm((prev) => ({ ...prev, tableNumber: table.tableNumber }));
+    if (errors.tableNumber) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.tableNumber;
+        return next;
+      });
     }
   };
 
@@ -94,8 +184,12 @@ export default function CreateOrder() {
     e.preventDefault();
 
     const fieldErrors = {};
-    if (!form.tableNumber.trim()) fieldErrors.tableNumber = "Requerido (Ej. Mesa 5)";
-    if (!form.waiter) fieldErrors.waiter = "Selecciona un mesero";
+    if (!form.tableNumber.trim()) {
+      fieldErrors.tableNumber = "La mesa es obligatoria.";
+    }
+    if (!form.waiter.trim()) {
+      fieldErrors.waiter = "Debes asignar un mesero responsable.";
+    }
 
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
@@ -110,72 +204,90 @@ export default function CreateOrder() {
       return;
     }
 
-    // Regla RFADMIN26: Impide crear una segunda orden activa sobre la misma mesa
-    const currentStored = getStoredOrders();
-    const normalizedInput = form.tableNumber.trim().toLowerCase();
-    const existingActiveOrder = currentStored.find((o) => {
-      const t = o.tableNumber.trim().toLowerCase();
-      const isSameTable =
-        t === normalizedInput ||
-        t === `mesa ${normalizedInput}` ||
-        `mesa ${t}` === normalizedInput;
-      const isActive =
-        o.status === "Abierta" ||
-        o.status === "En preparación" ||
-        o.status === "en_proceso";
-      return isSameTable && isActive;
-    });
+    // Regla RFADMIN26: Validación de mesa disponible
+    const currentTableObj = tablesList.find(
+      (t) => t.tableNumber.toLowerCase() === form.tableNumber.toLowerCase()
+    );
 
-    if (existingActiveOrder) {
+    if (currentTableObj && !currentTableObj.isAvailable) {
       await showErrorAlert({
         title: "Mesa Ocupada",
-        text: `La "${form.tableNumber}" ya tiene una comanda activa (${existingActiveOrder.id}) en estado "${existingActiveOrder.status}". No se permite registrar una segunda orden activa sobre la misma mesa.`,
+        text: `La "${form.tableNumber}" ya tiene una comanda activa (${currentTableObj.activeOrderNumber || "en curso"}). No se permite registrar una comanda sobre una mesa ocupada.`,
       });
       return;
     }
 
-    // Construir items seleccionados
+    // Construir items seleccionados para backend
     const selectedItems = dishes
       .filter((d) => (qty[d.id] || 0) > 0)
       .map((d) => ({
-        id: d.id,
-        name: d.name,
-        price: parsePrice(d.price),
-        qty: qty[d.id],
+        productId: d.id,
+        quantity: qty[d.id],
+        unitPrice: d.price,
+        notes: "",
       }));
 
-    // Formatear ID único correlativo (RFADMIN26)
-    const newId = `ORD-${String(currentStored.length + 1).padStart(3, "0")}`;
-    const now = new Date();
-    const createdAt = `${now.toISOString().slice(0, 10)} ${now.toTimeString().slice(0, 8)}`;
+    setSubmitting(true);
 
-    const newOrder = {
-      id: newId,
-      tableNumber: form.tableNumber.startsWith("Mesa") ? form.tableNumber : `Mesa ${form.tableNumber}`,
-      waiter: form.waiter,
-      status: "Abierta", // RFADMIN26: Generando identificador único y estado 'Abierta'
-      items: selectedItems,
-      total: totalAmount,
-      observations: form.observations || "Sin observaciones adicionales",
-      createdAt,
-    };
+    try {
+      const tableFormatted = form.tableNumber.startsWith("Mesa")
+        ? form.tableNumber
+        : `Mesa ${form.tableNumber}`;
 
-    const updatedOrders = [newOrder, ...currentStored];
-    setOrders(updatedOrders);
-    saveStoredOrders(updatedOrders);
+      const created = await createOrder({
+        tableNumber: tableFormatted,
+        waiterName: form.waiter,
+        observations: form.observations || "Sin observaciones adicionales",
+        items: selectedItems,
+      });
 
-    setErrors({});
-    await showSuccessAlert({
-      title: "Orden Creada",
-      text: `Comanda ${newId} registrada con éxito en ${newOrder.tableNumber} con estado "Abierta".`,
-    });
+      // Notificación clara y limpia (sin mención de PostgreSQL)
+      await showSuccessAlert({
+        title: "Comanda Creada",
+        text: `Comanda ${created.order?.order_number || "creada"} para ${tableFormatted} registrada con éxito.`,
+      });
 
-    // Resetear formulario
-    setForm({ tableNumber: "", waiter: "", observations: "" });
-    setQty(dishes.reduce((acc, d) => ({ ...acc, [d.id]: 0 }), {}));
+      // Estructura completa de comanda para visualización e impresión inmediata
+      const createdOrder = created.order || {};
+      const fullOrderData = {
+        id: createdOrder.order_number || createdOrder.id || "ORD-000",
+        idCode: createdOrder.order_number || createdOrder.id || "ORD-000",
+        tableNumber: tableFormatted,
+        waiter: form.waiter,
+        status: createdOrder.status || "No Pagada",
+        createdAt: new Date().toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" }),
+        observations: form.observations || "Sin observaciones adicionales",
+        total: totalAmount,
+        totalAmount: totalAmount,
+        items: dishes
+          .filter((d) => (qty[d.id] || 0) > 0)
+          .map((d) => ({
+            name: d.name,
+            price: d.price,
+            qty: qty[d.id],
+            subtotal: d.price * qty[d.id],
+          })),
+      };
+
+      // Resetear formulario
+      setQty({});
+      setErrors({});
+      fetchInitialData();
+
+      // Abrir overlay de comanda inmediatamente con botón de impresión de factura
+      setSelectedOrder(fullOrderData);
+      setIsViewModalOpen(true);
+    } catch (err) {
+      console.error("Error al registrar orden:", err);
+      await showErrorAlert({
+        title: "Error al registrar comanda",
+        text: err.message || "No se pudo guardar la comanda.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  // Manejo de consulta y cancelación de órdenes
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
     setIsViewModalOpen(true);
@@ -185,20 +297,34 @@ export default function CreateOrder() {
     setOrderToCancel(order);
   };
 
-  const handleConfirmCancel = () => {
+  const handleConfirmCancel = async () => {
     if (!orderToCancel) return;
-    const currentStored = getStoredOrders();
-    const updated = currentStored.map((o) =>
-      o.id === orderToCancel.id ? { ...o, status: "Anulada" } : o
-    );
-    setOrders(updated);
-    saveStoredOrders(updated);
-    setOrderToCancel(null);
+    try {
+      const identifier = orderToCancel.numericId || orderToCancel.id;
+      await cancelOrder(identifier, "Cancelada desde módulo de comanda");
 
-    showSuccessAlert({
-      title: "Orden Anulada",
-      text: `La comanda ${orderToCancel.id} ha sido anulada correctamente.`,
-    });
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderToCancel.id
+            ? { ...o, status: "Anulada", orderStatus: "Anulada" }
+            : o
+        )
+      );
+
+      await showSuccessAlert({
+        title: "Comanda Anulada",
+        text: `La comanda ${orderToCancel.id} ha sido anulada correctamente.`,
+      });
+      fetchInitialData();
+    } catch (err) {
+      console.error("Error al cancelar orden:", err);
+      await showErrorAlert({
+        title: "Error al anular",
+        text: err.message || "No se pudo anular la orden.",
+      });
+    } finally {
+      setOrderToCancel(null);
+    }
   };
 
   const orderColumns = useMemo(
@@ -207,11 +333,11 @@ export default function CreateOrder() {
         onViewOrder: handleViewOrder,
         onRequestCancel: handleRequestCancel,
       }),
-    [orders]
+    []
   );
 
   return (
-    <div className="w-full pb-12">
+    <div className="w-full pb-12 font-[family-name:var(--main-font)]">
       {/* Header bar */}
       <div className="w-full bg-[var(--color-secondary-950)] text-[var(--color-white)] shadow-md border-b border-[var(--color-secondary-800)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-4">
@@ -225,21 +351,20 @@ export default function CreateOrder() {
               ←
             </Button>
             <div>
-              <h1 className="text-[length:var(--fs-md)] font-bold">
-                {activeTab === "create" ? "Crear Nueva Orden" : "Listado de Órdenes"}
+              <h1 className="text-[length:var(--fs-md)] font-bold text-[var(--color-white)]">
+                {activeTab === "create" ? "Crear Nueva Orden" : "Listado de Comandas"}
               </h1>
               <p className="text-xs text-[var(--color-gray-400)]">
-                Gestión de comandas y estado de mesas en salón
+                Gestión en tiempo real de mesas y comandas del restaurante
               </p>
             </div>
           </div>
 
-          {/* Accesible View Mode Tabs */}
           <div className="flex items-center gap-2 bg-[var(--color-secondary-900)] p-1 rounded-lg border border-[var(--color-secondary-800)]">
             <button
               type="button"
               onClick={() => setActiveTab("create")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
                 activeTab === "create"
                   ? "bg-[var(--color-primary-500)] text-white shadow-sm"
                   : "text-[var(--color-gray-300)] hover:text-white"
@@ -248,171 +373,234 @@ export default function CreateOrder() {
               <PlusCircle size={14} />
               Nueva Comanda
             </button>
-
             <button
               type="button"
               onClick={() => setActiveTab("list")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
                 activeTab === "list"
                   ? "bg-[var(--color-primary-500)] text-white shadow-sm"
                   : "text-[var(--color-gray-300)] hover:text-white"
               }`}
             >
               <List size={14} />
-              Ver Órdenes ({orders.length})
+              Ver Comandas ({orders.length})
             </button>
-
-            <Link to="/orderList">
-              <span className="text-[11px] text-[var(--color-primary-400)] hover:underline px-2 py-1 cursor-pointer">
-                ↗ Tabla Completa
-              </span>
-            </Link>
           </div>
-
-          {activeTab === "create" && (
-            <div className="flex items-center gap-3">
-              <span className="text-[length:var(--fs-xxs)] text-[var(--color-gray-300)]">
-                Items: {totalItems}
-              </span>
-
-              {/* Total Badge */}
-              <div className="text-[length:var(--fs-xs)] font-bold bg-[var(--color-secondary-800)] text-[var(--color-white)] px-4 py-1.5 rounded-md border border-[var(--color-secondary-600)] flex items-center gap-2">
-                <span>Total: ${totalAmount.toLocaleString()}</span>
-              </div>
-
-              {/* Botón de editar orden al lado del Total */}
-              <IconButton
-                type="button"
-                ariaLabel="Editar orden"
-                hitSize={34}
-                iconSize={16}
-                variant="primary"
-                className="rounded-md cursor-pointer"
-                onClick={() => navigate("/editorder", { state: { form, qty } })}
-                title="Editar orden"
-              >
-                <Pencil size={16} />
-              </IconButton>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* VISTA 1: FORMULARIO Y SELECCIÓN DE PLATILLOS */}
-      {activeTab === "create" && (
-        <form onSubmit={handleSubmit} className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
-          {/* General order data card */}
-          <div className="p-6 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)] mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[length:var(--fs-sm)] font-bold text-[var(--color-white)]">
-                Datos de la Mesa y Mesero
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-6">
+        {activeTab === "create" ? (
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Formulario datos de la orden */}
+            <div className="lg:col-span-1 space-y-4 bg-[var(--color-secondary-900)] p-5 rounded-xl border border-[var(--color-secondary-800)] shadow-md">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary-400)] border-b border-[var(--color-secondary-800)] pb-2">
+                Datos de la Comanda
               </h2>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start w-full">
-              <Input
-                label="Número de Mesa"
-                name="tableNumber"
-                type="text"
-                value={form.tableNumber}
-                placeholder="Ej. Mesa 5 o 5"
-                htmlFor="order-table-number"
-                onChange={handleChange}
-                error={errors.tableNumber}
-              />
+              {/* Selector de Mesas con Disponibilidad */}
+              <div>
+                <Select
+                  label="Mesa *"
+                  name="tableNumber"
+                  value={form.tableNumber}
+                  onChange={handleChangeForm}
+                  options={tableSelectOptions}
+                  error={errors.tableNumber}
+                />
+
+                {/* Mapa visual de mesas y su estado en tiempo real */}
+                <div className="mt-2 pt-2 border-t border-[var(--color-secondary-800)]">
+                  <div className="flex items-center justify-between text-[11px] mb-2 text-[var(--color-gray-400)]">
+                    <span>Disponibilidad de mesas:</span>
+                    <span className="font-medium text-[var(--color-primary-400)]">
+                      {tablesList.filter((t) => t.isAvailable).length} libres
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-1.5">
+                    {tablesList.map((t) => {
+                      const isSelected = form.tableNumber === t.tableNumber;
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => handleSelectTablePill(t)}
+                          title={`${t.tableNumber} - ${t.status} (Cap. ${t.capacity})${!t.isAvailable ? ` - Orden ${t.activeOrderNumber}` : ""}`}
+                          className={`py-1.5 px-1 rounded text-center transition flex flex-col items-center justify-center text-[11px] border cursor-pointer ${
+                            isSelected
+                              ? "bg-[var(--color-primary-500)] text-white border-[var(--color-primary-400)] ring-2 ring-[var(--color-primary-400)]/40 font-bold"
+                              : t.isAvailable
+                              ? "bg-[var(--color-secondary-950)] text-[var(--color-gray-200)] border-[var(--color-success-border)] hover:bg-[var(--color-secondary-800)]"
+                              : "bg-[var(--color-secondary-950)]/60 text-[var(--color-gray-500)] border-[var(--color-secondary-800)] cursor-not-allowed opacity-60"
+                          }`}
+                        >
+                          <span className="font-semibold truncate leading-tight">
+                            M{t.id}
+                          </span>
+                          <span
+                            className={`text-[9px] mt-0.5 px-1 rounded-full ${
+                              t.isAvailable
+                                ? "bg-[var(--color-success-bg)] text-[var(--color-success)]"
+                                : "bg-[var(--color-error-bg)] text-[var(--color-error)]"
+                            }`}
+                          >
+                            {t.isAvailable ? "Libre" : "Ocup."}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
 
               <Select
-                label="Selecciona un Mesero"
+                label="Mesero asignado *"
                 name="waiter"
-                htmlFor="order-waiter"
-                options={waiterOptions}
                 value={form.waiter}
-                onChange={handleChange}
+                onChange={handleChangeForm}
+                options={waiterOptions}
                 error={errors.waiter}
               />
 
               <Input
-                label="Observaciones para Cocina"
+                label="Observaciones de cocina"
                 name="observations"
-                type="text"
+                placeholder="Términos de carne, sin cebolla, etc."
                 value={form.observations}
-                placeholder="Ej. Término medio, sin cebolla..."
-                htmlFor="order-observations"
-                onChange={handleChange}
-                error={errors.observations}
+                onChange={handleChangeForm}
               />
-            </div>
-          </div>
 
-          {/* Dishes list header */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-[length:var(--fs-md)] font-bold text-[var(--color-white)]">
-              Platillos del Menú
-            </h2>
-            <span className="text-xs text-[var(--color-gray-400)]">
-              Los platillos marcados como <strong>Inhabilitados</strong> están excluidos de las comandas.
-            </span>
-          </div>
-
-          {/* Dishes Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full mb-10">
-            {dishes.map((dish) => (
-              <Card
-                key={dish.id}
-                product={dish}
-                qty={qty[dish.id] || 0}
-                onIncrement={() => handleIncrement(dish)}
-                onDecrement={() => handleDecrement(dish)}
-              />
-            ))}
-          </div>
-
-          {/* Action footer */}
-          <div className="p-6 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="text-[length:var(--fs-sm)] font-bold text-[var(--color-white)]">
-                Total estimado:{" "}
-                <span className="text-[var(--color-primary-400)] text-[length:var(--fs-md)]">
-                  ${totalAmount.toLocaleString()}
-                </span>
+              {/* Resumen monetario */}
+              <div className="pt-4 border-t border-[var(--color-secondary-800)] space-y-2">
+                <div className="flex justify-between text-xs text-[var(--color-gray-400)]">
+                  <span>Ítems seleccionados:</span>
+                  <span className="font-bold text-[var(--color-white)]">{totalItems} un.</span>
+                </div>
+                <div className="flex justify-between text-base font-bold text-[var(--color-white)]">
+                  <span>Total a facturar:</span>
+                  <span className="text-[var(--color-primary-300)] text-lg">
+                    ${totalAmount.toLocaleString("es-CO")} COP
+                  </span>
+                </div>
               </div>
-              <IconButton
-                type="button"
-                ariaLabel="Editar orden"
-                hitSize={34}
-                iconSize={16}
-                variant="primary"
-                className="rounded-md cursor-pointer"
-                onClick={() => navigate("/editorder", { state: { form, qty } })}
-                title="Editar orden"
-              >
-                <Pencil size={16} />
-              </IconButton>
-            </div>
-            <Button variant="primary" size="md" type="submit">
-              Crear Orden (Estado: Abierta)
-            </Button>
-          </div>
-        </form>
-      )}
 
-      {/* VISTA 2: LISTADO DE ÓRDENES EMBEBIDO */}
-      {activeTab === "list" && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-6 shadow-md text-[var(--color-white)]">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-[var(--color-white)]">Listado de Órdenes</h2>
-              <Button variant="primary" size="sm" onClick={() => setActiveTab("create")}>
-                Crear comanda
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-full mt-4"
+                disabled={submitting || totalItems === 0}
+              >
+                {submitting ? "Registrando..." : "Registrar Comanda"}
               </Button>
             </div>
 
+            {/* Selector de platillos gastronómicos */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold text-[var(--color-white)]">
+                  Menú Gastronómico ({dishes.length} platillos)
+                </h2>
+                {loadingProducts && (
+                  <span className="text-xs text-[var(--color-primary-400)]">
+                    Cargando menú...
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {dishes.map((dish) => {
+                  const count = qty[dish.id] || 0;
+                  const isInactive = dish.status === "Inactivo";
+
+                  return (
+                    <div
+                      key={dish.id}
+                      className={`p-3 rounded-xl border transition flex items-center justify-between gap-3 ${
+                        isInactive
+                          ? "bg-[var(--color-secondary-950)]/50 border-[var(--color-secondary-800)]/40 opacity-50 cursor-not-allowed"
+                          : "bg-[var(--color-secondary-900)] border-[var(--color-secondary-800)] hover:border-[var(--color-secondary-700)] shadow-sm"
+                      }`}
+                    >
+                      {/* Imagen pequeña del platillo */}
+                      <div className="size-14 rounded-lg overflow-hidden border border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)] shrink-0 shadow-xs">
+                        <img
+                          src={getProductImage(dish)}
+                          alt={dish.name}
+                          className={`w-full h-full object-cover transition duration-150 ${
+                            isInactive ? "grayscale contrast-75" : ""
+                          }`}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = imgPunta;
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className={`text-[10px] font-mono block ${
+                            isInactive ? "text-[var(--color-gray-500)]" : "text-[var(--color-gray-400)]"
+                          }`}
+                        >
+                          {dish.code}
+                        </span>
+                        <h4
+                          className={`text-sm font-bold truncate ${
+                            isInactive ? "text-[var(--color-gray-400)]" : "text-[var(--color-white)]"
+                          }`}
+                        >
+                          {dish.name}
+                        </h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span
+                            className={`text-xs font-semibold ${
+                              isInactive
+                                ? "text-[var(--color-gray-500)]"
+                                : "text-[var(--color-primary-300)]"
+                            }`}
+                          >
+                            ${dish.price.toLocaleString("es-CO")}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Contador de unidades */}
+                      <div className="flex items-center gap-2 bg-[var(--color-secondary-950)] px-2 py-1 rounded-lg border border-[var(--color-secondary-800)]">
+                        <button
+                          type="button"
+                          disabled={count === 0}
+                          onClick={() => handleDecrement(dish)}
+                          className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-[var(--color-gray-300)] hover:text-white disabled:opacity-30 cursor-pointer"
+                        >
+                          -
+                        </button>
+                        <span className="text-xs font-bold w-4 text-center text-[var(--color-white)]">
+                          {count}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={isInactive}
+                          onClick={() => handleIncrement(dish)}
+                          className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] disabled:opacity-30 cursor-pointer"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </form>
+        ) : (
+          /* Pestaña de listado */
+          <div className="bg-[var(--color-secondary-900)] p-6 rounded-xl border border-[var(--color-secondary-800)] shadow-md">
             <DataTable data={orders} columns={orderColumns} />
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Modal de consulta de orden */}
       <OrderViewModal
         order={selectedOrder}
         isOpen={isViewModalOpen}
@@ -422,13 +610,12 @@ export default function CreateOrder() {
         }}
       />
 
-      {/* Diálogo de confirmación explícita para anular orden (RFADMIN30) */}
       {orderToCancel && (
         <ConfirmDialog
           isOpen={Boolean(orderToCancel)}
-          title="Anular Orden del Sistema"
-          description={`¿Estás seguro de que deseas anular la comanda ${orderToCancel.id} de la ${orderToCancel.tableNumber}? Esta acción no se puede deshacer.`}
-          confirmText="Sí, anular orden"
+          title="Anular Comanda del Sistema"
+          description={`¿Estás seguro de que deseas anular la comanda ${orderToCancel.id}?`}
+          confirmText="Sí, anular comanda"
           cancelText="No, conservar"
           isDestructive={true}
           onConfirm={handleConfirmCancel}

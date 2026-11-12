@@ -1,7 +1,8 @@
-import { useState, useMemo } from "react";
-import { DataTable, Button, ListReportModal, ConfirmDialog, Alert } from "@/shared";
+import { useState, useEffect, useMemo } from "react";
+import { DataTable, Button, ListReportModal, Alert, showConfirmAlert, showSuccessAlert, showErrorAlert } from "@/shared";
 import { getSuppliersColumns } from "../table/SuppliersColumns";
-import { suppliers } from "../data/suppliers";
+import { getAllSuppliers, updateSupplierStatus } from "../services/suppliersServices";
+import usePermission from "@/features/access/services/usePermission";
 import { Link } from "react-router-dom";
 
 const suppliersReportFields = [
@@ -13,64 +14,86 @@ const suppliersReportFields = [
 ];
 
 export default function SuppliersListPage() {
-  const [suppliersList, setSuppliersList] = useState(() =>
-    [...suppliers].map((s, idx) => ({ ...s, isActive: idx % 3 !== 0 }))
-  );
+  const [suppliersList, setSuppliersList] = useState([]);
   const [isReportOpen, setIsReportOpen] = useState(false);
-  const [pendingChange, setPendingChange] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const { granted: canToggleStatus } = usePermission("disable_supplier");
+
+  useEffect(() => {
+    async function loadSuppliers() {
+      try {
+        const data = await getAllSuppliers();
+
+        const formattedData = data.map(s => ({
+          ...s,
+          companyName: s.companyName || s.company_name,
+          supplierEmail: s.supplierEmail || s.email,
+          supplierPhone: s.supplierPhone || s.phone,
+          isActive: s.isActive ?? s.is_active ?? true
+        }));
+
+        setSuppliersList(formattedData);
+      } catch (error) {
+        console.error("Error al cargar proveedores", error);
+        setFeedback({
+          type: "error",
+          title: "Error de conexión",
+          message: error.message || "No se pudieron cargar los proveedores"
+        });
+      }
+    }
+
+    loadSuppliers();
+  }, []);
 
   // Ordenar alfabéticamente por defecto (RFADMIN17, RFADMIN18)
   const sortedSuppliers = useMemo(() => {
     return [...suppliersList].sort((a, b) =>
-      a.companyName.localeCompare(b.companyName)
+      (a.companyName || "").localeCompare(b.companyName || "")
     );
   }, [suppliersList]);
 
-  const reportSuppliers = useMemo(() => {
-    return sortedSuppliers.map((s) => ({
-      ...s,
-      isActive: s.isActive ? "Activo" : "Inactivo"
-    }));
-  }, [sortedSuppliers])
+  // Manejo de solicitud de cambio de estado con confirmación mediante SweetAlert
+  const handleRequestStatusChange = async (supplier, targetState) => {
+    const actionText = targetState ? "habilitar" : "inhabilitar";
+    const compName = supplier.companyName || supplier.company_name || "Proveedor";
 
-  // Manejo de solicitud de cambio de estado con confirmación previa (RFADMIN17)
-  const handleRequestStatusChange = (supplier, targetState) => {
-    setPendingChange({
-      supplier,
-      targetState,
-      title: targetState ? "Habilitar proveedor" : "Inhabilitar proveedor",
-      description: targetState
-        ? `¿Desea habilitar al proveedor ${supplier.companyName}? Volverá a estar disponible para asociar a nuevos insumos y productos.`
-        : `¿Está seguro de que desea inhabilitar al proveedor ${supplier.companyName}? Conservará todo su historial pero no podrá asociarse a nuevos productos.`,
+    const result = await showConfirmAlert({
+      title: targetState ? "¿Desea habilitar este proveedor?" : "¿Desea inhabilitar este proveedor?",
+      text: targetState
+        ? `¿Desea habilitar al proveedor "${compName}"? Volverá a estar disponible para asociar a nuevos insumos y productos.`
+        : `¿Está seguro de que desea inhabilitar al proveedor "${compName}"? Conservará todo su historial pero no podrá asociarse a nuevos productos.`,
+      confirmButtonText: targetState ? "Sí, habilitar" : "Sí, inhabilitar",
+      cancelButtonText: "Cancelar",
       isDestructive: !targetState,
     });
-  };
 
-  const handleConfirmStatusChange = () => {
-    if (!pendingChange) return;
-    const { supplier, targetState } = pendingChange;
+    if (!result.isConfirmed) return;
 
-    setSuppliersList((prev) =>
-      prev.map((s) =>
-        s.id === supplier.id ? { ...s, isActive: targetState } : s
-      )
-    );
+    try {
+      await updateSupplierStatus(supplier.id, targetState);
 
-    setFeedback({
-      type: "success",
-      title: "Estado actualizado",
-      message: `El proveedor ${supplier.companyName} fue ${
-        targetState ? "habilitado" : "inhabilitado"
-      } exitosamente sin perder información histórica.`,
-    });
+      setSuppliersList((prev) =>
+        prev.map((s) =>
+          s.id === supplier.id ? { ...s, isActive: targetState, is_active: targetState } : s
+        )
+      );
 
-    setPendingChange(null);
+      await showSuccessAlert({
+        title: "Estado actualizado",
+        text: `El proveedor "${compName}" fue ${actionText} exitosamente.`,
+      });
+    } catch (error) {
+      await showErrorAlert({
+        title: "Error al actualizar",
+        text: error.message || "No se pudo actualizar el estado",
+      });
+    }
   };
 
   const columns = useMemo(
-    () => getSuppliersColumns({ onRequestStatusChange: handleRequestStatusChange }),
-    []
+    () => getSuppliersColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus }),
+    [canToggleStatus]
   );
 
   return (
@@ -104,23 +127,10 @@ export default function SuppliersListPage() {
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         title="proveedores y distribuidores"
-        data={reportSuppliers}
+        data={sortedSuppliers}
         fields={suppliersReportFields}
         filePrefix="proveedores"
       />
-
-      {pendingChange && (
-        <ConfirmDialog
-          isOpen={Boolean(pendingChange)}
-          title={pendingChange.title}
-          description={pendingChange.description}
-          confirmText={pendingChange.targetState ? "Habilitar" : "Inhabilitar"}
-          cancelText="Cancelar"
-          isDestructive={pendingChange.isDestructive}
-          onConfirm={handleConfirmStatusChange}
-          onCancel={() => setPendingChange(null)}
-        />
-      )}
     </div>
   );
 }

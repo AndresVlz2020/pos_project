@@ -136,7 +136,7 @@ export default function CreateUser() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4">
         <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-8 shadow-md text-center max-w-lg w-full">
-          <div className="size-14 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto mb-4 text-amber-400">
+          <div className="size-14 rounded-full bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] flex items-center justify-center mx-auto mb-4 text-[var(--color-warning)]">
             <ShieldAlert className="size-7" />
           </div>
           <h2 className="text-lg font-bold text-[var(--color-white)] mb-2">Acceso Exclusivo de Administrador</h2>
@@ -146,9 +146,6 @@ export default function CreateUser() {
           <div className="flex justify-center gap-3">
             <Link to="/">
               <Button>Ir al Punto de Venta</Button>
-            </Link>
-            <Link to="/Auth">
-              <Button variant="secondary">Cambiar Operador</Button>
             </Link>
           </div>
         </div>

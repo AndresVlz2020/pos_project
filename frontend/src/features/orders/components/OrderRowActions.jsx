@@ -5,21 +5,13 @@ import { showErrorAlert } from "@/shared";
 export default function OrderRowActions({ order, onViewOrder }) {
   const navigate = useNavigate();
 
-  const isClosedOrPaid = order.status === "Pagada" || order.status === "Cerrada";
-  const isCanceled = order.status === "Anulada";
+  const isPaid = order.status === "Pagada";
 
   const handleEdit = () => {
-    if (isClosedOrPaid) {
+    if (isPaid) {
       showErrorAlert({
         title: "Operación no permitida",
-        text: `La orden ${order.id} se encuentra en estado "${order.status}" y no puede ser modificada.`,
-      });
-      return;
-    }
-    if (isCanceled) {
-      showErrorAlert({
-        title: "Orden anulada",
-        text: `La orden ${order.id} está anulada y no puede ser editada.`,
+        text: `La orden ${order.id} se encuentra en estado "Pagada" y no puede ser modificada.`,
       });
       return;
     }

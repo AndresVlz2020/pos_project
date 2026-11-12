@@ -1,171 +1,275 @@
-import { Input, Button, FileInput, Select, showSuccessAlert, showErrorAlert } from "@/shared";
-import { useState } from "react";
+import { Input, Button, Select, FileInput, showSuccessAlert, showErrorAlert } from "@/shared";
+import { useState, useEffect } from "react";
 import { productSchema } from "../schemas/productSchema";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { updateProduct } from "../services/productServices";
+import { getProductImage, imgPunta } from "@/utils/imageHelper";
+import resizeImageFile from "@/utils/imageFile";
 
-export default function EditProduct1() {
-    const navigate = useNavigate();
-    const [formProduct, setProduct] = useState({
-        productName: "",
-        productPrice: "",
-        productCategory: "",
-        productDescription: "",
-        productStatus: "",
+export default function EditProductPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const productToEdit =
+    location.state?.product ||
+    (() => {
+      try {
+        return JSON.parse(sessionStorage.getItem("last_edited_product") || "null");
+      } catch {
+        return null;
+      }
+    })();
+
+  useEffect(() => {
+    if (location.state?.product) {
+      sessionStorage.setItem("last_edited_product", JSON.stringify(location.state.product));
+    }
+  }, [location.state]);
+
+  const [formProduct, setProduct] = useState({
+    productName: "",
+    productPrice: "",
+    productCategory: "2",
+    productDescription: "",
+    productStatus: "habilitado",
+  });
+
+  const [userImage, setUserImage] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (productToEdit) {
+      const categoryMapReverse = {
+        entradas: "1",
+        "platos fuertes": "2",
+        bebidas: "3",
+        postres: "4",
+        guarniciones: "5",
+        "comidas rápidas": "5",
+      };
+
+      const catKey = (productToEdit.category || productToEdit.category_name || "").toLowerCase();
+      const catVal = categoryMapReverse[catKey] || "2";
+
+      setProduct({
+        productName: productToEdit.title || productToEdit.name || "",
+        productPrice: String(productToEdit.price || ""),
+        productCategory: catVal,
+        productDescription: productToEdit.description || "",
+        productStatus: (productToEdit.is_active ?? (productToEdit.status === "Activo" || productToEdit.status === "disponible"))
+          ? "habilitado"
+          : "inhabilitado",
+      });
+    }
+  }, [productToEdit]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProduct((prev) => ({ ...prev, [name]: value }));
+
+    setErrors((prevErrors) => {
+      if (!prevErrors[name]) return prevErrors;
+      const nextErrors = { ...prevErrors };
+      delete nextErrors[name];
+      return nextErrors;
+    });
+  };
+
+  const categoryOptions = [
+    { value: "1", label: "Entradas y Aperitivos" },
+    { value: "2", label: "Platos Fuertes" },
+    { value: "3", label: "Bebidas y Jugos" },
+    { value: "4", label: "Postres" },
+    { value: "5", label: "Comida Rápida y Adicionales" },
+  ];
+
+  const statusOptions = [
+    { value: "habilitado", label: "Habilitado" },
+    { value: "inhabilitado", label: "Inhabilitado" },
+  ];
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const result = productSchema.safeParse({
+      ...formProduct,
+      userImage: userImage.length ? userImage : undefined,
     });
 
-    const [errors, setErrors] = useState({});
+    if (!result.success) {
+      const fieldErrors = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
 
-    const handleChange = (e) => {
-        const{name, value} = e.target;
-        setProduct((prev) => ({ ...prev, [name]: value}));
+    setErrors({});
+    setLoading(true);
 
-        // Limpiar el error del campo si existe
-        setErrors((prevErrors) => {
-            if (!prevErrors[name]) return prevErrors;
-            const nextErrors = { ...prevErrors };
-            delete nextErrors[name];
-            return nextErrors;
-        });
-    };
+    try {
+      const categoryMap = {
+        "1": "entradas",
+        "2": "platos fuertes",
+        "3": "bebidas",
+        "4": "postres",
+        "5": "guarniciones",
+      };
 
+      const selectedCat = categoryMap[formProduct.productCategory] || "platos fuertes";
+      const productId = productToEdit?.id;
 
-    const handleSubmit = async (e) => { 
-        e.preventDefault();
+      if (!productId) {
+        throw new Error("No se identificó el ID del producto a modificar");
+      }
 
-        const result = productSchema.safeParse(formProduct);
+      // Si se elige una imagen nueva, se redimensiona y se envía (si no, queda la actual)
+      let imageUrl;
+      if (userImage.length) {
+        imageUrl = await resizeImageFile(userImage[0]);
+      }
 
-        if(!result.success){
-            const fieldErrors = {};
-            result.error.issues.forEach((issue) => {
-                fieldErrors[issue.path[0]] = issue.message;
-            });
-            setErrors(fieldErrors);
-            return;
-        }
-        
-        setErrors({});
+      await updateProduct(productId, {
+        name: formProduct.productName,
+        title: formProduct.productName,
+        price: Number(formProduct.productPrice),
+        category: selectedCat,
+        description: formProduct.productDescription,
+        status: formProduct.productStatus === "habilitado" ? "Activo" : "Inactivo",
+        isActive: formProduct.productStatus === "habilitado",
+        imageUrl,
+      });
 
-        try {
-          await showSuccessAlert({
-            title: "Menú actualizado",
-            text: "El menú ha sido actualizado correctamente"
-          });
-          navigate("/productList");
-        } catch (error) {
-          console.error("Error:", error.message);
-          await showErrorAlert({
-            title: "Error al actualizar",
-            text: error.message
-          });
-        }
-    };
+      sessionStorage.removeItem("last_edited_product");
 
-    const categoryOptions = [
-        { value: "1", label: "Entradas y Aperitivos" },
-        { value: "2", label: "Platos Fuertes" },
-        { value: "3", label: "Bebidas y Jugos" },
-        { value: "4", label: "Postres" },
-        { value: "5", label: "Comida Rápida y Adicionales" }
-    ];
+      await showSuccessAlert({
+        title: "Menú actualizado",
+        text: "El platillo se ha actualizado correctamente en PostgreSQL.",
+      });
+      navigate("/productList");
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+      await showErrorAlert({
+        title: "Error al actualizar",
+        text: error.message || "No se pudo actualizar el producto en la base de datos.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const statusOptions = [
-        { value: "habilitado", label: "Habilitado" },
-        { value: "inhabilitado", label: "Inhabilitado" }
-    ];
-        return (
-        <div className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-            <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-8 text-[var(--color-white)]">Editar Producto</h1>
-            <form onSubmit={handleSubmit}>
-                <div className="flex flex-col md:flex-row gap-8 md:gap-16 justify-center">
-                    <div className="flex flex-col gap-3 flex-1 max-w-md">
-                        <Input
-                            label="Nombre del Platillo"
-                            name="productName"
-                            type="text"
-                            value={formProduct.productName}
-                            placeholder="Ingrese el nombre del platillo"
-                            htmlFor="product-name"
-                            onChange={handleChange}
-                            error={errors.productName}
-                        />
-                        <Input
-                            label="Precio"
-                            name="productPrice"
-                            type="text"
-                            value={formProduct.productPrice}
-                            placeholder="Ingrese el precio del producto"
-                            htmlFor="product-price"
-                            onChange={handleChange}
-                            error={errors.productPrice}
-                        />
-                        <Select
-                            label="Categoria"
-                            name="productCategory"
-                            htmlFor="product-category"
-                            options={categoryOptions}
-                            value={formProduct.productCategory}
-                            onChange={handleChange}
-                            error={errors.productCategory}
-                        />
-                    </div>
-            
-                    <div className="flex flex-col gap-3 flex-1 max-w-md">
-                        <Input
-                            label="Descripcion"
-                            name="productDescription"
-                            type="text"
-                            value={formProduct.productDescription}
-                            placeholder="Ingrese la descripcion del producto"
-                            htmlFor="product-description"
-                            onChange={handleChange}
-                            error={errors.productDescription}
-                        />
-                        <Select
-                            label="Estado del producto"
-                            name="productStatus"
-                            htmlFor="product-status"
-                            options={statusOptions}
-                            value={formProduct.productStatus}
-                            onChange={handleChange}
-                            error={errors.productStatus}
-                        />
-                    </div>
-                </div>
+  const currentImage = getProductImage({
+    ...productToEdit,
+    title: formProduct.productName || productToEdit?.title,
+  });
 
-                <div className="flex flex-col md:flex-row justify-center items-center mt-10 gap-12">
-                    <div className="flex flex-col items-center">
-                        <FileInput
-                            className="flex items-center justify-center"
-                            value={formProduct.userImage}
-                            onChange={(files) => 
-                                setProduct((prev) => ({ ...prev, userImage: files}))
-                            }
-                            multiple={true}
-                        />
-                        <p className="text-center text-[var(--color-gray-300)] text-sm mt-2">
-                            Suba una imagen del platillo
-                        </p>
-                    </div>
-                    <div className="flex gap-4 justify-center items-center">
-                        <Link to="/productList">
-                            <Button
-                                variant="secondary"
-                                size="md"
-                                type="button"
-                            >
-                                Cancelar
-                            </Button>
-                        </Link>
-                        <Button
-                            variant="primary"
-                            size="md"
-                            type="submit"
-                        >
-                            Hecho
-                        </Button>
-                    </div>
-                </div>
-            </form>
+  return (
+    <div className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
+        <div>
+          <h1 className="text-xl font-bold text-[var(--color-white)]">Editar Producto</h1>
+          <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
+            Actualizar datos directamente en la base de datos PostgreSQL.
+          </p>
         </div>
-    );
+        <Link to="/productList">
+          <Button variant="secondary" size="sm">
+            Volver al Menú
+          </Button>
+        </Link>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* Columna izquierda: foto actual + carga (mismo patrón que usuarios) */}
+          <div className="col-span-1 flex flex-col items-center">
+            <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Foto actual</span>
+            <div className="w-40 h-40 rounded-xl overflow-hidden border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]">
+              <img
+                src={currentImage}
+                alt={formProduct.productName || "Platillo"}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = imgPunta;
+                }}
+              />
+            </div>
+            <span className="text-center mt-3 mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cargar Imagen</span>
+            <div className="w-full h-52 md:h-56 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
+              <FileInput
+                className="flex items-center justify-center"
+                value={userImage}
+                onChange={setUserImage}
+                multiple={false}
+                accept="image/jpeg,image/png,image/webp"
+              />
+            </div>
+          </div>
+
+          {/* Campos */}
+          <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label="Nombre del Platillo *"
+              name="productName"
+              type="text"
+              value={formProduct.productName}
+              placeholder="Ingrese el nombre del platillo"
+              onChange={handleChange}
+              error={errors.productName}
+            />
+            <Input
+              label="Precio (COP) *"
+              name="productPrice"
+              type="number"
+              value={formProduct.productPrice}
+              placeholder="Ingrese el precio del producto"
+              onChange={handleChange}
+              error={errors.productPrice}
+            />
+            <Select
+              label="Categoría *"
+              name="productCategory"
+              options={categoryOptions}
+              value={formProduct.productCategory}
+              onChange={handleChange}
+              error={errors.productCategory}
+            />
+            <Select
+              label="Estado *"
+              name="productStatus"
+              options={statusOptions}
+              value={formProduct.productStatus}
+              onChange={handleChange}
+              error={errors.productStatus}
+            />
+            <div className="md:col-span-2">
+              <Input
+                label="Descripción"
+                name="productDescription"
+                type="text"
+                value={formProduct.productDescription}
+                placeholder="Ingrese la descripción del producto"
+                onChange={handleChange}
+                error={errors.productDescription}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-4 border-t border-[var(--color-secondary-800)]">
+          <Link to="/productList">
+            <Button variant="secondary" type="button" disabled={loading}>
+              Cancelar
+            </Button>
+          </Link>
+          <Button variant="primary" type="submit" disabled={loading}>
+            {loading ? "Actualizando en BD..." : "Guardar Cambios"}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
 }

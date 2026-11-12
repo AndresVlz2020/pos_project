@@ -70,11 +70,11 @@
   --fs-xxxs:  0.75rem; /* Mínimo */
   --fs-xxxxs:  0.5rem; /* Mínimo */
 
-   /* grosores de la fuente */
-    --fw-regular: 400; 
-    --fw-medium:  500; 
-    --fw-bold:    700; 
-    --fw-black:   900;
+  /* grosores de la fuente */
+  --fw-regular: 400; 
+  --fw-medium:  500; 
+  --fw-bold:    700; 
+  --fw-black:   900;
 
   /* Material Design 3 (Material You) Tokens */
   --md-sys-color-background: #111318;
@@ -86,4 +86,17 @@
   --md-sys-color-on-surface-variant: #c4c6d0;
   --md-sys-color-outline: #8e9099;
   --md-sys-color-outline-variant: #44474e;
+
+  /* Estados semánticos consistentes con variables CSS */
+  --color-success: #10B981;
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-success-border: rgba(16, 185, 129, 0.35);
+
+  --color-error: #EF4444;
+  --color-error-bg: rgba(239, 68, 68, 0.12);
+  --color-error-border: rgba(239, 68, 68, 0.35);
+
+  --color-warning: #F59E0B;
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-warning-border: rgba(245, 158, 11, 0.35);
 }

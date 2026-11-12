@@ -12,6 +12,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { logout } from "@/services/authService";
 import { hasPermission } from "@/features/access/services/accessService";
+import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
 
 export default function Navbar() {
   const location = useLocation();
@@ -160,9 +161,18 @@ export default function Navbar() {
 
           {/* Menú de Acciones / Hamburguesa */}
           <div className="flex items-center gap-2">
-            {/* Indicador sutil de rol activo */}
+            {/* Indicador sutil de rol activo con avatar */}
             {currentUser && (
               <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-2.5 py-1 rounded border border-[var(--color-secondary-800)]">
+                <img
+                  src={currentUser.photo || currentUser.userAvatarUrl || getUserAvatar(currentUser)}
+                  alt={currentUser.name || "Usuario"}
+                  className="size-6 rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = imgWorkerCarlos;
+                  }}
+                />
                 <span className="font-medium text-[var(--color-white)] truncate max-w-[120px]">
                   {currentUser.name}
                 </span>
@@ -281,14 +291,8 @@ export default function Navbar() {
                 )}
 
                 <DropdownItem
-                  onClick={() => navigate("/Auth")}
-                  className="cursor-pointer hover:bg-[var(--color-secondary-800)]"
-                >
-                  Cambiar operador / Iniciar sesión
-                </DropdownItem>
-                <DropdownItem
                   onClick={handleLogout}
-                  className="cursor-pointer text-red-400 hover:text-red-300 hover:bg-[var(--color-secondary-800)]"
+                  className="cursor-pointer text-[var(--color-error)] hover:opacity-90 hover:bg-[var(--color-secondary-800)]"
                 >
                   Cerrar sesión
                 </DropdownItem>

@@ -71,7 +71,7 @@ export default function AdminLoginForm({ onSubmit }) {
           />
         </div>
         {errors.userEmail && (
-          <p className="text-[11px] text-red-400 mt-1">{errors.userEmail}</p>
+          <p className="text-[11px] text-[var(--color-error)] mt-1">{errors.userEmail}</p>
         )}
       </div>
 
@@ -91,7 +91,7 @@ export default function AdminLoginForm({ onSubmit }) {
           />
         </div>
         {errors.userPassword && (
-          <p className="text-[11px] text-red-400 mt-1">{errors.userPassword}</p>
+          <p className="text-[11px] text-[var(--color-error)] mt-1">{errors.userPassword}</p>
         )}
       </div>
 

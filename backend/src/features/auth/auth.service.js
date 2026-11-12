@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { authRepository } from "./auth.repository.js";
 import { sendPasswordResetEmail } from "./email.service.js";
+import { getJWTSecret, getJWTExpires } from "../../config/env.js";
 
 export const authService = {
   async login({ email, password, userId, pin }) {
@@ -88,8 +89,8 @@ export const authService = {
         isSuperuser,
         isAdmin,
       },
-      process.env.JWT_SECRET || "mi_clave_super_segura",
-      { expiresIn: process.env.JWT_EXPIRES || "1h" }
+      getJWTSecret(),
+      { expiresIn: getJWTExpires() }
     );
 
     return {
@@ -162,7 +163,7 @@ export const authService = {
       // Método de compatibilidad por token
       let decoded;
       try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET || "mi_clave_super_segura");
+        decoded = jwt.verify(token, getJWTSecret());
       } catch {
         throw new Error("El enlace o token de recuperación es inválido o ha expirado");
       }

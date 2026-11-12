@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Select } from "@/shared";
+import { API_URL } from "@/features/config";
 import { getGroups } from "../services/groupService";
 import {
   getGroupPermissions,
@@ -27,7 +28,7 @@ export default function AccessSidebar({
   useEffect(() => {
     getGroups().then(setGroups).catch(console.error);
 
-    fetch("http://localhost:4000/api/users?active=true", {
+    fetch(`${API_URL}/users?active=true`, {
       cache: "no-store",
     })
       .then((res) => res.json())

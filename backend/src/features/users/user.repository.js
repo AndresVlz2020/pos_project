@@ -138,32 +138,49 @@ export const userRepository = {
     },
 
     // Método para actualizar un usuario existente
+    // Fusiona los campos recibidos con el registro actual: permite actualización parcial
+    // sin pisar datos guardados (antes, un PUT incompleto anulaba user_email → 500).
     async update(id, userData) {
-        const {
-            userName,
-            userEmail,
-            corporateEmail,
-            userPhone,
-            userDocumentTypes,
-            userDocumentNumber,
-            userPassword,
-            pin,
-            userType,
-            startDate,
-            endDate,
-            userAvatarUrl,
-            userImage,
-            isStaff = false,
-            isActive = true,
-            isSuperUser,
-            isSuperuser,
-        } = userData;
+        // 1) Traer el registro actual para fusionar
+        const currentResult = await pool.query(
+            `SELECT id, user_name, user_email, corporate_email, user_phone,
+                    user_document_types, user_document_number, user_password, pin,
+                    user_type, start_date, end_date, user_avatar_url,
+                    is_staff, is_active, is_superuser
+             FROM users WHERE id = $1 LIMIT 1`,
+            [id]
+        );
+        const current = currentResult.rows[0];
+        if (!current) return null;
 
-        const isSuper = isSuperuser !== undefined ? isSuperuser : (isSuperUser !== undefined ? isSuperUser : (userType === 'admin' || userType === 'Admin'));
-        const staff = isStaff || userType === 'mesero' || userType === 'cajero' || userType === 'cocina';
-        const avatar = userAvatarUrl || (typeof userImage === 'string' ? userImage : null);
-        const parsedStartDate = startDate && startDate.trim() !== '' ? startDate : null;
-        const parsedEndDate = endDate && endDate.trim() !== '' ? endDate : null;
+        const parseNullableDate = (incoming, fallback) => {
+            if (incoming === undefined) return fallback;   // campo ausente: conservar
+            if (incoming === null) return null;            // limpiar explícitamente
+            const s = String(incoming).trim();
+            return s === '' ? null : s;
+        };
+
+        // 2) Fusionar campo a campo (undefined = conservar valor actual)
+        const merged = {
+            userName: userData.userName ?? current.user_name,
+            userEmail: userData.userEmail ?? current.user_email,
+            corporateEmail: userData.corporateEmail ?? current.corporate_email,
+            userPhone: userData.userPhone ?? current.user_phone,
+            userDocumentTypes: userData.userDocumentTypes ?? current.user_document_types,
+            userDocumentNumber: userData.userDocumentNumber ?? current.user_document_number,
+            pin: userData.pin ?? current.pin,
+            userType: userData.userType ?? current.user_type,
+            startDate: parseNullableDate(userData.startDate, current.start_date),
+            endDate: parseNullableDate(userData.endDate, current.end_date),
+            avatar: userData.userAvatarUrl ?? (typeof userData.userImage === 'string' ? userData.userImage : null),
+            isStaff: userData.isStaff !== undefined ? Boolean(userData.isStaff) : current.is_staff,
+            isActive: userData.isActive !== undefined ? Boolean(userData.isActive) : current.is_active,
+            isSuper: userData.isSuperuser !== undefined ? Boolean(userData.isSuperuser)
+                : userData.isSuperUser !== undefined ? Boolean(userData.isSuperUser)
+                : (userData.userType !== undefined ? (userData.userType === 'admin' || userData.userType === 'Admin') : current.is_superuser),
+        };
+
+        const userPassword = userData.userPassword || null;
 
         let query;
         let values;
@@ -199,21 +216,21 @@ export const userRepository = {
                     is_superuser AS "isSuperUser";
             `;
             values = [
-                userName,
-                userEmail,
-                corporateEmail || userEmail,
-                userPhone || null,
-                userDocumentTypes || 'CC',
-                userDocumentNumber,
+                merged.userName,
+                merged.userEmail,
+                merged.corporateEmail || merged.userEmail,
+                merged.userPhone || null,
+                merged.userDocumentTypes || 'CC',
+                merged.userDocumentNumber,
                 userPassword,
-                pin || '1234',
-                userType || 'mesero',
-                parsedStartDate,
-                parsedEndDate,
-                avatar,
-                Boolean(staff),
-                Boolean(isActive),
-                Boolean(isSuper),
+                merged.pin || '1234',
+                merged.userType || 'mesero',
+                merged.startDate,
+                merged.endDate,
+                merged.avatar,
+                merged.isStaff,
+                merged.isActive,
+                merged.isSuper,
                 id,
             ];
         } else {
@@ -246,20 +263,20 @@ export const userRepository = {
                     is_superuser AS "isSuperUser";
             `;
             values = [
-                userName,
-                userEmail,
-                corporateEmail || userEmail,
-                userPhone || null,
-                userDocumentTypes || 'CC',
-                userDocumentNumber,
-                pin || '1234',
-                userType || 'mesero',
-                parsedStartDate,
-                parsedEndDate,
-                avatar,
-                Boolean(staff),
-                Boolean(isActive),
-                Boolean(isSuper),
+                merged.userName,
+                merged.userEmail,
+                merged.corporateEmail || merged.userEmail,
+                merged.userPhone || null,
+                merged.userDocumentTypes || 'CC',
+                merged.userDocumentNumber,
+                merged.pin || '1234',
+                merged.userType || 'mesero',
+                merged.startDate,
+                merged.endDate,
+                merged.avatar,
+                merged.isStaff,
+                merged.isActive,
+                merged.isSuper,
                 id,
             ];
         }
@@ -267,7 +284,7 @@ export const userRepository = {
         const result = await pool.query(query, values);
         const updated = result.rows[0];
         if (updated?.id) {
-            await this.syncUserGroup(updated.id, userType, isSuper);
+            await this.syncUserGroup(updated.id, merged.userType, merged.isSuper);
         }
         return updated;
     },
@@ -299,6 +316,9 @@ export const userRepository = {
                 start_date AS "startDate",
                 end_date AS "endDate",
                 user_avatar_url AS "userAvatarUrl",
+                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "photo",
+                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "avatar",
+                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "image",
                 is_staff AS "isStaff",
                 COALESCE(is_active, TRUE) AS "isActive",
                 is_superuser AS "isSuperUser",
@@ -309,6 +329,46 @@ export const userRepository = {
         `;
         const result = await pool.query(query, [Boolean(activeOnly)]);
         return result.rows;
+    },
+
+    async findById(id) {
+        const query = `
+            SELECT 
+                id,
+                user_name AS "userName",
+                user_name AS "name",
+                user_email AS "userEmail",
+                user_email AS "email",
+                corporate_email AS "corporateEmail",
+                user_phone AS "userPhone",
+                user_phone AS "phone",
+                user_document_types AS "userDocumentTypes",
+                user_document_types AS "document_type",
+                user_document_number AS "userDocumentNumber",
+                user_document_number AS "document_number",
+                pin,
+                user_type AS "userType",
+                CASE
+                    WHEN is_superuser = TRUE OR LOWER(COALESCE(user_type, '')) IN ('admin', 'administrador') THEN 'Administrador'
+                    WHEN LOWER(COALESCE(user_type, '')) IN ('cajero', 'caja') THEN 'Cajero'
+                    WHEN LOWER(COALESCE(user_type, '')) IN ('cocina', 'cocinero', 'parrilla') THEN 'Cocina'
+                    ELSE 'Mesero'
+                END AS "role",
+                start_date AS "startDate",
+                end_date AS "endDate",
+                user_avatar_url AS "userAvatarUrl",
+                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "photo",
+                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "avatar",
+                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "image",
+                is_staff AS "isStaff",
+                COALESCE(is_active, TRUE) AS "isActive",
+                is_superuser AS "isSuperUser",
+                created_at AS "createdAt"
+            FROM users
+            WHERE id = $1;
+        `;
+        const result = await pool.query(query, [id]);
+        return result.rows[0] || null;
     },
 
     // Actualizar estado activo/inactivo del usuario en PostgreSQL en tiempo real

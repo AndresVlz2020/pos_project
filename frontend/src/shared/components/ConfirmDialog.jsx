@@ -33,11 +33,17 @@ export function ConfirmDialog({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--color-secondary-950)]/80 backdrop-blur-xs animate-fade-in font-[family-name:var(--main-font)]">
       <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] rounded-xl p-6 shadow-2xl text-[var(--color-white)]">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-lg ${isDestructive ? "bg-red-500/20 text-red-400" : "bg-[var(--color-primary-500)]/20 text-[var(--color-primary-400)]"}`}>
+            <div
+              className={`p-2.5 rounded-lg ${
+                isDestructive
+                  ? "bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error-border)]"
+                  : "bg-[var(--color-primary-500)]/20 text-[var(--color-primary-400)] border border-[var(--color-primary-500)]/30"
+              }`}
+            >
               <AlertTriangle className="size-5" />
             </div>
             <h3 className="text-base font-bold text-[var(--color-white)]">{title}</h3>
@@ -72,7 +78,11 @@ export function ConfirmDialog({
             size="sm"
             onClick={onConfirm}
             disabled={isLoading}
-            className={isDestructive ? "bg-red-600 hover:bg-red-500 border-red-500" : ""}
+            className={
+              isDestructive
+                ? "bg-[var(--color-error)] hover:opacity-90 border-[var(--color-error)] text-[var(--color-white)]"
+                : ""
+            }
           >
             {isLoading ? "Procesando..." : confirmText}
           </Button>

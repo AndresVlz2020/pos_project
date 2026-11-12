@@ -2,57 +2,92 @@ import { Input, Button, FileInput, Select, Alert, showSuccessAlert, showErrorAle
 import { useState, useEffect } from "react";
 import { inventorySchema } from "../schemas/inventorySchema";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { suppliers } from "@/features/suppliers/data/suppliers";
+import { getAllSuppliers } from "@/features/suppliers/services/suppliersServices";
+import { createInventory, updateInventory } from "../services/inventoryServices";
 
 export default function CreateInventory() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const editItem = location.state?.item || null;
+    const rawItem = location.state?.item;
+    const editItem =
+        rawItem ||
+        (() => {
+            try {
+                return JSON.parse(sessionStorage.getItem("last_active_inventory_item") || "null");
+            } catch {
+                return null;
+            }
+        })();
+
+    useEffect(() => {
+        if (location.state?.item) {
+            sessionStorage.setItem("last_active_inventory_item", JSON.stringify(location.state.item));
+        }
+    }, [location.state]);
+
     const isReadOnly = Boolean(location.state?.readOnly);
     const isEditing = Boolean(editItem && !isReadOnly);
 
+    const [suppliersList, setSuppliersList] = useState([]);
+    const [loadingSuppliers, setLoadingSuppliers] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+
     const [formInventory, setInventory] = useState({
-        inventorySupplierSelect: editItem?.supplier || "",
-        inventoryProductName: editItem?.productName || "",
-        inventoryProductAccountant: editItem?.id || "",
+        inventorySupplierSelect: editItem?.supplier || editItem?.supplier_id || "",
+        inventoryProductName: editItem?.productName || editItem?.name || "",
+        inventoryProductAccountant: editItem?.code || editItem?.id || "",
         inventoryProductDescription: editItem?.description || "Insumo de inventario gastronómico",
         inventoryProductLocation: editItem?.location || "Almacén Central / Bodega",
-        productBrandSelect: editItem?.brand ? editItem.brand.toLowerCase() : "",
-        numberBatch: editItem ? `LT-${editItem.id?.replace(/\D/g, "") || "001"}` : "",
-        initialStock: editItem?.currentStock ? String(editItem.currentStock) : "",
-        minAmount: editItem?.minStock ? String(editItem.minStock) : "",
-        priceBuy: editItem?.priceBuy ? String(editItem.priceBuy) : "45000",
-        expirationDate: editItem?.lastUpdated || "2026-12-31",
+        productBrandSelect: editItem?.brand ? editItem.brand.toLowerCase() : "alpina",
+        numberBatch: editItem ? (editItem.numberBatch || editItem.batch_number || `LT-${editItem.id || "001"}`) : "",
+        initialStock: editItem?.currentStock !== undefined ? String(editItem.currentStock) : "",
+        minAmount: editItem?.minStock !== undefined ? String(editItem.minStock) : "5",
+        priceBuy: editItem?.priceBuy !== undefined ? String(editItem.priceBuy) : "45000",
+        expirationDate: editItem?.expirationDate || editItem?.lastUpdated || "2026-12-31",
     });
 
     const [errors, setErrors] = useState({});
     const [feedback, setFeedback] = useState(null);
 
+    // Cargar proveedores desde PostgreSQL en tiempo real
+    useEffect(() => {
+        async function fetchSuppliers() {
+            try {
+                const data = await getAllSuppliers();
+                setSuppliersList(data || []);
+            } catch (err) {
+                console.error("Error al cargar proveedores en inventario:", err);
+            } finally {
+                setLoadingSuppliers(false);
+            }
+        }
+        fetchSuppliers();
+    }, []);
+
     useEffect(() => {
         if (editItem) {
             setInventory({
-                inventorySupplierSelect: editItem.supplier || "",
-                inventoryProductName: editItem.productName || "",
-                inventoryProductAccountant: editItem.id || "",
+                inventorySupplierSelect: String(editItem.supplier_id || editItem.supplier || ""),
+                inventoryProductName: editItem.productName || editItem.name || "",
+                inventoryProductAccountant: editItem.code || editItem.id || "",
                 inventoryProductDescription: editItem.description || "Insumo de inventario gastronómico",
                 inventoryProductLocation: editItem.location || "Almacén Central / Bodega",
-                productBrandSelect: editItem.brand ? editItem.brand.toLowerCase() : "",
-                numberBatch: `LT-${editItem.id?.replace(/\D/g, "") || "001"}`,
+                productBrandSelect: editItem.brand ? editItem.brand.toLowerCase() : "alpina",
+                numberBatch: editItem.numberBatch || editItem.batch_number || `LT-${editItem.id || "001"}`,
                 initialStock: editItem.currentStock !== undefined ? String(editItem.currentStock) : "",
-                minAmount: editItem.minStock !== undefined ? String(editItem.minStock) : "",
+                minAmount: editItem.minStock !== undefined ? String(editItem.minStock) : "5",
                 priceBuy: editItem.priceBuy !== undefined ? String(editItem.priceBuy) : "45000",
-                expirationDate: editItem.lastUpdated || "2026-12-31",
+                expirationDate: editItem.expirationDate || editItem.lastUpdated || "2026-12-31",
             });
         }
     }, [editItem]);
 
     const handleChange = (e) => {
         if (isReadOnly) return;
-        const{name, value} = e.target;
-        setInventory((prev) => ({ ...prev, [name]: value}));
+        const { name, value } = e.target;
+        setInventory((prev) => ({ ...prev, [name]: value }));
 
-        // Limpiar el error del campo si existe
         setErrors((prevErrors) => {
             if (!prevErrors[name]) return prevErrors;
             const nextErrors = { ...prevErrors };
@@ -72,7 +107,7 @@ export default function CreateInventory() {
 
         const result = inventorySchema.safeParse(formInventory);
 
-        if(!result.success){
+        if (!result.success) {
             const fieldErrors = {};
             result.error.issues.forEach((issue) => {
                 fieldErrors[issue.path[0]] = issue.message;
@@ -83,70 +118,75 @@ export default function CreateInventory() {
         
         setErrors({});
 
-        // Regla RFADMIN17: Impide asociar nuevos productos a proveedores inhabilitados
-        const selectedSupplier = suppliers.find(
-            (s) => s.id === formInventory.inventorySupplierSelect || s.companyName === formInventory.inventorySupplierSelect
+        // Validar si el proveedor seleccionado está inhabilitado
+        const selectedSupplier = suppliersList.find(
+            (s) => String(s.id) === String(formInventory.inventorySupplierSelect) ||
+                   s.nit === formInventory.inventorySupplierSelect ||
+                   s.company_name === formInventory.inventorySupplierSelect
         );
-        if (selectedSupplier && selectedSupplier.isActive === false) {
+
+        if (selectedSupplier && selectedSupplier.is_active === false) {
             await showErrorAlert({
                 title: "Proveedor inhabilitado",
-                text: `El proveedor "${selectedSupplier.companyName}" está inhabilitado. No se pueden asociar insumos a un proveedor inactivo.`
+                text: `El proveedor "${selectedSupplier.company_name || selectedSupplier.companyName}" está inhabilitado en PostgreSQL. No se pueden asociar insumos a un proveedor inactivo.`
             });
             return;
         }
 
-        // Validar código o lote duplicado sólo si es creación nueva
-        if (!isEditing && (formInventory.numberBatch === "LT-001" || formInventory.inventoryProductAccountant === "001")) {
+        setSubmitting(true);
+
+        try {
+            const payload = {
+                itemName: formInventory.inventoryProductName,
+                productName: formInventory.inventoryProductName,
+                brand: formInventory.productBrandSelect,
+                category: "Insumos y Materias Primas",
+                currentStock: Number(formInventory.initialStock) || 0,
+                minStock: Number(formInventory.minAmount) || 0,
+                location: formInventory.inventoryProductLocation,
+                priceBuy: Number(formInventory.priceBuy) || 0,
+                batchNumber: formInventory.numberBatch,
+                expirationDate: formInventory.expirationDate || null,
+                supplierId: selectedSupplier ? selectedSupplier.id : null,
+                supplierName: selectedSupplier ? (selectedSupplier.company_name || selectedSupplier.companyName) : formInventory.inventorySupplierSelect,
+                description: formInventory.inventoryProductDescription,
+            };
+
+            if (isEditing && editItem?.id) {
+                await updateInventory(editItem.id, payload);
+                await showSuccessAlert({
+                    title: "Inventario actualizado",
+                    text: "El insumo ha sido actualizado correctamente en PostgreSQL."
+                });
+            } else {
+                await createInventory(payload);
+                await showSuccessAlert({
+                    title: "Inventario registrado",
+                    text: "Insumo registrado correctamente en PostgreSQL."
+                });
+            }
+
+            navigate("/inventoryList");
+        } catch (err) {
+            console.error("Error al guardar inventario:", err);
             await showErrorAlert({
-                title: "Registro duplicado",
-                text: "Ya existe un insumo registrado con este código o número de lote."
+                title: "Error al guardar",
+                text: err.message || "No se pudo sincronizar el insumo con PostgreSQL."
             });
-            return;
+        } finally {
+            setSubmitting(false);
         }
-
-        await showSuccessAlert({
-            title: isEditing ? "Inventario actualizado" : "Inventario registrado",
-            text: isEditing 
-                ? "El insumo ha sido actualizado correctamente."
-                : "Insumo registrado correctamente en el inventario."
-        });
-
-        navigate("/inventoryList");
     };
 
-
-    const supplierOptions = [
-        { value: "900.123.456-1", label: "Distribuidora Lácteos del Campo S.A.S." },
-        { value: "890.987.654-3", label: "Avícola y Carnes del Valle S.A." },
-        { value: "901.456.789-0", label: "Empaques Bio & Eco Gastronomía" },
-        { value: "800.555.444-2", label: "Comercializadora Fruver Central" },
-        { value: "900.777.888-5", label: "Distribuciones de Café & Bebidas S.A.S." },
-        { value: "901.222.333-8", label: "Pescadería y Mariscos del Pacífico" },
-        { value: "830.111.999-4", label: "Importadora de Licores & Vinos El Prado" },
-        { value: "891.333.222-7", label: "Procesadora de Carnes Frías y Embutidos" },
-        { value: "900.888.111-9", label: "Productos de Limpieza e Higiene Industrial" },
-        { value: "901.666.555-2", label: "Dotaciones y Chef Uniforms Alfa" },
-        { value: "800.444.777-1", label: "Panificadora e Insumos de Repostería" },
-        { value: "900.333.666-0", label: "Conservas y Salsas Gourmet S.A.S." },
-        { value: "901.999.888-6", label: "Congelados y Pulpas de Fruta Andina" },
-        { value: "890.222.111-5", label: "Gas e Insumos de Cocina Industrial" },
-        { value: "800.999.000-3", label: "Suministros de Cristalería y Menaje S.A." },
-        { value: "900.555.222-4", label: "Distribuidora de Aceites y Grasas" },
-        { value: "901.777.333-1", label: "Hortalizas y Verduras Hidropónicas" },
-        { value: "890.555.666-8", label: "Distribución de Cervezas Artesanales" },
-        { value: "900.444.111-2", label: "Sistemas de Fumigación y Control de Plagas" },
-        { value: "901.111.444-9", label: "Especias y Condimentos del Mundo" },
-        { value: "830.888.444-6", label: "Lácteos y Quesos Madurados Ltda." },
-        { value: "900.222.999-0", label: "Servicios de Re refrigeración y Neveras" },
-        { value: "891.777.444-3", label: "Muebles y Barras para Restaurantes" },
-        { value: "901.333.111-7", label: "Importadora de Arroz y Granos Especiales" },
-        { value: "800.111.222-5", label: "Comercializadora de Hielo y Agua Brisa" },
-        { value: "900.666.333-8", label: "Imprenta de Menús y Publicidad Pop" },
-        { value: "901.888.555-4", label: "Avícola San Fernando (Huevos y Pollo)" },
-        { value: "890.444.888-1", label: "Insumos para Coctelería y Jarabes" },
-        { value: "900.999.444-3", label: "Distribuidora de Harinas y Levaduras" },
-        { value: "901.555.999-2", label: "Servicios de Mantenimiento de Estufas" }
-    ];
+    const supplierOptions = suppliersList.length > 0 
+        ? suppliersList.map((s) => ({
+            value: String(s.id),
+            label: `${s.nit} - ${s.company_name || s.companyName}${s.is_active === false ? " (Inhabilitado)" : ""}`
+          }))
+        : [
+            { value: "1", label: "900.123.456-1 - Distribuidora Lácteos del Campo S.A.S." },
+            { value: "2", label: "890.987.654-3 - Avícola y Carnes del Valle S.A." },
+          ];
 
     const brandOptions = [
         { value: "alpina", label: "Alpina" },
@@ -154,7 +194,7 @@ export default function CreateInventory() {
         { value: "colanta", label: "Colanta" },
         { value: "zenu", label: "Zenú" },
         { value: "frisby", label: "Frisby" },
-        { value: "frixion", label: "Diana" },
+        { value: "diana", label: "Diana" },
         { value: "roa", label: "Arroz Roa" },
         { value: "doria", label: "Pastas Doria" },
         { value: "la-fina", label: "La Fina" },
@@ -171,13 +211,8 @@ export default function CreateInventory() {
         { value: "manuelita", label: "Manuelita" },
         { value: "incauca", label: "Incauca" },
         { value: "levapan", label: "Levapan" },
-        { value: "remington", label: "San Fernando" },
-        { value: "BIMBO", label: "Bimbo" },
-        { value: "coreanita", label: "La Caleñita" },
-        { value: "del-campo", label: "Lácteos del Campo" },
-        { value: "alpina-pro", label: "Alpina Professional" },
-        { value: "halls", label: "Halls" },
-        { value: "other", label: "Genérica / Otra" }
+        { value: "bimbo", label: "Bimbo" },
+        { value: "generica", label: "Genérica / Otra" }
     ];
 
     const pageTitle = isReadOnly
@@ -203,52 +238,44 @@ export default function CreateInventory() {
                 </div>
             )}
             <form onSubmit={handleSubmit}>
-
-                <div className="
-                        flex 
-                        flex-col lg:flex-row
-                        gap-8 lg:gap-12
-                        justify-center
-                        items-start
-                    "
-                >
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 justify-center items-start">
                     <div className="w-full lg:w-48 flex flex-col items-center">
-                        <FileInput className="flex items-center justify-center"
-                        value={formInventory.userImage}
-                        disabled={isReadOnly}
-                        onChange={(files) => 
-                            setInventory((prev) => ({ ...prev, userImage: files}))
-                        }
-                        multiple={true}
+                        <FileInput 
+                            className="flex items-center justify-center"
+                            value={formInventory.userImage}
+                            disabled={isReadOnly}
+                            onChange={(files) => setInventory((prev) => ({ ...prev, userImage: files }))}
+                            multiple={true}
                         />
                         <p className="text-center text-[var(--color-gray-300)] text-sm mt-2">
                             Código de barras / Imagen
                         </p>
                     </div>
+
                     <div className="flex-1 flex flex-col gap-1 w-full">
                         <Select
-                            label="Proveedor"
+                            label="Proveedor (PostgreSQL)"
                             name="inventorySupplierSelect"
                             htmlFor="supplier-select"
                             options={supplierOptions}
                             value={formInventory.inventorySupplierSelect}
                             onChange={handleChange}
-                            disabled={isReadOnly}
+                            disabled={isReadOnly || loadingSuppliers}
                             error={errors.inventorySupplierSelect}
                         />
                         <Input
-                            label="Nombre del producto"
+                            label="Nombre del insumo / producto"
                             name="inventoryProductName"
                             type="text"
                             value={formInventory.inventoryProductName}
-                            placeholder="Ingrese el nombre del producto"
+                            placeholder="Ej: Lomo fino de res, Queso mozzarella..."
                             htmlFor="inventory-product-name"
                             onChange={handleChange}
                             disabled={isReadOnly}
                             error={errors.inventoryProductName}
                         />
                         <Input
-                            label="Cuentadante"
+                            label="Cuentadante / Responsable"
                             name="inventoryProductAccountant"
                             type="text"
                             value={formInventory.inventoryProductAccountant}
@@ -263,7 +290,7 @@ export default function CreateInventory() {
                             name="inventoryProductDescription"
                             type="text"
                             value={formInventory.inventoryProductDescription}
-                            placeholder="Ingrese la descripción del producto"
+                            placeholder="Ingrese la descripción del insumo"
                             htmlFor="inventory-product-description"
                             onChange={handleChange}
                             disabled={isReadOnly}
@@ -274,7 +301,7 @@ export default function CreateInventory() {
                             name="inventoryProductLocation"
                             type="text"
                             value={formInventory.inventoryProductLocation}
-                            placeholder="Ingrese la ubicación"
+                            placeholder="Ej: Cuarto frío 1, Bodega seca..."
                             htmlFor="inventory-product-location"
                             onChange={handleChange}
                             disabled={isReadOnly}
@@ -295,7 +322,7 @@ export default function CreateInventory() {
                         />
                         <div className="relative">
                             <Input
-                                label="Número Lote (No editable en insumos existentes)"
+                                label="Número Lote (Trazabilidad)"
                                 name="numberBatch"
                                 type="text"
                                 value={formInventory.numberBatch}
@@ -306,45 +333,46 @@ export default function CreateInventory() {
                                 error={errors.numberBatch}
                             />
                             {isEditing && (
-                                <span className="text-[10px] text-amber-400 block -mt-1 mb-2">
+                                <span className="text-[10px] text-[var(--color-warning)] block -mt-1 mb-2">
                                     * El lote queda bloqueado por trazabilidad según norma RFADMIN11.
                                 </span>
                             )}
                         </div>
                         <Input
-                            label="Stock Inicial"
+                            label="Stock Actual"
                             name="initialStock"
-                            type="text"
+                            type="number"
                             value={formInventory.initialStock}
-                            placeholder="Cantidad Inicial"
+                            placeholder="Cantidad en almacén"
                             htmlFor="initial-stock"
                             onChange={handleChange}
                             disabled={isReadOnly}
                             error={errors.initialStock}
                         />
                         <Input
-                            label="Cantidad Mínima"
+                            label="Stock Mínimo (Alerta)"
                             name="minAmount"
-                            type="text"
+                            type="number"
                             value={formInventory.minAmount}
-                            placeholder="Mínima cantidad"
+                            placeholder="Mínimo permitido"
                             htmlFor="min-amount"
                             onChange={handleChange}
                             disabled={isReadOnly}
                             error={errors.minAmount}
                         />
                         <Input
-                            label="Valor de la compra"
+                            label="Precio de Compra (COP)"
                             name="priceBuy"
-                            type="text"
+                            type="number"
                             value={formInventory.priceBuy}
-                            placeholder="Ingrese el valor de la compra"
+                            placeholder="Costo unitario de compra"
                             htmlFor="price-buy"
                             onChange={handleChange}
                             disabled={isReadOnly}
                             error={errors.priceBuy}
                         />
                     </div>
+
                     <div className="flex-1 flex flex-col gap-1 w-full">
                         <Input
                             label="Fecha de vencimiento"
@@ -359,12 +387,14 @@ export default function CreateInventory() {
                         />
                     </div>
                 </div>
+
                 <div className="w-full flex justify-center mt-12 gap-4">
                     <Link to="/inventoryList">
                         <Button
                             variant="secondary"
                             size="md"
                             type="button"
+                            disabled={submitting}
                         >
                             {isReadOnly ? "Volver al Listado" : "Cancelar"}
                         </Button>
@@ -374,8 +404,9 @@ export default function CreateInventory() {
                             variant="primary"
                             size="md"
                             type="submit"
+                            disabled={submitting}
                         >
-                            {isEditing ? "Guardar Cambios" : "Confirmar Información"}
+                            {submitting ? "Guardando en PostgreSQL..." : isEditing ? "Guardar Cambios" : "Confirmar Información"}
                         </Button>
                     )}
                 </div>

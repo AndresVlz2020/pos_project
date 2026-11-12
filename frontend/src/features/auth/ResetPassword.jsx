@@ -151,7 +151,7 @@ export default function ResetPassword() {
                 className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-white)] text-xs border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-500)]"
               />
             </div>
-            {errors.email && <p className="text-[11px] text-red-400 mt-1">{errors.email}</p>}
+            {errors.email && <p className="text-[11px] text-[var(--color-error)] mt-1">{errors.email}</p>}
           </div>
 
           <div>
@@ -173,7 +173,7 @@ export default function ResetPassword() {
                 className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-primary-400)] font-mono text-base font-bold tracking-[0.3em] border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-600)] placeholder:tracking-normal placeholder:font-sans"
               />
             </div>
-            {errors.code && <p className="text-[11px] text-red-400 mt-1">{errors.code}</p>}
+            {errors.code && <p className="text-[11px] text-[var(--color-error)] mt-1">{errors.code}</p>}
           </div>
 
           <div>

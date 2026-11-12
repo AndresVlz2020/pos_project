@@ -1,8 +1,9 @@
 // frontend/src/features/access/services/permissionService.js
+import { API_URL } from "@/features/config";
 
-const API_URL = "http://localhost:4000/api/groups";
-const USERS_API_URL = "http://localhost:4000/api/users";
-const PERMISSIONS_API_URL = "http://localhost:4000/api/permissions";
+const GROUPS_API_URL = `${API_URL}/groups`;
+const USERS_API_URL = `${API_URL}/users`;
+const PERMISSIONS_API_URL = `${API_URL}/permissions`;
 
 function getStoredToken() {
   return (
@@ -12,8 +13,19 @@ function getStoredToken() {
   );
 }
 
+function getAuthHeaders() {
+  const token = getStoredToken();
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 export async function getGroupPermissions(groupId) {
-  const response = await fetch(`${API_URL}/${groupId}/permissions`);
+  const response = await fetch(`${GROUPS_API_URL}/${groupId}/permissions`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
 
   if (!response.ok) {
     throw new Error("Error obteniendo permisos");
@@ -23,7 +35,10 @@ export async function getGroupPermissions(groupId) {
 }
 
 export async function getUserPermissions(userId) {
-  const response = await fetch(`${USERS_API_URL}/${userId}/permissions`);
+  const response = await fetch(`${USERS_API_URL}/${userId}/permissions`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
 
   if (!response.ok) {
     throw new Error("Error obteniendo permisos del usuario");
@@ -33,14 +48,9 @@ export async function getUserPermissions(userId) {
 }
 
 export async function updateUserPermissions(userId, permissionIds) {
-  const token = getStoredToken();
-
   const response = await fetch(`${USERS_API_URL}/${userId}/permissions`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
       permissionIds,
     }),
@@ -54,7 +64,10 @@ export async function updateUserPermissions(userId, permissionIds) {
 }
 
 export async function getAllPermissions() {
-  const response = await fetch(PERMISSIONS_API_URL);
+  const response = await fetch(PERMISSIONS_API_URL, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
 
   if (!response.ok) {
     throw new Error("Error obteniendo permisos");

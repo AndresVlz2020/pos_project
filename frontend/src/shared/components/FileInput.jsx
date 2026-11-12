@@ -7,11 +7,14 @@ import "ldrs/react/Infinity.css";
 import { Plus } from "lucide-react";
 
 export default function FileInput({
-  value = [], // estado externo (files)
+  value = [], // estado externo (files) — se tolera null/undefined
   onChange, // setter externo
   multiple = false, // modo selección
   accept = "image/*,application/pdf", // tipos permitidos
 }) {
+  // Robustez: un estado nulo/indefinido no debe romper el render (BUG-01)
+  const safeValue = Array.isArray(value) ? value : [];
+
   const inputRef = useRef(); // input oculto
   const [isLoading, setIsLoading] = useState(false); // loader
   const [dragIndex, setDragIndex] = useState(null); // índice drag
@@ -21,8 +24,8 @@ export default function FileInput({
   // Genera previews SOLO para imágenes (evita crear URLs innecesarias)
   const previews = useMemo(
     () =>
-      value.map((file) => (isImage(file) ? URL.createObjectURL(file) : null)),
-    [value],
+      safeValue.map((file) => (isImage(file) ? URL.createObjectURL(file) : null)),
+    [safeValue],
   );
 
   // Limpieza de ObjectURL (prevención memory leak)
@@ -41,7 +44,7 @@ export default function FileInput({
     const list = Array.from(files);
     await new Promise((r) => setTimeout(r, 500));
 
-    const data = multiple ? [...value, ...list] : [list[0]];
+    const data = multiple ? [...safeValue, ...list] : [list[0]];
     onChange(data.slice(0, 12));
 
     setIsLoading(false);
@@ -49,14 +52,14 @@ export default function FileInput({
 
   // Eliminación inmutable
   const remove = (i) => {
-    const copy = [...value];
+    const copy = [...safeValue];
     copy.splice(i, 1);
     onChange(copy);
   };
 
   // Reordenamiento por drag & drop
   const reorder = (from, to) => {
-    const copy = [...value];
+    const copy = [...safeValue];
     const [m] = copy.splice(from, 1);
     copy.splice(to, 0, m);
     onChange(copy);
@@ -67,7 +70,7 @@ export default function FileInput({
     <div className="flex flex-col items-center gap-2 w-full">
       <h2 className="text-center text-[var(--color-gray-400)] text-xs font-semibold mb-1">Máx 12 archivos (10MB)</h2>
       <div className="relative flex flex-wrap gap-3 justify-center items-center">
-      {value.map((file, i) => (
+      {safeValue.map((file, i) => (
         <div
           key={i}
           draggable
@@ -99,7 +102,7 @@ export default function FileInput({
               type="button"
               aria-label="Eliminar archivo"
               onClick={() => remove(i)}
-              className="w-6 h-6 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-red-700 cursor-pointer"
+              className="w-6 h-6 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-error)] cursor-pointer"
             >
               ✕
             </button>

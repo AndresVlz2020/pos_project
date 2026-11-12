@@ -43,9 +43,14 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel } = {}) => [
     accessorKey: "status",
     header: "Estado",
     cell: ({ row }) => {
-      const status = row.original.status || "Abierta";
+      const status = row.original.status || "No Pagada";
+      const style = status === "Pagada"
+        ? "bg-[var(--color-success)]/15 text-[var(--color-success)] border-[var(--color-success)]/30"
+        : status === "Anulada"
+          ? "bg-[var(--color-error)]/15 text-[var(--color-error)] border-[var(--color-error)]/30"
+          : "bg-[var(--color-warning)]/15 text-[var(--color-warning)] border-[var(--color-warning)]/30";
       return (
-        <span className="inline-block px-2.5 py-1 text-xs font-medium rounded-md bg-[var(--color-secondary-800)] text-[var(--color-white)] border border-[var(--color-secondary-700)]">
+        <span className={`inline-block px-2.5 py-1 text-xs font-medium rounded-md border ${style}`}>
           {status}
         </span>
       );

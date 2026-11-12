@@ -1,6 +1,7 @@
 // backend/src/middlewares/auth.middleware.js
 
 import jwt from "jsonwebtoken";
+import { getJWTSecret } from "../config/env.js";
 
 export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -20,10 +21,7 @@ export const authenticateToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "mi_clave_super_segura",
-    );
+    const decoded = jwt.verify(token, getJWTSecret());
 
     req.user = decoded;
 

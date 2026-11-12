@@ -27,7 +27,7 @@ export const pool = new Pool({
     password: process.env.DB_PASSWORD || '',
 
     // Nombre de la base de datos a la que nos conectamos
-    database: process.env.DB_NAME || 'pos_db',
+    database: process.env.DB_NAME || 'pos_project',
 
     // Número máximo de conexiones activas en el pool
     max: 10,

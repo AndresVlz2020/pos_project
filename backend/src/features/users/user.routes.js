@@ -8,29 +8,31 @@ import { Router } from "express";
 // Solo delega la ejecución al controller
 import { userController } from "./user.controller.js";
 import { authenticateToken } from "../../middlewares/auth.middleware.js";
+import { requirePermission } from "../../middlewares/permission.middleware.js";
 
 // Creamos una instancia de Router de express
 const router = Router();
 
-// Definimos la ruta para listar usuarios
+// Definimos la ruta para listar usuarios (pública: el POS y la pantalla de acceso la usan)
 // GET /api/users
 router.get("/", userController.getAll);
 
-// Definimos la ruta para crear un usuario
+// Definimos la ruta para crear un usuario (requiere permiso de creación — solo admin)
 // POST /api/users
-router.post("/", authenticateToken, userController.create);
+router.post("/", authenticateToken, requirePermission("create_user"), userController.create);
 
-// Actualizar estado activo/inactivo del usuario en tiempo real
-router.patch("/:userId/status", userController.updateStatus);
-router.put("/:userId/status", userController.updateStatus);
+// Actualizar estado activo/inactivo del usuario en tiempo real (solo administración)
+// PATCH y PUT comparten el mismo controlador; ambos quedan protegidos
+router.patch("/:userId/status", authenticateToken, requirePermission("disable_user"), userController.updateStatus);
+router.put("/:userId/status", authenticateToken, requirePermission("disable_user"), userController.updateStatus);
 
-// Permisos individuales del usuario
-router.get("/:userId/permissions", userController.getPermissionsByUserId);
-router.put("/:userId/permissions", userController.updatePermissions);
+// Permisos individuales del usuario (solo administración)
+router.get("/:userId/permissions", authenticateToken, requirePermission("admin"), userController.getPermissionsByUserId);
+router.put("/:userId/permissions", authenticateToken, requirePermission("admin"), userController.updatePermissions);
 
-// Definimos la ruta para actualizar un usuario
+// Definimos la ruta para actualizar un usuario (requiere permiso de actualización)
 // PUT /api/users/:id
-router.put("/:id", userController.update);
+router.put("/:id", authenticateToken, requirePermission("update_user"), userController.update);
 
 // Exportamos el router para ser registrado en la aplicación principal
 export default router;

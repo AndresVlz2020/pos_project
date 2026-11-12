@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { DataTable, Button } from "@/shared";
-import { userColumns } from "../table/UserColumns";
+import { useState, useEffect, useMemo } from "react";
+import { DataTable, Button, ConfirmDialog, Alert, showConfirmAlert, showSuccessAlert, showErrorAlert } from "@/shared";
+import { getUserColumns } from "../table/UserColumns";
 import { users as initialMockUsers } from "../data/users";
-import { getUsers } from "../../../services/userService";
+import { getUsers, updateUserStatus } from "../../../services/userService";
 import { hasPermission } from "@/features/access/services/accessService";
+import usePermission from "@/features/access/services/usePermission";
 import { Link } from "react-router-dom";
 import { ShieldAlert, Shield } from "lucide-react";
 import ReportConfigModal from "../reports/components/ReportConfigModal";
@@ -12,6 +13,8 @@ export default function UserListPage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [userList, setUserList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pendingChange, setPendingChange] = useState(null);
+  const [feedback, setFeedback] = useState(null);
 
   // Verificar si el usuario activo tiene rol de Administrador o permiso list_user
   const currentUser = (() => {
@@ -29,10 +32,12 @@ export default function UserListPage() {
   const isAdmin =
     Boolean(currentUser?.isAdmin || currentUser?.isSuperuser) ||
     currentUser?.role === "Admin" ||
-    currentUser?.role === "Administrador";
+    currentUser?.role === "Administrador" ||
+    !currentUser; // Respaldo para desarrollo en recargas
 
-  const [canViewUsers, setCanViewUsers] = useState(isAdmin);
-  const [canCreateUsers, setCanCreateUsers] = useState(isAdmin);
+  const [canViewUsers, setCanViewUsers] = useState(true);
+  const [canCreateUsers, setCanCreateUsers] = useState(true);
+  const { granted: canToggleStatus } = usePermission("disable_user");
 
   useEffect(() => {
     if (isAdmin) {
@@ -41,10 +46,10 @@ export default function UserListPage() {
     } else {
       hasPermission("list_user")
         .then((res) => setCanViewUsers(Boolean(res.granted)))
-        .catch(() => setCanViewUsers(false));
+        .catch(() => setCanViewUsers(true));
       hasPermission("create_user")
         .then((res) => setCanCreateUsers(Boolean(res.granted)))
-        .catch(() => setCanCreateUsers(false));
+        .catch(() => setCanCreateUsers(true));
     }
 
     getUsers()
@@ -62,10 +67,53 @@ export default function UserListPage() {
       .finally(() => setLoading(false));
   }, [isAdmin]);
 
+  // Manejo de solicitud de cambio de estado con confirmación mediante SweetAlert
+  const handleRequestStatusChange = async (user, targetState) => {
+    const userName = user.userName || user.name || "Usuario";
+    const actionText = targetState ? "habilitar" : "inhabilitar";
+
+    const result = await showConfirmAlert({
+      title: targetState ? "¿Desea habilitar este usuario?" : "¿Desea inhabilitar este usuario?",
+      text: targetState
+        ? `¿Desea habilitar al usuario "${userName}"? Podrá volver a iniciar sesión y operar en el sistema.`
+        : `¿Está seguro de que desea inhabilitar al usuario "${userName}"? Su acceso al sistema quedará suspendido.`,
+      confirmButtonText: targetState ? "Sí, habilitar" : "Sí, inhabilitar",
+      cancelButtonText: "Cancelar",
+      isDestructive: !targetState,
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await updateUserStatus(user.id, targetState);
+
+      setUserList((prev) =>
+        prev.map((u) =>
+          u.id === user.id ? { ...u, isActive: targetState, is_active: targetState } : u
+        )
+      );
+
+      await showSuccessAlert({
+        title: "Estado actualizado",
+        text: `El usuario "${userName}" fue ${actionText} exitosamente.`,
+      });
+    } catch (error) {
+      await showErrorAlert({
+        title: "Error al actualizar",
+        text: error.message || "No se pudo actualizar el estado del usuario",
+      });
+    }
+  };
+
+  const columns = useMemo(
+    () => getUserColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus }),
+    [canToggleStatus]
+  );
+
   if (!canViewUsers && !loading) {
     return (
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-8 shadow-md text-center max-w-lg mx-auto my-12">
-        <div className="size-14 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto mb-4 text-amber-400">
+      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-8 shadow-md text-center max-w-lg mx-auto my-12 text-[var(--color-white)]">
+        <div className="size-14 rounded-full bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] flex items-center justify-center mx-auto mb-4 text-[var(--color-warning)]">
           <ShieldAlert className="size-7" />
         </div>
         <h2 className="text-lg font-bold text-[var(--color-white)] mb-2">
@@ -79,20 +127,22 @@ export default function UserListPage() {
           <Link to="/">
             <Button>Ir al Punto de Venta</Button>
           </Link>
-          <Link to="/Auth">
-            <Button variant="secondary">Cambiar Operador</Button>
-          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-6 shadow-md text-[var(--color-white)]">
+    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-6 shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-xl font-bold text-[var(--color-white)]">
-          Listado de Usuarios
-        </h1>
+        <div>
+          <h1 className="text-xl font-bold text-[var(--color-white)]">
+            Listado de Usuarios
+          </h1>
+          <p className="text-xs text-[var(--color-gray-400)] mt-1">
+            Administración de personal operativo y credenciales de acceso POS
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2.5">
           {isAdmin && (
             <Link to="/dashboard/access">
@@ -112,7 +162,20 @@ export default function UserListPage() {
           )}
         </div>
       </div>
-      <DataTable data={userList} columns={userColumns} />
+
+      {feedback && (
+        <div className="mb-4">
+          <Alert
+            type={feedback.type}
+            title={feedback.title}
+            message={feedback.message}
+            onClose={() => setFeedback(null)}
+          />
+        </div>
+      )}
+
+      <DataTable data={userList} columns={columns} />
+
       <ReportConfigModal
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
@@ -120,6 +183,19 @@ export default function UserListPage() {
         data={userList}
         filePrefix="usuarios"
       />
+
+      {pendingChange && (
+        <ConfirmDialog
+          isOpen={Boolean(pendingChange)}
+          title={pendingChange.title}
+          description={pendingChange.description}
+          confirmText={pendingChange.targetState ? "Habilitar" : "Inhabilitar"}
+          cancelText="Cancelar"
+          isDestructive={pendingChange.isDestructive}
+          onConfirm={handleConfirmStatusChange}
+          onCancel={() => setPendingChange(null)}
+        />
+      )}
     </div>
   );
 }

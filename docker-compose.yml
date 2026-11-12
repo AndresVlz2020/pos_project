@@ -1,0 +1,20 @@
+# docker-compose.yml
+# Orquesta frontend, backend y PostgreSQL.
+name: grupo6
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: grupo6_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: pos_project
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: grupo6_backend
+    env_file:
+      - ./backend/.env

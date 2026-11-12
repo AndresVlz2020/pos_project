@@ -1,6 +1,7 @@
 // frontend/src/features/access/services/accessService.js
+import { API_URL } from "@/features/config";
 
-const API_URL = "http://localhost:4000/api/access";
+const ACCESS_API_URL = `${API_URL}/access`;
 
 function getStoredToken() {
   return (
@@ -64,7 +65,7 @@ export async function hasPermission(permissionCode) {
     return { granted: allowed.includes(permissionCode) };
   }
 
-  const response = await fetch(`${API_URL}/check/${permissionCode}`, {
+  const response = await fetch(`${ACCESS_API_URL}/check/${permissionCode}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

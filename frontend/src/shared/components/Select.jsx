@@ -19,7 +19,7 @@ export default function Select({
         <label
           htmlFor={selectId}
           className={`block text-caption mb-1 font-medium ${
-            error ? "text-red-500" : "text-[var(--color-gray-200)]"
+            error ? "text-[var(--color-error)]" : "text-[var(--color-gray-200)]"
           }`}
         >
           {label}
@@ -39,7 +39,7 @@ export default function Select({
           border
           ${
             error
-              ? "border-red-500 focus:border-red-500"
+              ? "border-[var(--color-error)] focus:border-[var(--color-error)]"
               : "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)]"
           }
           bg-[var(--color-secondary-900)]
@@ -59,7 +59,10 @@ export default function Select({
           <option
             key={option.value}
             value={option.value}
-            className="bg-[var(--color-secondary-950)] text-white"
+            disabled={option.disabled}
+            className={`bg-[var(--color-secondary-950)] ${
+              option.disabled ? "text-[var(--color-gray-500)]" : "text-white"
+            }`}
           >
             {option.label}
           </option>
@@ -67,12 +70,10 @@ export default function Select({
       </select>
 
       {error && (
-        <p className="text-caption text-red-500 mt-1">
+        <p className="text-caption text-[var(--color-error)] mt-1">
           {error}
         </p>
       )}
-
     </div>
-
   );
 }

@@ -9,7 +9,22 @@ import { ShieldAlert } from "lucide-react";
 export default function EditUser1() {
   const navigate = useNavigate();
   const location = useLocation();
-  const editUser = location.state?.user;
+  const rawUser = location.state?.user;
+  const editUser =
+    rawUser ||
+    (() => {
+      try {
+        return JSON.parse(sessionStorage.getItem("last_edited_user") || "null");
+      } catch {
+        return null;
+      }
+    })();
+
+  useEffect(() => {
+    if (location.state?.user) {
+      sessionStorage.setItem("last_edited_user", JSON.stringify(location.state.user));
+    }
+  }, [location.state]);
 
   // Verificar si el usuario activo tiene rol de Administrador
   const currentUser = (() => {
@@ -123,7 +138,7 @@ export default function EditUser1() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4">
         <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-8 shadow-md text-center max-w-lg w-full">
-          <div className="size-14 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto mb-4 text-amber-400">
+          <div className="size-14 rounded-full bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] flex items-center justify-center mx-auto mb-4 text-[var(--color-warning)]">
             <ShieldAlert className="size-7" />
           </div>
           <h2 className="text-lg font-bold text-[var(--color-white)] mb-2">Acceso Exclusivo de Administrador</h2>
@@ -133,9 +148,6 @@ export default function EditUser1() {
           <div className="flex justify-center gap-3">
             <Link to="/">
               <Button>Ir al Punto de Venta</Button>
-            </Link>
-            <Link to="/Auth">
-              <Button variant="secondary">Cambiar Operador</Button>
             </Link>
           </div>
         </div>

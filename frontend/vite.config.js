@@ -13,7 +13,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"), //Cuando veas @, interprétalo como /src
+      "@": resolve(__dirname, "src"),
     },
+  },
+  server: {
+    port: 5173,
+    strictPort: true,
+    host: true,
   },
 });

@@ -1,24 +1,24 @@
-import { Input, Button, FileInput, Select, Alert, showSuccessAlert, showErrorAlert } from "@/shared";
-
+import { Input, Button, Select, Alert, FileInput, showSuccessAlert, showErrorAlert } from "@/shared";
 import { useState } from "react";
 import { productSchema } from "../schemas/productSchema";
-import { products } from "../data/products";
 import { Link, useNavigate } from "react-router-dom";
-import imgPunta from "@/assets/images/punta-de-anca-hd.jpg";
+import { createProduct } from "../services/productServices";
+import resizeImageFile from "@/utils/imageFile";
 
 export default function CreateProductPage() {
   const navigate = useNavigate();
   const [formProduct, setProduct] = useState({
     productName: "",
     productPrice: "",
-    productCategory: "",
+    productCategory: "2",
     productDescription: "",
     productStatus: "habilitado",
-    userImage: null,
   });
 
+  const [userImage, setUserImage] = useState([]);
   const [errors, setErrors] = useState({});
   const [feedback, setFeedback] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,51 +33,6 @@ export default function CreateProductPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFeedback(null);
-
-    const result = productSchema.safeParse(formProduct);
-
-    if (!result.success) {
-      const fieldErrors = {};
-      result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-
-    setErrors({});
-
-    // Validar platillos duplicados dentro de la misma categoría (RFADMIN20)
-    const categoryName = categoryOptions.find(
-      (c) => c.value === formProduct.productCategory
-    )?.label || formProduct.productCategory;
-
-    const isDuplicate = products.some(
-      (p) =>
-        p.title.trim().toLowerCase() === formProduct.productName.trim().toLowerCase() &&
-        p.category.trim().toLowerCase() === categoryName.trim().toLowerCase()
-    );
-
-    if (isDuplicate) {
-      showErrorAlert({
-        title: "Platillo duplicado",
-        text: `Ya existe un platillo registrado con el nombre "${formProduct.productName}" en la categoría "${categoryName}".`,
-      });
-      return;
-    }
-
-    await showSuccessAlert({
-      title: "Platillo creado",
-      text: "Platillo registrado correctamente en el menú.",
-    });
-
-    navigate("/productList");
-  };
-
-
   const categoryOptions = [
     { value: "1", label: "Entradas y Aperitivos" },
     { value: "2", label: "Platos Fuertes" },
@@ -91,13 +46,78 @@ export default function CreateProductPage() {
     { value: "inhabilitado", label: "Inhabilitado (Excluido de órdenes)" },
   ];
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setFeedback(null);
+
+    const result = productSchema.safeParse({
+      ...formProduct,
+      userImage: userImage.length ? userImage : undefined,
+    });
+
+    if (!result.success) {
+      const fieldErrors = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
+    setLoading(true);
+
+    try {
+      const categoryMap = {
+        "1": "entradas",
+        "2": "platos fuertes",
+        "3": "bebidas",
+        "4": "postres",
+        "5": "guarniciones",
+      };
+
+      const selectedCat = categoryMap[formProduct.productCategory] || "platos fuertes";
+
+      let imageUrl = null;
+      if (userImage.length) {
+        imageUrl = await resizeImageFile(userImage[0]);
+      }
+
+      await createProduct({
+        name: formProduct.productName,
+        title: formProduct.productName,
+        price: Number(formProduct.productPrice),
+        category: selectedCat,
+        description: formProduct.productDescription,
+        status: formProduct.productStatus === "habilitado" ? "Activo" : "Inactivo",
+        isActive: formProduct.productStatus === "habilitado",
+        imageUrl,
+      });
+
+      await showSuccessAlert({
+        title: "Platillo creado",
+        text: "Platillo registrado correctamente en PostgreSQL.",
+      });
+
+      navigate("/productList");
+    } catch (err) {
+      console.error("Error al registrar producto:", err);
+      await showErrorAlert({
+        title: "Error al registrar",
+        text: err.message || "No se pudo guardar el producto en la base de datos",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto my-8 p-6 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-xl text-[var(--color-white)]">
+    <div className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
         <div>
           <h1 className="text-xl font-bold text-[var(--color-white)]">Crear Platillo / Menú</h1>
           <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-            Registro de nuevos ítems con validación de categoría, precio y miniatura uniforme.
+            Registro de nuevos ítems con persistencia directa en PostgreSQL.
           </p>
         </div>
         <Link to="/productList">
@@ -119,94 +139,81 @@ export default function CreateProductPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex flex-col md:flex-row gap-8 items-start">
-          {/* Carga de Imagen o Placeholder uniforme */}
-          <div className="w-full md:w-56 flex flex-col items-center p-4 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-xl">
-            <FileInput
-              value={formProduct.userImage}
-              onChange={(files) =>
-                setProduct((prev) => ({ ...prev, userImage: files }))
-              }
-              className="w-full flex justify-center"
-            />
-            <p className="text-center text-[var(--color-gray-400)] text-xs mt-3">
-              Foto del platillo (PNG, JPG o WEBP). Si no adjunta imagen, se asignará un placeholder uniforme.
-            </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* Columna izquierda: carga de imagen (mismo patrón que usuarios) */}
+          <div className="col-span-1 flex flex-col items-center">
+            <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cargar Imagen</span>
+            <div className="w-full h-56 md:h-64 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
+              <FileInput
+                className="flex items-center justify-center"
+                value={userImage}
+                onChange={setUserImage}
+                multiple={false}
+                accept="image/jpeg,image/png,image/webp"
+              />
+            </div>
           </div>
 
           {/* Campos del formulario */}
-          <div className="flex-1 space-y-4 w-full">
+          <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input
-              label="Nombre del Platillo"
+              label="Nombre del Platillo *"
               name="productName"
-              type="text"
+              placeholder="Ej: Churrasco 350g, Limonada de Coco..."
               value={formProduct.productName}
-              placeholder="Ej: Punta de Anca Angus 400g"
-              htmlFor="product-name"
               onChange={handleChange}
               error={errors.productName}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Precio de Venta ($ COP)"
-                name="productPrice"
-                type="number"
-                min="1"
-                step="100"
-                value={formProduct.productPrice}
-                placeholder="Ej: 56000"
-                htmlFor="product-price"
-                onChange={handleChange}
-                error={errors.productPrice}
-              />
-
-              <Select
-                label="Categoría del Menú"
-                name="productCategory"
-                options={categoryOptions}
-                value={formProduct.productCategory}
-                onChange={handleChange}
-                error={errors.productCategory}
-              />
-            </div>
+            <Input
+              label="Precio (COP) *"
+              name="productPrice"
+              type="number"
+              placeholder="Ej: 38000"
+              value={formProduct.productPrice}
+              onChange={handleChange}
+              error={errors.productPrice}
+            />
 
             <Select
-              label="Estado Operativo del Platillo"
+              label="Categoría del Menú *"
+              name="productCategory"
+              value={formProduct.productCategory}
+              onChange={handleChange}
+              options={categoryOptions}
+              error={errors.productCategory}
+            />
+
+            <Select
+              label="Estado inicial *"
               name="productStatus"
-              options={statusOptions}
               value={formProduct.productStatus}
               onChange={handleChange}
+              options={statusOptions}
               error={errors.productStatus}
             />
 
-            <div>
-              <label className="block text-xs font-semibold text-[var(--color-gray-300)] mb-1.5">
-                Descripción del Platillo
-              </label>
-              <textarea
+            <div className="md:col-span-2">
+              <Input
+                label="Descripción del Platillo"
                 name="productDescription"
-                rows={3}
+                placeholder="Ingredientes, términos de carne, guarnición..."
                 value={formProduct.productDescription}
                 onChange={handleChange}
-                placeholder="Ingredientes, preparación, acompañamientos y gramaje..."
-                className="w-full p-3 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-xs text-[var(--color-white)] focus:border-[var(--color-primary-500)] outline-none resize-none"
+                error={errors.productDescription}
               />
-              {errors.productDescription && (
-                <p className="text-[11px] text-red-400 mt-1">{errors.productDescription}</p>
-              )}
             </div>
           </div>
         </div>
 
         <div className="flex justify-end gap-3 pt-4 border-t border-[var(--color-secondary-800)]">
           <Link to="/productList">
-            <Button variant="secondary" size="md">
+            <Button variant="secondary" type="button" disabled={loading}>
               Cancelar
             </Button>
           </Link>
-          <Button type="submit" variant="primary" size="md">
-            Registrar Platillo
+          <Button variant="primary" type="submit" disabled={loading}>
+            {loading ? "Guardando en BD..." : "Guardar Platillo"}
           </Button>
         </div>
       </form>

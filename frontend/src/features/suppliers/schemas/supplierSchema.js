@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { fileSchema } from "../../../shared/schemas/fileSchema";
+import { optionalFiles } from "../../../shared/schemas/fileSchema";
 
 export const supplierSchema = z.object({
   supplierNit: z
@@ -18,22 +18,23 @@ export const supplierSchema = z.object({
 
   supplierPhone: z
     .string()
-    .min(7, "El teléfono debe tener al menos 7 números")
-    .regex(/^[0-9+ -]+$/, "El teléfono debe ser únicamente números"),
+    .min(7, "El teléfono debe tener al menos 7 caracteres")
+    .regex(/^[0-9+ \-.()]+$/, "El teléfono debe contener únicamente números y caracteres de marcado (+, -, .)"),
 
   supplierDirection: z
     .string()
-    .min(5, "Ingrese una dirección válida (mínimo 5 caracteres)")
-    .max(120, "La dirección supera los 120 caracteres"),
+    .min(3, "Ingrese una dirección válida (mínimo 3 caracteres)")
+    .max(160, "La dirección supera los 160 caracteres"),
 
   supplierObservation: z
     .string()
-    .min(5, "Ingrese una observación válida (mínimo 5 caracteres)")
-    .max(500, "La observación supera los 500 caracteres"),
+    .max(500, "La observación supera los 500 caracteres")
+    .optional()
+    .or(z.literal("")),
 
   isStaff: z.boolean().optional(),
   isActive: z.boolean().optional(),
   isSuperUser: z.boolean().optional(),
 
-  userImage: fileSchema.shape.files.optional(),
+  userImage: optionalFiles,
 });

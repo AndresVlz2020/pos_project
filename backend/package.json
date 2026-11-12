@@ -8,7 +8,15 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "migrate": "node src/scripts/migrate.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "perf:all": "node tests/performance/runner.js --mode=all",
+    "perf:load": "node tests/performance/runner.js --mode=load",
+    "perf:stress": "node tests/performance/runner.js --mode=stress",
+    "perf:spike": "node tests/performance/runner.js --mode=spike",
+    "perf:soak": "node tests/performance/runner.js --mode=soak",
+    "perf:concurrency": "node tests/performance/runner.js --mode=concurrency",
+    "perf:volume": "node tests/performance/runner.js --mode=volume"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -20,5 +28,9 @@
     "nodemailer": "^10.0.12",
     "nodemon": "^3.1.14",
     "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.2",
+    "vitest": "^5.1.0"
   }
 }

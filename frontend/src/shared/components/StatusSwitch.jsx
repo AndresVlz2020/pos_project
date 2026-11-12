@@ -1,46 +1,29 @@
-// Hooks de React para manejar estado y efectos
-import { useState, useEffect } from "react";
-
 // Iconos usados dentro del switch
 import { Check, X } from "lucide-react";
 
-// Componente reutilizable para representar un switch de estado
-// (activo/inactivo)    
+/**
+ * Componente controlado para representar un switch de estado (habilitado / inhabilitado).
+ * No muta su estado internamente: la acción de cambio solo se consolida cuando el
+ * componente padre valida la confirmación mediante el botón del diálogo.
+ */
 export default function StatusSwitch({
-  checked = false,   // Valor inicial del switch (controlado desde el padre)
-  onChange,          // Callback que se ejecuta cuando cambia el estado
+  checked = false,   // Valor controlado directamente desde el registro en PostgreSQL
+  onChange,          // Callback que notifica la solicitud de cambio (abre diálogo de confirmación)
   disabled = false,  // Permite deshabilitar la interacción
   size = "md",       // Tamaño del switch (sm, md, lg)
 }) {
+  const isChecked = Boolean(checked);
 
-  // Estado interno del componente
-  // Se inicializa con el valor recibido desde la prop "checked"
-  const [isActive, setIsActive] = useState(checked);
+  // Función que maneja el click en el switch
+  // Solo solicita el cambio al componente padre sin mutar el switch prematuramente
+  const handleToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  // Efecto que sincroniza el estado interno
-  // con el valor recibido desde el componente padre
-  useEffect(() => {
-    queueMicrotask(() => {
-      setIsActive(checked);
-    });
-  }, [checked]); // Se ejecuta cada vez que cambia "checked"
-
-  // Función que maneja el cambio del switch
-  const handleToggle = () => {
-
-    // Si el switch está deshabilitado no permite interacción
     if (disabled) return;
 
-    // Calcula el nuevo estado (invierte el valor actual)
-    const newValue = !isActive;
-
-    // Actualiza el estado interno
-    setIsActive(newValue);
-
-    // Si existe un callback onChange, se ejecuta
-    // enviando el nuevo valor al componente padre
     if (onChange) {
-      onChange(newValue);
+      onChange(!isChecked);
     }
   };
 
@@ -59,46 +42,34 @@ export default function StatusSwitch({
   };
 
   return (
-
-    // Botón que funciona como switch con accesibilidad Material Design
     <button
       type="button"
       role="switch"
-      aria-checked={isActive}
-      aria-label={isActive ? "Habilitado / Activo" : "Inhabilitado / Inactivo"}
-      onClick={handleToggle}    // Evento que cambia el estado
-      disabled={disabled}       // Permite deshabilitar el botón
+      aria-checked={isChecked}
+      aria-label={isChecked ? "Habilitado / Activo" : "Inhabilitado / Inactivo"}
+      onClick={handleToggle}
+      disabled={disabled}
       className={`
         relative inline-flex items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/40
         ${sizes[size]}
-        ${isActive ? "bg-[var(--color-primary-500)]" : "bg-[var(--color-secondary-700)]"}
+        ${isChecked ? "bg-[var(--color-primary-500)]" : "bg-[var(--color-secondary-700)]"}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
     >
-
-      {/*
-        "Knob" del switch (el círculo que se mueve de izquierda a derecha)
-      */}
+      {/* Knob del switch (el círculo que se desplaza de izquierda a derecha) */}
       <span
         className={`
-          absolute left-0.5 flex items-center justify-center rounded-full bg-[var(--color-white)] shadow transition-transform
+          absolute left-0.5 flex items-center justify-center rounded-full bg-[var(--color-white)] shadow transition-transform duration-200
           ${knobSizes[size]}
-          ${isActive ? "translate-x-full" : "translate-x-0"}
+          ${isChecked ? "translate-x-full" : "translate-x-0"}
         `}
       >
-
-        {/*
-          Icono que cambia dependiendo del estado
-          ✓ activo
-          ✕ inactivo
-        */}
-        {isActive ? (
+        {isChecked ? (
           <Check size={12} className="text-[var(--color-secondary-950)]" />
         ) : (
           <X size={12} className="text-[var(--color-secondary-700)]" />
         )}
       </span>
-
     </button>
   );
 }

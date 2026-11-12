@@ -53,7 +53,7 @@ export default function Input({
                       ? "-mb-0"
                       : "mb-1"
                     }
-                    ${error ? "text-red-500" : ""}
+                    ${error ? "text-[var(--color-error)]" : ""}
                 `} 
                 
                 >
@@ -71,7 +71,7 @@ export default function Input({
                     h-12
                     rounded-md
                     border
-                    ${error ? "border-red-500 focus:border-red-500" : "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)]"}
+                    ${error ? "border-[var(--color-error)] focus:border-[var(--color-error)]" : "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)]"}
                     px-4
                     text-[var(--color-white)]
                     bg-[var(--color-secondary-900)]
@@ -89,7 +89,7 @@ export default function Input({
             </div>
             {/* Feedback */}
             {error && (
-                <p className="text-caption text-red-500 place-self-start mt-1">{error}</p>
+                <p className="text-caption text-[var(--color-error)] place-self-start mt-1">{error}</p>
             )}
         </div>
     )
