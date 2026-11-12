@@ -2,7 +2,7 @@ import { StatusSwitch } from "@/shared";
 import SuppliersRowActions from "../components/SuppliersRowActions";
 import { getSupplierImage } from "@/utils/imageHelper";
 
-export const getSuppliersColumns = ({ onRequestStatusChange, canToggleStatus = false } = {}) => [
+export const getSuppliersColumns = ({ onRequestStatusChange, canToggleStatus = false, canEdit = true } = {}) => [
   {
     accessorKey: "nit",
     header: "NIT",
@@ -71,6 +71,6 @@ export const getSuppliersColumns = ({ onRequestStatusChange, canToggleStatus = f
   },
   {
     id: "actions",
-    cell: ({ row }) => <SuppliersRowActions supplier={row.original} />,
+    cell: ({ row }) => <SuppliersRowActions supplier={row.original} canEdit={canEdit} />,
   },
 ];

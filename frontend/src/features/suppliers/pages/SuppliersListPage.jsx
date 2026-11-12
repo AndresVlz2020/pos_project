@@ -18,6 +18,8 @@ export default function SuppliersListPage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const { granted: canToggleStatus } = usePermission("disable_supplier");
+  const { granted: canEdit } = usePermission("update_supplier");
+  const { granted: canCreate } = usePermission("create_supplier");
 
   useEffect(() => {
     async function loadSuppliers() {
@@ -92,8 +94,8 @@ export default function SuppliersListPage() {
   };
 
   const columns = useMemo(
-    () => getSuppliersColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus }),
-    [canToggleStatus]
+    () => getSuppliersColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus, canEdit }),
+    [canToggleStatus, canEdit]
   );
 
   return (
@@ -104,9 +106,11 @@ export default function SuppliersListPage() {
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
             Generar reporte
           </Button>
-          <Link to="/CreateSupplier">
-            <Button variant="primary">Crear proveedor</Button>
-          </Link>
+          {canCreate && (
+            <Link to="/CreateSupplier">
+              <Button variant="primary">Crear proveedor</Button>
+            </Link>
+          )}
         </div>
       </div>
 

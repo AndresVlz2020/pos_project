@@ -23,6 +23,7 @@ export default function ProductListPage() {
   const [feedback, setFeedback] = useState(null);
   const { granted: canToggleStatus } = usePermission("disable_product");
   const { granted: canEdit } = usePermission("update_product");
+  const { granted: canCreate } = usePermission("create_product");
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -116,9 +117,11 @@ export default function ProductListPage() {
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
             Generar reporte
           </Button>
-          <Link to="/CreateProduct">
-            <Button variant="primary">Crear producto</Button>
-          </Link>
+          {canCreate && (
+            <Link to="/CreateProduct">
+              <Button variant="primary">Crear producto</Button>
+            </Link>
+          )}
         </div>
       </div>
 

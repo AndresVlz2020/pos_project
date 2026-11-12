@@ -88,13 +88,13 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: "productList", element: <ProductListPage /> },
-      { path: "inventoryList", element: <InventoryListPage /> },
-      { path: "supplierList", element: <SuppliersListPage /> },
-      { path: "orderList", element: <OrderListPage /> },
-      { path: "CreateOrder", element: <CreateOrder /> },
-      { path: "editorder", element: <EditOrder /> },
-      { path: "EditOrder", element: <EditOrder /> },
+      { path: "productList", element: <ProtectedRoute requiredPermission="list_product"><ProductListPage /></ProtectedRoute> },
+      { path: "inventoryList", element: <ProtectedRoute requiredPermission="list_inventory"><InventoryListPage /></ProtectedRoute> },
+      { path: "supplierList", element: <ProtectedRoute requiredPermission="list_supplier"><SuppliersListPage /></ProtectedRoute> },
+      { path: "orderList", element: <ProtectedRoute requiredPermission="list_order"><OrderListPage /></ProtectedRoute> },
+      { path: "CreateOrder", element: <ProtectedRoute requiredPermission="create_order"><CreateOrder /></ProtectedRoute> },
+      { path: "editorder", element: <ProtectedRoute requiredPermission="update_order"><EditOrder /></ProtectedRoute> },
+      { path: "EditOrder", element: <ProtectedRoute requiredPermission="update_order"><EditOrder /></ProtectedRoute> },
       {
         path: "edituser",
         element: (
@@ -103,58 +103,98 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: "editsupplier", element: <EditSupplier1 /> },
-      { path: "editproduct", element: <EditProduct1 /> },
+      { path: "editsupplier", element: <ProtectedRoute requiredPermission="update_supplier"><EditSupplier1 /></ProtectedRoute> },
+      { path: "editproduct", element: <ProtectedRoute requiredPermission="update_product"><EditProduct1 /></ProtectedRoute> },
     ],
   },
   {
     path: "/CreateInventory",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_inventory">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <CreateInventory /> }],
   },
   {
     path: "/CreateProduct",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="create_product">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <CreateProduct /> }],
   },
   {
     path: "/productList",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_product">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <ProductListPage /> }],
   },
   {
     path: "/supplierList",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_supplier">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <SuppliersListPage /> }],
   },
   {
     path: "/inventoryList",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_inventory">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <InventoryListPage /> }],
   },
   {
     path: "/products",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_product">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <ProductListPage /> }],
   },
   {
     path: "/inventory",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_inventory">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <InventoryListPage /> }],
   },
   {
     path: "/orderList",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_order">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <OrderListPage /> }],
   },
   {
     path: "/orders",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_order">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <OrderListPage /> }],
   },
   {
     path: "/CreateOrder",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="create_order">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <CreateOrder /> }],
   },
   {
@@ -181,22 +221,38 @@ const router = createBrowserRouter([
   },
   {
     path: "/CreateSupplier",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="create_supplier">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <CreateSuppliers /> }],
   },
   {
     path: "/readuser",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_user">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <ReadUser1 /> }],
   },
   {
     path: "/readsupplier",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_supplier">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <ReadSupplier1 /> }],
   },
   {
     path: "/readproduct",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="list_product">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <ReadProduct1 /> }],
   },
   {
@@ -210,22 +266,38 @@ const router = createBrowserRouter([
   },
   {
     path: "/editsupplier",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="update_supplier">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <EditSupplier1 /> }],
   },
   {
     path: "/editproduct",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="update_product">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <EditProduct1 /> }],
   },
   {
     path: "/editorder",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="update_order">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <EditOrder /> }],
   },
   {
     path: "/EditOrder",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute requiredPermission="update_order">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [{ index: true, element: <EditOrder /> }],
   },
   {

@@ -3,7 +3,7 @@ import InventoryRowActions from "../components/InventoryRowActions";
 import { updateInventoryStatus } from "../services/inventoryServices";
 import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 
-export const getInventoryColumns = ({ onRequestStatusChange, canToggleStatus = false } = {}) => [
+export const getInventoryColumns = ({ onRequestStatusChange, canToggleStatus = false, canEdit = true } = {}) => [
   {
     accessorKey: "code",
     header: "Código",
@@ -90,7 +90,7 @@ export const getInventoryColumns = ({ onRequestStatusChange, canToggleStatus = f
   },
   {
     id: "actions",
-    cell: ({ row }) => <InventoryRowActions item={row.original} />,
+    cell: ({ row }) => <InventoryRowActions item={row.original} canEdit={canEdit} />,
   },
 ];
 

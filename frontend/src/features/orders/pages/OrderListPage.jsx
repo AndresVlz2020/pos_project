@@ -3,6 +3,7 @@ import { DataTable, Button, ListReportModal, ConfirmDialog, Alert } from "@/shar
 import { getOrderColumns } from "../table/OrderColumns";
 import { getOrders, cancelOrder } from "../services/orderServices";
 import OrderViewModal from "../components/OrderViewModal";
+import usePermission from "@/features/access/services/usePermission";
 import { Link } from "react-router-dom";
 
 const orderReportFields = [
@@ -23,6 +24,7 @@ export default function OrderListPage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const { granted: canCreateOrder } = usePermission("create_order");
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -124,9 +126,11 @@ export default function OrderListPage() {
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
             Generar reporte
           </Button>
-          <Link to="/CreateOrder">
-            <Button variant="primary">Crear comanda</Button>
-          </Link>
+          {canCreateOrder && (
+            <Link to="/CreateOrder">
+              <Button variant="primary">Crear comanda</Button>
+            </Link>
+          )}
         </div>
       </div>
 

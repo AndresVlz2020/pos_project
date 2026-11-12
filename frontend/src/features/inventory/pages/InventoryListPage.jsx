@@ -24,6 +24,8 @@ export default function InventoryListPage() {
   const [pendingChange, setPendingChange] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const { granted: canToggleStatus } = usePermission("disable_inventory");
+  const { granted: canEdit } = usePermission("update_inventory");
+  const { granted: canCreate } = usePermission("create_inventory");
 
   const fetchInventory = useCallback(async () => {
     try {
@@ -106,8 +108,8 @@ export default function InventoryListPage() {
   };
 
   const columns = useMemo(
-    () => getInventoryColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus }),
-    [canToggleStatus]
+    () => getInventoryColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus, canEdit }),
+    [canToggleStatus, canEdit]
   );
 
   return (
@@ -126,9 +128,11 @@ export default function InventoryListPage() {
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
             Generar reporte
           </Button>
-          <Link to="/CreateInventory">
-            <Button variant="primary">Crear insumo</Button>
-          </Link>
+          {canCreate && (
+            <Link to="/CreateInventory">
+              <Button variant="primary">Crear insumo</Button>
+            </Link>
+          )}
         </div>
       </div>
 
