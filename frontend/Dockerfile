@@ -1,6 +1,10 @@
 # Etapa 1: construir la aplicación
-FROM node:20 AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
+
+ARG VITE_API_URL=/api
+ENV VITE_API_URL=$VITE_API_URL
+
 COPY package*.json ./
 RUN npm install
 COPY . .

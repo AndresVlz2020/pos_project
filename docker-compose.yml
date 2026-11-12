@@ -1,20 +1,52 @@
 # docker-compose.yml
 # Orquesta frontend, backend y PostgreSQL.
 name: grupo6
-services:
 
+services:
   postgres:
     image: postgres:16
     container_name: grupo6_postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
-      POSTGRES_DB: pos_project
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-12345}
+      POSTGRES_DB: ${DB_NAME:-pos_project}
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-pos_project}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   backend:
     build: ./backend
     container_name: grupo6_backend
+    restart: unless-stopped
     env_file:
       - ./backend/.env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
+    container_name: grupo6_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
