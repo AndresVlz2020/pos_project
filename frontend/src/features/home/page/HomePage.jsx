@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Navbar } from "@/shared";
+import { Navbar, useInactivityTimeout } from "@/shared";
 import { products as fallbackProducts } from "@/features/products/data/products";
 import { getProducts } from "@/features/products/services/productServices";
 import { useSearchParams } from "react-router-dom";
@@ -25,6 +25,7 @@ const PRIMARY_TABS = [
 ];
 
 export default function HomePage() {
+  useInactivityTimeout(10 * 60 * 1000);
   const [searchParams, setSearchParams] = useSearchParams();
   const urlSearch = searchParams.get("search") || "";
   const tabParam = searchParams.get("tab") || "menu";

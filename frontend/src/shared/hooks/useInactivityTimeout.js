@@ -9,13 +9,29 @@ import { showErrorAlert } from "../services/alertService";
 export function useInactivityTimeout(timeoutMs = 10 * 60 * 1000) {
   const navigate = useNavigate();
   const timerRef = useRef(null);
+  const intervalRef = useRef(null);
+  const lastActivityRef = useRef(Date.now());
+  const triggeredRef = useRef(false);
 
   useEffect(() => {
-    // Si no hay usuario autenticado, no activamos el temporizador
-    const hasUser = Boolean(localStorage.getItem("auth_user") || localStorage.getItem("auth_token"));
+    const hasUser = Boolean(
+      localStorage.getItem("auth_user") ||
+        localStorage.getItem("auth_token") ||
+        sessionStorage.getItem("user") ||
+        sessionStorage.getItem("token")
+    );
     if (!hasUser) return;
 
+    triggeredRef.current = false;
+    lastActivityRef.current = Date.now();
+
     const handleTimeout = async () => {
+      if (triggeredRef.current) return;
+      triggeredRef.current = true;
+
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+
       localStorage.removeItem("auth_user");
       localStorage.removeItem("auth_token");
       sessionStorage.removeItem("user");
@@ -31,10 +47,19 @@ export function useInactivityTimeout(timeoutMs = 10 * 60 * 1000) {
     };
 
     const resetTimer = () => {
+      if (triggeredRef.current) return;
+      lastActivityRef.current = Date.now();
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
       timerRef.current = setTimeout(handleTimeout, timeoutMs);
+    };
+
+    const checkElapsed = () => {
+      if (triggeredRef.current) return;
+      if (Date.now() - lastActivityRef.current >= timeoutMs) {
+        handleTimeout();
+      }
     };
 
     const activityEvents = [
@@ -46,21 +71,21 @@ export function useInactivityTimeout(timeoutMs = 10 * 60 * 1000) {
       "wheel",
     ];
 
-    // Iniciar temporizador
     resetTimer();
+    intervalRef.current = setInterval(checkElapsed, 15000);
 
-    // Escuchar eventos de interacción del usuario
     activityEvents.forEach((event) => {
       window.addEventListener(event, resetTimer, { passive: true });
     });
+    document.addEventListener("visibilitychange", checkElapsed);
 
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
       activityEvents.forEach((event) => {
         window.removeEventListener(event, resetTimer);
       });
+      document.removeEventListener("visibilitychange", checkElapsed);
     };
   }, [navigate, timeoutMs]);
 }

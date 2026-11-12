@@ -8,15 +8,14 @@ export default function AdminLoginForm({ onSubmit }) {
   const [form, setForm] = useState({
     userEmail: "",
     userPassword: "",
-    remember: false
   });
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value
+      [name]: value
     }));
 
     if (errors[name]) {
@@ -95,18 +94,7 @@ export default function AdminLoginForm({ onSubmit }) {
         )}
       </div>
 
-      <div className="flex items-center justify-between text-xs pt-1">
-        <label className="flex items-center gap-2 text-[var(--color-gray-400)] cursor-pointer">
-          <input
-            type="checkbox"
-            name="remember"
-            checked={form.remember}
-            onChange={handleChange}
-            className="rounded bg-[var(--color-secondary-950)] border-[var(--color-secondary-800)] text-[var(--color-primary-500)] focus:ring-0 cursor-pointer"
-          />
-          <span>Recordarme</span>
-        </label>
-
+      <div className="flex items-center justify-center text-xs pt-1">
         <Link
           to="/Auth/forgot-password"
           className="text-[var(--color-primary-400)] hover:underline"
