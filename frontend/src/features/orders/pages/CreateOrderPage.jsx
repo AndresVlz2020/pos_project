@@ -247,36 +247,10 @@ export default function CreateOrder() {
         text: `Comanda ${created.order?.order_number || "creada"} para ${tableFormatted} registrada con éxito.`,
       });
 
-      // Estructura completa de comanda para visualización e impresión inmediata
-      const createdOrder = created.order || {};
-      const fullOrderData = {
-        id: createdOrder.order_number || createdOrder.id || "ORD-000",
-        idCode: createdOrder.order_number || createdOrder.id || "ORD-000",
-        tableNumber: tableFormatted,
-        waiter: form.waiter,
-        status: createdOrder.status || "No Pagada",
-        createdAt: new Date().toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" }),
-        observations: form.observations || "Sin observaciones adicionales",
-        total: totalAmount,
-        totalAmount: totalAmount,
-        items: dishes
-          .filter((d) => (qty[d.id] || 0) > 0)
-          .map((d) => ({
-            name: d.name,
-            price: d.price,
-            qty: qty[d.id],
-            subtotal: d.price * qty[d.id],
-          })),
-      };
-
-      // Resetear formulario
+      // Resetear formulario y recargar mesas/órdenes (la factura se genera al pagar, no al crear)
       setQty({});
       setErrors({});
       fetchInitialData();
-
-      // Abrir overlay de comanda inmediatamente con botón de impresión de factura
-      setSelectedOrder(fullOrderData);
-      setIsViewModalOpen(true);
     } catch (err) {
       console.error("Error al registrar orden:", err);
       await showErrorAlert({

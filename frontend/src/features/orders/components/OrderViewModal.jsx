@@ -251,20 +251,22 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
           </span>
         </div>
 
-        {/* Acciones del Modal: Imprimir Factura / Comanda y Cerrar */}
+        {/* Acciones del Modal: Imprimir Factura solo si está Pagada */}
         <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--color-secondary-800)]">
           <Button variant="secondary" size="sm" onClick={onClose}>
-            Cerrar Comanda
+            Cerrar
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handlePrintInvoice}
-            className="flex items-center gap-1.5 shadow-md font-semibold"
-          >
-            <Printer size={15} />
-            Imprimir Factura
-          </Button>
+          {String(order.status || "").toLowerCase() === "pagada" && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handlePrintInvoice}
+              className="flex items-center gap-1.5 shadow-md font-semibold"
+            >
+              <Printer size={15} />
+              Imprimir Factura
+            </Button>
+          )}
         </div>
       </div>
     </Modal>

@@ -29,6 +29,9 @@ export default function EditOrder() {
     paymentMethod: editData?.paymentMethod || editData?.payment_method || "Efectivo",
   });
 
+  const [savedStatus, setSavedStatus] = useState(
+    editData?.orderStatus || editData?.status || "No Pagada"
+  );
   const [productsList, setProductsList] = useState([]);
   const [tablesList, setTablesList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,13 +54,15 @@ export default function EditOrder() {
         setTablesList(tbls || []);
 
         if (orderDetail) {
+          const persistedStatus = orderDetail.status || "No Pagada";
+          setSavedStatus(persistedStatus);
           setFormOrder({
             id: orderDetail.order_number || String(orderDetail.id),
             numericId: orderDetail.id,
             tableNumber: orderDetail.table_number || "Mesa 1",
             waiter: orderDetail.waiter || "Carlos Pérez",
             observations: orderDetail.observations || "",
-            orderStatus: orderDetail.status || "No Pagada",
+            orderStatus: persistedStatus,
             paymentMethod: orderDetail.paymentMethod || orderDetail.payment_method || "Efectivo",
           });
 
@@ -80,8 +85,8 @@ export default function EditOrder() {
     loadData();
   }, [initialOrderId]);
 
-  const isClosedOrPaid = formOrder.orderStatus === "Pagada";
-  const isCanceled = formOrder.orderStatus === "Anulada";
+  const isClosedOrPaid = savedStatus === "Pagada";
+  const isCanceled = savedStatus === "Anulada";
 
   const dishes = useMemo(() => {
     return productsList.map((p) => ({
