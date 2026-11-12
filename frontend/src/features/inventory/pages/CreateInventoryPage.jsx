@@ -254,7 +254,7 @@ export default function CreateInventory() {
 
                     <div className="flex-1 flex flex-col gap-1 w-full">
                         <Select
-                            label="Proveedor (PostgreSQL)"
+                            label="Proveedor"
                             name="inventorySupplierSelect"
                             htmlFor="supplier-select"
                             options={supplierOptions}
@@ -406,7 +406,7 @@ export default function CreateInventory() {
                             type="submit"
                             disabled={submitting}
                         >
-                            {submitting ? "Guardando en PostgreSQL..." : isEditing ? "Guardar Cambios" : "Confirmar Información"}
+                            {submitting ? "Guardando..." : isEditing ? "Guardar Cambios" : "Confirmar Información"}
                         </Button>
                     )}
                 </div>

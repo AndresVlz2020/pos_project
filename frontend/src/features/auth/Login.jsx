@@ -157,12 +157,12 @@ export default function Login() {
       // Si fue error de red/servidor apagado, NO penalizar el contador de intentos de contraseña
       if (err.isNetworkError) {
         await showErrorAlert({
-          title: "Servidor Desconectado",
-          text: "No se pudo conectar con el servidor backend. Verifica que el servidor esté iniciado e inténtalo de nuevo.",
+          title: "Sin conexión",
+          text: "No fue posible conectar con el sistema en este momento. Verifica tu conexión e inténtalo de nuevo.",
         });
         return {
           errors: {
-            userEmail: "Servidor backend no disponible en el puerto 4000.",
+            userEmail: "Servicio temporalmente no disponible. Intenta nuevamente.",
           },
         };
       }

@@ -126,7 +126,7 @@ export async function updateOrder(id, orderData) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || data.message || "Error al actualizar la comanda en PostgreSQL");
+      throw new Error(data.error || data.message || "Error al actualizar la comanda");
     }
 
     return data;

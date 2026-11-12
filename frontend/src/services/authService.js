@@ -28,8 +28,8 @@ export async function loginApi({ email, password, userId, pin }) {
 
     return data;
   } catch (err) {
-    if (err.name === "TypeError" || err.message?.includes("fetch")) {
-      const netErr = new Error("No se pudo conectar con el servidor backend (puerto 4000).");
+    if (err.name === "TypeError" || err.message?.toLowerCase().includes("failed to fetch")) {
+      const netErr = new Error("No fue posible conectar con el servicio en este momento.");
       netErr.isNetworkError = true;
       throw netErr;
     }

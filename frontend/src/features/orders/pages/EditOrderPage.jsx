@@ -474,7 +474,7 @@ export default function EditOrder() {
             </Link>
             {!isClosedOrPaid && !isCanceled && (
               <Button variant="primary" type="submit" disabled={submitting}>
-                {submitting ? "Actualizando en PostgreSQL..." : "Guardar Cambios"}
+                {submitting ? "Actualizando..." : "Guardar Cambios"}
               </Button>
             )}
           </div>

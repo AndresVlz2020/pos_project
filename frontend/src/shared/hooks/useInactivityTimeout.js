@@ -18,10 +18,13 @@ export function useInactivityTimeout(timeoutMs = 10 * 60 * 1000) {
     const handleTimeout = async () => {
       localStorage.removeItem("auth_user");
       localStorage.removeItem("auth_token");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("token");
 
       await showErrorAlert({
         title: "Sesión cerrada por inactividad",
         text: "Tu sesión ha expirado tras 10 minutos sin actividad. Por seguridad, inicia sesión nuevamente.",
+        confirmButtonText: "Volver al inicio de sesión",
       });
 
       navigate("/Auth", { replace: true });

@@ -3,7 +3,9 @@ import Swal from "sweetalert2";
 function sanitizeMessage(str) {
   if (!str || typeof str !== "string") return str;
   return str
-    .replace(/\s*(en|de|a|desde)?\s*(la|tu|nuestra)?\s*base de datos\s*/gi, " ")
+    .replace(/\s*(en|de|a|desde|con)?\s*(la|tu|nuestra)?\s*(base de datos|PostgreSQL|Postgres)\s*/gi, " ")
+    .replace(/\s*servidor backend(\s*\(puerto \d+\))?\s*/gi, " servicio ")
+    .replace(/\s*en el puerto \d+\s*/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -43,7 +45,7 @@ export function showErrorAlert({
     String(cleanText).toLowerCase().includes("fetch") ||
     String(cleanText).toLowerCase().includes("networkerror")
   ) {
-    cleanText = "Error inesperado de conexión con el servidor backend.";
+    cleanText = "No fue posible conectar con el servicio. Verifica tu conexión e inténtalo de nuevo.";
   }
 
   return Swal.fire({

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
-import { Button } from "@/shared";
+import { Button, showWarningAlert } from "@/shared";
 
 export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
   const navigate = useNavigate();
@@ -38,11 +38,21 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
       }, 1000);
     }, warningMs);
 
-    // Timer de cierre definitivo
-    timerRef.current = setTimeout(() => {
+    // Timer de cierre definitivo con aviso y confirmación SweetAlert
+    timerRef.current = setTimeout(async () => {
       localStorage.removeItem("auth_token");
       localStorage.removeItem("auth_user");
-      navigate("/Auth");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      setShowWarning(false);
+
+      await showWarningAlert({
+        title: "Sesión cerrada por inactividad",
+        text: "Tu sesión se cerró automáticamente por seguridad tras un período de inactividad.",
+        confirmButtonText: "Volver al inicio de sesión",
+      });
+
+      navigate("/Auth", { replace: true });
     }, timeoutMs);
   };
 
