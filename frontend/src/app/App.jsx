@@ -1,5 +1,5 @@
 import { RouterProvider } from "react-router-dom";
-import router from "@/App/router";
+import router from "@/app/router";
 
 // Al abrir la aplicación (carga en frío / refresh), siempre inicia en la
 // pantalla de inicio de sesión: no se conserva la sesión entre entradas.
