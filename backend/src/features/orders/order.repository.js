@@ -139,7 +139,7 @@ export const orderRepository = {
       let totalAmount = Number(data.total || data.totalAmount || 0);
       if (totalAmount === 0 && items.length > 0) {
         totalAmount = items.reduce(
-          (sum, it) => sum + (Number(it.price || 0) * Number(it.qty || it.quantity || 1)),
+          (sum, it) => sum + (Number(it.price ?? it.unitPrice ?? 0) * Number(it.qty || it.quantity || 1)),
           0
         );
       }
@@ -174,7 +174,7 @@ export const orderRepository = {
 
       for (const item of items) {
         let productId = item.productId || item.product_id;
-        let unitPrice = Number(item.price || 0);
+        let unitPrice = Number(item.price ?? item.unitPrice ?? 0);
 
         if (!productId && item.name) {
           const prodRes = await client.query(
@@ -236,7 +236,7 @@ export const orderRepository = {
       const items = Array.isArray(data.items) ? data.items : null;
       if (items) {
         totalAmount = items.reduce(
-          (sum, it) => sum + (Number(it.price || 0) * Number(it.qty || it.quantity || 1)),
+          (sum, it) => sum + (Number(it.price ?? it.unitPrice ?? 0) * Number(it.qty || it.quantity || 1)),
           0
         );
 
@@ -244,7 +244,7 @@ export const orderRepository = {
 
         for (const item of items) {
           let productId = item.productId || item.product_id;
-          let unitPrice = Number(item.price || 0);
+          let unitPrice = Number(item.price ?? item.unitPrice ?? 0);
 
           if (!productId && item.name) {
             const prodRes = await client.query(
