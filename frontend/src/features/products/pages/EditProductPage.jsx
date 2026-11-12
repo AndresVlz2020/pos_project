@@ -177,9 +177,6 @@ export default function EditProductPage() {
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
         <div>
           <h1 className="text-xl font-bold text-[var(--color-white)]">Editar Producto</h1>
-          <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-            Actualizar datos directamente en la base de datos PostgreSQL.
-          </p>
         </div>
         <Link to="/productList">
           <Button variant="secondary" size="sm">

@@ -47,9 +47,6 @@ export default function PosSuppliersPanel() {
             <Truck className="size-5 text-[var(--color-primary-400)]" />
             Proveedores de Insumos & Materia Prima
           </h2>
-          <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-            Directorio de compras conectado a PostgreSQL (proveedores activos).
-          </p>
         </div>
 
         <Link

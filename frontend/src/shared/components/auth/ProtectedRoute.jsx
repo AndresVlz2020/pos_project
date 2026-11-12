@@ -12,9 +12,13 @@ export default function ProtectedRoute({ children, requiredPermission }) {
   );
 
   useEffect(() => {
-    if (!token || !requiredPermission) return;
+    if (!token || !requiredPermission) {
+      setStatus("allowed");
+      return;
+    }
 
     let active = true;
+    setStatus("loading");
 
     hasPermission(requiredPermission)
       .then((res) => {

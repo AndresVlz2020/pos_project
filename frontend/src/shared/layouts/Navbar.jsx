@@ -44,6 +44,9 @@ export default function Navbar() {
     initialIsAdmin || isCajero
   );
   const [canViewSuppliers, setCanViewSuppliers] = useState(initialIsAdmin);
+  const [canCreateOrder, setCanCreateOrder] = useState(
+    initialIsAdmin || isCajero || role === "Mesero"
+  );
 
   useEffect(() => {
     const token =
@@ -54,6 +57,7 @@ export default function Navbar() {
       setCanViewUsers(false);
       setCanViewInventory(false);
       setCanViewSuppliers(false);
+      setCanCreateOrder(false);
       return;
     }
 
@@ -72,7 +76,11 @@ export default function Navbar() {
     hasPermission("list_supplier")
       .then((res) => setCanViewSuppliers(Boolean(res.granted)))
       .catch(() => setCanViewSuppliers(initialIsAdmin));
-  }, [location.pathname, initialIsAdmin, isCajero]);
+
+    hasPermission("create_order")
+      .then((res) => setCanCreateOrder(Boolean(res.granted)))
+      .catch(() => setCanCreateOrder(initialIsAdmin || isCajero || role === "Mesero"));
+  }, [location.pathname, initialIsAdmin, isCajero, role]);
 
   const pathname = location.pathname.toLowerCase();
   const isHome = pathname === "/";
@@ -126,7 +134,10 @@ export default function Navbar() {
               </Link>
             </li>
             <li>
-              <Link to={"/CreateOrder"} className={getLinkClass(isOrders)}>
+              <Link
+                to={canCreateOrder ? "/CreateOrder" : "/orderList"}
+                className={getLinkClass(isOrders)}
+              >
                 Pedidos
               </Link>
             </li>
@@ -218,16 +229,18 @@ export default function Navbar() {
                   >
                     Productos
                   </DropdownItem>
-                  <DropdownItem
-                    onClick={() => navigate("/CreateOrder")}
-                    className={`cursor-pointer ${
-                      pathname === "/createorder"
-                        ? "text-[var(--color-primary-400)] font-bold"
-                        : ""
-                    }`}
-                  >
-                    Crear Pedido
-                  </DropdownItem>
+                  {canCreateOrder && (
+                    <DropdownItem
+                      onClick={() => navigate("/CreateOrder")}
+                      className={`cursor-pointer ${
+                        pathname === "/createorder"
+                          ? "text-[var(--color-primary-400)] font-bold"
+                          : ""
+                      }`}
+                    >
+                      Crear Pedido
+                    </DropdownItem>
+                  )}
                   <DropdownItem
                     onClick={() => navigate("/orderList")}
                     className={`cursor-pointer ${

@@ -68,7 +68,7 @@ export default function PosStaffPanel() {
       <PosSectionHeader
         icon={Users}
         title="Personal en Turno"
-        subtitle="Equipo operativo activo en salón, cocina y barra (datos reales de PostgreSQL)."
+        subtitle="Equipo operativo activo en salón, cocina y barra."
         searchQuery={query}
         onSearchChange={setQuery}
         searchPlaceholder="Buscar por nombre o cargo..."

@@ -315,9 +315,6 @@ export default function EditOrder() {
           <h1 className="text-xl font-bold text-[var(--color-white)]">
             Editar Comanda {formOrder.id}
           </h1>
-          <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-            Actualizar datos directamente en la base de datos PostgreSQL
-          </p>
         </div>
         <Link to="/OrderListPage">
           <Button variant="secondary" size="sm">

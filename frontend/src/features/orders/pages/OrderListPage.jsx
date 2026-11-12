@@ -114,9 +114,6 @@ export default function OrderListPage() {
           <h1 className="text-xl font-bold text-[var(--color-white)]">
             Listado de Órdenes y Comandas
           </h1>
-          <p className="text-xs text-[var(--color-gray-400)] mt-1">
-            Sincronizado en tiempo real con PostgreSQL ({orders.length} comandas registradas)
-          </p>
         </div>
 
         <div className="flex gap-2.5">

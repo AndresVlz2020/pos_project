@@ -76,7 +76,7 @@ export default function PosCustomersPanel() {
       <PosSectionHeader
         icon={Receipt}
         title="Comandas & Facturación del turno"
-        subtitle="Comandas registradas en tiempo real desde PostgreSQL."
+        subtitle="Comandas registradas en tiempo real."
         searchQuery={query}
         onSearchChange={setQuery}
         searchPlaceholder="Buscar por número, mesa, mesero o estado..."

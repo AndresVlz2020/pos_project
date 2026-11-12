@@ -179,9 +179,6 @@ export default function EditSupplierPage() {
                         <Building2 className="size-6 text-[var(--color-primary-400)]" />
                         Editar Proveedor
                     </h1>
-                    <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-                        Modificación en tiempo real sincronizada con PostgreSQL.
-                    </p>
                 </div>
                 <Link to="/supplierList">
                     <Button variant="secondary" size="sm">
@@ -324,7 +321,7 @@ export default function EditSupplierPage() {
                             type="submit"
                             disabled={submitting}
                         >
-                            {submitting ? "Guardando en PostgreSQL..." : "Guardar Cambios"}
+                            {submitting ? "Guardando..." : "Guardar Cambios"}
                         </Button>
                     </div>
                 </form>
