@@ -49,7 +49,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
   }, []);
 
   const quickStaffList = useMemo(() => {
-    return staffUsers.slice(0, 6);
+    return staffUsers;
   }, [staffUsers]);
 
   const filteredStaffList = useMemo(() => {
@@ -158,7 +158,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1">
             {quickStaffList.map((staff) => (
               <button
                 key={staff.id}
