@@ -191,37 +191,40 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
             <Utensils size={14} className="text-[var(--color-primary-400)]" />
             Resumen de Platillos Ordenados ({(order.items || []).length})
           </h4>
-          <div className="border border-[var(--color-secondary-800)] rounded-lg max-h-[38dvh] overflow-y-auto overflow-x-auto bg-[var(--color-secondary-950)]">
-            <table className="w-full text-left text-xs min-w-[340px]">
+          <div className="border border-[var(--color-secondary-800)] rounded-lg max-h-[36dvh] overflow-y-auto overflow-x-hidden bg-[var(--color-secondary-950)]">
+            <table className="w-full text-left text-[11px] sm:text-xs">
               <thead className="sticky top-0 z-10 bg-[var(--color-secondary-900)] text-[var(--color-gray-400)] border-b border-[var(--color-secondary-800)]">
                 <tr>
-                  <th className="py-2 px-2.5 sm:px-3 font-semibold">Cant.</th>
-                  <th className="py-2 px-2.5 sm:px-3 font-semibold">Platillo</th>
-                  <th className="py-2 px-2.5 sm:px-3 font-semibold text-right">Precio Unit.</th>
-                  <th className="py-2 px-2.5 sm:px-3 font-semibold text-right">Subtotal</th>
+                  <th className="py-2 px-2 sm:px-3 font-semibold w-9 sm:w-auto">Cant.</th>
+                  <th className="py-2 px-1.5 sm:px-3 font-semibold">Platillo</th>
+                  <th className="py-2 px-1.5 sm:px-3 font-semibold text-right whitespace-nowrap">
+                    <span className="sm:hidden">Unit.</span>
+                    <span className="hidden sm:inline">Precio Unit.</span>
+                  </th>
+                  <th className="py-2 px-2 sm:px-3 font-semibold text-right whitespace-nowrap">Subtotal</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-secondary-800)]">
                 {(order.items || []).map((item, idx) => (
                   <tr key={idx} className="hover:bg-[var(--color-secondary-900)]/50">
-                    <td className="py-2 px-2.5 sm:px-3 font-bold text-[var(--color-primary-400)] whitespace-nowrap">
+                    <td className="py-2 px-2 sm:px-3 font-bold text-[var(--color-primary-400)] whitespace-nowrap">
                       {item.qty}x
                     </td>
-                    <td className="py-2 px-2.5 sm:px-3 font-medium text-[var(--color-white)]">
-                      <div className="flex items-center gap-2 min-w-0">
+                    <td className="py-2 px-1.5 sm:px-3 font-medium text-[var(--color-white)] min-w-0">
+                      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                         <img
                           src={getProductImage({ name: item.name })}
                           alt={item.name}
-                          className="size-7 rounded object-cover border border-[var(--color-secondary-700)] shrink-0"
+                          className="size-6 sm:size-7 rounded object-cover border border-[var(--color-secondary-700)] shrink-0"
                           onError={(e) => { e.currentTarget.style.display = 'none'; }}
                         />
-                        <span className="break-words">{item.name}</span>
+                        <span className="min-w-0 break-words leading-snug">{item.name}</span>
                       </div>
                     </td>
-                    <td className="py-2 px-2.5 sm:px-3 text-right text-[var(--color-gray-300)] whitespace-nowrap">
+                    <td className="py-2 px-1.5 sm:px-3 text-right text-[var(--color-gray-300)] whitespace-nowrap">
                       ${Number(item.price || 0).toLocaleString("es-CO")}
                     </td>
-                    <td className="py-2 px-2.5 sm:px-3 text-right font-semibold text-[var(--color-white)] whitespace-nowrap">
+                    <td className="py-2 px-2 sm:px-3 text-right font-semibold text-[var(--color-white)] whitespace-nowrap">
                       ${(Number(item.price || 0) * (item.qty || 1)).toLocaleString("es-CO")}
                     </td>
                   </tr>
@@ -242,11 +245,11 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
         )}
 
         {/* Total General */}
-        <div className="flex items-center justify-between pt-3 border-t border-[var(--color-secondary-800)]">
+        <div className="flex items-center justify-between gap-2 pt-3 border-t border-[var(--color-secondary-800)]">
           <span className="text-sm font-semibold text-[var(--color-gray-300)]">
             Total Liquidado:
           </span>
-          <span className="text-xl font-bold text-[var(--color-white)]">
+          <span className="text-lg sm:text-xl font-bold text-[var(--color-white)] whitespace-nowrap">
             ${Number(order.total || 0).toLocaleString("es-CO")} COP
           </span>
         </div>
