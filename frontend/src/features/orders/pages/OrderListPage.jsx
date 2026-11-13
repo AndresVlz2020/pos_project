@@ -25,6 +25,7 @@ export default function OrderListPage() {
   const [orderToCancel, setOrderToCancel] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const { granted: canCreateOrder } = usePermission("create_order");
+  const { granted: canEditOrder } = usePermission("update_order");
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -103,8 +104,9 @@ export default function OrderListPage() {
       getOrderColumns({
         onViewOrder: handleViewOrder,
         onRequestCancel: handleRequestCancel,
+        canEdit: canEditOrder,
       }),
-    []
+    [canEditOrder]
   );
 
   return (

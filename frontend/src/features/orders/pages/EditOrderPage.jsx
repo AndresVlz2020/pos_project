@@ -273,7 +273,7 @@ export default function EditOrder() {
         return;
       }
 
-      navigate("/OrderListPage");
+      navigate("/orderList");
     } catch (err) {
       console.error("Error al actualizar comanda:", err);
       await showErrorAlert({
@@ -298,7 +298,7 @@ export default function EditOrder() {
         text: `La comanda ${formOrder.id} ha sido anulada exitosamente.`,
       });
 
-      navigate("/OrderListPage");
+      navigate("/orderList");
     } catch (err) {
       console.error("Error al anular orden:", err);
       await showErrorAlert({
@@ -523,7 +523,7 @@ export default function EditOrder() {
         isOpen={Boolean(paidOrderForPrint)}
         onClose={() => {
           setPaidOrderForPrint(null);
-          navigate("/OrderListPage");
+          navigate("/orderList");
         }}
       />
     </div>

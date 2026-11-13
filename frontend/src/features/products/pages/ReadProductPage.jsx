@@ -2,9 +2,11 @@ import { getProductImage, imgPunta } from "@/utils/imageHelper";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/shared";
+import usePermission from "@/features/access/services/usePermission";
 
 export default function ReadProductPage() {
   const location = useLocation();
+  const { granted: canEdit } = usePermission("update_product");
   const product =
     location.state?.product ||
     (() => {
@@ -117,11 +119,13 @@ export default function ReadProductPage() {
               Volver al Listado
             </Button>
           </Link>
-          <Link to="/editProduct" state={{ product }}>
-            <Button variant="primary" size="md">
-              Editar Platillo
-            </Button>
-          </Link>
+          {canEdit && (
+            <Link to="/editproduct" state={{ product }}>
+              <Button variant="primary" size="md">
+                Editar Platillo
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

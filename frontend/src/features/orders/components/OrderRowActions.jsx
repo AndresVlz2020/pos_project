@@ -2,7 +2,7 @@ import { Eye, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { showErrorAlert } from "@/shared";
 
-export default function OrderRowActions({ order, onViewOrder }) {
+export default function OrderRowActions({ order, onViewOrder, canEdit = true }) {
   const navigate = useNavigate();
 
   const isPaid = order.status === "Pagada";
@@ -37,13 +37,15 @@ export default function OrderRowActions({ order, onViewOrder }) {
 
   return (
     <div className="flex gap-2">
-      <button
-        onClick={handleEdit}
-        className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-500)] text-[var(--color-white)] transition cursor-pointer border border-[var(--color-secondary-700)]"
-        title="Editar orden"
-      >
-        <Pencil size={15} />
-      </button>
+      {canEdit && (
+        <button
+          onClick={handleEdit}
+          className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-500)] text-[var(--color-white)] transition cursor-pointer border border-[var(--color-secondary-700)]"
+          title="Editar orden"
+        >
+          <Pencil size={15} />
+        </button>
+      )}
 
       <button
         onClick={() => onViewOrder && onViewOrder(order)}

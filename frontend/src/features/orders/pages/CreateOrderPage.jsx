@@ -337,7 +337,10 @@ export default function CreateOrder() {
           <div className="flex items-center gap-2 bg-[var(--color-secondary-900)] p-1 rounded-lg border border-[var(--color-secondary-800)]">
             <button
               type="button"
-              onClick={() => setActiveTab("create")}
+              onClick={() => {
+                setActiveTab("create");
+                fetchInitialData();
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
                 activeTab === "create"
                   ? "bg-[var(--color-primary-500)] text-[#ffffff] shadow-sm"

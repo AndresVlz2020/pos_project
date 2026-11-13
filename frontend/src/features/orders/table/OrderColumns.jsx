@@ -1,6 +1,6 @@
 import OrderRowActions from "../components/OrderRowActions";
 
-export const getOrderColumns = ({ onViewOrder, onRequestCancel } = {}) => [
+export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true } = {}) => [
   {
     accessorKey: "id",
     header: "Id",
@@ -68,6 +68,7 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel } = {}) => [
         order={row.original}
         onViewOrder={onViewOrder}
         onRequestCancel={onRequestCancel}
+        canEdit={canEdit}
       />
     ),
   },

@@ -205,6 +205,7 @@ export const orderRepository = {
         }
       }
 
+      await this.syncTableStatus(client, tableNumber);
       await client.query("COMMIT");
       return await this.findById(createdOrder.order_number);
     } catch (error) {
@@ -278,6 +279,11 @@ export const orderRepository = {
         [tableNumber, status, observations, totalAmount, paymentMethod, current.numericId]
       );
 
+      await this.syncTableStatus(client, current.table_number);
+      if (tableNumber !== current.table_number) {
+        await this.syncTableStatus(client, tableNumber);
+      }
+
       await client.query("COMMIT");
       return await this.findById(current.order_number);
     } catch (error) {
@@ -286,6 +292,25 @@ export const orderRepository = {
     } finally {
       client.release();
     }
+  },
+
+  async syncTableStatus(dbClient, tableNumber) {
+    if (!tableNumber) return;
+    await dbClient.query(
+      `UPDATE restaurant_tables t
+       SET status = CASE
+         WHEN EXISTS (
+           SELECT 1 FROM orders o
+           WHERE (LOWER(TRIM(o.table_number)) = LOWER(TRIM(t.table_number)) OR TRIM(o.table_number) = CAST(t.id AS VARCHAR))
+             AND LOWER(o.status) = 'no pagada'
+         ) THEN 'Ocupada'
+         ELSE 'Disponible'
+       END,
+       updated_at = NOW()
+       WHERE LOWER(TRIM(t.table_number)) = LOWER(TRIM($1))
+          OR CAST(t.id AS VARCHAR) = TRIM($1);`,
+      [String(tableNumber)]
+    );
   },
 
   async updateStatus(orderIdentifier, newStatus) {
@@ -297,12 +322,13 @@ export const orderRepository = {
     `;
     const result = await pool.query(query, [newStatus, String(orderIdentifier)]);
     if (!result.rows[0]) return null;
+    await this.syncTableStatus(pool, result.rows[0].table_number);
     return await this.findById(result.rows[0].order_number);
   },
 
   async getTablesAvailability() {
     const query = `
-      SELECT 
+      SELECT DISTINCT ON (t.id)
         t.id,
         t.table_number,
         t.capacity,
@@ -317,7 +343,7 @@ export const orderRepository = {
         (LOWER(TRIM(o.table_number)) = LOWER(TRIM(t.table_number)) OR TRIM(o.table_number) = CAST(t.id AS VARCHAR))
         AND LOWER(o.status) = 'no pagada'
       )
-      ORDER BY t.id ASC;
+      ORDER BY t.id ASC, o.id DESC;
     `;
     const result = await pool.query(query);
     return result.rows.map((row) => ({
