@@ -26,6 +26,7 @@ export async function getTablesAvailability() {
     const response = await fetch(`${ORDERS_URL}/tables/availability`, {
       method: "GET",
       headers: getAuthHeaders(),
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -52,6 +53,7 @@ export async function getOrders({ status = null } = {}) {
     const response = await fetch(url, {
       method: "GET",
       headers: getAuthHeaders(),
+      cache: "no-store",
     });
 
     if (!response.ok) {

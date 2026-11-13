@@ -57,9 +57,12 @@ export default function CreateOrder() {
       setOrders(ords || []);
       setTablesList(tbls || []);
 
-      // Si no hay mesa seleccionada, preseleccionar la primera disponible
+      // Preseleccionar primera mesa disponible si no hay ninguna o si la actual dejó de estarlo
       setForm((prev) => {
-        if (prev.tableNumber) return prev;
+        const stillAvailable = (tbls || []).some(
+          (t) => t.tableNumber === prev.tableNumber && t.isAvailable
+        );
+        if (prev.tableNumber && stillAvailable) return prev;
         const firstAvailable = (tbls || []).find((t) => t.isAvailable);
         return {
           ...prev,
@@ -76,6 +79,20 @@ export default function CreateOrder() {
 
   useEffect(() => {
     fetchInitialData();
+  }, [fetchInitialData]);
+
+  useEffect(() => {
+    const handleRefresh = () => {
+      if (document.visibilityState === "visible") {
+        fetchInitialData();
+      }
+    };
+    window.addEventListener("focus", fetchInitialData);
+    document.addEventListener("visibilitychange", handleRefresh);
+    return () => {
+      window.removeEventListener("focus", fetchInitialData);
+      document.removeEventListener("visibilitychange", handleRefresh);
+    };
   }, [fetchInitialData]);
 
   // Regla RFADMIN29 / RFADMIN24: Platillos inhabilitados excluidos de órdenes
