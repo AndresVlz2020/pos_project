@@ -70,7 +70,18 @@ export default function ReadUser1() {
               <p className="flex items-center gap-2"><Shield className="size-4 text-[var(--color-primary-400)]" />Rol: <span className="font-semibold text-[var(--color-white)]">{roleName}</span></p>
               <p className="flex items-center gap-2"><Phone className="size-4 text-[var(--color-primary-400)]" />Teléfono: <span className="font-mono text-[var(--color-gray-200)]">{user?.userPhone || "No registrado"}</span></p>
               <p className="flex items-center gap-2"><Mail className="size-4 text-[var(--color-primary-400)]" />Correo: <span className="font-medium text-[var(--color-gray-200)]">{user?.userEmail}</span></p>
-              <p>Estado: <span className={`font-bold ${isUserActive ? "text-[var(--color-success)]" : "text-[var(--color-error)]"}`}>{statusText}</span></p>
+              <p className="flex items-center gap-2">
+                Estado:{" "}
+                <span
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
+                    isUserActive
+                      ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40"
+                      : "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
+                  }`}
+                >
+                  {statusText}
+                </span>
+              </p>
             </div>
           </div>
         </div>

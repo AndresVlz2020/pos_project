@@ -103,10 +103,10 @@ export default function ReadSupplierPage() {
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
               <h2 className="text-lg font-bold text-[var(--color-white)]">{supplierName}</h2>
               <span
-                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
                   isActive
-                    ? "bg-[var(--color-success-bg)] text-[var(--color-success)] border border-[var(--color-success-border)]"
-                    : "bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error-border)]"
+                    ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40"
+                    : "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
                 }`}
               >
                 {isActive ? <CheckCircle2 className="size-3" /> : <XCircle className="size-3" />}
@@ -138,7 +138,7 @@ export default function ReadSupplierPage() {
             </div>
             <div>
               <span className="text-[var(--color-gray-400)] block">Estado Operativo:</span>
-              <span className={`font-semibold ${isActive ? "text-[var(--color-success)]" : "text-[var(--color-error)]"}`}>
+              <span className={`font-semibold ${isActive ? "text-[var(--color-primary-400)]" : "text-[var(--color-gray-300)]"}`}>
                 {status}
               </span>
             </div>

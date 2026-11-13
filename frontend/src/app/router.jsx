@@ -20,7 +20,7 @@ import EditProduct1 from "@/features/products/pages/EditProductPage";
 import { UserListPage, UserRegisterForm } from "@/features/users";
 import { ProductListPage } from "@/features/products";
 import { SuppliersListPage } from "@/features/suppliers";
-import { InventoryListPage } from "@/features/inventory";
+import { InventoryListPage, ReadInventoryPage } from "@/features/inventory";
 import { OrderListPage } from "@/features/orders";
 import { HomePage } from "@/features/home";
 import { AccessPage } from "@/features/access";
@@ -245,6 +245,15 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [{ index: true, element: <ReadSupplier1 /> }],
+  },
+  {
+    path: "/readinventory",
+    element: (
+      <ProtectedRoute requiredPermission="list_inventory">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
+    children: [{ index: true, element: <ReadInventoryPage /> }],
   },
   {
     path: "/readproduct",
