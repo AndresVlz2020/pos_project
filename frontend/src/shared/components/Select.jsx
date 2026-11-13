@@ -18,7 +18,7 @@ export default function Select({
       {label && (
         <label
           htmlFor={selectId}
-          className={`block text-caption mb-1 font-medium ${
+          className={`block text-xs mb-1.5 font-medium ${
             error ? "text-[var(--color-error)]" : "text-[var(--color-gray-200)]"
           }`}
         >
@@ -37,6 +37,7 @@ export default function Select({
           h-12
           rounded-md
           border
+          text-base sm:text-sm
           ${
             error
               ? "border-[var(--color-error)] focus:border-[var(--color-error)]"

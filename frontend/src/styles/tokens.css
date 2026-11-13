@@ -57,18 +57,29 @@
   --main-font: Helvetica, arial, sans-serif;
   --secondary-font: Calibri, Helvetica, Arial;
 
-  /* Font-size */
-  --fs-xxxxl: 5rem; /* Ultra grande */
-  --fs-xxxl:  4rem; /* Súper grande */
-  --fs-xxl:   3rem; /* Extra grande */
-  --fs-xl:    2.5rem; /* Muy grande */
-  --fs-lg:    2rem; /* Grande */
-  --fs-md:    1.5rem; /* titulos */
-  --fs-sm:    1.25rem; /* subtitulo */
-  --fs-xs:    1.0rem; /* Extra pequeño */
-  --fs-xxs:   0.875rem; /* Extra extra pequeño */
-  --fs-xxxs:  0.75rem; /* Mínimo */
-  --fs-xxxxs:  0.5rem; /* Mínimo */
+  /* Font-size (alineado a escala Material Design 3: mínimo 11px Label Small) */
+  --fs-xxxxl: 5rem;      /* Ultra grande */
+  --fs-xxxl:  4rem;      /* Súper grande */
+  --fs-xxl:   3rem;      /* 48px */
+  --fs-xl:    2.25rem;   /* 36px - M3 Display Small */
+  --fs-lg:    1.75rem;   /* 28px - M3 Headline Medium */
+  --fs-md:    1.5rem;    /* 24px - M3 Headline Small */
+  --fs-sm:    1.25rem;   /* 20px - M3 Title Large/Medium */
+  --fs-xs:    1rem;      /* 16px - M3 Body Large */
+  --fs-xxs:   0.875rem;  /* 14px - M3 Body Medium / Label Large */
+  --fs-xxxs:  0.75rem;   /* 12px - M3 Body Small / Label Medium */
+  --fs-xxxxs: 0.6875rem; /* 11px - M3 Label Small */
+
+  /* Material Design 3 Escala de Espaciado (base 4dp) y Touch Targets */
+  --md-space-1: 0.25rem;  /* 4dp */
+  --md-space-2: 0.5rem;   /* 8dp */
+  --md-space-3: 0.75rem;  /* 12dp */
+  --md-space-4: 1rem;     /* 16dp */
+  --md-space-6: 1.5rem;   /* 24dp */
+  --md-touch-target: 48px;
+  --md-control-sm: 36px;
+  --md-control-md: 40px;
+  --md-control-lg: 48px;
 
   /* grosores de la fuente */
   --fw-regular: 400; 

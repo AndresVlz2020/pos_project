@@ -7,9 +7,9 @@ const baseStyles =
   "search flex items-center rounded-md px-4 transition-all border";
 
 const sizeStyles = {
-    sm: "h-9 text-xs",
-    md: "h-11 text-sm",
-    lg: "h-12 text-sm sm:text-base",
+    sm: "h-10 text-xs sm:text-sm",
+    md: "h-11 text-base sm:text-sm",
+    lg: "h-12 text-base",
 };
 
 const variantStyles = {

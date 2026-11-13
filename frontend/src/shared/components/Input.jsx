@@ -43,16 +43,9 @@ export default function Input({
                 htmlFor={htmlFor}
                 className={`
                     block
-                    text-caption
-                    mb-1
+                    text-xs
+                    mb-1.5
                     text-[var(--color-gray-200)] font-medium
-                    ${
-                      size === "sm"
-                      ? "-mb-2"
-                      : size === "md"
-                      ? "-mb-0"
-                      : "mb-1"
-                    }
                     ${error ? "text-[var(--color-error)]" : ""}
                 `} 
                 
@@ -71,6 +64,7 @@ export default function Input({
                     h-12
                     rounded-md
                     border
+                    text-base sm:text-sm
                     ${error ? "border-[var(--color-error)] focus:border-[var(--color-error)]" : "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)]"}
                     px-4
                     text-[var(--color-white)]

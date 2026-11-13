@@ -428,7 +428,7 @@ export default function CreateOrder() {
                           type="button"
                           onClick={() => handleSelectTablePill(t)}
                           title={`${t.tableNumber} - ${t.status} (Cap. ${t.capacity})${!t.isAvailable ? ` - Orden ${t.activeOrderNumber}` : ""}`}
-                          className={`py-1.5 px-1 rounded text-center transition flex flex-col items-center justify-center text-[11px] border cursor-pointer ${
+                          className={`min-h-[48px] py-1.5 px-1 rounded text-center transition flex flex-col items-center justify-center text-[11px] border cursor-pointer ${
                             isSelected
                               ? "bg-[var(--color-primary-500)] text-[#ffffff] border-[var(--color-primary-400)] ring-2 ring-[var(--color-primary-400)]/40 font-bold"
                               : t.isAvailable
@@ -566,24 +566,24 @@ export default function CreateOrder() {
                         </div>
                       </div>
 
-                      {/* Contador de unidades */}
-                      <div className="flex items-center gap-2 bg-[var(--color-secondary-950)] px-2 py-1 rounded-lg border border-[var(--color-secondary-800)]">
+                      {/* Contador de unidades (touch target Material Design) */}
+                      <div className="flex items-center gap-1.5 bg-[var(--color-secondary-950)] px-1.5 py-1 rounded-lg border border-[var(--color-secondary-800)] shrink-0">
                         <button
                           type="button"
                           disabled={count === 0}
                           onClick={() => handleDecrement(dish)}
-                          className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-[var(--color-gray-300)] hover:text-white disabled:opacity-30 cursor-pointer"
+                          className="w-9 h-9 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-sm font-bold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-white disabled:opacity-30 cursor-pointer"
                         >
                           -
                         </button>
-                        <span className="text-xs font-bold w-4 text-center text-[var(--color-white)]">
+                        <span className="text-xs font-bold w-5 text-center text-[var(--color-white)]">
                           {count}
                         </span>
                         <button
                           type="button"
                           disabled={isInactive}
                           onClick={() => handleIncrement(dish)}
-                          className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] disabled:opacity-30 cursor-pointer"
+                          className="w-9 h-9 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-sm font-bold text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] disabled:opacity-30 cursor-pointer"
                         >
                           +
                         </button>

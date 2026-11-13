@@ -14,9 +14,9 @@ export default function Button({
   };
 
   const sizes = {
-    sm: "h-8 px-3 text-xs gap-1.5",
-    md: "h-9 px-4 text-xs font-semibold gap-2",
-    lg: "h-10 px-5 text-sm font-semibold gap-2",
+    sm: "min-h-[36px] px-3 text-xs font-medium gap-1.5",
+    md: "min-h-[40px] px-4 text-sm font-medium gap-2",
+    lg: "min-h-[48px] px-6 text-sm font-semibold gap-2",
   };
 
   return (
