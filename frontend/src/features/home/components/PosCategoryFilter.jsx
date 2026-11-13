@@ -35,10 +35,10 @@ export default function PosCategoryFilter({ selectedCategory, onSelectCategory, 
               }
             `}
           >
-            <Icon className={`size-3.5 ${isActive ? "text-[var(--color-white)]" : "text-[var(--color-primary-400)]"}`} />
+            <Icon className={`size-3.5 ${isActive ? "text-[#ffffff]" : "text-[var(--color-primary-400)]"}`} />
             <span>{cat.label}</span>
             <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-bold ${
-              isActive ? "bg-black/30 text-white" : "bg-[var(--color-secondary-800)] text-[var(--color-gray-300)]"
+              isActive ? "bg-black/30 text-[#ffffff]" : "bg-[var(--color-secondary-800)] text-[var(--color-gray-300)]"
             }`}>
               {count}
             </span>
