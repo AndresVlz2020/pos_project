@@ -46,47 +46,58 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
   };
 
   return (
-    <div className="space-y-3.5">
-      {/* Barra de Búsqueda y Ordenamiento directa */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <div className="flex-1">
-          <SearchField
-            value={searchQuery}
-            onChange={onSearchChange}
-            onSubmit={onSearchChange}
-            onClear={onClearSearch}
-            placeholder="Buscar por platillo, corte de carne, bebida o postre..."
-            size="md"
-            variant="dark"
-            fullWidth={true}
-            className="w-full border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] shadow-none"
-          />
-        </div>
-
-        <div className="flex items-center justify-between sm:justify-end gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-3 py-2 rounded-md border border-[var(--color-secondary-800)]">
-            <Filter className="size-3.5 text-[var(--color-primary-400)]" />
-            <span>Ordenar:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent text-[var(--color-white)] text-xs font-semibold outline-none cursor-pointer"
-            >
-              <option value="default" className="bg-[var(--color-secondary-950)] text-white">Por Defecto</option>
-              <option value="price-asc" className="bg-[var(--color-secondary-950)] text-white">Menor Precio</option>
-              <option value="price-desc" className="bg-[var(--color-secondary-950)] text-white">Mayor Precio</option>
-            </select>
-          </div>
-        </div>
+    <div className="space-y-3">
+      {/* Barra de Búsqueda directa */}
+      <div className="w-full">
+        <SearchField
+          value={searchQuery}
+          onChange={onSearchChange}
+          onSubmit={onSearchChange}
+          onClear={onClearSearch}
+          placeholder="Buscar por platillo, corte de carne, bebida o postre..."
+          size="md"
+          variant="dark"
+          fullWidth={true}
+          className="w-full border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] shadow-none"
+        />
       </div>
 
-      {/* Barra de Filtros de Categoría Compacta justo debajo del buscador */}
-      <div className="pb-1 w-full min-w-0">
-        <PosCategoryFilter
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          products={products}
-        />
+      {/* Fila única: botón icono de ordenamiento + categorías en scroll horizontal */}
+      <div className="flex items-start gap-2 w-full min-w-0">
+        <div
+          title={
+            sortBy === "price-asc"
+              ? "Orden: Menor Precio"
+              : sortBy === "price-desc"
+              ? "Orden: Mayor Precio"
+              : "Ordenar productos"
+          }
+          className={`relative shrink-0 inline-flex items-center justify-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-md border transition-all cursor-pointer ${
+            sortBy !== "default"
+              ? "bg-[var(--color-primary-500)] text-[#ffffff] border-[var(--color-primary-600)]"
+              : "bg-[var(--color-secondary-900)] text-[var(--color-primary-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border-[var(--color-secondary-800)]"
+          }`}
+        >
+          <Filter className="size-4 pointer-events-none" />
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            aria-label="Ordenar productos"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer bg-[var(--color-secondary-950)] text-white"
+          >
+            <option value="default" className="bg-[var(--color-secondary-950)] text-white">Por Defecto</option>
+            <option value="price-asc" className="bg-[var(--color-secondary-950)] text-white">Menor Precio</option>
+            <option value="price-desc" className="bg-[var(--color-secondary-950)] text-white">Mayor Precio</option>
+          </select>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <PosCategoryFilter
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            products={products}
+          />
+        </div>
       </div>
 
       {/* Indicador de Filtro o Búsqueda Activa */}
