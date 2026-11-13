@@ -139,8 +139,8 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Comanda ${order.idCode || order.id}`}>
-      <div className="space-y-5 text-[var(--color-white)] text-sm font-[family-name:var(--main-font)]">
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-lg" title={`Comanda ${order.idCode || order.id}`}>
+      <div className="space-y-4 text-[var(--color-white)] text-sm font-[family-name:var(--main-font)]">
         {/* Cabecera de comanda */}
         <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-lg">
           <div>
@@ -189,39 +189,39 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
         <div>
           <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-gray-400)] mb-2 flex items-center gap-1.5">
             <Utensils size={14} className="text-[var(--color-primary-400)]" />
-            Resumen de Platillos Ordenados
+            Resumen de Platillos Ordenados ({(order.items || []).length})
           </h4>
-          <div className="border border-[var(--color-secondary-800)] rounded-lg overflow-hidden bg-[var(--color-secondary-950)]">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[var(--color-secondary-900)] text-[var(--color-gray-400)] border-b border-[var(--color-secondary-800)]">
+          <div className="border border-[var(--color-secondary-800)] rounded-lg max-h-[38dvh] overflow-y-auto overflow-x-auto bg-[var(--color-secondary-950)]">
+            <table className="w-full text-left text-xs min-w-[340px]">
+              <thead className="sticky top-0 z-10 bg-[var(--color-secondary-900)] text-[var(--color-gray-400)] border-b border-[var(--color-secondary-800)]">
                 <tr>
-                  <th className="py-2 px-3 font-semibold">Cant.</th>
-                  <th className="py-2 px-3 font-semibold">Platillo</th>
-                  <th className="py-2 px-3 font-semibold text-right">Precio Unit.</th>
-                  <th className="py-2 px-3 font-semibold text-right">Subtotal</th>
+                  <th className="py-2 px-2.5 sm:px-3 font-semibold">Cant.</th>
+                  <th className="py-2 px-2.5 sm:px-3 font-semibold">Platillo</th>
+                  <th className="py-2 px-2.5 sm:px-3 font-semibold text-right">Precio Unit.</th>
+                  <th className="py-2 px-2.5 sm:px-3 font-semibold text-right">Subtotal</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-secondary-800)]">
                 {(order.items || []).map((item, idx) => (
                   <tr key={idx} className="hover:bg-[var(--color-secondary-900)]/50">
-                    <td className="py-2.5 px-3 font-bold text-[var(--color-primary-400)]">
+                    <td className="py-2 px-2.5 sm:px-3 font-bold text-[var(--color-primary-400)] whitespace-nowrap">
                       {item.qty}x
                     </td>
-                    <td className="py-2.5 px-3 font-medium text-[var(--color-white)]">
-                      <div className="flex items-center gap-2">
+                    <td className="py-2 px-2.5 sm:px-3 font-medium text-[var(--color-white)]">
+                      <div className="flex items-center gap-2 min-w-0">
                         <img
                           src={getProductImage({ name: item.name })}
                           alt={item.name}
                           className="size-7 rounded object-cover border border-[var(--color-secondary-700)] shrink-0"
                           onError={(e) => { e.currentTarget.style.display = 'none'; }}
                         />
-                        <span>{item.name}</span>
+                        <span className="break-words">{item.name}</span>
                       </div>
                     </td>
-                    <td className="py-2.5 px-3 text-right text-[var(--color-gray-300)]">
+                    <td className="py-2 px-2.5 sm:px-3 text-right text-[var(--color-gray-300)] whitespace-nowrap">
                       ${Number(item.price || 0).toLocaleString("es-CO")}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-semibold text-[var(--color-white)]">
+                    <td className="py-2 px-2.5 sm:px-3 text-right font-semibold text-[var(--color-white)] whitespace-nowrap">
                       ${(Number(item.price || 0) * (item.qty || 1)).toLocaleString("es-CO")}
                     </td>
                   </tr>

@@ -153,8 +153,8 @@ export default function Navbar() {
   return (
     <>
     <nav className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] sticky top-0 z-50 shadow-sm">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="flex h-16 items-center justify-between gap-4">
+      <div className="mx-auto max-w-7xl px-2.5 sm:px-6">
+        <div className="flex h-16 items-center justify-between gap-2 sm:gap-4">
           {/* Logo de marca */}
           <div className="flex items-center shrink-0">
             <Link
@@ -162,11 +162,47 @@ export default function Navbar() {
               className="flex items-center gap-2 group transition-transform hover:scale-105"
             >
               <BrandLogo
-                className="h-10 sm:h-12 w-auto object-contain drop-shadow"
+                className="h-7 sm:h-11 w-auto object-contain drop-shadow"
                 alt="D'Piero Logo"
               />
             </Link>
           </div>
+
+          {/* Info de perfil y turno centrada en teléfonos */}
+          {currentUser && (
+            <div className="sm:hidden flex-1 flex justify-center min-w-0 px-1">
+              <div className="inline-flex items-center gap-1.5 max-w-full bg-[var(--color-secondary-900)] px-2 py-1 rounded border border-[var(--color-secondary-800)] text-[11px] text-[var(--color-gray-300)]">
+                <img
+                  src={currentUser.photo || currentUser.userAvatarUrl || getUserAvatar(currentUser)}
+                  alt={currentUser.name || "Usuario"}
+                  className="size-5 rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = imgWorkerCarlos;
+                  }}
+                />
+                <div className="min-w-0 leading-tight">
+                  <span className="block font-medium text-[var(--color-white)] truncate max-w-[82px]">
+                    {currentUser.name}
+                  </span>
+                  <span className="block text-[9px] text-[var(--color-primary-400)] font-semibold truncate">
+                    {currentUser.role}
+                  </span>
+                </div>
+                {!isAdmin && sessionStartedAt && (
+                  <button
+                    type="button"
+                    onClick={() => setIsHistoryOpen(true)}
+                    title="Ver mi historial de sesiones"
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[10px] font-semibold shrink-0 cursor-pointer"
+                  >
+                    <Clock className="size-2.5" />
+                    {formatDuration(elapsedSeconds)}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Links de navegación principales según permisos del rol */}
           <ul className="hidden lg:flex items-center gap-6">
@@ -218,7 +254,7 @@ export default function Navbar() {
           </ul>
 
           {/* Menú de Acciones / Hamburguesa */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Indicador sutil de rol activo con avatar */}
             {currentUser && (
               <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-2.5 py-1 rounded border border-[var(--color-secondary-800)]">
@@ -249,19 +285,6 @@ export default function Navbar() {
                   </button>
                 )}
               </div>
-            )}
-
-            {/* Contador compacto visible en teléfonos para personal no administrador */}
-            {currentUser && !isAdmin && sessionStartedAt && (
-              <button
-                type="button"
-                onClick={() => setIsHistoryOpen(true)}
-                title="Ver mi historial de sesiones"
-                className="sm:hidden inline-flex items-center gap-1 px-2 py-1 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[11px] font-semibold cursor-pointer"
-              >
-                <Clock className="size-3" />
-                {formatDuration(elapsedSeconds)}
-              </button>
             )}
 
             {/* Botón de cambio de tema */}

@@ -450,16 +450,16 @@ export default function EditOrder() {
                       type="button"
                       disabled={count === 0 || isClosedOrPaid || isCanceled}
                       onClick={() => handleDecrement(dish)}
-                      className="w-6 h-6 rounded bg-[var(--color-secondary-800)] flex items-center justify-center text-xs font-bold disabled:opacity-30 cursor-pointer"
+                      className="w-10 h-10 sm:w-9 sm:h-9 rounded-md bg-[var(--color-secondary-800)] flex items-center justify-center text-base font-bold disabled:opacity-30 cursor-pointer"
                     >
                       -
                     </button>
-                    <span className="text-xs font-bold w-4 text-center">{count}</span>
+                    <span className="text-xs font-bold w-5 text-center">{count}</span>
                     <button
                       type="button"
                       disabled={isClosedOrPaid || isCanceled || isInactive}
                       onClick={() => handleIncrement(dish)}
-                      className="w-6 h-6 rounded bg-[var(--color-primary-500)] text-[#ffffff] flex items-center justify-center text-xs font-bold disabled:opacity-30 cursor-pointer"
+                      className="w-10 h-10 sm:w-9 sm:h-9 rounded-md bg-[var(--color-primary-500)] text-[#ffffff] flex items-center justify-center text-base font-bold disabled:opacity-30 cursor-pointer"
                     >
                       +
                     </button>

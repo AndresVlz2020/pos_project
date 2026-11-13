@@ -6,7 +6,6 @@ import QuickAccessSelector, { formatRole } from "./components/QuickAccessSelecto
 import PinKeypad from "./components/PinKeypad";
 import AdminLoginForm from "./components/AdminLoginForm";
 import { loginApi } from "@/services/authService";
-import { hasPermission } from "@/features/access/services/accessService";
 
 function saveSession(token, userObj) {
   localStorage.setItem("auth_token", token);
@@ -123,14 +122,7 @@ export default function Login() {
         isSuperuser: Boolean(result.user?.isSuperuser),
       });
 
-      const listPerm = await hasPermission("list_user").catch(() => ({
-        granted: isAdmin,
-      }));
-      if (isAdmin || listPerm?.granted) {
-        navigate("/dashboard/userList");
-      } else {
-        navigate("/");
-      }
+      navigate("/");
       return { success: true };
     } catch (err) {
       console.warn("Backend login failed or unreachable:", err.message);
@@ -150,7 +142,7 @@ export default function Login() {
         };
         saveSession("token-admin-" + Date.now(), adminSession);
 
-        navigate("/dashboard/userList");
+        navigate("/");
         return { success: true };
       }
 

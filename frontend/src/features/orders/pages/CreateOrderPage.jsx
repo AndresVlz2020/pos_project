@@ -566,13 +566,13 @@ export default function CreateOrder() {
                         </div>
                       </div>
 
-                      {/* Contador de unidades (touch target Material Design) */}
+                      {/* Contador de unidades (touch target cómodo en móvil) */}
                       <div className="flex items-center gap-1.5 bg-[var(--color-secondary-950)] px-1.5 py-1 rounded-lg border border-[var(--color-secondary-800)] shrink-0">
                         <button
                           type="button"
                           disabled={count === 0}
                           onClick={() => handleDecrement(dish)}
-                          className="w-9 h-9 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-sm font-bold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-white disabled:opacity-30 cursor-pointer"
+                          className="w-10 h-10 sm:w-9 sm:h-9 rounded-md flex items-center justify-center text-base font-bold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-white disabled:opacity-30 cursor-pointer"
                         >
                           -
                         </button>
@@ -583,7 +583,7 @@ export default function CreateOrder() {
                           type="button"
                           disabled={isInactive}
                           onClick={() => handleIncrement(dish)}
-                          className="w-9 h-9 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-sm font-bold text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] disabled:opacity-30 cursor-pointer"
+                          className="w-10 h-10 sm:w-9 sm:h-9 rounded-md flex items-center justify-center text-base font-bold text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] disabled:opacity-30 cursor-pointer"
                         >
                           +
                         </button>

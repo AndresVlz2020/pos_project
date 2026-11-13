@@ -16,7 +16,7 @@ export default function PosCategoryFilter({ selectedCategory, onSelectCategory, 
   };
 
   return (
-    <div className="flex flex-nowrap sm:flex-wrap items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+    <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1 w-full min-w-0 snap-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       {POS_CATEGORIES.map((cat) => {
         const Icon = cat.icon;
         const count = getCount(cat.id);
@@ -28,7 +28,7 @@ export default function PosCategoryFilter({ selectedCategory, onSelectCategory, 
             type="button"
             onClick={() => onSelectCategory(cat.id)}
             className={`
-              inline-flex items-center gap-2 px-3.5 py-2 rounded-md text-xs font-semibold transition-all cursor-pointer whitespace-nowrap
+              shrink-0 snap-start inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-md text-xs font-semibold transition-all cursor-pointer whitespace-nowrap
               ${isActive
                 ? "bg-[var(--color-primary-500)] text-[#ffffff] border border-[var(--color-primary-600)] shadow-none"
                 : "bg-[var(--color-secondary-900)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-800)]"

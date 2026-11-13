@@ -81,7 +81,7 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
       </div>
 
       {/* Barra de Filtros de Categoría Compacta justo debajo del buscador */}
-      <div className="pb-1">
+      <div className="pb-1 w-full min-w-0">
         <PosCategoryFilter
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
