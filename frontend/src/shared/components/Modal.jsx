@@ -31,7 +31,7 @@ export function Modal({
   return createPortal(
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
       <div
-        className={`w-full ${maxWidth} rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] p-6 shadow-2xl text-[var(--color-white)] transition-all ${className}`}
+        className={`dpiero-modal-in w-full ${maxWidth} rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] p-6 shadow-2xl text-[var(--color-white)] transition-all ${className}`}
       >
         <div className="flex items-center justify-between pb-3 mb-4 border-b border-[var(--color-secondary-800)]">
           {title && <h3 className="text-lg font-bold text-[var(--color-white)]">{title}</h3>}

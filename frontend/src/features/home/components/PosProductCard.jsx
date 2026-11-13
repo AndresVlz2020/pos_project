@@ -19,7 +19,7 @@ export default function PosProductCard({ product }) {
       className={`group rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] text-[var(--color-white)] transition-colors duration-150 overflow-hidden flex flex-col justify-between ${
         isInhabilitado
           ? "opacity-75"
-          : "hover:border-[var(--color-primary-500)]"
+          : "hover:border-[var(--color-primary-500)] hover:-translate-y-0.5 transition-all duration-200"
       }`}
     >
       <div>
