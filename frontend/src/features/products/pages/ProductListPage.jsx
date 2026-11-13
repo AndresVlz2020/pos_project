@@ -108,9 +108,6 @@ export default function ProductListPage() {
           <h1 className="text-xl font-bold text-[var(--color-white)]">Listado de Productos</h1>
         </div>
         <div className="flex gap-2.5">
-          <Button variant="secondary" onClick={fetchProducts} disabled={loading}>
-            {loading ? "Sincronizando..." : "Refrescar"}
-          </Button>
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
             Generar reporte
           </Button>

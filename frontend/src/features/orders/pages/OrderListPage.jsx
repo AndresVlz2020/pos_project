@@ -117,9 +117,6 @@ export default function OrderListPage() {
         </div>
 
         <div className="flex gap-2.5">
-          <Button variant="secondary" onClick={fetchOrders} disabled={loading}>
-            {loading ? "Sincronizando..." : "Refrescar"}
-          </Button>
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
             Generar reporte
           </Button>
