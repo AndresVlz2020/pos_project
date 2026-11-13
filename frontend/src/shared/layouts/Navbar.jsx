@@ -162,7 +162,7 @@ export default function Navbar() {
               className="flex items-center gap-2 group transition-transform hover:scale-105"
             >
               <BrandLogo
-                className="h-5 sm:h-11 w-auto max-w-[96px] sm:max-w-none object-contain drop-shadow"
+                className="h-5 sm:h-11 w-auto object-contain drop-shadow"
                 alt="D'Piero Logo"
               />
             </Link>
@@ -186,7 +186,11 @@ export default function Navbar() {
                     {currentUser.name}
                   </span>
                   <div className="flex items-center gap-1 mt-0.5 min-w-0">
-                    <span className="text-[9px] text-[var(--color-primary-400)] font-semibold truncate">
+                    <span
+                      className={`${
+                        !isAdmin && sessionStartedAt ? "hidden min-[390px]:inline" : "inline"
+                      } text-[9px] text-[var(--color-primary-400)] font-semibold truncate`}
+                    >
                       {currentUser.role}
                     </span>
                     {!isAdmin && sessionStartedAt && (
