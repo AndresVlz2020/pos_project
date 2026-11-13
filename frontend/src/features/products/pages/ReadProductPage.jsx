@@ -92,7 +92,7 @@ export default function ReadProductPage() {
                 <span
                   className={`font-semibold ${
                     isAvailable
-                      ? "text-[var(--color-success)]"
+                      ? "text-[var(--color-primary-300)]"
                       : "text-[var(--color-error)]"
                   }`}
                 >
@@ -101,7 +101,7 @@ export default function ReadProductPage() {
               </p>
               <p className="flex items-center gap-2 pt-2 border-t border-[var(--color-secondary-700)]">
                 Precio al público:{" "}
-                <span className="font-bold text-[var(--color-primary-300)] text-xl">
+                <span className="font-bold text-[var(--color-white)] text-xl">
                   ${price} COP
                 </span>
               </p>

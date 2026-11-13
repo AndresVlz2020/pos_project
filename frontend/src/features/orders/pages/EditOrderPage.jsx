@@ -388,7 +388,7 @@ export default function EditOrder() {
               </div>
               <div className="flex justify-between text-sm font-bold text-[var(--color-white)] pt-1 border-t border-[var(--color-secondary-800)]">
                 <span>Total Comanda:</span>
-                <span className="text-[var(--color-primary-300)] text-base">
+                <span className="text-[var(--color-white)] text-base">
                   ${totalAmount.toLocaleString("es-CO")} COP
                 </span>
               </div>

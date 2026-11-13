@@ -453,7 +453,7 @@ export default function CreateOrder() {
                 </div>
                 <div className="flex justify-between text-base font-bold text-[var(--color-white)]">
                   <span>Total a facturar:</span>
-                  <span className="text-[var(--color-primary-300)] text-lg">
+                  <span className="text-[var(--color-white)] text-lg">
                     ${totalAmount.toLocaleString("es-CO")} COP
                   </span>
                 </div>

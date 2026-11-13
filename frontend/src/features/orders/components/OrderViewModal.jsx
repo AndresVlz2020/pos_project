@@ -246,7 +246,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
           <span className="text-sm font-semibold text-[var(--color-gray-300)]">
             Total Liquidado:
           </span>
-          <span className="text-xl font-bold text-[var(--color-primary-400)]">
+          <span className="text-xl font-bold text-[var(--color-white)]">
             ${Number(order.total || 0).toLocaleString("es-CO")} COP
           </span>
         </div>

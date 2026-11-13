@@ -63,7 +63,7 @@ export default function PosProductCard({ product }) {
             <span className="text-[length:var(--fs-xxxxs)] text-[var(--color-gray-400)] uppercase font-medium block">
               Precio
             </span>
-            <span className="text-[length:var(--fs-xs)] font-bold text-[var(--color-primary-300)]">
+            <span className="text-[length:var(--fs-xs)] font-bold text-[var(--color-white)]">
               ${formattedPrice} COP
             </span>
           </div>
