@@ -316,7 +316,7 @@ export default function EditOrder() {
             Editar Comanda {formOrder.id}
           </h1>
         </div>
-        <Link to="/OrderListPage">
+        <Link to="/orderList">
           <Button variant="secondary" size="sm">
             Volver al Listado
           </Button>
@@ -493,7 +493,7 @@ export default function EditOrder() {
           )}
 
           <div className="flex gap-3 ml-auto">
-            <Link to="/OrderListPage">
+            <Link to="/orderList">
               <Button variant="secondary" type="button" disabled={submitting}>
                 Cancelar
               </Button>

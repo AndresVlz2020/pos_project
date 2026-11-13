@@ -337,7 +337,14 @@ export default function CreateOrder() {
               type="button"
               variant="secondary"
               size="sm"
-              onClick={() => window.history.back()}
+              onClick={() => {
+                if (activeTab === "list") {
+                  setActiveTab("create");
+                  fetchInitialData();
+                } else {
+                  window.history.back();
+                }
+              }}
             >
               ←
             </Button>
