@@ -159,10 +159,10 @@ html.theme-light .logo-light-theme {
   width: 100%;
   height: 100%;
   background: linear-gradient(
-    180deg,
-    var(--color-secondary-950) 0%,
-    var(--color-primary-800) 65%,
-    var(--color-primary-500) 100%
+    0deg,
+    var(--color-primary-800) 0%,
+    var(--color-primary-600) 55%,
+    var(--color-primary-400) 100%
   );
   pointer-events: none;
   z-index: 0;
@@ -170,11 +170,11 @@ html.theme-light .logo-light-theme {
 
 .dpiero-wave-bg .dpiero-wave span {
   position: absolute;
-  width: 300vmax;
-  height: 300vmax;
+  width: max(260vh, 180vw);
+  height: max(260vh, 180vw);
   top: 0;
   left: 50%;
-  transform: translate(-50%, -82%);
+  transform: translate(-50%, -75%);
   pointer-events: none;
 }
 
@@ -198,10 +198,10 @@ html.theme-light .logo-light-theme {
 
 @keyframes dpieroWaveSpin {
   0% {
-    transform: translate(-50%, -82%) rotate(0deg);
+    transform: translate(-50%, -75%) rotate(0deg);
   }
   100% {
-    transform: translate(-50%, -82%) rotate(360deg);
+    transform: translate(-50%, -75%) rotate(360deg);
   }
 }
 
