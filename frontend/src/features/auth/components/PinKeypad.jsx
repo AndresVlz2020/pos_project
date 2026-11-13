@@ -10,12 +10,6 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
       const nextPin = pinInput + digit;
       setPinInput(nextPin);
       if (onClearError) onClearError();
-
-      if (nextPin.length === 4) {
-        onValidatePin(nextPin, () => {
-          setPinInput("");
-        });
-      }
     }
   };
 
