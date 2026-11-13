@@ -66,8 +66,8 @@ export default function PosStaffPanel() {
         <div className="flex-1">
           <PosSectionHeader
             icon={Users}
-            title="Personal en Turno (Tiempo Real)"
-            subtitle="Colaboradores con sesión activa en este momento y duración de su turno."
+            title="Personal en Turno"
+            subtitle="Colaboradores con sesión activa y duración de su turno."
             searchQuery={query}
             onSearchChange={setQuery}
             searchPlaceholder="Buscar por nombre o cargo..."
