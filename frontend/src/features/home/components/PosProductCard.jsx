@@ -72,7 +72,7 @@ export default function PosProductCard({ product }) {
             className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
               isInhabilitado
                 ? "bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error-border)]"
-                : "bg-[var(--color-success-bg)] text-[var(--color-success)] border border-[var(--color-success-border)]"
+                : "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-300)] border border-[var(--color-primary-500)]/40"
             }`}
           >
             {isInhabilitado ? "No disponible" : "Disponible"}

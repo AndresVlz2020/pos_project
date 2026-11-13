@@ -405,7 +405,7 @@ export default function CreateOrder() {
                             isSelected
                               ? "bg-[var(--color-primary-500)] text-white border-[var(--color-primary-400)] ring-2 ring-[var(--color-primary-400)]/40 font-bold"
                               : t.isAvailable
-                              ? "bg-[var(--color-secondary-950)] text-[var(--color-gray-200)] border-[var(--color-success-border)] hover:bg-[var(--color-secondary-800)]"
+                              ? "bg-[var(--color-secondary-950)] text-[var(--color-gray-200)] border-[var(--color-primary-500)]/40 hover:bg-[var(--color-secondary-800)]"
                               : "bg-[var(--color-secondary-950)]/60 text-[var(--color-gray-500)] border-[var(--color-secondary-800)] cursor-not-allowed opacity-60"
                           }`}
                         >
@@ -415,7 +415,7 @@ export default function CreateOrder() {
                           <span
                             className={`text-[9px] mt-0.5 px-1 rounded-full ${
                               t.isAvailable
-                                ? "bg-[var(--color-success-bg)] text-[var(--color-success)]"
+                                ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-300)]"
                                 : "bg-[var(--color-error-bg)] text-[var(--color-error)]"
                             }`}
                           >

@@ -8,12 +8,12 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
   const getStatusBadge = (status) => {
     const s = String(status || "").toLowerCase();
     if (s.includes("no pagada")) {
-      return "bg-[var(--color-warning)]/15 text-[var(--color-warning)] border-[var(--color-warning)]/30";
+      return "bg-[var(--color-error-bg)] text-[var(--color-error)] border-[var(--color-error-border)]";
     }
     if (s.includes("pagada")) {
-      return "bg-[var(--color-success)]/15 text-[var(--color-success)] border-[var(--color-success)]/30";
+      return "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-300)] border-[var(--color-primary-500)]/40";
     }
-    return "bg-[var(--color-secondary-800)] text-[var(--color-white)] border-[var(--color-secondary-700)]";
+    return "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]";
   };
 
   const handlePrintInvoice = () => {
