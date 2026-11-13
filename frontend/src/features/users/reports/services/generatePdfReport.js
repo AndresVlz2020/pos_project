@@ -1,15 +1,16 @@
-// Librería para generación de PDFs en el cliente
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-
 // Función utilitaria para generar un reporte institucional en PDF
 // Cumple con RFADMIN13, RFADMIN19, RFADMIN25 y RFADMIN31
-export function generatePdfReport({
+export async function generatePdfReport({
   headers,
   rows,
   title = "Reporte del Sistema",
   fileName = "report.pdf"
 }) {
+  // Carga dinámica bajo demanda para reducir el bundle inicial
+  const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+    import("jspdf"),
+    import("jspdf-autotable"),
+  ]);
   const doc = new jsPDF();
 
   const user = (() => {

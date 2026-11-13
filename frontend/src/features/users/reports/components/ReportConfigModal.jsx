@@ -66,7 +66,7 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
 
 
   // Handler principal para generar el reporte
-  const handleGenerateReport = () => {
+  const handleGenerateReport = async () => {
     setAlertMessage("");
 
     if (!selectedFields.length) {
@@ -80,7 +80,7 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
     }
 
     // Invoca el caso de uso con la configuración actual
-    const result = generateUserReport({
+    const result = await generateUserReport({
       format,
       selectedFields,
       scope,

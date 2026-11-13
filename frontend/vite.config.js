@@ -21,4 +21,26 @@ export default defineConfig({
     strictPort: true,
     host: true,
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: "vendor-react",
+              test: /node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
+            },
+            {
+              name: "vendor-table",
+              test: /node_modules[\\/]@tanstack[\\/]/,
+            },
+            {
+              name: "vendor-ui",
+              test: /node_modules[\\/](lucide-react|sweetalert2)[\\/]/,
+            },
+          ],
+        },
+      },
+    },
+  },
 });

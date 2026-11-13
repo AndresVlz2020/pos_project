@@ -10,7 +10,7 @@ import { generatePdfReport } from "./generatePdfReport";
 // Caso de uso: orquestador de generación de reportes de usuarios
 // Patrón: Application Service (coordina utilidades y servicios)
 
-export function generateUserReport({
+export async function generateUserReport({
   format,        // "excel" o "pdf"
   selectedFields,// Campos seleccionados por el usuario
   scope,         // Alcance del reporte
@@ -39,7 +39,7 @@ export function generateUserReport({
 
   // Selección de estrategia de exportación según formato
   if (format === "excel") {
-    generateExcelReport({
+    await generateExcelReport({
       headers,
       rows,
       fileName: `users-report-${timestamp}.xlsx`
@@ -47,7 +47,7 @@ export function generateUserReport({
   }
 
   if (format === "pdf") {
-    generatePdfReport({
+    await generatePdfReport({
       headers,
       rows,
       fileName: `users-report-${timestamp}.pdf`

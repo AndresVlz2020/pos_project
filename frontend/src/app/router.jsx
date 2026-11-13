@@ -1,29 +1,55 @@
 // src/app/router.jsx
+import { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthLayout, DashboardLayout, ProtectedRoute } from "@/shared";
-import CreateOrder from "@/features/orders/pages/CreateOrderPage";
-import EditOrder from "@/features/orders/pages/EditOrderPage";
-import UsersManagement from "@/features/users/pages/UsersManagementPage";
-import Login from "@/features/auth/Login";
-import ForgotPassword from "@/features/auth/ForgotPassword";
-import ResetPassword from "@/features/auth/ResetPassword";
-import CreateUser from "@/features/users/pages/CreateUserPage";
-import EditUser1 from "@/features/users/pages/EditUserPage";
-import ReadUser1 from "@/features/users/pages/ReadUserPage";
-import CreateInventory from "@/features/inventory/pages/CreateInventoryPage";
-import CreateSuppliers from "@/features/suppliers/pages/CreateSupplierPage";
-import ReadSupplier1 from "@/features/suppliers/pages/ReadSupplierPage";
-import EditSupplier1 from "@/features/suppliers/pages/EditSupplierPage";
-import CreateProduct from "@/features/products/pages/CreateProductPage";
-import ReadProduct1 from "@/features/products/pages/ReadProductPage";
-import EditProduct1 from "@/features/products/pages/EditProductPage";
-import { UserListPage, UserRegisterForm } from "@/features/users";
-import { ProductListPage } from "@/features/products";
-import { SuppliersListPage } from "@/features/suppliers";
-import { InventoryListPage, ReadInventoryPage } from "@/features/inventory";
-import { OrderListPage } from "@/features/orders";
-import { HomePage } from "@/features/home";
-import { AccessPage } from "@/features/access";
+
+const RouteLoader = (
+  <div className="flex min-h-[40vh] items-center justify-center p-6 text-sm text-[var(--color-muted)]">
+    Cargando...
+  </div>
+);
+
+// Carga diferida por ruta para reducir el bundle inicial sin alterar rutas ni permisos
+const lazyRoute = (loader, exportName) => {
+  const Component = lazy(async () => {
+    const mod = await loader();
+    return exportName ? { default: mod[exportName] } : mod;
+  });
+
+  return function LazyRouteWrapper() {
+    return (
+      <Suspense fallback={RouteLoader}>
+        <Component />
+      </Suspense>
+    );
+  };
+};
+
+const CreateOrder = lazyRoute(() => import("@/features/orders/pages/CreateOrderPage"));
+const EditOrder = lazyRoute(() => import("@/features/orders/pages/EditOrderPage"));
+const UsersManagement = lazyRoute(() => import("@/features/users/pages/UsersManagementPage"));
+const Login = lazyRoute(() => import("@/features/auth/Login"));
+const ForgotPassword = lazyRoute(() => import("@/features/auth/ForgotPassword"));
+const ResetPassword = lazyRoute(() => import("@/features/auth/ResetPassword"));
+const CreateUser = lazyRoute(() => import("@/features/users/pages/CreateUserPage"));
+const EditUser1 = lazyRoute(() => import("@/features/users/pages/EditUserPage"));
+const ReadUser1 = lazyRoute(() => import("@/features/users/pages/ReadUserPage"));
+const CreateInventory = lazyRoute(() => import("@/features/inventory/pages/CreateInventoryPage"));
+const CreateSuppliers = lazyRoute(() => import("@/features/suppliers/pages/CreateSupplierPage"));
+const ReadSupplier1 = lazyRoute(() => import("@/features/suppliers/pages/ReadSupplierPage"));
+const EditSupplier1 = lazyRoute(() => import("@/features/suppliers/pages/EditSupplierPage"));
+const CreateProduct = lazyRoute(() => import("@/features/products/pages/CreateProductPage"));
+const ReadProduct1 = lazyRoute(() => import("@/features/products/pages/ReadProductPage"));
+const EditProduct1 = lazyRoute(() => import("@/features/products/pages/EditProductPage"));
+const UserListPage = lazyRoute(() => import("@/features/users"), "UserListPage");
+const UserRegisterForm = lazyRoute(() => import("@/features/users"), "UserRegisterForm");
+const ProductListPage = lazyRoute(() => import("@/features/products"), "ProductListPage");
+const SuppliersListPage = lazyRoute(() => import("@/features/suppliers"), "SuppliersListPage");
+const InventoryListPage = lazyRoute(() => import("@/features/inventory"), "InventoryListPage");
+const ReadInventoryPage = lazyRoute(() => import("@/features/inventory"), "ReadInventoryPage");
+const OrderListPage = lazyRoute(() => import("@/features/orders"), "OrderListPage");
+const HomePage = lazyRoute(() => import("@/features/home"), "HomePage");
+const AccessPage = lazyRoute(() => import("@/features/access"), "AccessPage");
 
 const router = createBrowserRouter([
   {

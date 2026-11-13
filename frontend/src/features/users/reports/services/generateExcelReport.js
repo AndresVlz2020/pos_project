@@ -1,14 +1,13 @@
-// Librería para manipulación y generación de archivos Excel
-import * as XLSX from "xlsx";
-
 // Función utilitaria para generar un archivo Excel con membrete y metadatos
 // Cumple con RFADMIN13, RFADMIN19, RFADMIN25 y RFADMIN31
-export function generateExcelReport({
+export async function generateExcelReport({
   headers,
   rows,
   title = "Reporte del Sistema",
   fileName = "report.xlsx"
 }) {
+  // Carga dinámica bajo demanda para reducir el bundle inicial
+  const XLSX = await import("xlsx");
   const user = (() => {
     try {
       return JSON.parse(localStorage.getItem("auth_user") || "null");

@@ -35,7 +35,7 @@ export default function ListReportModal({
     );
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setFeedback(null);
 
     if (!selectedKeys.length) {
@@ -75,14 +75,14 @@ export default function ListReportModal({
     const fileName = `${filePrefix}-report-${timestamp}`;
 
     if (format === "excel") {
-      generateExcelReport({
+      await generateExcelReport({
         headers,
         rows,
         title: reportTitle,
         fileName: `${fileName}.xlsx`,
       });
     } else {
-      generatePdfReport({
+      await generatePdfReport({
         headers,
         rows,
         title: reportTitle,
