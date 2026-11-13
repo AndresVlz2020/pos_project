@@ -144,14 +144,6 @@ export default function UserListPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
-          {isAdmin && (
-            <Link to="/dashboard/access">
-              <Button variant="secondary">
-                <Shield className="size-4" />
-                <span>Permisos</span>
-              </Button>
-            </Link>
-          )}
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
             Generar reporte
           </Button>

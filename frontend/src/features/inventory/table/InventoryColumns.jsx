@@ -67,7 +67,7 @@ export const getInventoryColumns = ({ onRequestStatusChange, canToggleStatus = f
       const isLow = current <= min;
       const unit = item.unit || "un.";
       return (
-        <span className={isLow ? "text-[var(--color-warning)] font-semibold" : ""}>
+        <span className={isLow ? "text-[var(--color-primary-400)] font-semibold" : ""}>
           {current} {unit}
           {isLow && " (bajo)"}
         </span>

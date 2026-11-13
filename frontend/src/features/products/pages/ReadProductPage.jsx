@@ -85,7 +85,9 @@ export default function ReadProductPage() {
               </p>
               <p>
                 Stock disponible:{" "}
-                <span className="font-semibold text-[var(--color-white)]">{stock} un.</span>
+                <span className="font-semibold text-[var(--color-white)]">
+                  {Math.trunc(Number(stock ?? 0))} un.
+                </span>
               </p>
               <p>
                 Estado:{" "}

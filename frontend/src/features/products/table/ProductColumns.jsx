@@ -52,7 +52,7 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
     cell: ({ row }) => {
       const product = row.original;
       return (
-        <span className="font-semibold text-sm text-[var(--color-primary-300)]">
+        <span className="font-semibold text-sm text-[var(--color-white)]">
           ${Number(product.price || 0).toLocaleString("es-CO")}
         </span>
       );
@@ -63,7 +63,7 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
     header: "Stock",
     cell: ({ row }) => (
       <span className="font-mono text-xs">
-        {row.original.stock ?? 0}
+        {Math.trunc(Number(row.original.stock ?? 0))}
       </span>
     ),
   },

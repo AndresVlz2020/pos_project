@@ -45,10 +45,10 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel } = {}) => [
     cell: ({ row }) => {
       const status = row.original.status || "No Pagada";
       const style = status === "Pagada"
-        ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-300)] border-[var(--color-primary-500)]/40"
+        ? "bg-[var(--color-white)]/10 text-[var(--color-white)] border-[var(--color-white)]/30"
         : status === "Anulada"
           ? "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
-          : "bg-[var(--color-error-bg)] text-[var(--color-error)] border-[var(--color-error-border)]";
+          : "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40";
       return (
         <span className={`inline-block px-2.5 py-1 text-xs font-medium rounded-md border ${style}`}>
           {status}

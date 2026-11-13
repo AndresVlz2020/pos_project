@@ -531,7 +531,7 @@ export default function CreateOrder() {
                             className={`text-xs font-semibold ${
                               isInactive
                                 ? "text-[var(--color-gray-500)]"
-                                : "text-[var(--color-primary-300)]"
+                                : "text-[var(--color-white)]"
                             }`}
                           >
                             ${dish.price.toLocaleString("es-CO")}

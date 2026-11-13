@@ -437,7 +437,7 @@ export default function EditOrder() {
                       </h5>
                       <span
                         className={`text-[11px] font-semibold ${
-                          isInactive ? "text-[var(--color-gray-500)]" : "text-[var(--color-primary-300)]"
+                          isInactive ? "text-[var(--color-gray-500)]" : "text-[var(--color-white)]"
                         }`}
                       >
                         ${dish.price.toLocaleString("es-CO")}

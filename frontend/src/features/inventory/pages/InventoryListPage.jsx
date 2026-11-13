@@ -119,9 +119,6 @@ export default function InventoryListPage() {
           <h1 className="text-xl font-bold text-[var(--color-white)]">Listado de Inventario</h1>
         </div>
         <div className="flex gap-2.5">
-          <Button variant="secondary" onClick={fetchInventory} disabled={loading}>
-            {loading ? "Sincronizando..." : "Refrescar"}
-          </Button>
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
             Generar reporte
           </Button>
