@@ -17,6 +17,7 @@ import supplierRoutes from "./features/suppliers/supplier.routes.js";
 import productRoutes from "./features/products/product.routes.js";
 import inventoryRoutes from "./features/inventory/inventory.routes.js";
 import orderRoutes from "./features/orders/order.routes.js";
+import sessionRoutes from "./features/sessions/session.routes.js";
 
 // Creamos la instancia principal de la aplicación Express
 const app = express();
@@ -54,6 +55,7 @@ app.use("/api/suppliers", supplierRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 // Middleware global de control de errores para blindar la API contra caídas
 app.use((err, req, res, next) => {

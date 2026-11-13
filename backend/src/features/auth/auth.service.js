@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { authRepository } from "./auth.repository.js";
 import { sendPasswordResetEmail } from "./email.service.js";
 import { getJWTSecret, getJWTExpires } from "../../config/env.js";
+import { sessionRepository } from "../sessions/session.repository.js";
 
 export const authService = {
   async login({ email, password, userId, pin }) {
@@ -93,8 +94,18 @@ export const authService = {
       { expiresIn: getJWTExpires() }
     );
 
+    let activeSession = null;
+    if (!isAdmin) {
+      try {
+        activeSession = await sessionRepository.startSession(user.id);
+      } catch (err) {
+        console.warn("No se pudo iniciar registro de sesión de turno:", err.message);
+      }
+    }
+
     return {
       token,
+      session: activeSession,
       user: {
         id: user.id,
         email: user.user_email,

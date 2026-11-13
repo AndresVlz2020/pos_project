@@ -28,15 +28,15 @@ export default function PosTerminalHeader({
 
     async function load() {
       try {
-        const [ordersRes, tablesRes, usersRes] = await Promise.all([
+        const [ordersRes, tablesRes, activeSessionsRes] = await Promise.all([
           fetch(`${API_URL}/orders`, { headers }),
           fetch(`${API_URL}/orders/tables/availability`, { headers }),
-          fetch(`${API_URL}/users?active=true`, { headers }),
+          fetch(`${API_URL}/sessions/active`, { headers, cache: "no-store" }),
         ]);
 
         const orders = ordersRes.ok ? await ordersRes.json() : [];
         const tables = tablesRes.ok ? await tablesRes.json() : [];
-        const users = usersRes.ok ? await usersRes.json() : [];
+        const activeSessions = activeSessionsRes.ok ? await activeSessionsRes.json() : [];
 
         const todaysOrders = (Array.isArray(orders) ? orders : []).filter(
           (o) =>
@@ -57,15 +57,7 @@ export default function PosTerminalHeader({
           (t) => t.status === "Ocupada"
         ).length;
 
-        const activeOps = (Array.isArray(users) ? users : []).filter((u) => {
-          const type = (u.role || u.userType || "").toLowerCase();
-          const isAdmin =
-            u.isSuperUser ||
-            Boolean(u.isSuperuser) ||
-            type === "admin" ||
-            type === "administrador";
-          return (u.isActive ?? true) && !isAdmin;
-        }).length;
+        const activeOps = Array.isArray(activeSessions) ? activeSessions.length : 0;
 
         if (active) {
           setKpis({

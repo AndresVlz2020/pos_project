@@ -102,7 +102,10 @@ export async function resetPasswordApi(params, maybePassword) {
   }
 }
 
+import { endCurrentSession } from "./sessionService";
+
 export function logout() {
+  endCurrentSession();
   localStorage.removeItem("auth_user");
   localStorage.removeItem("auth_token");
   sessionStorage.removeItem("user");

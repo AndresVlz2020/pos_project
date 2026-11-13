@@ -9,10 +9,16 @@ import {
   BrandLogo,
 } from "@/shared";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, Clock } from "lucide-react";
 import { logout } from "@/services/authService";
 import { hasPermission } from "@/features/access/services/accessService";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
+import {
+  getCurrentSession,
+  sendSessionHeartbeat,
+  formatDuration,
+} from "@/services/sessionService";
+import SessionHistoryModal from "../components/SessionHistoryModal";
 
 export default function Navbar() {
   const location = useLocation();
@@ -43,6 +49,9 @@ export default function Navbar() {
   const [canViewInventory, setCanViewInventory] = useState(
     initialIsAdmin || isCajero
   );
+  const [sessionStartedAt, setSessionStartedAt] = useState(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [canViewSuppliers, setCanViewSuppliers] = useState(initialIsAdmin);
   const [canCreateOrder, setCanCreateOrder] = useState(
     initialIsAdmin || isCajero || role === "Mesero"
@@ -104,7 +113,45 @@ export default function Navbar() {
     navigate("/Auth");
   };
 
+  // Seguimiento de sesión en tiempo real solo para personal no administrador
+  useEffect(() => {
+    if (!currentUser || isAdmin) {
+      setSessionStartedAt(null);
+      return;
+    }
+
+    let active = true;
+
+    getCurrentSession()
+      .then((data) => {
+        if (!active || !data?.session?.startedAt) return;
+        setSessionStartedAt(data.session.startedAt);
+        const startMs = new Date(data.session.startedAt).getTime();
+        setElapsedSeconds(Math.max(0, Math.floor((Date.now() - startMs) / 1000)));
+      })
+      .catch(() => {});
+
+    const hbId = setInterval(() => {
+      sendSessionHeartbeat().catch(() => {});
+    }, 45000);
+
+    return () => {
+      active = false;
+      clearInterval(hbId);
+    };
+  }, [isAdmin, currentUser?.id]);
+
+  useEffect(() => {
+    if (!sessionStartedAt || isAdmin) return;
+    const startMs = new Date(sessionStartedAt).getTime();
+    const tickId = setInterval(() => {
+      setElapsedSeconds(Math.max(0, Math.floor((Date.now() - startMs) / 1000)));
+    }, 1000);
+    return () => clearInterval(tickId);
+  }, [sessionStartedAt, isAdmin]);
+
   return (
+    <>
     <nav className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] sticky top-0 z-50 shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between gap-4">
@@ -190,6 +237,17 @@ export default function Navbar() {
                 <span className="text-[10px] px-1.5 py-0.2 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-400)] font-semibold">
                   {currentUser.role}
                 </span>
+                {!isAdmin && sessionStartedAt && (
+                  <button
+                    type="button"
+                    onClick={() => setIsHistoryOpen(true)}
+                    title="Ver mi historial de sesiones"
+                    className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[11px] font-semibold hover:bg-[var(--color-primary-500)]/25 transition cursor-pointer"
+                  >
+                    <Clock className="size-3" />
+                    {formatDuration(elapsedSeconds)}
+                  </button>
+                )}
               </div>
             )}
 
@@ -304,6 +362,13 @@ export default function Navbar() {
                 )}
 
                 <DropdownItem
+                  onClick={() => setIsHistoryOpen(true)}
+                  className="cursor-pointer hover:bg-[var(--color-secondary-800)]"
+                >
+                  {isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}
+                </DropdownItem>
+
+                <DropdownItem
                   onClick={handleLogout}
                   className="cursor-pointer text-[var(--color-error)] hover:opacity-90 hover:bg-[var(--color-secondary-800)]"
                 >
@@ -315,5 +380,11 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+    <SessionHistoryModal
+      isOpen={isHistoryOpen}
+      onClose={() => setIsHistoryOpen(false)}
+      isAdmin={isAdmin}
+    />
+    </>
   );
 }

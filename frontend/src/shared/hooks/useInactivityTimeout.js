@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { showErrorAlert } from "../services/alertService";
+import { endCurrentSession } from "@/services/sessionService";
 
 /**
  * Hook para cierre automático de sesión tras inactividad (RNF09)
@@ -31,6 +32,8 @@ export function useInactivityTimeout(timeoutMs = 10 * 60 * 1000) {
 
       if (timerRef.current) clearTimeout(timerRef.current);
       if (intervalRef.current) clearInterval(intervalRef.current);
+
+      await endCurrentSession();
 
       localStorage.removeItem("auth_user");
       localStorage.removeItem("auth_token");
