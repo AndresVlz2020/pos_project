@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { DollarSign, UtensilsCrossed, LayoutGrid, Users } from "lucide-react";
 import { API_URL } from "@/features/config";
 
 // KPIs operativos en tiempo real, conectados a PostgreSQL:
@@ -81,78 +82,66 @@ export default function PosTerminalHeader({
     };
   }, []);
 
-  const hour = new Date().getHours();
-  const shift = hour < 12 ? "Turno Mañana" : hour < 18 ? "Turno Tarde / Noche" : "Turno Noche";
-
   const fmtMoney = (n) => `$${Number(n ?? 0).toLocaleString("es-CO")}`;
   const kpiValue = (v, fallback = "…") =>
     v === null || v === undefined ? fallback : v;
 
+  const cards = [
+    {
+      label: "Venta de Turno",
+      value: kpiValue(kpis.ventasTurno === null ? null : fmtMoney(kpis.ventasTurno)),
+      icon: DollarSign,
+    },
+    {
+      label: "Comandas Cocina",
+      value: kpiValue(
+        kpis.comandasCocina === null ? null : `${kpis.comandasCocina} activas`
+      ),
+      icon: UtensilsCrossed,
+    },
+    {
+      label: "Mesas Ocupadas",
+      value:
+        kpis.mesasOcupadas === null || kpis.totalMesas === null
+          ? "…"
+          : `${kpis.mesasOcupadas} / ${kpis.totalMesas} mesas`,
+      icon: LayoutGrid,
+    },
+    {
+      label: "Personal Turno",
+      value: kpiValue(
+        kpis.personalTurno === null ? null : `${kpis.personalTurno} en servicio`
+      ),
+      icon: Users,
+    },
+  ];
+
   return (
-    <header className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] py-3">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-3">
-        {/* Barra superior del POS */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight">
-              Punto de Venta
-            </h1>
-            <div className="flex items-center gap-1.5 text-[11px]">
-              <span className="px-2 py-0.5 rounded bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] font-medium border border-[var(--color-secondary-700)]">
-                {operator} · {role}
-              </span>
-              <span className="hidden md:inline-block px-2 py-0.5 rounded bg-[var(--color-secondary-900)] text-[var(--color-gray-400)] text-[10px]">
-                {shift}
-              </span>
-            </div>
-          </div>
-        </div>
-
+    <header className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] py-4">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Métricas Operativas Conectadas a PostgreSQL */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-md px-3.5 py-2.5">
-            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Venta de Turno
-            </p>
-            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
-              {kpiValue(kpis.ventasTurno === null ? null : fmtMoney(kpis.ventasTurno))}
-            </p>
-          </div>
-
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-md px-3.5 py-2.5">
-            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Comandas Cocina
-            </p>
-            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
-              {kpiValue(
-                kpis.comandasCocina === null ? null : `${kpis.comandasCocina} activas`
-              )}
-            </p>
-          </div>
-
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-md px-3.5 py-2.5">
-            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Mesas Ocupadas
-            </p>
-            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
-              {kpis.mesasOcupadas === null || kpis.totalMesas === null
-                ? "…"
-                : `${kpis.mesasOcupadas} / ${kpis.totalMesas} mesas`}
-            </p>
-          </div>
-
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-md px-3.5 py-2.5">
-            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Personal Turno
-            </p>
-            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
-              {kpiValue(
-                kpis.personalTurno === null
-                  ? null
-                  : `${kpis.personalTurno} en servicio`
-              )}
-            </p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {cards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={card.label}
+                className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] hover:border-[var(--color-primary-500)]/40 transition-colors rounded-xl px-5 py-4 shadow-sm flex items-center justify-between gap-4"
+              >
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-wider text-[var(--color-gray-400)] font-semibold">
+                    {card.label}
+                  </p>
+                  <p className="text-xl sm:text-2xl font-bold text-[var(--color-white)] tracking-tight mt-1 truncate">
+                    {card.value}
+                  </p>
+                </div>
+                <div className="size-11 rounded-xl bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/30 text-[var(--color-primary-400)] flex items-center justify-center shrink-0">
+                  <Icon className="size-5" />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </header>
