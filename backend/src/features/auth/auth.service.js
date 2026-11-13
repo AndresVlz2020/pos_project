@@ -7,6 +7,101 @@ import { sendPasswordResetEmail } from "./email.service.js";
 import { getJWTSecret, getJWTExpires } from "../../config/env.js";
 import { sessionRepository } from "../sessions/session.repository.js";
 
+export const MAX_PIN_ATTEMPTS = 5;
+export const PIN_LOCK_SECONDS = 60;
+
+/**
+ * Error HTTP estructurado para respuestas de autenticación con metadatos (p.ej. 429 lockout).
+ */
+export class AuthServiceError extends Error {
+  constructor(message, status = 401, meta = {}) {
+    super(message);
+    this.status = status;
+    this.meta = meta;
+  }
+}
+
+export function resolveUserFlagsAndRole(user) {
+  const isSuperuser = Boolean(user.is_superuser);
+  const isAdmin = Boolean(
+    user.is_superuser ||
+      user.is_admin_group ||
+      String(user.user_type || "").toLowerCase() === "admin" ||
+      String(user.user_type || "").toLowerCase() === "administrador"
+  );
+
+  let role = "Staff";
+  if (isAdmin) {
+    role = "Admin";
+  } else if (user.user_type) {
+    const rawType = user.user_type.toLowerCase();
+    if (rawType.includes("caj")) role = "Cajero";
+    else if (rawType.includes("meser")) role = "Mesero";
+    else if (rawType.includes("cocin")) role = "Cocina";
+    else role = user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1).toLowerCase();
+  } else if (user.is_staff) {
+    role = "Mesero";
+  }
+
+  return { isSuperuser, isAdmin, role };
+}
+
+export async function verifyUserPasswordSecret(user, plainSecret) {
+  const secretInput = String(plainSecret || "").trim();
+  if (!secretInput) return false;
+
+  if (user.password && user.password.length > 0) {
+    try {
+      const matched = await bcrypt.compare(secretInput, user.password);
+      if (matched) return true;
+    } catch {
+      // Continuar al fallback por compatibilidad con semillas antiguas
+    }
+    if (secretInput === user.password) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export async function issueSessionForUser(user) {
+  const { isSuperuser, isAdmin, role } = resolveUserFlagsAndRole(user);
+
+  const token = jwt.sign(
+    {
+      id: user.id,
+      email: user.user_email,
+      role,
+      isSuperuser,
+      isAdmin,
+    },
+    getJWTSecret(),
+    { expiresIn: getJWTExpires() }
+  );
+
+  let activeSession = null;
+  if (!isAdmin) {
+    try {
+      activeSession = await sessionRepository.startSession(user.id);
+    } catch (err) {
+      console.warn("No se pudo iniciar registro de sesión de turno:", err.message);
+    }
+  }
+
+  return {
+    token,
+    session: activeSession,
+    user: {
+      id: user.id,
+      email: user.user_email,
+      name: user.user_name,
+      role,
+      isSuperuser,
+      isAdmin,
+    },
+  };
+}
+
 export const authService = {
   async login({ email, password, userId, pin }) {
     let user = null;
@@ -21,35 +116,39 @@ export const authService = {
     const secretInput = String(password || pin || "").trim();
 
     if ((!email && !userId) || !secretInput) {
-      throw new Error("El correo/usuario y la contraseña/PIN son requeridos");
+      throw new AuthServiceError("El correo/usuario y la contraseña/PIN son requeridos", 401);
     }
 
-    console.log(
-      "USER ENCONTRADO:",
-      user ? { id: user.id, email: user.user_email, type: user.user_type } : null
-    );
-
     if (!user) {
-      throw new Error("Credenciales inválidas");
+      throw new AuthServiceError("Credenciales inválidas", 401);
     }
 
     if (!user.is_active) {
-      throw new Error("Usuario inactivo");
+      throw new AuthServiceError("Usuario inactivo", 401);
+    }
+
+    const isPinLogin = Boolean(
+      (pin !== undefined && pin !== null && String(pin).trim() !== "") ||
+        (userId && !password)
+    );
+
+    if (isPinLogin && Number(user.pin_lock_remaining_seconds) > 0) {
+      const retryAfter = Number(user.pin_lock_remaining_seconds);
+      throw new AuthServiceError(
+        `PIN bloqueado temporalmente por seguridad. Intenta nuevamente en ${retryAfter}s.`,
+        429,
+        {
+          code: "PIN_LOCKED",
+          retryAfterSeconds: retryAfter,
+          lockedUntil: user.pin_locked_until,
+          attemptsRemaining: 0,
+          maxAttempts: MAX_PIN_ATTEMPTS,
+        }
+      );
     }
 
     // 1. Comparar password con bcrypt (soporta hashes y fallback a texto plano si fue sembrado directo)
-    let isMatch = false;
-    if (user.password && user.password.length > 0) {
-      try {
-        isMatch = await bcrypt.compare(secretInput, user.password);
-      } catch {
-        isMatch = false;
-      }
-
-      if (!isMatch && secretInput === user.password) {
-        isMatch = true;
-      }
-    }
+    let isMatch = await verifyUserPasswordSecret(user, secretInput);
 
     // 2. Soporte para personal operativo (mesero, cajero, cocina) cuyo acceso principal es por PIN
     if (!isMatch && user.pin && secretInput === String(user.pin).trim()) {
@@ -57,64 +156,50 @@ export const authService = {
     }
 
     if (!isMatch) {
-      throw new Error("Credenciales inválidas");
-    }
+      if (isPinLogin) {
+        const updated = await authRepository.recordFailedPinAttempt(
+          user.id,
+          MAX_PIN_ATTEMPTS,
+          PIN_LOCK_SECONDS
+        );
+        const retryAfter = Number(updated?.pin_lock_remaining_seconds || 0);
+        const failedAttempts = Number(updated?.pin_failed_attempts || 1);
+        const attemptsRemaining = Math.max(0, MAX_PIN_ATTEMPTS - failedAttempts);
 
-    const isSuperuser = Boolean(user.is_superuser);
-    const isAdmin = Boolean(
-      user.is_superuser ||
-      user.is_admin_group ||
-      String(user.user_type || "").toLowerCase() === "admin" ||
-      String(user.user_type || "").toLowerCase() === "administrador"
-    );
+        if (retryAfter > 0 || failedAttempts >= MAX_PIN_ATTEMPTS) {
+          throw new AuthServiceError(
+            `Has superado el límite de ${MAX_PIN_ATTEMPTS} intentos fallidos. Espera ${retryAfter || PIN_LOCK_SECONDS}s antes de volver a intentar.`,
+            429,
+            {
+              code: "PIN_LOCKED",
+              retryAfterSeconds: retryAfter || PIN_LOCK_SECONDS,
+              lockedUntil: updated?.pin_locked_until,
+              attemptsRemaining: 0,
+              maxAttempts: MAX_PIN_ATTEMPTS,
+            }
+          );
+        }
 
-    // Formatear rol según user_type real de la BD
-    let role = "Staff";
-    if (isAdmin) {
-      role = "Admin";
-    } else if (user.user_type) {
-      const rawType = user.user_type.toLowerCase();
-      if (rawType.includes("caj")) role = "Cajero";
-      else if (rawType.includes("meser")) role = "Mesero";
-      else if (rawType.includes("cocin")) role = "Cocina";
-      else role = user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1).toLowerCase();
-    } else if (user.is_staff) {
-      role = "Mesero";
-    }
-
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.user_email,
-        role,
-        isSuperuser,
-        isAdmin,
-      },
-      getJWTSecret(),
-      { expiresIn: getJWTExpires() }
-    );
-
-    let activeSession = null;
-    if (!isAdmin) {
-      try {
-        activeSession = await sessionRepository.startSession(user.id);
-      } catch (err) {
-        console.warn("No se pudo iniciar registro de sesión de turno:", err.message);
+        throw new AuthServiceError(
+          `PIN incorrecto. Te quedan ${attemptsRemaining} intento(s) antes del bloqueo temporal.`,
+          401,
+          {
+            code: "INVALID_PIN",
+            attemptsRemaining,
+            failedAttempts,
+            maxAttempts: MAX_PIN_ATTEMPTS,
+          }
+        );
       }
+
+      throw new AuthServiceError("Credenciales inválidas", 401);
     }
 
-    return {
-      token,
-      session: activeSession,
-      user: {
-        id: user.id,
-        email: user.user_email,
-        name: user.user_name,
-        role,
-        isSuperuser,
-        isAdmin,
-      },
-    };
+    if (isPinLogin && (Number(user.pin_failed_attempts) > 0 || user.pin_locked_until)) {
+      await authRepository.resetPinAttempts(user.id);
+    }
+
+    return issueSessionForUser(user);
   },
 
   async forgotPassword(email) {

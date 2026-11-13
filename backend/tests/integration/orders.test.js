@@ -1,6 +1,6 @@
 // Pruebas de integración del núcleo del negocio: comandas (órdenes).
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { api, getToken, auth } from "../helpers/api.js";
+import { api, getToken, auth, stepUpAuth } from "../helpers/api.js";
 import { pool, resetDb, one } from "../helpers/db.js";
 
 let meseroToken;
@@ -110,7 +110,7 @@ describe("transiciones de estado", () => {
 
     const res = await api
       .patch(`/api/orders/${orderNum}/cancel`)
-      .set(auth(adminToken))
+      .set(await stepUpAuth(adminToken))
       .send({ reason: "cliente se retiró" });
     expect(res.status).toBe(200);
     expect(res.body.order.status).toBe("Anulada");

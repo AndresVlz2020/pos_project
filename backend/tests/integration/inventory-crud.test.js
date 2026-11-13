@@ -1,6 +1,6 @@
 // Pruebas de integración del CRUD de inventario.
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { api, getToken, auth } from "../helpers/api.js";
+import { api, getToken, auth, stepUpAuth } from "../helpers/api.js";
 import { pool, resetDb, one } from "../helpers/db.js";
 
 let adminToken;
@@ -91,7 +91,7 @@ describe("actualización y estado", () => {
 
     const res = await api
       .patch(`/api/inventory/${id}/status`)
-      .set(auth(adminToken))
+      .set(await stepUpAuth(adminToken))
       .send({ isActive: false });
     expect(res.status).toBe(200);
 

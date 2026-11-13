@@ -1,4 +1,5 @@
 import { API_URL } from "@/features/config";
+import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
 
 const SUPPLIERS_URL = `${API_URL}/suppliers`;
 
@@ -87,9 +88,17 @@ export async function updateSupplier(id, supplierData) {
 
 export async function updateSupplierStatus(id, is_active) {
   try {
+    const actionLabel = is_active
+      ? "Confirmar habilitación de proveedor"
+      : "Confirmar inhabilitación de proveedor";
+    const stepUpHeaders = await getAdminStepUpHeaders(actionLabel);
+
     const response = await fetch(`${SUPPLIERS_URL}/${id}`, {
       method: "PATCH",
-      headers: getHeaders(),
+      headers: {
+        ...getHeaders(),
+        ...stepUpHeaders,
+      },
       body: JSON.stringify({ is_active }),
     });
 

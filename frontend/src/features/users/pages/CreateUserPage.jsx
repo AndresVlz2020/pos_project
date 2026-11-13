@@ -117,6 +117,7 @@ export default function CreateUser() {
       });
       navigate("/dashboard/userList");
     } catch (err) {
+      if (err?.isStepUpCancelled) return;
       console.error("Error al registrar usuario en backend:", err);
       const isConnectionError =
         err.message?.toLowerCase().includes("fetch") ||

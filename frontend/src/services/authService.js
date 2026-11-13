@@ -23,6 +23,11 @@ export async function loginApi({ email, password, userId, pin }) {
     if (!response.ok) {
       const err = new Error(data.error || data.message || `Error al iniciar sesión (${response.status})`);
       err.status = response.status;
+      err.code = data.code;
+      err.retryAfterSeconds = data.retryAfterSeconds;
+      err.attemptsRemaining = data.attemptsRemaining;
+      err.maxAttempts = data.maxAttempts;
+      err.lockedUntil = data.lockedUntil;
       throw err;
     }
 

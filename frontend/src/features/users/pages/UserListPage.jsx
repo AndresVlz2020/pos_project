@@ -98,6 +98,7 @@ export default function UserListPage() {
         text: `El usuario "${userName}" fue ${actionText} exitosamente.`,
       });
     } catch (error) {
+      if (error?.isStepUpCancelled) return;
       await showErrorAlert({
         title: "Error al actualizar",
         text: error.message || "No se pudo actualizar el estado del usuario",

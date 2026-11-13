@@ -58,6 +58,7 @@ export default function AccessPage() {
         text: "Los permisos se han guardado correctamente en PostgreSQL.",
       });
     } catch (error) {
+      if (error?.isStepUpCancelled) return;
       console.error("Error guardando permisos:", error);
       await showErrorAlert({
         title: "Error al guardar",

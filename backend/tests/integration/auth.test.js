@@ -1,6 +1,6 @@
 // Pruebas de integración de autenticación (login dual + recuperación de clave).
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { api, login, getToken, auth, SEED_USERS } from "../helpers/api.js";
+import { api, login, getToken, stepUpAuth, SEED_USERS } from "../helpers/api.js";
 import { pool, resetDb, one } from "../helpers/db.js";
 
 beforeAll(async () => {
@@ -58,9 +58,10 @@ describe("login por PIN (personal operativo)", () => {
   it("rechaza usuario inactivo (401)", async () => {
     // Crear usuario de prueba, deshabilitarlo e intentar entrar.
     const adminToken = await getToken("admin");
+    const adminHeaders = await stepUpAuth(adminToken);
     const created = await api
       .post("/api/users")
-      .set(auth(adminToken))
+      .set(adminHeaders)
       .send({
         userName: "TEST Inactivo",
         userEmail: "test.inactivo@dpiero.com",
@@ -73,7 +74,7 @@ describe("login por PIN (personal operativo)", () => {
 
     await api
       .patch(`/api/users/${userId}/status`)
-      .set(auth(adminToken))
+      .set(adminHeaders)
       .send({ isActive: false });
 
     const res = await login({ email: "test.inactivo@dpiero.com", pin: "4321" });

@@ -1,4 +1,5 @@
 import { API_URL } from "@/features/config";
+import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
 
 const INVENTORY_URL = `${API_URL}/inventory`;
 
@@ -120,9 +121,17 @@ export async function updateInventory(id, itemData) {
  */
 export async function updateInventoryStatus(id, is_active) {
   try {
+    const actionLabel = is_active
+      ? "Confirmar habilitación de insumo"
+      : "Confirmar inhabilitación de insumo";
+    const stepUpHeaders = await getAdminStepUpHeaders(actionLabel);
+
     const response = await fetch(`${INVENTORY_URL}/${id}/status`, {
       method: "PATCH",
-      headers: getAuthHeaders(),
+      headers: {
+        ...getAuthHeaders(),
+        ...stepUpHeaders,
+      },
       body: JSON.stringify({ is_active }),
     });
 

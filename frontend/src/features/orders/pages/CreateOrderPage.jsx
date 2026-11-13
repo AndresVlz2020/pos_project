@@ -308,6 +308,7 @@ export default function CreateOrder() {
       });
       fetchInitialData();
     } catch (err) {
+      if (err?.isStepUpCancelled) return;
       console.error("Error al cancelar orden:", err);
       await showErrorAlert({
         title: "Error al anular",

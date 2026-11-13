@@ -300,6 +300,7 @@ export default function EditOrder() {
 
       navigate("/orderList");
     } catch (err) {
+      if (err?.isStepUpCancelled) return;
       console.error("Error al anular orden:", err);
       await showErrorAlert({
         title: "Error al anular",

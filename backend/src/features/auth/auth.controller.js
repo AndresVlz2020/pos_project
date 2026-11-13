@@ -13,8 +13,10 @@ export const authController = {
         ...result,
       });
     } catch (err) {
-      res.status(401).json({
+      const status = err.status || 401;
+      res.status(status).json({
         error: err.message,
+        ...(err.meta || {}),
       });
     }
   },

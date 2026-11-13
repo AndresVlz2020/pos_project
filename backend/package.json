@@ -19,6 +19,7 @@
     "perf:volume": "node tests/performance/runner.js --mode=volume"
   },
   "dependencies": {
+    "@simplewebauthn/server": "^14.1.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

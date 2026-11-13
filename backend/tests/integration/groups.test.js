@@ -1,7 +1,7 @@
 // Pruebas de integración del módulo de grupos y permisos (RBAC).
 // Verifica los endpoints de administrador y la matriz de permisos sembrada.
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { api, getToken, auth } from "../helpers/api.js";
+import { api, getToken, auth, stepUpAuth } from "../helpers/api.js";
 import { pool, resetDb, query } from "../helpers/db.js";
 
 let adminToken;
@@ -111,10 +111,11 @@ describe("permisos por grupo (admin)", () => {
     const singlePermissionId = rows[0].permission_id;
 
     const before = await groupPermissionCodes(id);
+    const adminHeaders = await stepUpAuth(adminToken);
 
     const res = await api
       .put(`/api/groups/${id}/permissions`)
-      .set(auth(adminToken))
+      .set(adminHeaders)
       .send({ permissionIds: [singlePermissionId] });
     expect(res.status).toBe(200);
 
@@ -132,7 +133,7 @@ describe("permisos por grupo (admin)", () => {
 
     await api
       .put(`/api/groups/${id}/permissions`)
-      .set(auth(adminToken))
+      .set(adminHeaders)
       .send({ permissionIds: restoreIds });
 
     const restored = await groupPermissionCodes(id);

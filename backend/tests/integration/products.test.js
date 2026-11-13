@@ -1,6 +1,6 @@
 // Pruebas de integración del CRUD de productos.
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { api, getToken, auth } from "../helpers/api.js";
+import { api, getToken, auth, stepUpAuth } from "../helpers/api.js";
 import { pool, resetDb, one } from "../helpers/db.js";
 
 let adminToken;
@@ -78,7 +78,7 @@ describe("actualización y estado de producto", () => {
 
     const off = await api
       .patch(`/api/products/${id}/status`)
-      .set(auth(adminToken))
+      .set(await stepUpAuth(adminToken))
       .send({ isActive: false });
     expect(off.status).toBe(200);
 

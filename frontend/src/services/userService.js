@@ -1,4 +1,6 @@
 // Servicio de comunicación con la API Backend de usuarios
+import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 function getStoredToken() {
@@ -17,11 +19,13 @@ function getStoredToken() {
 export async function createUser(userData) {
   try {
     const token = getStoredToken();
+    const stepUpHeaders = await getAdminStepUpHeaders("Confirmar creación de usuario");
     const response = await fetch(`${API_BASE_URL}/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...stepUpHeaders,
       },
       body: JSON.stringify(userData),
     });
@@ -81,12 +85,17 @@ export async function getUsers({ activeOnly = false } = {}) {
  */
 export async function updateUserStatus(userId, isActive) {
   const token = getStoredToken();
+  const actionLabel = isActive
+    ? "Confirmar habilitación de usuario"
+    : "Confirmar inhabilitación de usuario";
+  const stepUpHeaders = await getAdminStepUpHeaders(actionLabel);
 
   const response = await fetch(`${API_BASE_URL}/users/${userId}/status`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...stepUpHeaders,
     },
     body: JSON.stringify({ isActive }),
   });
@@ -109,11 +118,13 @@ export async function updateUserStatus(userId, isActive) {
 export async function updateUser(id, userData) {
   try {
     const token = getStoredToken();
+    const stepUpHeaders = await getAdminStepUpHeaders("Confirmar edición de usuario");
     const response = await fetch(`${API_BASE_URL}/users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...stepUpHeaders,
       },
       body: JSON.stringify(userData),
     });

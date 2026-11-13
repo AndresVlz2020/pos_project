@@ -19,6 +19,7 @@ import {
   formatDuration,
 } from "@/services/sessionService";
 import SessionHistoryModal from "../components/SessionHistoryModal";
+import BiometricSettingsModal from "../components/BiometricSettingsModal";
 
 export default function Navbar() {
   const location = useLocation();
@@ -52,6 +53,7 @@ export default function Navbar() {
   const [sessionStartedAt, setSessionStartedAt] = useState(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isBiometricsOpen, setIsBiometricsOpen] = useState(false);
   const [canViewSuppliers, setCanViewSuppliers] = useState(initialIsAdmin);
   const [canCreateOrder, setCanCreateOrder] = useState(
     initialIsAdmin || isCajero || role === "Mesero"
@@ -391,6 +393,13 @@ export default function Navbar() {
                 )}
 
                 <DropdownItem
+                  onClick={() => setIsBiometricsOpen(true)}
+                  className="cursor-pointer hover:bg-[var(--color-secondary-800)]"
+                >
+                  Configurar Biometría / Huella
+                </DropdownItem>
+
+                <DropdownItem
                   onClick={() => setIsHistoryOpen(true)}
                   className="cursor-pointer hover:bg-[var(--color-secondary-800)]"
                 >
@@ -413,6 +422,12 @@ export default function Navbar() {
       isOpen={isHistoryOpen}
       onClose={() => setIsHistoryOpen(false)}
       isAdmin={isAdmin}
+    />
+    <BiometricSettingsModal
+      isOpen={isBiometricsOpen}
+      onClose={() => setIsBiometricsOpen(false)}
+      isAdmin={isAdmin}
+      userName={currentUser?.name || currentUser?.email || ""}
     />
     </>
   );

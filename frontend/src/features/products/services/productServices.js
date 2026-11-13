@@ -1,4 +1,5 @@
 import { API_URL } from "@/features/config";
+import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
 
 const PRODUCTS_URL = `${API_URL}/products`;
 
@@ -120,9 +121,17 @@ export async function updateProduct(id, productData) {
  */
 export async function updateProductStatus(id, is_active) {
   try {
+    const actionLabel = is_active
+      ? "Confirmar habilitación de platillo"
+      : "Confirmar inhabilitación de platillo";
+    const stepUpHeaders = await getAdminStepUpHeaders(actionLabel);
+
     const response = await fetch(`${PRODUCTS_URL}/${id}/status`, {
       method: "PATCH",
-      headers: getAuthHeaders(),
+      headers: {
+        ...getAuthHeaders(),
+        ...stepUpHeaders,
+      },
       body: JSON.stringify({ is_active }),
     });
 

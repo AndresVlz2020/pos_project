@@ -1,5 +1,6 @@
 // frontend/src/features/access/services/permissionService.js
 import { API_URL } from "@/features/config";
+import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
 
 const GROUPS_API_URL = `${API_URL}/groups`;
 const USERS_API_URL = `${API_URL}/users`;
@@ -48,16 +49,22 @@ export async function getUserPermissions(userId) {
 }
 
 export async function updateUserPermissions(userId, permissionIds) {
+  const stepUpHeaders = await getAdminStepUpHeaders("Confirmar cambio de permisos de usuario");
+
   const response = await fetch(`${USERS_API_URL}/${userId}/permissions`, {
     method: "PUT",
-    headers: getAuthHeaders(),
+    headers: {
+      ...getAuthHeaders(),
+      ...stepUpHeaders,
+    },
     body: JSON.stringify({
       permissionIds,
     }),
   });
 
   if (!response.ok) {
-    throw new Error("Error actualizando permisos del usuario");
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Error actualizando permisos del usuario");
   }
 
   return response.json();

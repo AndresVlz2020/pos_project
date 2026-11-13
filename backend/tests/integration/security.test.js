@@ -7,10 +7,11 @@
 //   - CORS con lista blanca.
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import jwt from "jsonwebtoken";
-import { api, getToken, auth } from "../helpers/api.js";
+import { api, getToken, auth, stepUpAuth } from "../helpers/api.js";
 import { pool, resetDb } from "../helpers/db.js";
 
 let tokens; // { admin, mesero, cajero, cocina }
+let adminStepUp;
 let fixtures; // { prodId, invId, suppId, orderNum, userId }
 
 beforeAll(async () => {
@@ -21,6 +22,7 @@ beforeAll(async () => {
     cajero: await getToken("cajero"),
     cocina: await getToken("cocina"),
   };
+  adminStepUp = await stepUpAuth(tokens.admin);
 
   // Fixtures que mutan: los crea el admin/mesero para que las rutas tengan un
   // id real sobre el que operar.
@@ -60,7 +62,7 @@ beforeAll(async () => {
 
   const user = await api
     .post("/api/users")
-    .set(auth(tokens.admin))
+    .set(adminStepUp)
     .send({
       userName: "TEST SEC Mesero",
       userEmail: "test.sec@dpiero.com",
@@ -205,7 +207,7 @@ describe("RBAC: rol correcto → 2xx", () => {
   it("admin anula comanda (200)", async () => {
     const res = await api
       .patch(`/api/orders/${fixtures.orderNum}/cancel`)
-      .set(auth(tokens.admin))
+      .set(adminStepUp)
       .send({ reason: "prueba" });
     expect(res.status).toBe(200);
     expect(res.body.order.orderStatus || res.body.order.status).toBe("Anulada");
@@ -222,13 +224,13 @@ describe("RBAC: rol correcto → 2xx", () => {
   it("admin deshabilita y habilita producto (200)", async () => {
     const off = await api
       .patch(`/api/products/${fixtures.prodId}/status`)
-      .set(auth(tokens.admin))
+      .set(adminStepUp)
       .send({ isActive: false });
     expect(off.status).toBe(200);
 
     const on = await api
       .patch(`/api/products/${fixtures.prodId}/status`)
-      .set(auth(tokens.admin))
+      .set(adminStepUp)
       .send({ isActive: true });
     expect(on.status).toBe(200);
   });
@@ -258,7 +260,7 @@ describe("RBAC: rol correcto → 2xx", () => {
   it("admin deshabilita proveedor (200)", async () => {
     const res = await api
       .patch(`/api/suppliers/${fixtures.suppId}`)
-      .set(auth(tokens.admin))
+      .set(adminStepUp)
       .send({ is_active: false });
     expect(res.status).toBe(200);
   });
@@ -311,7 +313,7 @@ describe("RBAC: rol correcto → 2xx", () => {
   it("admin crea usuario (201)", async () => {
     const res = await api
       .post("/api/users")
-      .set(auth(tokens.admin))
+      .set(adminStepUp)
       .send({
         userName: "TEST SEC Mesero 2",
         userEmail: "test.sec2@dpiero.com",
@@ -326,7 +328,7 @@ describe("RBAC: rol correcto → 2xx", () => {
   it("admin actualiza usuario (200) y consulta permisos (200)", async () => {
     const upd = await api
       .put(`/api/users/${fixtures.userId}`)
-      .set(auth(tokens.admin))
+      .set(adminStepUp)
       .send({ userPhone: "3007777777" });
     expect(upd.status).toBe(200);
 

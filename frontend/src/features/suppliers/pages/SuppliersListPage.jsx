@@ -86,6 +86,7 @@ export default function SuppliersListPage() {
         text: `El proveedor "${compName}" fue ${actionText} exitosamente.`,
       });
     } catch (error) {
+      if (error?.isStepUpCancelled) return;
       await showErrorAlert({
         title: "Error al actualizar",
         text: error.message || "No se pudo actualizar el estado",

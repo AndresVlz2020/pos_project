@@ -27,3 +27,24 @@ export async function getToken(role) {
 }
 
 export const auth = (token) => ({ Authorization: `Bearer ${token}` });
+
+export async function getStepUpToken(adminToken, password = SEED_USERS.admin.password) {
+  const res = await api
+    .post("/api/auth/step-up/verify")
+    .set(auth(adminToken))
+    .send({ password });
+  if (res.status !== 200 || !res.body?.stepUpToken) {
+    throw new Error(
+      `No se pudo obtener stepUpToken: HTTP ${res.status} ${JSON.stringify(res.body)}`
+    );
+  }
+  return res.body.stepUpToken;
+}
+
+export async function stepUpAuth(adminToken, password = SEED_USERS.admin.password) {
+  const stepUpToken = await getStepUpToken(adminToken, password);
+  return {
+    Authorization: `Bearer ${adminToken}`,
+    "X-Admin-Confirm-Token": stepUpToken,
+  };
+}

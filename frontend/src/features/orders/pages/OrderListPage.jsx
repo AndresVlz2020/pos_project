@@ -88,6 +88,7 @@ export default function OrderListPage() {
         message: `La comanda ${orderToCancel.id} (${orderToCancel.tableNumber}) ha sido anulada en PostgreSQL y su stock fue restaurado.`,
       });
     } catch (error) {
+      if (error?.isStepUpCancelled) return;
       console.error("Error al anular orden:", error);
       setFeedback({
         type: "error",

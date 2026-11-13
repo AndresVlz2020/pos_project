@@ -1,4 +1,5 @@
 import { API_URL } from "@/features/config";
+import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
 
 const ORDERS_URL = `${API_URL}/orders`;
 
@@ -167,9 +168,14 @@ export async function updateOrderStatus(id, status) {
  */
 export async function cancelOrder(id, reason = "Cancelada por usuario") {
   try {
+    const stepUpHeaders = await getAdminStepUpHeaders("Confirmar anulación de comanda");
+
     const response = await fetch(`${ORDERS_URL}/${id}/cancel`, {
       method: "PATCH",
-      headers: getAuthHeaders(),
+      headers: {
+        ...getAuthHeaders(),
+        ...stepUpHeaders,
+      },
       body: JSON.stringify({ reason }),
     });
 

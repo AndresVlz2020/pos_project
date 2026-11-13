@@ -96,6 +96,10 @@ export default function InventoryListPage() {
         } exitosamente en PostgreSQL.`,
       });
     } catch (error) {
+      if (error?.isStepUpCancelled) {
+        setPendingChange(null);
+        return;
+      }
       console.error("Error al cambiar estado:", error);
       setFeedback({
         type: "error",

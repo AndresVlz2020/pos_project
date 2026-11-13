@@ -88,6 +88,7 @@ export default function ProductListPage() {
         text: `El platillo "${prodName}" fue ${actionText} exitosamente.`,
       });
     } catch (error) {
+      if (error?.isStepUpCancelled) return;
       console.error("Error al cambiar estado:", error);
       await showErrorAlert({
         title: "Error al actualizar",

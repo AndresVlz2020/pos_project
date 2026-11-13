@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Users, Shield } from "lucide-react";
 import { BrandLogo, showErrorAlert } from "@/shared";
@@ -6,6 +6,7 @@ import QuickAccessSelector, { formatRole } from "./components/QuickAccessSelecto
 import PinKeypad from "./components/PinKeypad";
 import AdminLoginForm from "./components/AdminLoginForm";
 import { loginApi } from "@/services/authService";
+import { loginWithBiometricsApi } from "@/services/biometricService";
 
 function saveSession(token, userObj) {
   localStorage.setItem("auth_token", token);
@@ -19,15 +20,57 @@ export default function Login() {
   const [authMode, setAuthMode] = useState("pin");
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [pinError, setPinError] = useState("");
+  const [pinLockSeconds, setPinLockSeconds] = useState(0);
+
+  // Cuenta regresiva en tiempo real para el bloqueo de 60s por intentos fallidos
+  useEffect(() => {
+    if (pinLockSeconds <= 0) return;
+    const timer = setInterval(() => {
+      setPinLockSeconds((prev) => (prev > 1 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [pinLockSeconds]);
+
+  const completeSessionLogin = (result, fallbackStaff = null) => {
+    const normalizedRole = formatRole(
+      result.user?.role || fallbackStaff?.role || fallbackStaff?.userType || ""
+    );
+    const isAdmin = Boolean(
+      result.user?.isAdmin ||
+        result.user?.isSuperuser ||
+        normalizedRole === "Administrador" ||
+        result.user?.role === "Admin"
+    );
+    const baseRole = isAdmin ? "Admin" : normalizedRole;
+
+    const sessionUser = {
+      id: result.user?.id || fallbackStaff?.id,
+      name:
+        result.user?.name ||
+        fallbackStaff?.userName ||
+        fallbackStaff?.name ||
+        "Usuario",
+      role: baseRole,
+      displayRole: isAdmin ? "Administrador" : normalizedRole,
+      email: result.user?.email || fallbackStaff?.userEmail || "",
+      isAdmin,
+      isSuperuser: Boolean(result.user?.isSuperuser),
+    };
+
+    saveSession(result.token, sessionUser);
+    navigate("/");
+  };
 
   const handleSelectStaff = (staff) => {
     setSelectedStaff(staff);
     setPinError("");
+    setPinLockSeconds(0);
   };
 
   const handleBackToStaffList = () => {
     setSelectedStaff(null);
     setPinError("");
+    setPinLockSeconds(0);
   };
 
   const handleValidatePin = async (pin, onResetPin) => {
@@ -38,41 +81,14 @@ export default function Login() {
         pin,
       });
 
-      const normalizedRole = formatRole(
-        result.user?.role || selectedStaff.role || selectedStaff.userType || ""
-      );
-      const baseRole = normalizedRole === "Administrador" ? "Admin" : normalizedRole;
-
-      const sessionUser = {
-        id: result.user?.id || selectedStaff.id,
-        name: result.user?.name || selectedStaff.userName || selectedStaff.name,
-        role: baseRole,
-        displayRole: normalizedRole,
-        email: result.user?.email || selectedStaff.userEmail,
-        isAdmin: Boolean(result.user?.isAdmin),
-        isSuperuser: Boolean(result.user?.isSuperuser),
-      };
-
-      saveSession(result.token, sessionUser);
-      navigate("/");
+      setPinLockSeconds(0);
+      setPinError("");
+      completeSessionLogin(result, selectedStaff);
     } catch (err) {
-      if (err.isNetworkError && (pin === selectedStaff?.pin || pin === "1234")) {
-        const normalizedRole = formatRole(
-          selectedStaff.role || selectedStaff.userType || ""
-        );
-        const baseRole = normalizedRole === "Administrador" ? "Admin" : normalizedRole;
-
-        const sessionUser = {
-          id: selectedStaff.id,
-          name: selectedStaff.userName || selectedStaff.name,
-          role: baseRole,
-          displayRole: normalizedRole,
-          email: selectedStaff.userEmail || `${selectedStaff.id}@dpiero.com`,
-          isAdmin: false,
-          isSuperuser: false,
-        };
-        saveSession("token-pin-" + selectedStaff.id + "-" + Date.now(), sessionUser);
-        navigate("/");
+      if (err.status === 429 || err.code === "PIN_LOCKED") {
+        setPinLockSeconds(Number(err.retryAfterSeconds) || 60);
+        setPinError("");
+        if (onResetPin) onResetPin();
         return;
       }
 
@@ -81,6 +97,20 @@ export default function Login() {
         if (onResetPin) onResetPin();
       }, 700);
     }
+  };
+
+  const handleStaffBiometricLogin = async (staff) => {
+    const result = await loginWithBiometricsApi({ userId: staff.id });
+    setPinLockSeconds(0);
+    setPinError("");
+    completeSessionLogin(result, staff);
+  };
+
+  const handleAdminBiometricLogin = async (email) => {
+    const result = await loginWithBiometricsApi({ email });
+    const emailClean = String(email || "").trim().toLowerCase();
+    localStorage.removeItem(`login_attempts_${emailClean}`);
+    completeSessionLogin(result);
   };
 
   const handleAdminSubmit = async (form) => {
@@ -96,57 +126,19 @@ export default function Login() {
       });
       return {
         errors: {
-          userEmail: "Cuenta bloqueada por múltiples intentos fallidos.",
+          userPassword: "Cuenta bloqueada por múltiples intentos fallidos.",
         },
       };
     }
 
     try {
-      // 1. Intentamos autenticación con JWT contra el backend
       const result = await loginApi({ email: emailClean, password: form.userPassword });
-
       localStorage.removeItem(attemptsKey);
-      const isAdmin = Boolean(
-        result.user?.isAdmin ||
-          result.user?.isSuperuser ||
-          result.user?.role === "Admin"
-      );
-
-      saveSession(result.token, {
-        id: result.user?.id,
-        name: result.user?.name || "Administrador",
-        email: result.user?.email,
-        role: result.user?.role || "Admin",
-        displayRole: isAdmin ? "Administrador" : result.user?.role || "Personal",
-        isAdmin,
-        isSuperuser: Boolean(result.user?.isSuperuser),
-      });
-
-      navigate("/");
+      completeSessionLogin(result);
       return { success: true };
     } catch (err) {
       console.warn("Backend login failed or unreachable:", err.message);
 
-      // Verificamos credenciales locales de contingencia en caso de que el backend esté offline
-      if (emailClean === "admin@dpiero.com" && form.userPassword === "12345678") {
-        localStorage.removeItem(attemptsKey);
-        const adminSession = {
-          id: 1,
-          name: "Administrador General",
-          email: "admin@dpiero.com",
-          role: "Admin",
-          displayRole: "Administrador",
-          station: "Administración Central",
-          isAdmin: true,
-          isSuperuser: true,
-        };
-        saveSession("token-admin-" + Date.now(), adminSession);
-
-        navigate("/");
-        return { success: true };
-      }
-
-      // Si fue error de red/servidor apagado, NO penalizar el contador de intentos de contraseña
       if (err.isNetworkError) {
         await showErrorAlert({
           title: "Sin conexión",
@@ -154,12 +146,11 @@ export default function Login() {
         });
         return {
           errors: {
-            userEmail: "Servicio temporalmente no disponible. Intenta nuevamente.",
+            userPassword: "Servicio temporalmente no disponible. Intenta nuevamente.",
           },
         };
       }
 
-      // Si falla por credenciales inválidas (401), incrementar contador de intentos fallidos
       const newAttempts = currentAttempts + 1;
       localStorage.setItem(attemptsKey, String(newAttempts));
 
@@ -170,7 +161,7 @@ export default function Login() {
         });
         return {
           errors: {
-            userEmail: "Cuenta bloqueada. Se superaron los 3 intentos permitidos.",
+            userPassword: "Cuenta bloqueada. Se superaron los 3 intentos permitidos.",
           },
         };
       }
@@ -202,6 +193,7 @@ export default function Login() {
             onClick={() => {
               setAuthMode("pin");
               setPinError("");
+              setPinLockSeconds(0);
             }}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               authMode === "pin"
@@ -218,6 +210,7 @@ export default function Login() {
             onClick={() => {
               setAuthMode("admin");
               setPinError("");
+              setPinLockSeconds(0);
             }}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               authMode === "admin"
@@ -236,10 +229,14 @@ export default function Login() {
               <QuickAccessSelector onSelectStaff={handleSelectStaff} />
             ) : (
               <PinKeypad
+                key={selectedStaff.id}
                 selectedStaff={selectedStaff}
                 onBack={handleBackToStaffList}
                 onValidatePin={handleValidatePin}
+                onBiometricLogin={handleStaffBiometricLogin}
                 pinError={pinError}
+                lockSeconds={pinLockSeconds}
+                onSyncLockSeconds={setPinLockSeconds}
                 onClearError={() => setPinError("")}
               />
             )}
@@ -247,7 +244,10 @@ export default function Login() {
         )}
 
         {authMode === "admin" && (
-          <AdminLoginForm onSubmit={handleAdminSubmit} />
+          <AdminLoginForm
+            onSubmit={handleAdminSubmit}
+            onBiometricLogin={handleAdminBiometricLogin}
+          />
         )}
       </div>
     </div>

@@ -127,6 +127,7 @@ export default function EditUser1() {
       });
       navigate("/dashboard/userList");
     } catch (err) {
+      if (err?.isStepUpCancelled) return;
       await showErrorAlert({
         title: "Error al actualizar",
         text: err.message || "No se pudo actualizar el usuario en el servidor."
