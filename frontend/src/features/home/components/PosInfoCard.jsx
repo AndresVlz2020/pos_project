@@ -62,7 +62,7 @@ export default function PosInfoCard({
           <Link
             to={actionLink}
             aria-label={actionAriaLabel || actionLabel}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[11px] font-semibold text-white transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[11px] font-semibold text-[#ffffff] transition-colors cursor-pointer"
           >
             {ActionIcon && <ActionIcon className="size-3" />}
             <span>{actionLabel}</span>
@@ -72,7 +72,7 @@ export default function PosInfoCard({
             type="button"
             onClick={onActionClick}
             aria-label={actionAriaLabel || actionLabel}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[11px] font-semibold text-white transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[11px] font-semibold text-[#ffffff] transition-colors cursor-pointer"
           >
             {ActionIcon && <ActionIcon className="size-3" />}
             <span>{actionLabel}</span>

@@ -459,7 +459,7 @@ export default function EditOrder() {
                       type="button"
                       disabled={isClosedOrPaid || isCanceled || isInactive}
                       onClick={() => handleIncrement(dish)}
-                      className="w-6 h-6 rounded bg-[var(--color-primary-500)] text-white flex items-center justify-center text-xs font-bold disabled:opacity-30 cursor-pointer"
+                      className="w-6 h-6 rounded bg-[var(--color-primary-500)] text-[#ffffff] flex items-center justify-center text-xs font-bold disabled:opacity-30 cursor-pointer"
                     >
                       +
                     </button>

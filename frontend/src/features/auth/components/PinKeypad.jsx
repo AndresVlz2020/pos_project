@@ -111,7 +111,7 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
           type="button"
           onClick={handleConfirm}
           aria-label="Confirmar PIN"
-          className="bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
+          className="bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[#ffffff] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
         >
           <Check className="size-6" />
         </button>

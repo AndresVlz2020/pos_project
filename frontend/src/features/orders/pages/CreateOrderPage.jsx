@@ -340,7 +340,7 @@ export default function CreateOrder() {
               onClick={() => setActiveTab("create")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
                 activeTab === "create"
-                  ? "bg-[var(--color-primary-500)] text-white shadow-sm"
+                  ? "bg-[var(--color-primary-500)] text-[#ffffff] shadow-sm"
                   : "text-[var(--color-gray-300)] hover:text-white"
               }`}
             >
@@ -352,7 +352,7 @@ export default function CreateOrder() {
               onClick={() => setActiveTab("list")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
                 activeTab === "list"
-                  ? "bg-[var(--color-primary-500)] text-white shadow-sm"
+                  ? "bg-[var(--color-primary-500)] text-[#ffffff] shadow-sm"
                   : "text-[var(--color-gray-300)] hover:text-white"
               }`}
             >
@@ -403,7 +403,7 @@ export default function CreateOrder() {
                           title={`${t.tableNumber} - ${t.status} (Cap. ${t.capacity})${!t.isAvailable ? ` - Orden ${t.activeOrderNumber}` : ""}`}
                           className={`py-1.5 px-1 rounded text-center transition flex flex-col items-center justify-center text-[11px] border cursor-pointer ${
                             isSelected
-                              ? "bg-[var(--color-primary-500)] text-white border-[var(--color-primary-400)] ring-2 ring-[var(--color-primary-400)]/40 font-bold"
+                              ? "bg-[var(--color-primary-500)] text-[#ffffff] border-[var(--color-primary-400)] ring-2 ring-[var(--color-primary-400)]/40 font-bold"
                               : t.isAvailable
                               ? "bg-[var(--color-secondary-950)] text-[var(--color-gray-200)] border-[var(--color-primary-500)]/40 hover:bg-[var(--color-secondary-800)]"
                               : "bg-[var(--color-secondary-950)]/60 text-[var(--color-gray-500)] border-[var(--color-secondary-800)] cursor-not-allowed opacity-60"

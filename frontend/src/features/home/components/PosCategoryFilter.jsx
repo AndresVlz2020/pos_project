@@ -30,7 +30,7 @@ export default function PosCategoryFilter({ selectedCategory, onSelectCategory, 
             className={`
               inline-flex items-center gap-2 px-3.5 py-2 rounded-md text-xs font-semibold transition-all cursor-pointer whitespace-nowrap
               ${isActive
-                ? "bg-[var(--color-primary-500)] text-[var(--color-white)] border border-[var(--color-primary-600)] shadow-none"
+                ? "bg-[var(--color-primary-500)] text-[#ffffff] border border-[var(--color-primary-600)] shadow-none"
                 : "bg-[var(--color-secondary-900)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-800)]"
               }
             `}

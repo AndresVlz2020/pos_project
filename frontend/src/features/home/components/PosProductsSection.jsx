@@ -129,7 +129,7 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-xs font-semibold text-[var(--color-white)] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-xs font-semibold text-[#ffffff] transition-colors cursor-pointer"
           >
             Ver todos los productos
           </button>
