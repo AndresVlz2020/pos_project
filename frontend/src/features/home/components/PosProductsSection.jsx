@@ -109,7 +109,7 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
 
       {/* Cuadrícula de Productos */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {filteredProducts.map((product) => (
             <PosProductCard key={product.id} product={product} />
           ))}

@@ -111,8 +111,63 @@ export default function DataTable({ data, columns, compact = false }) {
         </div>
       </div>
 
-      {/* ================== TABLA ================== */}
-      <div className="overflow-x-auto border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] rounded-xl shadow-lg">
+      {/* ================== VISTA EN TARJETAS PARA TELÉFONOS (< sm) ================== */}
+      <div className="sm:hidden space-y-2.5">
+        {table.getRowModel().rows.length === 0 ? (
+          <div className="border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] rounded-xl p-6 text-center text-sm text-[var(--color-gray-400)]">
+            <p className="font-medium text-sm text-[var(--color-gray-300)]">
+              No se encontraron registros coincidentes
+            </p>
+            <p className="text-xs text-[var(--color-gray-500)] mt-1">
+              Intente ajustar los términos de búsqueda o filtros aplicados.
+            </p>
+          </div>
+        ) : (
+          table.getRowModel().rows.map((row) => {
+            const cells = row.getVisibleCells();
+            const actionCell = cells.find((c) => {
+              const h = c.column.columnDef.header;
+              return c.column.id === "actions" || h === "" || h === "Acciones";
+            });
+            const dataCells = cells.filter((c) => c !== actionCell);
+
+            return (
+              <div
+                key={row.id}
+                className="border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] rounded-xl p-3.5 shadow-sm space-y-2.5"
+              >
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                  {dataCells.map((cell) => {
+                    const headerText =
+                      typeof cell.column.columnDef.header === "string"
+                        ? cell.column.columnDef.header
+                        : cell.column.id;
+                    return (
+                      <div key={cell.id} className="min-w-0">
+                        <span className="block text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-semibold truncate">
+                          {headerText}
+                        </span>
+                        <div className="text-xs text-[var(--color-white)] mt-0.5 break-words">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {actionCell && (
+                  <div className="pt-2 border-t border-[var(--color-secondary-800)] flex items-center justify-end gap-2">
+                    {flexRender(actionCell.column.columnDef.cell, actionCell.getContext())}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* ================== TABLA (TABLET Y ESCRITORIO >= sm) ================== */}
+      <div className="hidden sm:block overflow-x-auto border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] rounded-xl shadow-lg">
         <table className="w-full text-left">
           {/* ================== CABECERA ================== */}
           <thead className="bg-[var(--color-secondary-950)] text-[var(--color-gray-300)] border-b border-[var(--color-secondary-800)]">
@@ -202,10 +257,11 @@ export default function DataTable({ data, columns, compact = false }) {
         </span>
 
         {/* ================== CONTROLES DE PAGINACIÓN ================== */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-1.5 sm:gap-2">
           <Button
             size="sm"
             variant="secondary"
+            className="hidden sm:inline-flex"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
@@ -221,8 +277,8 @@ export default function DataTable({ data, columns, compact = false }) {
             Anterior
           </Button>
 
-          <span className="text-xs sm:text-sm px-2 text-[var(--color-gray-300)]">
-            Página <strong className="text-[var(--color-white)]">{table.getState().pagination.pageIndex + 1}</strong> de{" "}
+          <span className="text-xs sm:text-sm px-1.5 sm:px-2 text-[var(--color-gray-300)]">
+            Pág. <strong className="text-[var(--color-white)]">{table.getState().pagination.pageIndex + 1}</strong> /{" "}
             <strong className="text-[var(--color-white)]">{table.getPageCount() || 1}</strong>
           </span>
 
@@ -238,6 +294,7 @@ export default function DataTable({ data, columns, compact = false }) {
           <Button
             size="sm"
             variant="secondary"
+            className="hidden sm:inline-flex"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >

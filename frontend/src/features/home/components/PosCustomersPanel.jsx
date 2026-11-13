@@ -86,8 +86,8 @@ export default function PosCustomersPanel() {
       />
 
       {/* Resumen real del turno */}
-      <div className="grid grid-cols-3 gap-2 font-[family-name:var(--main-font)]">
-        <div className="rounded-md border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] px-2 py-2 text-center">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 font-[family-name:var(--main-font)]">
+        <div className="col-span-2 sm:col-span-1 rounded-md border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] px-2 py-2 text-center">
           <p className="text-[9px] uppercase tracking-wider text-[var(--color-gray-400)] font-semibold">
             Ventas del turno
           </p>

@@ -24,7 +24,7 @@ export default function PosProductCard({ product }) {
     >
       <div>
         {/* Imagen del plato con badge si está inhabilitado */}
-        <div className="relative w-full h-44 overflow-hidden bg-[var(--color-secondary-950)]">
+        <div className="relative w-full h-28 sm:h-44 overflow-hidden bg-[var(--color-secondary-950)]">
           <img
             src={image}
             alt={displayName}
@@ -46,19 +46,19 @@ export default function PosProductCard({ product }) {
         </div>
 
         {/* Información del Producto */}
-        <div className="p-3.5 space-y-1.5">
+        <div className="p-2.5 sm:p-3.5 space-y-1 sm:space-y-1.5">
           <h3 className="text-[length:var(--fs-xxs)] font-bold text-[var(--color-white)] line-clamp-1 group-hover:text-[var(--color-primary-300)] transition-colors">
             {displayName}
           </h3>
-          <p className="text-[length:var(--fs-xxxs)] text-[var(--color-gray-400)] line-clamp-2 leading-relaxed">
+          <p className="line-clamp-1 sm:line-clamp-2 text-[length:var(--fs-xxxs)] text-[var(--color-gray-400)] leading-relaxed">
             {description}
           </p>
         </div>
       </div>
 
       {/* Footer de Tarjeta con Precio y Botón de Venta POS */}
-      <div className="p-3.5 pt-0">
-        <div className="pt-2.5 border-t border-[var(--color-secondary-800)] flex items-center justify-between gap-2">
+      <div className="p-2.5 sm:p-3.5 pt-0">
+        <div className="pt-2 sm:pt-2.5 border-t border-[var(--color-secondary-800)] flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
           <div>
             <span className="text-[length:var(--fs-xxxxs)] text-[var(--color-gray-400)] uppercase font-medium block">
               Precio

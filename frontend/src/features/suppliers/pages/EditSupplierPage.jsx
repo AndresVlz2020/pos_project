@@ -172,8 +172,8 @@ export default function EditSupplierPage() {
     });
 
     return (
-        <div className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
-            <div className="flex items-center justify-between pb-6 mb-6 border-b border-[var(--color-secondary-800)]">
+        <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 sm:pb-6 mb-5 sm:mb-6 border-b border-[var(--color-secondary-800)]">
                 <div>
                     <h1 className="text-xl font-bold text-[var(--color-white)] flex items-center gap-2">
                         <Building2 className="size-6 text-[var(--color-primary-400)]" />

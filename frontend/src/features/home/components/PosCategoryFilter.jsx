@@ -16,7 +16,7 @@ export default function PosCategoryFilter({ selectedCategory, onSelectCategory, 
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+    <div className="flex flex-nowrap sm:flex-wrap items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
       {POS_CATEGORIES.map((cat) => {
         const Icon = cat.icon;
         const count = getCount(cat.id);

@@ -251,6 +251,19 @@ export default function Navbar() {
               </div>
             )}
 
+            {/* Contador compacto visible en teléfonos para personal no administrador */}
+            {currentUser && !isAdmin && sessionStartedAt && (
+              <button
+                type="button"
+                onClick={() => setIsHistoryOpen(true)}
+                title="Ver mi historial de sesiones"
+                className="sm:hidden inline-flex items-center gap-1 px-2 py-1 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[11px] font-semibold cursor-pointer"
+              >
+                <Clock className="size-3" />
+                {formatDuration(elapsedSeconds)}
+              </button>
+            )}
+
             {/* Botón de cambio de tema */}
             <ThemeToggle />
 

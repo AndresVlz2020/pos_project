@@ -75,7 +75,7 @@ export default function CreateSuppliers() {
 
 
     return (
-        <div className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
+        <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
             <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-6 text-[var(--color-white)]">Crear Proveedor</h1>
             {feedback && (
                 <div className="mb-6 max-w-xl mx-auto">

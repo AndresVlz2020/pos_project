@@ -31,16 +31,16 @@ export default function PosSectionHeader({
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
         {onSearchChange && (
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial min-w-[160px]">
             <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-gray-400)]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder={searchPlaceholder}
-              className="pl-8 pr-3 py-1.5 rounded-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-xs text-white placeholder:text-[var(--color-gray-400)] outline-none focus:border-[var(--color-primary-400)] w-60 font-[family-name:var(--main-font)] transition-colors"
+              className="pl-8 pr-3 py-1.5 rounded-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-xs text-white placeholder:text-[var(--color-gray-400)] outline-none focus:border-[var(--color-primary-400)] w-full sm:w-60 font-[family-name:var(--main-font)] transition-colors"
             />
           </div>
         )}
@@ -48,7 +48,7 @@ export default function PosSectionHeader({
         {actionLabel && actionLink && (
           <Link
             to={actionLink}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-secondary-700)] transition-colors font-[family-name:var(--main-font)]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-secondary-700)] transition-colors font-[family-name:var(--main-font)] whitespace-nowrap shrink-0"
           >
             {ActionIcon && <ActionIcon className="size-3.5" />}
             <span>{actionLabel}</span>

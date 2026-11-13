@@ -167,7 +167,7 @@ export default function HomePage() {
       </div>
 
       {/* Contenido Dinámico del Módulo Seleccionado */}
-      <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 py-5">
+      <main className="flex-1 mx-auto max-w-7xl w-full px-3 sm:px-6 py-3 sm:py-5 overflow-x-hidden">
         {activeTab === "menu" && (
           <PosProductsSection
             products={productsToDisplay}

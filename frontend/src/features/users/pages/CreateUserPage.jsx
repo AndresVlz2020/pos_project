@@ -154,12 +154,12 @@ export default function CreateUser() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="w-full">
       {/* Body */}
-      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-8 p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-        <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-8 text-[var(--color-white)]">Crear Usuario</h1>
+      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
+        <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-5 sm:mb-8 text-[var(--color-white)]">Crear Usuario</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8 items-start">
           {/* Left: upload placeholder */}
           <div className="col-span-1 flex flex-col items-center">
             <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cargar Imagen</span>

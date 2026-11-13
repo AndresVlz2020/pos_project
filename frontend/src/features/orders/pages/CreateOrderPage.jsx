@@ -328,10 +328,10 @@ export default function CreateOrder() {
   );
 
   return (
-    <div className="w-full pb-12 font-[family-name:var(--main-font)]">
+    <div className="w-full pb-24 lg:pb-12 font-[family-name:var(--main-font)]">
       {/* Header bar */}
       <div className="w-full bg-[var(--color-secondary-950)] text-[var(--color-white)] shadow-md border-b border-[var(--color-secondary-800)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-4">
             <Button
               type="button"
@@ -390,11 +390,11 @@ export default function CreateOrder() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 mt-4 sm:mt-6">
         {activeTab === "create" ? (
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Formulario datos de la orden */}
-            <div className="lg:col-span-1 space-y-4 bg-[var(--color-secondary-900)] p-5 rounded-xl border border-[var(--color-secondary-800)] shadow-md">
+            <div className="lg:col-span-1 space-y-3.5 sm:space-y-4 bg-[var(--color-secondary-900)] p-4 sm:p-5 rounded-xl border border-[var(--color-secondary-800)] shadow-md">
               <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary-400)] border-b border-[var(--color-secondary-800)] pb-2">
                 Datos de la Comanda
               </h2>
@@ -419,7 +419,7 @@ export default function CreateOrder() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-5 gap-1.5">
+                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5">
                     {tablesList.map((t) => {
                       const isSelected = form.tableNumber === t.tableNumber;
                       return (
@@ -509,7 +509,7 @@ export default function CreateOrder() {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
                 {dishes.map((dish) => {
                   const count = qty[dish.id] || 0;
                   const isInactive = dish.status === "Inactivo";
@@ -517,14 +517,14 @@ export default function CreateOrder() {
                   return (
                     <div
                       key={dish.id}
-                      className={`p-3 rounded-xl border transition flex items-center justify-between gap-3 ${
+                      className={`p-2.5 sm:p-3 rounded-xl border transition flex items-center justify-between gap-2.5 sm:gap-3 ${
                         isInactive
                           ? "bg-[var(--color-secondary-950)]/50 border-[var(--color-secondary-800)]/40 opacity-50 cursor-not-allowed"
                           : "bg-[var(--color-secondary-900)] border-[var(--color-secondary-800)] hover:border-[var(--color-secondary-700)] shadow-sm"
                       }`}
                     >
                       {/* Imagen pequeña del platillo */}
-                      <div className="size-14 rounded-lg overflow-hidden border border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)] shrink-0 shadow-xs">
+                      <div className="size-12 sm:size-14 rounded-lg overflow-hidden border border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)] shrink-0 shadow-xs">
                         <img
                           src={getProductImage(dish)}
                           alt={dish.name}
@@ -593,10 +593,30 @@ export default function CreateOrder() {
                 })}
               </div>
             </div>
+            {/* Barra inferior fija en teléfono para enviar comanda sin devolver el scroll */}
+            <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[var(--color-secondary-950)]/95 backdrop-blur border-t border-[var(--color-secondary-800)] px-3 py-2.5 flex items-center justify-between gap-3 shadow-2xl">
+              <div className="min-w-0">
+                <p className="text-[11px] text-[var(--color-gray-400)] leading-tight">
+                  {totalItems} {totalItems === 1 ? "ítem" : "ítems"} • {form.tableNumber || "Sin mesa"}
+                </p>
+                <p className="text-sm font-bold text-[var(--color-white)] truncate">
+                  ${totalAmount.toLocaleString("es-CO")} COP
+                </p>
+              </div>
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                className="shrink-0"
+                disabled={submitting || totalItems === 0}
+              >
+                {submitting ? "Registrando..." : "Registrar Comanda"}
+              </Button>
+            </div>
           </form>
         ) : (
           /* Pestaña de listado */
-          <div className="bg-[var(--color-secondary-900)] p-6 rounded-xl border border-[var(--color-secondary-800)] shadow-md">
+          <div className="bg-[var(--color-secondary-900)] p-3 sm:p-6 rounded-xl border border-[var(--color-secondary-800)] shadow-md">
             <DataTable data={orders} columns={orderColumns} />
           </div>
         )}

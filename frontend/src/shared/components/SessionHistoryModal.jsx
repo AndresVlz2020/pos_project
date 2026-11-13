@@ -103,8 +103,8 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
           </div>
         )}
 
-        {/* Tabla */}
-        <div className="flex-1 overflow-auto p-5">
+        {/* Tabla / Tarjetas */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-5">
           {loading && rows.length === 0 ? (
             <div className="py-10 text-center text-sm text-[var(--color-gray-400)]">
               Cargando historial de sesiones...
@@ -114,41 +114,30 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
               No hay sesiones registradas todavía.
             </div>
           ) : (
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-[var(--color-secondary-800)] text-[var(--color-gray-400)] uppercase">
-                  {isAdmin && <th className="py-2 pr-3">Colaborador</th>}
-                  <th className="py-2 pr-3">Inicio</th>
-                  <th className="py-2 pr-3">Fin</th>
-                  <th className="py-2 pr-3">Duración</th>
-                  <th className="py-2">Estado</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--color-secondary-800)]">
+            <>
+              {/* Tarjetas en teléfono */}
+              <div className="sm:hidden space-y-2.5">
                 {filtered.map((row) => {
                   const elapsed = row.isActive
                     ? Math.max(0, Math.floor((Date.now() - new Date(row.startedAt).getTime()) / 1000))
                     : row.durationSeconds;
                   return (
-                    <tr key={row.id} className="hover:bg-[var(--color-secondary-800)]/40">
-                      {isAdmin && (
-                        <td className="py-2.5 pr-3">
-                          <div className="font-semibold text-[var(--color-white)]">{row.userName}</div>
-                          <div className="text-[11px] text-[var(--color-gray-400)]">{row.userType || "Personal"}</div>
-                        </td>
-                      )}
-                      <td className="py-2.5 pr-3 font-mono text-[var(--color-gray-200)]">
-                        {formatDateTime(row.startedAt)}
-                      </td>
-                      <td className="py-2.5 pr-3 font-mono text-[var(--color-gray-300)]">
-                        {formatDateTime(row.endedAt)}
-                      </td>
-                      <td className="py-2.5 pr-3 font-mono font-semibold text-[var(--color-white)]">
-                        {formatDuration(elapsed)}
-                      </td>
-                      <td className="py-2.5">
+                    <div
+                      key={row.id}
+                      className="rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]/70 p-3 space-y-1.5 text-xs"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        {isAdmin ? (
+                          <span className="font-semibold text-[var(--color-white)] truncate">
+                            {row.userName} ({row.userType || "Personal"})
+                          </span>
+                        ) : (
+                          <span className="font-mono font-semibold text-[var(--color-white)]">
+                            {formatDuration(elapsed)}
+                          </span>
+                        )}
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
+                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border shrink-0 ${
                             row.isActive
                               ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40"
                               : "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
@@ -156,12 +145,79 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                         >
                           {row.isActive ? "En turno" : "Finalizada"}
                         </span>
-                      </td>
-                    </tr>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-[11px] text-[var(--color-gray-300)]">
+                        <div>
+                          <span className="text-[var(--color-gray-500)] block">Inicio:</span>
+                          <span className="font-mono">{formatDateTime(row.startedAt)}</span>
+                        </div>
+                        <div>
+                          <span className="text-[var(--color-gray-500)] block">Fin:</span>
+                          <span className="font-mono">{formatDateTime(row.endedAt)}</span>
+                        </div>
+                      </div>
+                      {isAdmin && (
+                        <div className="text-[11px] text-[var(--color-gray-400)]">
+                          Duración: <span className="font-mono font-semibold text-[var(--color-white)]">{formatDuration(elapsed)}</span>
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
-              </tbody>
-            </table>
+              </div>
+
+              {/* Tabla en tablet y escritorio */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-[var(--color-secondary-800)] text-[var(--color-gray-400)] uppercase">
+                      {isAdmin && <th className="py-2 pr-3">Colaborador</th>}
+                      <th className="py-2 pr-3">Inicio</th>
+                      <th className="py-2 pr-3">Fin</th>
+                      <th className="py-2 pr-3">Duración</th>
+                      <th className="py-2">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--color-secondary-800)]">
+                    {filtered.map((row) => {
+                      const elapsed = row.isActive
+                        ? Math.max(0, Math.floor((Date.now() - new Date(row.startedAt).getTime()) / 1000))
+                        : row.durationSeconds;
+                      return (
+                        <tr key={row.id} className="hover:bg-[var(--color-secondary-800)]/40">
+                          {isAdmin && (
+                            <td className="py-2.5 pr-3">
+                              <div className="font-semibold text-[var(--color-white)]">{row.userName}</div>
+                              <div className="text-[11px] text-[var(--color-gray-400)]">{row.userType || "Personal"}</div>
+                            </td>
+                          )}
+                          <td className="py-2.5 pr-3 font-mono text-[var(--color-gray-200)]">
+                            {formatDateTime(row.startedAt)}
+                          </td>
+                          <td className="py-2.5 pr-3 font-mono text-[var(--color-gray-300)]">
+                            {formatDateTime(row.endedAt)}
+                          </td>
+                          <td className="py-2.5 pr-3 font-mono font-semibold text-[var(--color-white)]">
+                            {formatDuration(elapsed)}
+                          </td>
+                          <td className="py-2.5">
+                            <span
+                              className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
+                                row.isActive
+                                  ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40"
+                                  : "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
+                              }`}
+                            >
+                              {row.isActive ? "En turno" : "Finalizada"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>

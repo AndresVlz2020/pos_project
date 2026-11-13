@@ -67,12 +67,12 @@ export default function AccessPage() {
   };
 
   return (
-    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-6 shadow-md text-[var(--color-white)]">
-      <h1 className="text-xl font-bold mb-6 text-[var(--color-white)]">
+    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-4 sm:p-6 shadow-md text-[var(--color-white)]">
+      <h1 className="text-xl font-bold mb-4 sm:mb-6 text-[var(--color-white)]">
         Gestión de permisos
       </h1>
 
-      <div className="flex flex-col md:flex-row gap-8 items-start">
+      <div className="flex flex-col md:flex-row gap-5 sm:gap-8 items-start">
         <AccessSidebar
           selectedGroup={selectedGroup}
           setSelectedGroup={setSelectedGroup}

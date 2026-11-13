@@ -86,46 +86,46 @@ export default function PosTerminalHeader({
     v === null || v === undefined ? fallback : v;
 
   return (
-    <header className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] py-4">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <header className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] py-2.5 sm:py-4">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
         {/* Métricas Operativas Conectadas a PostgreSQL */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-4 py-3.5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5">
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-2 sm:px-4 sm:py-3.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Venta de Turno
             </p>
-            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
+            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
               {kpiValue(kpis.ventasTurno === null ? null : fmtMoney(kpis.ventasTurno))}
             </p>
           </div>
 
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-4 py-3.5">
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-2 sm:px-4 sm:py-3.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Comandas Cocina
             </p>
-            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
+            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
               {kpiValue(
                 kpis.comandasCocina === null ? null : `${kpis.comandasCocina} activas`
               )}
             </p>
           </div>
 
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-4 py-3.5">
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-2 sm:px-4 sm:py-3.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Mesas Ocupadas
             </p>
-            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
+            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
               {kpis.mesasOcupadas === null || kpis.totalMesas === null
                 ? "…"
                 : `${kpis.mesasOcupadas} / ${kpis.totalMesas} mesas`}
             </p>
           </div>
 
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-4 py-3.5">
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-2 sm:px-4 sm:py-3.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Personal Turno
             </p>
-            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
+            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
               {kpiValue(
                 kpis.personalTurno === null
                   ? null
