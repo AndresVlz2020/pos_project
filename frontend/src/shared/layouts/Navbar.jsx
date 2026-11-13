@@ -168,43 +168,28 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Info de perfil y turno centrada en teléfonos */}
+          {/* Info de perfil y turno centrada en teléfonos (sin avatar para priorizar espacio) */}
           {currentUser && (
-            <div className="sm:hidden flex-1 flex justify-center min-w-0 px-0.5">
-              <div className="flex items-center gap-1.5 min-w-0 max-w-full overflow-hidden bg-[var(--color-secondary-900)] px-2 py-1 rounded-md border border-[var(--color-secondary-800)] text-[var(--color-gray-300)]">
-                <img
-                  src={currentUser.photo || currentUser.userAvatarUrl || getUserAvatar(currentUser)}
-                  alt={currentUser.name || "Usuario"}
-                  className="size-6 rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = imgWorkerCarlos;
-                  }}
-                />
-                <div className="min-w-0 flex-1 leading-tight">
-                  <span className="block text-[11px] font-semibold text-[var(--color-white)] truncate">
-                    {currentUser.name}
+            <div className="sm:hidden flex-1 flex justify-center min-w-0 px-1">
+              <div className="inline-flex flex-col items-center justify-center min-w-0 max-w-full overflow-hidden bg-[var(--color-secondary-900)] px-2.5 py-1 rounded-md border border-[var(--color-secondary-800)] text-[var(--color-gray-300)] leading-tight">
+                <span className="block w-full text-center text-[11px] font-semibold text-[var(--color-white)] truncate">
+                  {currentUser.name}
+                </span>
+                <div className="flex items-center justify-center gap-1.5 mt-0.5 min-w-0 max-w-full">
+                  <span className="text-[9px] text-[var(--color-primary-400)] font-semibold truncate">
+                    {currentUser.role}
                   </span>
-                  <div className="flex items-center gap-1 mt-0.5 min-w-0">
-                    <span
-                      className={`${
-                        !isAdmin && sessionStartedAt ? "hidden min-[390px]:inline" : "inline"
-                      } text-[9px] text-[var(--color-primary-400)] font-semibold truncate`}
+                  {!isAdmin && sessionStartedAt && (
+                    <button
+                      type="button"
+                      onClick={() => setIsHistoryOpen(true)}
+                      title="Ver mi historial de sesiones"
+                      className="inline-flex items-center gap-0.5 px-1 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[9px] font-semibold shrink-0 cursor-pointer"
                     >
-                      {currentUser.role}
-                    </span>
-                    {!isAdmin && sessionStartedAt && (
-                      <button
-                        type="button"
-                        onClick={() => setIsHistoryOpen(true)}
-                        title="Ver mi historial de sesiones"
-                        className="inline-flex items-center gap-0.5 px-1 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[9px] font-semibold shrink-0 cursor-pointer"
-                      >
-                        <Clock className="size-2.5" />
-                        {formatDuration(elapsedSeconds)}
-                      </button>
-                    )}
-                  </div>
+                      <Clock className="size-2.5" />
+                      {formatDuration(elapsedSeconds)}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

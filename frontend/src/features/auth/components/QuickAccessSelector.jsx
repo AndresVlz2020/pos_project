@@ -3,6 +3,7 @@ import { SearchX, UserCheck } from "lucide-react";
 import { SearchField } from "@/shared";
 import { users as fallbackUsers } from "@/features/users/data/users";
 import { getUsers } from "@/services/userService";
+import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
 
 const normalizeText = (text = "") =>
   text
@@ -19,6 +20,20 @@ export const formatRole = (role = "") => {
   if (r.includes("admin")) return "Administrador";
   return role || "Mesero";
 };
+
+export function StaffAvatar({ staff, sizeClass = "size-9" }) {
+  return (
+    <img
+      src={staff?.photo || staff?.userAvatarUrl || getUserAvatar(staff)}
+      alt={staff?.userName || staff?.name || "Colaborador"}
+      className={`${sizeClass} rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0`}
+      onError={(e) => {
+        e.currentTarget.onerror = null;
+        e.currentTarget.src = imgWorkerCarlos;
+      }}
+    />
+  );
+}
 
 export default function QuickAccessSelector({ onSelectStaff }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -115,6 +130,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                   onClick={() => onSelectStaff(staff)}
                   className="w-full p-3 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left transition-all cursor-pointer flex items-center justify-between gap-3 active:scale-[0.99] group"
                 >
+                  <StaffAvatar staff={staff} />
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
                       {staff.userName || staff.name}
@@ -164,14 +180,17 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                 key={staff.id}
                 type="button"
                 onClick={() => onSelectStaff(staff)}
-                className="p-3.5 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left transition-all cursor-pointer active:scale-[0.98] group"
+                className="p-3 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left transition-all cursor-pointer active:scale-[0.98] group flex items-center gap-2.5"
               >
-                <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
-                  {staff.userName || staff.name}
-                </p>
-                <p className="text-[11px] text-[var(--color-primary-400)] font-medium truncate mt-1">
-                  {formatRole(staff.role || staff.userType)}
-                </p>
+                <StaffAvatar staff={staff} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
+                    {staff.userName || staff.name}
+                  </p>
+                  <p className="text-[11px] text-[var(--color-primary-400)] font-medium truncate mt-0.5">
+                    {formatRole(staff.role || staff.userType)}
+                  </p>
+                </div>
               </button>
             ))}
           </div>

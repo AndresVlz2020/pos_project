@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, Delete, Check } from "lucide-react";
-import { formatRole } from "./QuickAccessSelector";
+import { formatRole, StaffAvatar } from "./QuickAccessSelector";
 
 export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinError, onClearError }) {
   const [pinInput, setPinInput] = useState("");
@@ -33,14 +33,17 @@ export default function PinKeypad({ selectedStaff, onBack, onValidatePin, pinErr
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between pb-3 border-b border-[var(--color-secondary-800)]">
-        <div>
-          <p className="text-xs font-bold text-[var(--color-white)] leading-tight">
-            {selectedStaff.userName || selectedStaff.name}
-          </p>
-          <p className="text-[11px] text-[var(--color-primary-400)] font-medium mt-0.5">
-            {formatRole(selectedStaff.role)}
-          </p>
+      <div className="flex items-center justify-between gap-2 pb-3 border-b border-[var(--color-secondary-800)]">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <StaffAvatar staff={selectedStaff} sizeClass="size-10" />
+          <div className="min-w-0">
+            <p className="text-xs font-bold text-[var(--color-white)] leading-tight truncate">
+              {selectedStaff.userName || selectedStaff.name}
+            </p>
+            <p className="text-[11px] text-[var(--color-primary-400)] font-medium mt-0.5 truncate">
+              {formatRole(selectedStaff.role)}
+            </p>
+          </div>
         </div>
 
         <button
