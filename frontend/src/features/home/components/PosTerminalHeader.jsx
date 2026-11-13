@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { DollarSign, UtensilsCrossed, LayoutGrid, Users } from "lucide-react";
 import { API_URL } from "@/features/config";
 
 // KPIs operativos en tiempo real, conectados a PostgreSQL:
@@ -86,62 +85,54 @@ export default function PosTerminalHeader({
   const kpiValue = (v, fallback = "…") =>
     v === null || v === undefined ? fallback : v;
 
-  const cards = [
-    {
-      label: "Venta de Turno",
-      value: kpiValue(kpis.ventasTurno === null ? null : fmtMoney(kpis.ventasTurno)),
-      icon: DollarSign,
-    },
-    {
-      label: "Comandas Cocina",
-      value: kpiValue(
-        kpis.comandasCocina === null ? null : `${kpis.comandasCocina} activas`
-      ),
-      icon: UtensilsCrossed,
-    },
-    {
-      label: "Mesas Ocupadas",
-      value:
-        kpis.mesasOcupadas === null || kpis.totalMesas === null
-          ? "…"
-          : `${kpis.mesasOcupadas} / ${kpis.totalMesas} mesas`,
-      icon: LayoutGrid,
-    },
-    {
-      label: "Personal Turno",
-      value: kpiValue(
-        kpis.personalTurno === null ? null : `${kpis.personalTurno} en servicio`
-      ),
-      icon: Users,
-    },
-  ];
-
   return (
     <header className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] py-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Métricas Operativas Conectadas a PostgreSQL */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {cards.map((card) => {
-            const Icon = card.icon;
-            return (
-              <div
-                key={card.label}
-                className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] hover:border-[var(--color-primary-500)]/40 transition-colors rounded-xl px-5 py-4 shadow-sm flex items-center justify-between gap-4"
-              >
-                <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-wider text-[var(--color-gray-400)] font-semibold">
-                    {card.label}
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-[var(--color-white)] tracking-tight mt-1 truncate">
-                    {card.value}
-                  </p>
-                </div>
-                <div className="size-11 rounded-xl bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/30 text-[var(--color-primary-400)] flex items-center justify-center shrink-0">
-                  <Icon className="size-5" />
-                </div>
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-4 py-3.5">
+            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
+              Venta de Turno
+            </p>
+            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
+              {kpiValue(kpis.ventasTurno === null ? null : fmtMoney(kpis.ventasTurno))}
+            </p>
+          </div>
+
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-4 py-3.5">
+            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
+              Comandas Cocina
+            </p>
+            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
+              {kpiValue(
+                kpis.comandasCocina === null ? null : `${kpis.comandasCocina} activas`
+              )}
+            </p>
+          </div>
+
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-4 py-3.5">
+            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
+              Mesas Ocupadas
+            </p>
+            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
+              {kpis.mesasOcupadas === null || kpis.totalMesas === null
+                ? "…"
+                : `${kpis.mesasOcupadas} / ${kpis.totalMesas} mesas`}
+            </p>
+          </div>
+
+          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-4 py-3.5">
+            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
+              Personal Turno
+            </p>
+            <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5">
+              {kpiValue(
+                kpis.personalTurno === null
+                  ? null
+                  : `${kpis.personalTurno} en servicio`
+              )}
+            </p>
+          </div>
         </div>
       </div>
     </header>
