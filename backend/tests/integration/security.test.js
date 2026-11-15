@@ -412,12 +412,23 @@ describe("CORS (lista blanca)", () => {
     expect(res.status).toBe(200);
   });
 
+  it("permite mismo host tras proxy en producción", async () => {
+    const res = await api
+      .get("/api/products")
+      .set("Host", "grupo6.ricoprogramar.com")
+      .set("Origin", "http://grupo6.ricoprogramar.com");
+    expect(res.status).toBe(200);
+    expect(res.headers["access-control-allow-origin"]).toBe(
+      "http://grupo6.ricoprogramar.com"
+    );
+  });
+
   it("rechaza origen no permitido", async () => {
     const res = await api
       .get("/api/products")
+      .set("Host", "grupo6.ricoprogramar.com")
       .set("Origin", "http://evil.example.com");
-    // El middleware CORS llama callback(error) → el manejador global responde 500.
-    expect(res.status).toBeGreaterThanOrEqual(400);
+    expect(res.status).toBe(403);
     expect(res.body.error).toMatch(/CORS|no permitido/i);
   });
 });

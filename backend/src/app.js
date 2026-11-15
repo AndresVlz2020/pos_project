@@ -24,21 +24,64 @@ const app = express();
 
 // Middlewares de CORS
 // Desarrollo: permite cualquier origen localhost/127.0.0.1 (cualquier puerto).
-// Producción: permite el origen exacto FRONTEND_URL si está configurado, y nada más.
+// Producción: permite el mismo host tras Nginx/reverse-proxy y orígenes configurados en FRONTEND_URL/CORS_ORIGINS.
 const allowedLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+
+function getAllowedConfiguredOrigins() {
+  const raw = [process.env.FRONTEND_URL, process.env.CORS_ORIGINS]
+    .filter(Boolean)
+    .join(",");
+  return new Set(
+    raw
+      .split(",")
+      .map((entry) => entry.trim().replace(/\/+$/, "").toLowerCase())
+      .filter(Boolean)
+  );
+}
+
+function isSameProxyHostOrigin(origin, req) {
+  try {
+    const parsedOrigin = new URL(origin);
+    if (!["http:", "https:"].includes(parsedOrigin.protocol)) return false;
+
+    const forwardedHost = String(
+      req.headers["x-forwarded-host"] || req.headers.host || ""
+    )
+      .split(",")[0]
+      .trim()
+      .toLowerCase();
+
+    if (!forwardedHost) return false;
+
+    const originHost = parsedOrigin.host.toLowerCase();
+    if (originHost === forwardedHost) return true;
+
+    // Si el proxy envió Host sin puerto ($host), permitir coincidencia exacta de hostname
+    const requestHostname = forwardedHost.split(":")[0];
+    return !forwardedHost.includes(":") && parsedOrigin.hostname.toLowerCase() === requestHostname;
+  } catch {
+    return false;
+  }
+}
+
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Peticiones sin Origin (curl, Postman, server-to-server) se permiten.
-      // El filtrado real de orígenes del navegador ocurre en el propio navegador vía CORS.
-      if (!origin) return callback(null, true);
-      if (allowedLocalhost.test(origin)) return callback(null, true);
-      if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) {
-        return callback(null, true);
-      }
-      return callback(new Error(`Origen no permitido por CORS: ${origin}`));
-    },
-    credentials: true,
+  cors((req, callback) => {
+    const origin = req.headers.origin;
+    const normalizedOrigin = origin ? origin.trim().replace(/\/+$/, "").toLowerCase() : "";
+    const configuredOrigins = getAllowedConfiguredOrigins();
+
+    if (
+      !origin ||
+      allowedLocalhost.test(normalizedOrigin) ||
+      configuredOrigins.has(normalizedOrigin) ||
+      isSameProxyHostOrigin(origin, req)
+    ) {
+      return callback(null, { origin: true, credentials: true });
+    }
+
+    const corsErr = new Error(`Origen no permitido por CORS: ${origin}`);
+    corsErr.status = 403;
+    return callback(corsErr);
   })
 );
 
@@ -59,11 +102,13 @@ app.use("/api/sessions", sessionRoutes);
 
 // Middleware global de control de errores para blindar la API contra caídas
 app.use((err, req, res, next) => {
+  const status = err.status || 500;
   console.error("❌ Error interceptado en el backend:", err.stack || err.message);
-  const message = isProduction
-    ? "Error interno del servidor"
-    : err.message || "Error interno del servidor";
-  res.status(err.status || 500).json({
+  const message =
+    isProduction && status >= 500
+      ? "Error interno del servidor"
+      : err.message || "Error interno del servidor";
+  res.status(status).json({
     error: message,
   });
 });
