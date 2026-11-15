@@ -148,7 +148,7 @@ export const sessionRepository = {
     return rows;
   },
 
-  async getHistory({ userId = null, includeAll = false, limit = 100 } = {}) {
+  async getHistory({ userId = null, includeAll = false, limit = 500 } = {}) {
     await this.ensureTable();
     const params = [];
     const conditions = [];
