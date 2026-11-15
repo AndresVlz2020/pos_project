@@ -60,7 +60,7 @@ export default function ProductListPage() {
     const result = await showConfirmAlert({
       title: targetState ? "¿Desea habilitar este platillo?" : "¿Desea inhabilitar este platillo?",
       text: targetState
-        ? `¿Desea habilitar el platillo "${prodName}"? Volverá a estar disponible para la venta en el punto de venta (POS) y comandas.`
+        ? `¿Desea habilitar el platillo "${prodName}"? Volverá a estar disponible para la venta en el punto de venta (POS) y órdenes.`
         : `¿Está seguro de que desea inhabilitar el platillo "${prodName}"? Quedará excluido de nuevas órdenes.`,
       confirmButtonText: targetState ? "Sí, habilitar" : "Sí, inhabilitar",
       cancelButtonText: "Cancelar",

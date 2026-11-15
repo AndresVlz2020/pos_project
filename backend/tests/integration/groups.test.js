@@ -70,21 +70,19 @@ describe("matriz de permisos sembrada por grupo", () => {
     ]);
   });
 
-  it("Cajero tiene 7 permisos (POS + inventario, incl. deshabilitar)", async () => {
+  it("Cajero tiene 5 permisos (POS + solo consulta de inventario)", async () => {
     const id = await groupIdByName("Cajero");
     const codes = await groupPermissionCodes(id);
     expect(codes).toEqual([
       "create_order",
-      "disable_inventory",
       "list_inventory",
       "list_order",
       "list_product",
-      "update_inventory",
       "update_order",
     ]);
   });
 
-  it("Cocina tiene 3 permisos (solo consulta y actualizar comandas)", async () => {
+  it("Cocina tiene 3 permisos (solo consulta y actualizar órdenes)", async () => {
     const id = await groupIdByName("Cocina");
     const codes = await groupPermissionCodes(id);
     expect(codes).toEqual(["list_order", "list_product", "update_order"]);

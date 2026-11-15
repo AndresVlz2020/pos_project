@@ -2,7 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { Navbar, useInactivityTimeout } from "@/shared";
 import { products as fallbackProducts } from "@/features/products/data/products";
 import { getProducts } from "@/features/products/services/productServices";
-import { useSearchParams } from "react-router-dom";
+import usePermission from "@/features/access/services/usePermission";
+import {
+  startOrderWithProduct,
+  clearOrderDraft,
+} from "@/features/orders/utils/orderDraftStorage";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   UtensilsCrossed, 
   Users, 
@@ -12,13 +17,14 @@ import {
 import {
   PosTerminalHeader,
   PosProductsSection,
+  PosProductDetailModal,
   PosStaffPanel,
   PosSuppliersPanel,
   PosCustomersPanel
 } from "../components";
 
 const PRIMARY_TABS = [
-  { id: "menu", label: "Catálogo & Comandas", icon: UtensilsCrossed },
+  { id: "menu", label: "Catálogo & Órdenes", icon: UtensilsCrossed },
   { id: "staff", label: "Personal en Turno", icon: Users },
   { id: "suppliers", label: "Proveedores", icon: Truck },
   { id: "customers", label: "Facturación", icon: UserCheck },
@@ -26,12 +32,15 @@ const PRIMARY_TABS = [
 
 export default function HomePage() {
   useInactivityTimeout(10 * 60 * 1000);
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlSearch = searchParams.get("search") || "";
   const tabParam = searchParams.get("tab") || "menu";
 
   const [dbProducts, setDbProducts] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const { granted: canCreateOrder, loading: loadingOrderPerm } =
+    usePermission("create_order");
 
   // Obtener usuario autenticado actual y sus permisos
   const currentUser = (() => {
@@ -49,7 +58,6 @@ export default function HomePage() {
   // Cargar productos en tiempo real desde PostgreSQL
   const fetchPosProducts = useCallback(async () => {
     try {
-      setLoadingProducts(true);
       const data = await getProducts({ activeOnly: true });
       if (Array.isArray(data) && data.length > 0) {
         setDbProducts(data);
@@ -59,19 +67,24 @@ export default function HomePage() {
     } catch (err) {
       console.warn("Usando catálogo de respaldo en HomePage:", err);
       setDbProducts(fallbackProducts);
-    } finally {
-      setLoadingProducts(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchPosProducts();
+    clearOrderDraft();
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) fetchPosProducts();
+    });
+    return () => {
+      active = false;
+    };
   }, [fetchPosProducts]);
 
   // Definir pestañas permitidas según rol:
   // - Admin: Todas las pestañas
-  // - Cajero: Catálogo & Comandas, Clientes & Facturación (no personal ni proveedores)
-  // - Mesero / Cocinero: Catálogo & Comandas exclusivamente
+  // - Cajero: Catálogo & Órdenes, Clientes & Facturación (no personal ni proveedores)
+  // - Mesero / Cocinero: Catálogo & Órdenes exclusivamente
   const availableTabs = PRIMARY_TABS.filter((tab) => {
     if (tab.id === "menu") return true;
     if (tab.id === "customers") return isAdmin || isCajero;
@@ -80,32 +93,17 @@ export default function HomePage() {
     return false;
   });
 
-  const [searchQuery, setSearchQuery] = useState(urlSearch);
-  const [activeTab, setActiveTab] = useState(tabParam);
-
-  // Asegurar que si la URL apunta a una pestaña no permitida para el rol, vuelva a 'menu'
-  useEffect(() => {
-    const isAllowed = availableTabs.some((t) => t.id === activeTab);
-    if (!isAllowed) {
-      setActiveTab("menu");
-      const next = new URLSearchParams(searchParams);
-      next.set("tab", "menu");
-      setSearchParams(next, { replace: true });
-    }
-  }, [activeTab, availableTabs]);
-
-  useEffect(() => {
-    setSearchQuery(urlSearch);
-  }, [urlSearch]);
+  const searchQuery = urlSearch;
+  const activeTab = availableTabs.some((t) => t.id === tabParam)
+    ? tabParam
+    : "menu";
 
   const handleSearchChange = (val) => {
-    setSearchQuery(val);
     const next = new URLSearchParams(searchParams);
     if (val.trim()) {
       next.set("search", val);
       if (activeTab !== "menu") {
         next.set("tab", "menu");
-        setActiveTab("menu");
       }
     } else {
       next.delete("search");
@@ -114,7 +112,6 @@ export default function HomePage() {
   };
 
   const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
     const next = new URLSearchParams(searchParams);
     next.set("tab", tabId);
     setSearchParams(next, { replace: true });
@@ -122,6 +119,19 @@ export default function HomePage() {
 
   const handleClearSearch = () => {
     handleSearchChange("");
+  };
+
+  const handleSelectProduct = (product) => {
+    if (!product) return;
+    setSelectedProduct(product);
+  };
+
+  const handleOrderProduct = (product, quantity = 1) => {
+    if (!product) return;
+    const addCount = Math.max(1, Math.trunc(Number(quantity) || 1));
+    startOrderWithProduct(product, addCount);
+    setSelectedProduct(null);
+    navigate("/CreateOrder");
   };
 
   const productsToDisplay = dbProducts.length > 0 ? dbProducts : fallbackProducts;
@@ -174,6 +184,7 @@ export default function HomePage() {
             searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
             onClearSearch={handleClearSearch}
+            onSelectProduct={handleSelectProduct}
           />
         )}
 
@@ -183,6 +194,18 @@ export default function HomePage() {
 
         {activeTab === "customers" && <PosCustomersPanel />}
       </main>
+
+      {selectedProduct && (
+        <PosProductDetailModal
+          key={selectedProduct.id}
+          product={selectedProduct}
+          isOpen={Boolean(selectedProduct)}
+          onClose={() => setSelectedProduct(null)}
+          onOrder={handleOrderProduct}
+          canCreateOrder={canCreateOrder}
+          loadingPermission={loadingOrderPerm}
+        />
+      )}
     </div>
   );
 }

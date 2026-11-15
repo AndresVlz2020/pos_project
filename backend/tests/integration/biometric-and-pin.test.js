@@ -43,7 +43,16 @@ function toBase64Url(input) {
   return Buffer.from(input).toString("base64url");
 }
 
-function createVirtualAuthenticator(rpId = "localhost", origin = "http://localhost:5173") {
+function createVirtualAuthenticator(
+  rpId = "localhost",
+  origin = "http://localhost:5173",
+  config = {}
+) {
+  const {
+    aaguidHex = "00000000-0000-0000-0000-000000000000",
+    backedUp = false,
+  } = config;
+  const aaguidBytes = Buffer.from(aaguidHex.replace(/-/g, ""), "hex");
   const { publicKey, privateKey } = crypto.generateKeyPairSync("ec", {
     namedCurve: "prime256v1",
   });
@@ -78,10 +87,12 @@ function createVirtualAuthenticator(rpId = "localhost", origin = "http://localho
         })
       );
 
-      const flags = Buffer.from([0x45]); // UP (0x01) + UV (0x04) + AT (0x40)
+      // UP (0x01) + UV (0x04) + AT (0x40); opcional BE (0x08) + BS (0x10) para passkeys sincronizadas
+      const flagsByte = backedUp ? 0x5d : 0x45;
+      const flags = Buffer.from([flagsByte]);
       const counterBuf = Buffer.alloc(4);
       counterBuf.writeUInt32BE(0, 0);
-      const aaguid = Buffer.alloc(16, 0);
+      const aaguid = aaguidBytes.length === 16 ? aaguidBytes : Buffer.alloc(16, 0);
       const credLenBuf = Buffer.alloc(2);
       credLenBuf.writeUInt16BE(credentialIdBuf.length, 0);
 
@@ -422,5 +433,70 @@ describe("Admin 2 pasos (email-check) + Step-Up Auth (huella o contraseña)", ()
       .set(auth(adminToken));
     expect(adminCreds.body.credentials[0].deviceLabel).toBe("iPhone Admin");
     expect(adminId).toBeTruthy();
+  });
+});
+
+describe("bloqueo estricto de Windows Hello, passkeys sincronizadas y PC Windows", () => {
+  it("rechaza registro desde User-Agent Windows y devuelve step-up sin biometría en PC Windows", async () => {
+    const windowsUa =
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+
+    const regBlocked = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set("User-Agent", windowsUa)
+      .set(auth(meseroToken));
+    expect(regBlocked.status).toBe(403);
+    expect(regBlocked.body.code).toBe("DESKTOP_BIOMETRICS_DISABLED");
+
+    const stepUpWindows = await api
+      .post("/api/auth/step-up/options")
+      .set("Origin", "http://localhost:5173")
+      .set("User-Agent", windowsUa)
+      .set(auth(adminToken));
+    expect(stepUpWindows.status).toBe(200);
+    expect(stepUpWindows.body.hasBiometrics).toBe(false);
+    expect(stepUpWindows.body.options).toBeNull();
+    expect(stepUpWindows.body.reason).toBe("DESKTOP_BIOMETRICS_DISABLED");
+  });
+
+  it("solicita residentKey=discouraged y rechaza AAGUID de Windows Hello y passkeys respaldadas", async () => {
+    // 1. Verificar política anti-passkey en opciones de registro
+    const optsRes = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken));
+    expect(optsRes.status).toBe(200);
+    expect(optsRes.body.options.authenticatorSelection.residentKey).toBe("discouraged");
+
+    // 2. Simular atestación de Windows Hello Hardware TPM (08987058-...) → 403 WINDOWS_HELLO_FORBIDDEN
+    const winHelloAuth = createVirtualAuthenticator("localhost", "http://localhost:5173", {
+      aaguidHex: "08987058-cadc-4b81-b6e1-30de50dcbe96",
+    });
+    const winHelloAtt = winHelloAuth.buildRegistration(optsRes.body.options.challenge);
+    const winHelloRes = await api
+      .post("/api/auth/webauthn/register/verify")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken))
+      .send({ response: winHelloAtt, deviceLabel: "Intento Windows Hello" });
+    expect(winHelloRes.status).toBe(403);
+    expect(winHelloRes.body.code).toBe("WINDOWS_HELLO_FORBIDDEN");
+
+    // 3. Simular passkey sincronizada en la nube (backedUp=true / multiDevice) → 400 SYNCED_PASSKEY_FORBIDDEN
+    const optsRes2 = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken));
+    const syncedAuth = createVirtualAuthenticator("localhost", "http://localhost:5173", {
+      backedUp: true,
+    });
+    const syncedAtt = syncedAuth.buildRegistration(optsRes2.body.options.challenge);
+    const syncedRes = await api
+      .post("/api/auth/webauthn/register/verify")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken))
+      .send({ response: syncedAtt, deviceLabel: "Passkey Nube" });
+    expect(syncedRes.status).toBe(400);
+    expect(syncedRes.body.code).toBe("SYNCED_PASSKEY_FORBIDDEN");
   });
 });

@@ -23,9 +23,9 @@ export const orderController = {
 
   async create(req, res) {
     try {
-      const order = await orderService.createOrder(req.body);
+      const order = await orderService.createOrder(req.body, req.user);
       res.status(201).json({
-        message: "Comanda registrada en PostgreSQL exitosamente",
+        message: "Orden registrada en PostgreSQL exitosamente",
         order,
       });
     } catch (error) {
@@ -36,9 +36,9 @@ export const orderController = {
 
   async update(req, res) {
     try {
-      const order = await orderService.updateOrder(req.params.id, req.body);
+      const order = await orderService.updateOrder(req.params.id, req.body, req.user);
       res.status(200).json({
-        message: "Comanda actualizada exitosamente",
+        message: "Orden actualizada exitosamente",
         order,
       });
     } catch (error) {
@@ -51,9 +51,9 @@ export const orderController = {
     try {
       const { id } = req.params;
       const { status } = req.body;
-      const order = await orderService.updateOrderStatus(id, status);
+      const order = await orderService.updateOrderStatus(id, status, req.user);
       res.status(200).json({
-        message: "Estado de la comanda actualizado en PostgreSQL",
+        message: "Estado de la orden actualizado en PostgreSQL",
         order,
       });
     } catch (error) {
@@ -68,7 +68,7 @@ export const orderController = {
       const { reason } = req.body || {};
       const order = await orderService.cancelOrder(id, reason);
       res.status(200).json({
-        message: "Comanda anulada exitosamente",
+        message: "Orden anulada exitosamente",
         order,
       });
     } catch (error) {

@@ -275,7 +275,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
 
       {validatedAccount?.hasBiometrics && !biometricsReadyHere && (
         <p className="text-[11px] text-center text-[var(--color-gray-400)] bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-1.5">
-          Este equipo no dispone de lector biométrico; ingresa con tu contraseña.
+          Este equipo PC no cuenta con lector de huella físico; ingresa con tu contraseña.
         </p>
       )}
 

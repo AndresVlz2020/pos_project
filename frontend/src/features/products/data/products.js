@@ -1,3 +1,4 @@
+import { getProductImage } from "@/utils/imageHelper";
 import imgPunta from "@/assets/images/punta-de-anca-hd.jpg";
 import imgLimonada from "@/assets/images/limonada-hd.jpg";
 import imgPostre from "@/assets/images/postre-coco-hd.jpg";
@@ -142,6 +143,149 @@ export const products = [
         image: imgPapas,
         category: "guarniciones",
         stock: 50,
+        status: "Disponible"
+    },
+    {
+        id: "pechuga-gratinada",
+        code: "PAR-04",
+        title: "Pechuga Gratinada a las Brasas",
+        price: 36000,
+        description: "Filete de pechuga marinada en finas hierbas a la parrilla con queso mozzarella gratinado y tocineta",
+        image: getProductImage({ code: "PAR-04" }),
+        category: "platos fuertes",
+        stock: 22,
+        status: "Disponible"
+    },
+    {
+        id: "salmon-parrilla",
+        code: "PAR-05",
+        title: "Salmón a la Parrilla con Eneldo",
+        price: 54000,
+        description: "Lomo de salmón fresco sellado en plancha con mantequilla cítrica de limón tahití y eneldo",
+        image: getProductImage({ code: "PAR-05" }),
+        category: "platos fuertes",
+        stock: 12,
+        status: "Disponible"
+    },
+    {
+        id: "trucha-ajillo",
+        code: "PAR-06",
+        title: "Trucha Arcoíris al Ajillo",
+        price: 42000,
+        description: "Trucha fresca entera abierta a la brasa con láminas de ajo dorado, perejil y limón",
+        image: getProductImage({ code: "PAR-06" }),
+        category: "platos fuertes",
+        stock: 14,
+        status: "Disponible"
+    },
+    {
+        id: "picada-parrillera",
+        code: "PAR-07",
+        title: "Picada Parrillera Familiar D'Piero",
+        price: 89000,
+        description: "Tabla mixta con res, cerdo, pollo, chorizo santandereano, chicharrón, papa criolla y maduro",
+        image: getProductImage({ code: "PAR-07" }),
+        category: "platos fuertes",
+        stock: 10,
+        status: "Disponible"
+    },
+    {
+        id: "fetuccini-camarones",
+        code: "PAR-08",
+        title: "Fetuccini Alfredo con Camarones",
+        price: 44000,
+        description: "Pasta artesanal en salsa cremosa de queso parmesano madurado con camarones salteados al ajillo",
+        image: getProductImage({ code: "PAR-08" }),
+        category: "platos fuertes",
+        stock: 16,
+        status: "Disponible"
+    },
+    {
+        id: "chorizo-santandereano",
+        code: "ENT-03",
+        title: "Chorizo Santandereano con Arepa",
+        price: 21000,
+        description: "Dos chorizos artesanales asados al carbón servidos con arepa de maíz pelao y limón",
+        image: getProductImage({ code: "ENT-03" }),
+        category: "entradas",
+        stock: 24,
+        status: "Disponible"
+    },
+    {
+        id: "limonada-coco",
+        code: "BEB-05",
+        title: "Limonada de Coco Cremosa",
+        price: 13000,
+        description: "Refrescante mezcla frappé de zumo de limón recién exprimido y crema natural de coco",
+        image: getProductImage({ code: "BEB-05" }),
+        category: "bebidas",
+        stock: 35,
+        status: "Disponible"
+    },
+    {
+        id: "tiramisu-clasico",
+        code: "POS-03",
+        title: "Tiramisú Clásico Italiano",
+        price: 20000,
+        description: "Capas de bizcocho remojado en café espresso, crema suave de mascarpone y cacao amargo espolvoreado",
+        image: getProductImage({ code: "POS-03" }),
+        category: "postres",
+        stock: 12,
+        status: "Disponible"
+    },
+    {
+        id: "flan-caramelo",
+        code: "POS-04",
+        title: "Flan de Caramelo Artesanal",
+        price: 15000,
+        description: "Flan tradicional sedoso de vainilla cocido a baño maría con salsa líquida de caramelo dorado",
+        image: getProductImage({ code: "POS-04" }),
+        category: "postres",
+        stock: 16,
+        status: "Disponible"
+    },
+    {
+        id: "volcan-chocolate",
+        code: "POS-05",
+        title: "Volcán de Chocolate Fundido",
+        price: 21000,
+        description: "Bizcocho tibio de cacao al 70% con centro líquido de chocolate servido con frutos rojos frescos",
+        image: getProductImage({ code: "POS-05" }),
+        category: "postres",
+        stock: 14,
+        status: "Disponible"
+    },
+    {
+        id: "maduro-con-queso",
+        code: "GUA-02",
+        title: "Plátano Maduro Asado con Queso",
+        price: 11000,
+        description: "Plátano maduro caramelizado al horno relleno de queso doble crema gratinado y bocadillo",
+        image: getProductImage({ code: "GUA-02" }),
+        category: "guarniciones",
+        stock: 25,
+        status: "Disponible"
+    },
+    {
+        id: "ensalada-cesar",
+        code: "GUA-03",
+        title: "Ensalada César Clásica",
+        price: 15000,
+        description: "Lechuga romana fresca, crutones al ajo, láminas de queso parmesano y aderezo César tradicional",
+        image: getProductImage({ code: "GUA-03" }),
+        category: "guarniciones",
+        stock: 20,
+        status: "Disponible"
+    },
+    {
+        id: "arepa-con-queso",
+        code: "GUA-04",
+        title: "Arepa con Queso Asada a la Brasa",
+        price: 9000,
+        description: "Arepa artesanal de maíz blanco asada a la parrilla rellena de queso campesino derretido",
+        image: getProductImage({ code: "GUA-04" }),
+        category: "guarniciones",
+        stock: 35,
         status: "Disponible"
     }
 ];

@@ -177,7 +177,7 @@ describe("RBAC: rol correcto → 2xx", () => {
     expect(res.status).toBe(201);
   });
 
-  it("mesero crea comanda (201)", async () => {
+  it("mesero crea orden (201)", async () => {
     const res = await api
       .post("/api/orders")
       .set(auth(tokens.mesero))
@@ -188,7 +188,7 @@ describe("RBAC: rol correcto → 2xx", () => {
     expect(res.status).toBe(201);
   });
 
-  it("mesero actualiza estado de comanda (200)", async () => {
+  it("mesero actualiza estado de orden (200)", async () => {
     const res = await api
       .patch(`/api/orders/${fixtures.orderNum}/status`)
       .set(auth(tokens.mesero))
@@ -196,7 +196,7 @@ describe("RBAC: rol correcto → 2xx", () => {
     expect(res.status).toBe(200);
   });
 
-  it("cocina actualiza estado de comanda (200)", async () => {
+  it("cocina actualiza estado de orden (200)", async () => {
     const res = await api
       .patch(`/api/orders/${fixtures.orderNum}/status`)
       .set(auth(tokens.cocina))
@@ -204,7 +204,7 @@ describe("RBAC: rol correcto → 2xx", () => {
     expect(res.status).toBe(200);
   });
 
-  it("admin anula comanda (200)", async () => {
+  it("admin anula orden (200)", async () => {
     const res = await api
       .patch(`/api/orders/${fixtures.orderNum}/cancel`)
       .set(adminStepUp)
@@ -273,31 +273,37 @@ describe("RBAC: rol correcto → 2xx", () => {
     expect(res.status).toBe(201);
   });
 
-  it("admin y cajero actualizan insumo (200)", async () => {
+  it("admin actualiza insumo (200); cajero recibe 403", async () => {
     const asAdmin = await api
       .put(`/api/inventory/${fixtures.invId}`)
       .set(auth(tokens.admin))
       .send({ currentStock: 42 });
     expect(asAdmin.status).toBe(200);
 
+    // Migración 0033 revocó escritura de inventario a Cajero (solo list_inventory).
     const asCajero = await api
       .put(`/api/inventory/${fixtures.invId}`)
       .set(auth(tokens.cajero))
       .send({ currentStock: 43 });
-    expect(asCajero.status).toBe(200);
+    expect(asCajero.status).toBe(403);
   });
 
-  it("cajero deshabilita y habilita insumo en su área (200)", async () => {
-    // Cajero: su área es gestión de inventario; tiene disable_inventory (0028).
-    const off = await api
+  it("admin deshabilita y habilita insumo (200); cajero recibe 403", async () => {
+    const asCajero = await api
       .patch(`/api/inventory/${fixtures.invId}/status`)
       .set(auth(tokens.cajero))
+      .send({ isActive: false });
+    expect(asCajero.status).toBe(403);
+
+    const off = await api
+      .patch(`/api/inventory/${fixtures.invId}/status`)
+      .set(adminStepUp)
       .send({ isActive: false });
     expect(off.status).toBe(200);
 
     const on = await api
       .patch(`/api/inventory/${fixtures.invId}/status`)
-      .set(auth(tokens.cajero))
+      .set(adminStepUp)
       .send({ isActive: true });
     expect(on.status).toBe(200);
   });

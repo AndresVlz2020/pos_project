@@ -77,7 +77,7 @@ export default function Register() {
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-secondary-950)] via-[var(--color-secondary-950)]/40 to-transparent flex flex-col justify-end p-8">
             <h2 className="text-2xl font-bold text-[var(--color-white)] mb-2">Únete al Equipo D'Piero</h2>
             <p className="text-sm text-[var(--color-gray-300)] leading-relaxed">
-              Crea tu cuenta de acceso operativo para gestionar comandas, registrar pedidos y supervisar tu estación.
+              Crea tu cuenta de acceso operativo para gestionar órdenes, registrar pedidos y supervisar tu estación.
             </p>
           </div>
         </div>

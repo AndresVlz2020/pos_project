@@ -88,17 +88,18 @@ export function DropdownContent({ children, className = "" }) {
     <div
       role="menu"
       className={`
+        dpiero-modal-in
         absolute
         z-50
-        mt-1
+        mt-1.5
         min-w-48
         border
-        border-[var(--color-secondary-800)]
+        border-[var(--color-secondary-700)]
         bg-[var(--color-secondary-900)]
         text-[var(--color-white)]
         p-1.5
-        shadow-lg
-        rounded-lg
+        shadow-xl
+        rounded-xl
         overflow-hidden
         ${className}
       `}

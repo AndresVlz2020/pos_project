@@ -27,6 +27,98 @@ import imgWorkerAna from "@/assets/images/worker-ana.jpg";
 import logoWhite from "@/assets/images/logo-d,piero.png";
 import logoOrange from "@/assets/images/logo-d,piero-orange.png";
 
+// Carga automática vía Vite de todas las imágenes generadas en assets/images/products
+const GENERATED_PRODUCT_MODULES = import.meta.glob(
+  "@/assets/images/products/*.{jpg,jpeg,png,webp}",
+  { eager: true, import: "default" }
+);
+
+const ALL_PRODUCT_ASSETS = {
+  "punta-de-anca-hd.jpg": imgPunta,
+  "costillas-bbq-hd.jpg": imgCostillas,
+  "hamburguesa-hd.jpg": imgHamburguesa,
+  "chicharron-hd.jpg": imgChicharron,
+  "empanadas-hd.jpg": imgEmpanadas,
+  "limonada-hd.jpg": imgLimonada,
+  "coctel-fresa-hd.jpg": imgCoctel,
+  "cerveza-hd.jpg": imgCerveza,
+  "jugo-natural-hd.jpg": imgJugo,
+  "postre-coco-hd.jpg": imgCoco,
+  "tres-leches-hd.jpg": imgTresLeches,
+  "papas-rusticas-hd.jpg": imgPapas,
+  ...Object.fromEntries(
+    Object.entries(GENERATED_PRODUCT_MODULES).map(([fullPath, src]) => [
+      fullPath.split("/").pop().toLowerCase(),
+      src,
+    ])
+  ),
+};
+
+const PRODUCT_FILENAME_BY_CODE = {
+  "PAR-01": "punta-de-anca-hd.jpg",
+  "PAR-02": "costillas-bbq-hd.jpg",
+  "PAR-03": "hamburguesa-hd.jpg",
+  "PAR-04": "pechuga-gratinada.jpg",
+  "PAR-05": "salmon-parrilla.jpg",
+  "PAR-06": "trucha-al-ajillo.jpg",
+  "PAR-07": "picada-parrillera.jpg",
+  "PAR-08": "fetuccini-camarones.jpg",
+  "ENT-01": "chicharron-hd.jpg",
+  "ENT-02": "empanadas-hd.jpg",
+  "ENT-03": "chorizo-santandereano.jpg",
+  "BEB-01": "limonada-hd.jpg",
+  "BEB-02": "coctel-fresa-hd.jpg",
+  "BEB-03": "cerveza-hd.jpg",
+  "BEB-04": "jugo-natural-hd.jpg",
+  "BEB-05": "limonada-coco.jpg",
+  "POS-01": "postre-coco-hd.jpg",
+  "POS-02": "tres-leches-hd.jpg",
+  "POS-03": "tiramisu-clasico.jpg",
+  "POS-04": "flan-caramelo.jpg",
+  "POS-05": "volcan-chocolate.jpg",
+  "GUA-01": "papas-rusticas-hd.jpg",
+  "GUA-02": "maduro-con-queso.jpg",
+  "GUA-03": "ensalada-cesar.jpg",
+  "GUA-04": "arepa-con-queso.jpg",
+};
+
+const normalizeProductKey = (text = "") =>
+  String(text)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+
+const PRODUCT_FILENAME_BY_NAME = {
+  "punta de anca angus 400g": "punta-de-anca-hd.jpg",
+  "costillas ahumadas bbq d'piero": "costillas-bbq-hd.jpg",
+  "hamburguesa d'piero artesanal": "hamburguesa-hd.jpg",
+  "pechuga gratinada a las brasas": "pechuga-gratinada.jpg",
+  "salmon a la parrilla con eneldo": "salmon-parrilla.jpg",
+  "trucha arcoiris al ajillo": "trucha-al-ajillo.jpg",
+  "picada parrillera familiar d'piero": "picada-parrillera.jpg",
+  "fetuccini alfredo con camarones": "fetuccini-camarones.jpg",
+  "chicharron carnudo crocante": "chicharron-hd.jpg",
+  "empanadas de carne & papa (x5)": "empanadas-hd.jpg",
+  "chorizo santandereano con arepa": "chorizo-santandereano.jpg",
+  "limonada hierbabuena artesanal": "limonada-hd.jpg",
+  "coctel de frutos rojos & fresa": "coctel-fresa-hd.jpg",
+  "cerveza artesanal rubia 330ml": "cerveza-hd.jpg",
+  "jugo natural de fruta fresca": "jugo-natural-hd.jpg",
+  "limonada de coco cremosa": "limonada-coco.jpg",
+  "postre gourmet de coco": "postre-coco-hd.jpg",
+  "torta tradicional tres leches": "tres-leches-hd.jpg",
+  "tiramisu clasico italiano": "tiramisu-clasico.jpg",
+  "flan de caramelo artesanal": "flan-caramelo.jpg",
+  "volcan de chocolate fundido": "volcan-chocolate.jpg",
+  "papas rusticas a las finas hierbas": "papas-rusticas-hd.jpg",
+  "papas rusticas con romero & ajo": "papas-rusticas-hd.jpg",
+  "platano maduro asado con queso": "maduro-con-queso.jpg",
+  "ensalada cesar clasica": "ensalada-cesar.jpg",
+  "arepa con queso asada a la brasa": "arepa-con-queso.jpg",
+};
+
 // Mapa de productos según slug o coincidencias de nombre
 export const PRODUCT_IMAGES = {
   punta: imgPunta,
@@ -44,6 +136,7 @@ export const PRODUCT_IMAGES = {
   tres_leches: imgTresLeches,
   tresleches: imgTresLeches,
   papa: imgPapas,
+  ...ALL_PRODUCT_ASSETS,
 };
 
 /**
@@ -52,7 +145,33 @@ export const PRODUCT_IMAGES = {
 export function getProductImage(product) {
   if (!product) return imgPunta;
 
-  const url = product.image || product.image_url || "";
+  const url = String(product.image || product.image_url || "").trim();
+
+  // Imágenes personalizadas cargadas por usuario (Data URL / HTTP)
+  if (url.startsWith("data:image/") || url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
+  // 1. Coincidencia exacta por nombre de archivo en image_url
+  const filename = url.split("/").pop()?.split("?")[0]?.toLowerCase() || "";
+  if (filename && ALL_PRODUCT_ASSETS[filename]) {
+    return ALL_PRODUCT_ASSETS[filename];
+  }
+
+  // 2. Coincidencia exacta por código de platillo (PAR-04, BEB-05, ...)
+  const codeKey = String(product.code || "").trim().toUpperCase();
+  const codeFile = PRODUCT_FILENAME_BY_CODE[codeKey];
+  if (codeFile && ALL_PRODUCT_ASSETS[codeFile]) {
+    return ALL_PRODUCT_ASSETS[codeFile];
+  }
+
+  // 3. Coincidencia exacta por nombre normalizado (útil para detalles de órdenes / facturas)
+  const exactNameFile = PRODUCT_FILENAME_BY_NAME[normalizeProductKey(product.title || product.name || "")];
+  if (exactNameFile && ALL_PRODUCT_ASSETS[exactNameFile]) {
+    return ALL_PRODUCT_ASSETS[exactNameFile];
+  }
+
+  // 4. Respaldos por palabras clave heredadas
   const name = `${product.title || product.name || ""} ${product.code || ""} ${url}`.toLowerCase();
 
   if (name.includes("punta") || name.includes("anca") || name.includes("angus")) return imgPunta;
@@ -68,7 +187,7 @@ export function getProductImage(product) {
   if (name.includes("tres") || name.includes("leche")) return imgTresLeches;
   if (name.includes("papa") || name.includes("rustica")) return imgPapas;
 
-  if (url && typeof url === "string" && !url.startsWith("/src/") && !url.includes("undefined")) {
+  if (url && !url.startsWith("/src/") && !url.includes("undefined")) {
     return url;
   }
 

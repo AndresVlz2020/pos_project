@@ -33,7 +33,7 @@ export default function OrderListPage() {
       const data = await getOrders();
       setOrders(data || []);
     } catch (error) {
-      console.error("Error al cargar comandas desde PostgreSQL:", error);
+      console.error("Error al cargar órdenes desde PostgreSQL:", error);
       setFeedback({
         type: "error",
         title: "Error de conexión",
@@ -85,7 +85,7 @@ export default function OrderListPage() {
       setFeedback({
         type: "success",
         title: "Orden Anulada",
-        message: `La comanda ${orderToCancel.id} (${orderToCancel.tableNumber}) ha sido anulada en PostgreSQL y su stock fue restaurado.`,
+        message: `La orden ${orderToCancel.id} (${orderToCancel.tableNumber}) ha sido anulada en PostgreSQL y su stock fue restaurado.`,
       });
     } catch (error) {
       if (error?.isStepUpCancelled) return;
@@ -115,7 +115,7 @@ export default function OrderListPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
           <h1 className="text-xl font-bold text-[var(--color-white)]">
-            Listado de Órdenes y Comandas
+            Listado de Órdenes
           </h1>
         </div>
 
@@ -125,7 +125,7 @@ export default function OrderListPage() {
           </Button>
           {canCreateOrder && (
             <Link to="/CreateOrder">
-              <Button variant="primary">Crear comanda</Button>
+              <Button variant="primary">Crear orden</Button>
             </Link>
           )}
         </div>
@@ -144,7 +144,7 @@ export default function OrderListPage() {
 
       {loading && orders.length === 0 ? (
         <div className="py-12 text-center text-[var(--color-gray-400)]">
-          Cargando comandas desde PostgreSQL...
+          Cargando órdenes desde PostgreSQL...
         </div>
       ) : (
         <DataTable data={sortedOrders} columns={columns} />
@@ -165,7 +165,7 @@ export default function OrderListPage() {
         <ConfirmDialog
           isOpen={Boolean(orderToCancel)}
           title="Anular Orden del Sistema"
-          description={`¿Estás seguro de que deseas anular la comanda ${orderToCancel.id} perteneciente a la ${orderToCancel.tableNumber}? Esta acción marcará la orden como ANULADA en PostgreSQL.`}
+          description={`¿Estás seguro de que deseas anular la orden ${orderToCancel.id} perteneciente a la ${orderToCancel.tableNumber}? Esta acción marcará la orden como ANULADA en PostgreSQL.`}
           confirmText="Sí, anular orden"
           cancelText="No, conservar"
           isDestructive={true}
@@ -178,7 +178,7 @@ export default function OrderListPage() {
       <ListReportModal
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
-        title="órdenes y comandas"
+        title="órdenes"
         data={sortedOrders}
         fields={orderReportFields}
         filePrefix="ordenes-restaurante"

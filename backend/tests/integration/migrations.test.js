@@ -22,15 +22,15 @@ async function count(table) {
 }
 
 describe("migraciones", () => {
-  it("hay 29 archivos de migración", () => {
+  it("hay 36 archivos de migración", () => {
     const files = fs
       .readdirSync(MIGRATIONS_DIR)
       .filter((f) => f.endsWith(".sql"));
-    expect(files).toHaveLength(29);
+    expect(files).toHaveLength(36);
   });
 
-  it("la tabla _migrations registra las 29 migraciones aplicadas", async () => {
-    expect(await count("_migrations")).toBe(29);
+  it("la tabla _migrations registra las 36 migraciones aplicadas", async () => {
+    expect(await count("_migrations")).toBe(36);
   });
 
   it("re-ejecutar migraciones es idempotente (no duplica datos)", async () => {
@@ -54,6 +54,6 @@ describe("migraciones", () => {
     };
 
     expect(after).toEqual(before);
-    expect(await count("_migrations")).toBe(29);
+    expect(await count("_migrations")).toBe(36);
   });
 });

@@ -1,5 +1,5 @@
 import { Modal, Button } from "@/shared";
-import { Receipt, Calendar, User, Utensils, Printer } from "lucide-react";
+import { Calendar, User, Utensils, Printer } from "lucide-react";
 import { getProductImage } from "@/utils/imageHelper";
 
 export default function OrderViewModal({ order, isOpen, onClose }) {
@@ -37,7 +37,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
       <html lang="es">
         <head>
           <meta charset="utf-8" />
-          <title>Factura de Venta - ${order.idCode || order.id || "Comanda"}</title>
+          <title>Factura de Venta - ${order.idCode || order.id || "Orden"}</title>
           <style>
             @page { margin: 5mm; size: 80mm auto; }
             body {
@@ -69,7 +69,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
             <p>Régimen Común - Sistema POS</p>
             <p>Calle 45 # 12-34 - Medellín, Colombia</p>
             <div class="divider"></div>
-            <p class="font-bold" style="font-size: 13px;">FACTURA / COMANDA DE SERVICIO</p>
+            <p class="font-bold" style="font-size: 13px;">FACTURA / ORDEN DE SERVICIO</p>
             <p class="font-bold" style="font-size: 14px; margin-top: 2px;">N° ${order.idCode || order.id || "ORD-000"}</p>
           </div>
 
@@ -77,7 +77,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
 
           <div>
             <div class="row"><span><strong>Ubicación:</strong></span><span class="font-bold">${order.tableNumber || "Mesa General"}</span></div>
-            <div class="row"><span><strong>Mesero:</strong></span><span>${order.waiter || "Mesero General"}</span></div>
+            <div class="row"><span><strong>Atendido por:</strong></span><span>${order.waiter || "Sin asignar"}</span></div>
             <div class="row"><span><strong>Fecha / Hora:</strong></span><span>${order.createdAt || new Date().toLocaleString("es-CO")}</span></div>
             <div class="row"><span><strong>Estado:</strong></span><span>${order.status || "No Pagada"}</span></div>
             <div class="row"><span><strong>Método de pago:</strong></span><span>${order.paymentMethod || order.payment_method || "Sin especificar"}</span></div>
@@ -122,7 +122,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
 
           <div class="footer">
             <p class="font-bold">¡GRACIAS POR SU VISITA!</p>
-            <p>Comanda registrada en el sistema del restaurante.</p>
+            <p>Orden registrada en el sistema del restaurante.</p>
             <p>D'Piero Gourmet & Parrilla</p>
           </div>
 
@@ -139,9 +139,9 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-lg" title={`Comanda ${order.idCode || order.id}`}>
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-lg" title={`Orden ${order.idCode || order.id}`}>
       <div className="space-y-4 text-[var(--color-white)] text-sm font-[family-name:var(--main-font)]">
-        {/* Cabecera de comanda */}
+        {/* Cabecera de orden */}
         <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-lg">
           <div>
             <span className="text-xs text-[var(--color-gray-400)] block">Ubicación</span>
@@ -162,7 +162,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
           </div>
 
           <div>
-            <span className="text-xs text-[var(--color-gray-400)] block">Mesero</span>
+            <span className="text-xs text-[var(--color-gray-400)] block">Atendido por</span>
             <span className="font-medium text-[var(--color-gray-200)] flex items-center gap-1">
               <User size={14} className="text-[var(--color-primary-400)]" />
               {order.waiter}

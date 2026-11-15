@@ -28,9 +28,9 @@ frontend/
 │   │   ├── inventory/          # Módulo de Inventario e Insumos
 │   │   ├── suppliers/          # Módulo de Proveedores
 │   │   ├── products/           # Módulo de Menú y Platillos
-│   │   ├── orders/             # Módulo de Comandas y Órdenes
+│   │   ├── orders/             # Módulo de Órdenes
 │   │   └── home/               # Terminal POS de atención en salón
-│   │       ├── components/     # Categorías, tarjetas de platillo, comandero, staff
+│   │       ├── components/     # Categorías, tarjetas de platillo, órdenes, staff
 │   │       └── page/           # HomePage (Punto de Venta activo)
 │   ├── shared/                 # Componentes reutilizables transversales
 │   │   ├── components/         # Button, Input, Select, DataTable, Card, Alert, etc.

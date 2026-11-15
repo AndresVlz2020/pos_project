@@ -93,18 +93,28 @@ export default function AdminStepUpModal() {
     const prepareModal = async () => {
       setLoadingOptions(true);
       try {
-        const [caps, stepUpRes] = await Promise.all([
-          getBiometricCapabilities(),
-          getAdminStepUpOptionsApi().catch(() => ({ hasBiometrics: false, options: null })),
-        ]);
+        const caps = await getBiometricCapabilities();
+        if (!mounted) return;
+
+        if (!caps.supported || !caps.platformAvailable) {
+          setHasBiometricOption(false);
+          setInfoMsg(
+            caps.isDesktop
+              ? "En este equipo PC confirma la acción con tu contraseña de administrador."
+              : "Este dispositivo no admite biometría compatible; confirma con tu contraseña."
+          );
+          return;
+        }
+
+        const stepUpRes = await getAdminStepUpOptionsApi().catch(() => ({
+          hasBiometrics: false,
+          options: null,
+        }));
 
         if (!mounted) return;
 
         const canUseBioHere =
-          caps.supported &&
-          caps.platformAvailable &&
-          Boolean(stepUpRes?.hasBiometrics) &&
-          Boolean(stepUpRes?.options);
+          Boolean(stepUpRes?.hasBiometrics) && Boolean(stepUpRes?.options);
 
         setHasBiometricOption(canUseBioHere);
         cachedOptionsRef.current = stepUpRes?.options || null;
@@ -112,18 +122,14 @@ export default function AdminStepUpModal() {
         if (canUseBioHere && !autoTriggeredRef.current) {
           autoTriggeredRef.current = true;
           setLoadingOptions(false);
-          // Disparo automático amigable; si el navegador exige gesto usuario, cae sin error rojo
+          // Disparo automático en dispositivo móvil compatible
           await runBiometricVerification(true);
           return;
         }
 
         if (!stepUpRes?.hasBiometrics) {
           setInfoMsg(
-            "No tienes una huella vinculada todavía. Confirma con tu contraseña (puedes activar tu huella en el menú de usuario)."
-          );
-        } else if (!caps.supported || !caps.platformAvailable) {
-          setInfoMsg(
-            "Este equipo no dispone de lector biométrico compatible; confirma con tu contraseña."
+            "No tienes una huella vinculada en este dispositivo. Confirma con tu contraseña (puedes activarla en el menú de usuario)."
           );
         }
       } finally {

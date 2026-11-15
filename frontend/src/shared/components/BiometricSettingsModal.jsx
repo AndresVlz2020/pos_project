@@ -43,6 +43,9 @@ export default function BiometricSettingsModal({
     supported: false,
     platformAvailable: false,
     secureContext: true,
+    isDesktop: false,
+    isWindows: false,
+    reason: "",
   });
   const [credentials, setCredentials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -181,8 +184,8 @@ export default function BiometricSettingsModal({
             </div>
             <p className="leading-relaxed">
               {isAdmin
-                ? "Podrás iniciar sesión con huella en dispositivos compatibles y autorizar acciones críticas del sistema. En equipos sin sensor seguirás usando tu contraseña."
-                : "Podrás usar tu huella o Face ID para iniciar tu turno rápidamente en lugar del PIN. Sigue siendo opcional: tu PIN siempre permanece disponible."}
+                ? "Por seguridad, en PC/Windows confirmarás siempre con tu contraseña (Windows Hello está deshabilitado). Solo se admite biometría sin claves guardadas en nube desde dispositivos con sensor compatible o un lector USB físico dedicado."
+                : "Opcional: puedes seguir usando tu PIN siempre, o vincular huella desde un dispositivo móvil compatible (Windows Hello en PC está deshabilitado por seguridad)."}
             </p>
           </div>
 
@@ -190,10 +193,10 @@ export default function BiometricSettingsModal({
             <div
               className={`rounded-xl px-3.5 py-2.5 text-xs font-medium border ${
                 feedback.type === "success"
-                  ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-200"
+                  ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)]"
                   : feedback.type === "info"
-                  ? "bg-amber-500/15 border-amber-500/40 text-amber-100"
-                  : "bg-red-500/15 border-red-500/40 text-red-200"
+                  ? "bg-[var(--color-warning-bg)] border-[var(--color-warning-border)] text-[var(--color-warning)]"
+                  : "bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)]"
               }`}
             >
               {feedback.message}
@@ -209,11 +212,13 @@ export default function BiometricSettingsModal({
             <>
               {/* Bloque de compatibilidad del dispositivo actual */}
               {!capabilities.secureContext ? (
-                <div className="rounded-xl bg-amber-500/10 border border-amber-500/40 p-3.5 flex items-start gap-2.5 text-xs text-amber-100">
-                  <AlertTriangle className="size-4 shrink-0 mt-0.5 text-amber-400" />
+                <div className="rounded-xl bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] p-3.5 flex items-start gap-2.5 text-xs text-[var(--color-white)]">
+                  <AlertTriangle className="size-4 shrink-0 mt-0.5 text-[var(--color-warning)]" />
                   <div>
-                    <p className="font-semibold">Conexión no segura detectada</p>
-                    <p className="text-amber-200/90 mt-0.5">
+                    <p className="font-semibold text-[var(--color-warning)]">
+                      Conexión no segura detectada
+                    </p>
+                    <p className="text-[var(--color-gray-300)] mt-0.5">
                       Los navegadores solo permiten registrar o leer huellas en{" "}
                       <strong>HTTPS</strong> o <strong>localhost</strong>.
                     </p>
@@ -224,7 +229,7 @@ export default function BiometricSettingsModal({
                   onSubmit={handleEnroll}
                   className="rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] p-4 space-y-3"
                 >
-                  <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[var(--color-primary-400)]">
                     <CheckCircle2 className="size-4 shrink-0" />
                     <span>Este dispositivo tiene biometría compatible disponible</span>
                   </div>
@@ -239,7 +244,7 @@ export default function BiometricSettingsModal({
                       value={deviceLabel}
                       onChange={(e) => setDeviceLabel(e.target.value)}
                       placeholder="Ej: Celular Caja, Tablet Cocina, Mi iPhone..."
-                      className="w-full rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] px-3 py-2 text-xs text-white placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)]"
+                      className="w-full rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] px-3 py-2 text-xs text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)]"
                     />
                   </div>
 
@@ -262,14 +267,17 @@ export default function BiometricSettingsModal({
                 </form>
               ) : (
                 <div className="rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] p-3.5 flex items-start gap-2.5 text-xs text-[var(--color-gray-300)]">
-                  <AlertTriangle className="size-4 shrink-0 mt-0.5 text-[var(--color-gray-400)]" />
+                  <AlertTriangle className="size-4 shrink-0 mt-0.5 text-[var(--color-warning)]" />
                   <div>
-                    <p className="font-semibold text-white">
-                      Este equipo no tiene lector biométrico activo
+                    <p className="font-semibold text-[var(--color-white)]">
+                      {capabilities.isDesktop
+                        ? "Este equipo PC no cuenta con lector de huella físico"
+                        : "Este dispositivo no tiene sensor biométrico disponible"}
                     </p>
-                    <p className="text-[var(--color-gray-400)] mt-0.5">
-                      Puedes abrir tu sesión desde un teléfono o portátil con huella/Face ID
-                      para vincularlo aquí, y administrar tus dispositivos registrados debajo.
+                    <p className="text-[var(--color-gray-400)] mt-0.5 leading-relaxed">
+                      {capabilities.isDesktop
+                        ? "Por seguridad no se utiliza Windows Hello ni llaves guardadas en el navegador. En PC se requiere un lector USB biométrico físico dedicado; mientras tanto usa tu contraseña o PIN."
+                        : "Puedes continuar usando tu contraseña o PIN en este equipo, y administrar abajo cualquier dispositivo registrado."}
                     </p>
                   </div>
                 </div>
@@ -297,7 +305,7 @@ export default function BiometricSettingsModal({
                         <div className="flex items-center gap-2.5 min-w-0">
                           <Smartphone className="size-4 text-[var(--color-primary-400)] shrink-0" />
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-white truncate">
+                            <p className="text-xs font-semibold text-[var(--color-white)] truncate">
                               {cred.deviceLabel}
                             </p>
                             <p className="text-[11px] text-[var(--color-gray-400)] truncate">

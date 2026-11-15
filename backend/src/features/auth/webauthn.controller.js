@@ -34,7 +34,8 @@ export const webauthnController = {
     try {
       const options = await webauthnService.createRegistrationOptions(
         req.user.id,
-        req.get("origin")
+        req.get("origin"),
+        req.get("user-agent")
       );
       res.status(200).json({ options });
     } catch (err) {
@@ -87,6 +88,7 @@ export const webauthnController = {
         {
           userId: req.body?.userId,
           email: req.body?.email,
+          userAgent: req.get("user-agent"),
         },
         req.get("origin")
       );
@@ -103,6 +105,7 @@ export const webauthnController = {
           userId: req.body?.userId,
           email: req.body?.email,
           response: req.body?.response,
+          userAgent: req.get("user-agent"),
         },
         req.get("origin")
       );
@@ -119,7 +122,8 @@ export const webauthnController = {
     try {
       const result = await webauthnService.createStepUpOptions(
         req.user.id,
-        req.get("origin")
+        req.get("origin"),
+        req.get("user-agent")
       );
       res.status(200).json(result);
     } catch (err) {
@@ -134,6 +138,7 @@ export const webauthnController = {
         {
           response: req.body?.response,
           password: req.body?.password,
+          userAgent: req.get("user-agent"),
         },
         req.get("origin")
       );

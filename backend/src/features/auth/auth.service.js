@@ -70,6 +70,7 @@ export async function issueSessionForUser(user) {
   const token = jwt.sign(
     {
       id: user.id,
+      name: user.user_name,
       email: user.user_email,
       role,
       isSuperuser,

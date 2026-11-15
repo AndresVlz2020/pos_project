@@ -11,6 +11,7 @@ import {
 import { useState } from "react"
 import Button from "./Button"
 import SearchField from "./SearchField"
+import Select from "./Select"
 
 // Componente reutilizable de tabla
 // Recibe:
@@ -96,18 +97,20 @@ export default function DataTable({ data, columns, compact = false }) {
         {/* ================== SELECTOR DE FILAS ================== */}
         {/* Permite cambiar cuántas filas se muestran por página */}
         <div className="flex items-center gap-2 text-xs sm:text-sm text-[var(--color-gray-300)]">
-          <span>Filas por página:</span>
-          <select
+          <span className="shrink-0">Filas por página:</span>
+          <Select
+            ariaLabel="Filas por página"
+            size="sm"
+            includeEmptyOption={false}
             value={table.getState().pagination.pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
-            className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] rounded-xl px-3 py-1.5 outline-none cursor-pointer"
-          >
-            {[5, 7, 10, 20, 50].map(size => (
-              <option key={size} value={size} className="bg-[var(--color-secondary-950)] text-white">
-                {size} filas
-              </option>
-            ))}
-          </select>
+            options={[5, 7, 10, 20, 50].map((size) => ({
+              value: size,
+              label: `${size} filas`,
+            }))}
+            className="!mb-0 !w-auto"
+            buttonClassName="min-w-[112px]"
+          />
         </div>
       </div>
 

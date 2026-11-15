@@ -28,34 +28,49 @@ export const orderService = {
     return order;
   },
 
-  async createOrder(data) {
+  async createOrder(data, authenticatedUser = null) {
     if (!data.tableNumber && !data.table) {
-      throw new Error("El número de mesa es obligatorio para registrar la comanda");
+      throw new Error("El número de mesa es obligatorio para registrar la orden");
     }
 
-    if (data.status !== undefined || data.orderStatus !== undefined) {
-      data.status = normalizeStatus(data.status ?? data.orderStatus);
+    const orderData = { ...data };
+    // El creador/mesero siempre proviene del usuario autenticado en el token JWT.
+    if (authenticatedUser?.id) {
+      orderData.waiterId = authenticatedUser.id;
+    }
+
+    if (orderData.status !== undefined || orderData.orderStatus !== undefined) {
+      orderData.status = normalizeStatus(orderData.status ?? orderData.orderStatus);
     } else {
-      data.status = "No Pagada"; // Estado por defecto: cuenta sin pagar (mesa ocupada)
+      orderData.status = "No Pagada"; // Estado por defecto: cuenta sin pagar (mesa ocupada)
     }
 
-    return await orderRepository.create(data);
+    return await orderRepository.create(orderData);
   },
 
-  async updateOrder(id, data) {
+  async updateOrder(id, data, authenticatedUser = null) {
     // Normalizar estado si viene en el payload
     if (data.status !== undefined || data.orderStatus !== undefined) {
       data.status = normalizeStatus(data.status ?? data.orderStatus);
     }
 
-    const updated = await orderRepository.update(id, data);
+    const payload = { ...data };
+    if (authenticatedUser?.id) {
+      payload.waiterId = authenticatedUser.id;
+    }
+
+    const updated = await orderRepository.update(id, payload);
     if (!updated) throw new Error("Orden no encontrada para actualizar");
     return updated;
   },
 
-  async updateOrderStatus(id, status) {
+  async updateOrderStatus(id, status, authenticatedUser = null) {
     const normalized = normalizeStatus(status);
-    const updated = await orderRepository.updateStatus(id, normalized);
+    const updated = await orderRepository.updateStatus(
+      id,
+      normalized,
+      authenticatedUser?.id || null
+    );
     if (!updated) throw new Error("Orden no encontrada para actualizar estado");
     return updated;
   },

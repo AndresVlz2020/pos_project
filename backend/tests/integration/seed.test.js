@@ -33,18 +33,18 @@ describe("semilla reproducida por migraciones", () => {
     expect(emails).toContain("ana.cocina@dpiero.com");
   });
 
-  it("siembra 5 categorías, 12 productos y 26 proveedores", async () => {
+  it("siembra 5 categorías, 25 productos y 26 proveedores", async () => {
     expect(await count("categories")).toBe(5);
-    expect(await count("products")).toBe(12);
+    expect(await count("products")).toBe(25);
     expect(await count("suppliers")).toBe(26);
   });
 
-  it("siembra 30 insumos de inventario y 10 mesas", async () => {
+  it("siembra 30 insumos de inventario y 20 mesas", async () => {
     expect(await count("inventory")).toBe(30);
-    expect(await count("restaurant_tables")).toBe(10);
+    expect(await count("restaurant_tables")).toBe(20);
   });
 
-  it("siembra 5 comandas de demostración con 3 ítems", async () => {
+  it("siembra 5 órdenes de demostración con 3 ítems", async () => {
     expect(await count("orders")).toBe(5);
     expect(await count("order_items")).toBe(3);
   });

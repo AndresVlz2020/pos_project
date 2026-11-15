@@ -1,9 +1,20 @@
 import { useState, useMemo } from "react";
-import { SearchX, Filter, Plus } from "lucide-react";
-import { Link } from "react-router-dom";
-import { SearchField } from "@/shared";
+import { SearchX, Filter, Check } from "lucide-react";
+import {
+  SearchField,
+  Dropdown,
+  DropdownTrigger,
+  DropdownContent,
+  DropdownItem,
+} from "@/shared";
 import PosCategoryFilter from "./PosCategoryFilter";
 import PosProductCard from "./PosProductCard";
+
+const SORT_OPTIONS = [
+  { value: "default", label: "Por Defecto" },
+  { value: "price-asc", label: "Menor Precio" },
+  { value: "price-desc", label: "Mayor Precio" },
+];
 
 // Normaliza texto eliminando acentos y mayúsculas
 const normalizeText = (text = "") =>
@@ -13,7 +24,13 @@ const normalizeText = (text = "") =>
     .toLowerCase()
     .trim();
 
-export default function PosProductsSection({ products = [], searchQuery = "", onSearchChange, onClearSearch }) {
+export default function PosProductsSection({
+  products = [],
+  searchQuery = "",
+  onSearchChange,
+  onClearSearch,
+  onSelectProduct,
+}) {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("default");
 
@@ -62,34 +79,53 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
         />
       </div>
 
-      {/* Fila única: botón icono de ordenamiento + categorías en scroll horizontal */}
+      {/* Fila única: componente Dropdown de ordenamiento + categorías en scroll horizontal */}
       <div className="flex items-start gap-2 w-full min-w-0">
-        <div
-          title={
-            sortBy === "price-asc"
-              ? "Orden: Menor Precio"
-              : sortBy === "price-desc"
-              ? "Orden: Mayor Precio"
-              : "Ordenar productos"
-          }
-          className={`relative shrink-0 inline-flex items-center justify-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-md border transition-all cursor-pointer ${
-            sortBy !== "default"
-              ? "bg-[var(--color-primary-500)] text-[#ffffff] border-[var(--color-primary-600)]"
-              : "bg-[var(--color-secondary-900)] text-[var(--color-primary-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border-[var(--color-secondary-800)]"
-          }`}
-        >
-          <Filter className="size-4 pointer-events-none" />
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            aria-label="Ordenar productos"
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer bg-[var(--color-secondary-950)] text-white"
-          >
-            <option value="default" className="bg-[var(--color-secondary-950)] text-white">Por Defecto</option>
-            <option value="price-asc" className="bg-[var(--color-secondary-950)] text-white">Menor Precio</option>
-            <option value="price-desc" className="bg-[var(--color-secondary-950)] text-white">Mayor Precio</option>
-          </select>
-        </div>
+        <Dropdown className="shrink-0">
+          <DropdownTrigger>
+            <button
+              type="button"
+              aria-label="Ordenar productos"
+              title={
+                SORT_OPTIONS.find((opt) => opt.value === sortBy)?.label
+                  ? `Orden: ${SORT_OPTIONS.find((opt) => opt.value === sortBy).label}`
+                  : "Ordenar productos"
+              }
+              className={`inline-flex items-center justify-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-md border transition-all cursor-pointer ${
+                sortBy !== "default"
+                  ? "bg-[var(--color-primary-500)] text-[#ffffff] border-[var(--color-primary-600)]"
+                  : "bg-[var(--color-secondary-900)] text-[var(--color-primary-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border-[var(--color-secondary-800)]"
+              }`}
+            >
+              <Filter className="size-4" />
+            </button>
+          </DropdownTrigger>
+
+          <DropdownContent className="left-0 min-w-[185px]">
+            <p className="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-gray-400)]">
+              Ordenar por
+            </p>
+            <div className="space-y-0.5 mt-0.5">
+              {SORT_OPTIONS.map((option) => {
+                const isSelected = sortBy === option.value;
+                return (
+                  <DropdownItem
+                    key={option.value}
+                    onClick={() => setSortBy(option.value)}
+                    className={`flex items-center justify-between gap-2 text-xs sm:text-sm ${
+                      isSelected
+                        ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] font-semibold"
+                        : ""
+                    }`}
+                  >
+                    <span>{option.label}</span>
+                    {isSelected && <Check className="size-3.5 shrink-0" />}
+                  </DropdownItem>
+                );
+              })}
+            </div>
+          </DropdownContent>
+        </Dropdown>
 
         <div className="flex-1 min-w-0">
           <PosCategoryFilter
@@ -122,7 +158,11 @@ export default function PosProductsSection({ products = [], searchQuery = "", on
       {filteredProducts.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {filteredProducts.map((product) => (
-            <PosProductCard key={product.id} product={product} />
+            <PosProductCard
+              key={product.id}
+              product={product}
+              onSelect={onSelectProduct}
+            />
           ))}
         </div>
       ) : (

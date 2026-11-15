@@ -20,7 +20,7 @@ function getAuthHeaders() {
 }
 
 /**
- * Obtiene todas las comandas/órdenes desde PostgreSQL
+ * Obtiene la disponibilidad de mesas desde PostgreSQL
  */
 export async function getTablesAvailability() {
   try {
@@ -43,7 +43,7 @@ export async function getTablesAvailability() {
 }
 
 /**
- * Obtiene todas las comandas/órdenes desde PostgreSQL
+ * Obtiene todas las órdenes desde PostgreSQL
  */
 export async function getOrders({ status = null } = {}) {
   try {
@@ -70,7 +70,7 @@ export async function getOrders({ status = null } = {}) {
 }
 
 /**
- * Obtiene el detalle de una comanda por ID o número de orden con sus ítems
+ * Obtiene el detalle de una orden por ID o número de orden con sus ítems
  */
 export async function getOrderById(id) {
   try {
@@ -81,7 +81,7 @@ export async function getOrderById(id) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || "Error al obtener la comanda");
+      throw new Error(errorData.error || "Error al obtener la orden");
     }
 
     return await response.json();
@@ -92,7 +92,7 @@ export async function getOrderById(id) {
 }
 
 /**
- * Registra una nueva comanda/orden en PostgreSQL con sus ítems y descuenta stock
+ * Registra una nueva orden en PostgreSQL con sus ítems y descuenta stock
  */
 export async function createOrder(orderData) {
   try {
@@ -105,7 +105,7 @@ export async function createOrder(orderData) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || "Error al registrar la comanda en PostgreSQL");
+      throw new Error(data.error || "Error al registrar la orden en PostgreSQL");
     }
 
     return data;
@@ -116,7 +116,7 @@ export async function createOrder(orderData) {
 }
 
 /**
- * Actualiza una comanda existente
+ * Actualiza una orden existente
  */
 export async function updateOrder(id, orderData) {
   try {
@@ -129,7 +129,7 @@ export async function updateOrder(id, orderData) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || data.message || "Error al actualizar la comanda");
+      throw new Error(data.error || data.message || "Error al actualizar la orden");
     }
 
     return data;
@@ -140,7 +140,7 @@ export async function updateOrder(id, orderData) {
 }
 
 /**
- * Actualiza el estado de una comanda (Pagada / No Pagada / Anulada)
+ * Actualiza el estado de una orden (Pagada / No Pagada / Anulada)
  */
 export async function updateOrderStatus(id, status) {
   try {
@@ -153,7 +153,7 @@ export async function updateOrderStatus(id, status) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || "Error al actualizar el estado de la comanda");
+      throw new Error(data.error || "Error al actualizar el estado de la orden");
     }
 
     return data;
@@ -164,11 +164,11 @@ export async function updateOrderStatus(id, status) {
 }
 
 /**
- * Anula una comanda y restaura el stock en PostgreSQL
+ * Anula una orden y restaura el stock en PostgreSQL
  */
 export async function cancelOrder(id, reason = "Cancelada por usuario") {
   try {
-    const stepUpHeaders = await getAdminStepUpHeaders("Confirmar anulación de comanda");
+    const stepUpHeaders = await getAdminStepUpHeaders("Confirmar anulación de orden");
 
     const response = await fetch(`${ORDERS_URL}/${id}/cancel`, {
       method: "PATCH",
@@ -182,7 +182,7 @@ export async function cancelOrder(id, reason = "Cancelada por usuario") {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || "Error al anular la comanda");
+      throw new Error(data.error || "Error al anular la orden");
     }
 
     return data;

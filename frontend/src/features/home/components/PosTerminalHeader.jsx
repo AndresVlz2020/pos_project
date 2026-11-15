@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { API_URL } from "@/features/config";
 
 // KPIs operativos en tiempo real, conectados a PostgreSQL:
-// - Venta de Turno: suma de totales de las comandas de hoy (excluye anuladas)
-// - Comandas Cocina: comandas de hoy sin cerrar/pagar (en preparación/abierta)
+// - Venta de Turno: suma de totales de las órdenes de hoy (excluye anuladas)
+// - Órdenes Cocina: órdenes de hoy sin cerrar/pagar (en preparación/abierta)
 // - Mesas Ocupadas: mesas ocupadas / total de mesas (restaurant_tables)
 // - Personal Turno: colaboradores activos no administradores
 export default function PosTerminalHeader({
@@ -12,7 +12,7 @@ export default function PosTerminalHeader({
 }) {
   const [kpis, setKpis] = useState({
     ventasTurno: null,
-    comandasCocina: null,
+    ordenesCocina: null,
     mesasOcupadas: null,
     totalMesas: null,
     personalTurno: null,
@@ -62,7 +62,7 @@ export default function PosTerminalHeader({
         if (active) {
           setKpis({
             ventasTurno: ventas,
-            comandasCocina: activasCocina,
+            ordenesCocina: activasCocina,
             mesasOcupadas: occupied,
             totalMesas: Array.isArray(tables) ? tables.length : 0,
             personalTurno: activeOps,
@@ -101,11 +101,11 @@ export default function PosTerminalHeader({
 
           <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-2 sm:px-4 sm:py-3.5">
             <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Comandas Cocina
+              Órdenes Cocina
             </p>
             <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
               {kpiValue(
-                kpis.comandasCocina === null ? null : `${kpis.comandasCocina} activas`
+                kpis.ordenesCocina === null ? null : `${kpis.ordenesCocina} activas`
               )}
             </p>
           </div>

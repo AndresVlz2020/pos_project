@@ -1,4 +1,10 @@
 import OrderRowActions from "../components/OrderRowActions";
+import { PaymentMethodBadge } from "../components/PaymentMethodCards";
+import { TableIllustration } from "../components/TableSelectorGrid";
+import {
+  extractTableNumber,
+  normalizeOrderStatus,
+} from "../utils/orderFormHelpers";
 
 export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true } = {}) => [
   {
@@ -8,6 +14,24 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true }
   {
     accessorKey: "tableNumber",
     header: "Mesa",
+    cell: ({ row }) => {
+      const rawTable = row.original.tableNumber || row.original.table_number || "";
+      const tableNum = extractTableNumber({ tableNumber: rawTable, id: rawTable });
+      return (
+        <div
+          className="inline-flex items-center justify-center"
+          title={rawTable || `Mesa ${tableNum}`}
+          aria-label={rawTable || `Mesa ${tableNum}`}
+        >
+          <TableIllustration
+            number={tableNum || "—"}
+            isAvailable
+            isSelected={false}
+            sizeClassName="w-12 h-[38px]"
+          />
+        </div>
+      );
+    },
   },
   {
     accessorKey: "waiter",
@@ -40,18 +64,32 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true }
     },
   },
   {
-    accessorKey: "status",
+    id: "status",
+    accessorFn: (row) => {
+      const status = row.status || "No Pagada";
+      const method = row.paymentMethod || row.payment_method || "";
+      return status === "Pagada" && method ? `${status} ${method}` : status;
+    },
     header: "Estado",
     cell: ({ row }) => {
-      const status = row.original.status || "No Pagada";
-      const style = status === "Pagada"
-        ? "bg-[var(--color-white)]/10 text-[var(--color-white)] border-[var(--color-white)]/30"
-        : status === "Anulada"
-          ? "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
-          : "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40";
+      const rawStatus = row.original.status || "No Pagada";
+      const isCanceled = String(rawStatus).trim().toLowerCase() === "anulada";
+      const normalizedStatus = normalizeOrderStatus(rawStatus);
+
+      if (!isCanceled && normalizedStatus === "Pagada") {
+        return (
+          <PaymentMethodBadge
+            method={row.original.paymentMethod || row.original.payment_method}
+          />
+        );
+      }
+
+      const style = isCanceled
+        ? "bg-[var(--color-error-bg)] text-[var(--color-error)] border-[var(--color-error-border)]"
+        : "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40";
       return (
         <span className={`inline-block px-2.5 py-1 text-xs font-medium rounded-md border ${style}`}>
-          {status}
+          {isCanceled ? "Anulada" : normalizedStatus}
         </span>
       );
     },

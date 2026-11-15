@@ -104,23 +104,162 @@ export function mapWebAuthnError(err, fallback = "No se pudo completar la verifi
 }
 
 /**
- * Detecta compatibilidad real de WebAuthn y sensor biométrico local en el dispositivo actual.
+ * Detecta la plataforma cliente actual para impedir por completo Windows Hello
+ * y prompts biométricos nativos en equipos de escritorio (PC/Windows/macOS/Linux).
+ */
+export function detectClientPlatform() {
+  if (typeof navigator === "undefined") {
+    return { isDesktop: true, isWindows: false, isMobile: false };
+  }
+
+  const ua = String(navigator.userAgent || "").toLowerCase();
+  const uaData = navigator.userAgentData;
+  const uaPlatform = String(uaData?.platform || "").toLowerCase();
+  const maxTouch = Number(navigator.maxTouchPoints || 0);
+
+  const isWindows =
+    !ua.includes("windows phone") &&
+    (/windows nt|win64|wow64/.test(ua) || uaPlatform === "windows");
+
+  if (isWindows) {
+    return { isDesktop: true, isWindows: true, isMobile: false };
+  }
+
+  const isAndroid = /android/.test(ua) || uaPlatform === "android";
+  const isAppleTouch =
+    /iphone|ipad|ipod/.test(ua) ||
+    uaPlatform === "ios" ||
+    ((/macintosh/.test(ua) || uaPlatform === "macos") && maxTouch > 1);
+
+  const isMobile = Boolean(isAndroid || isAppleTouch || uaData?.mobile === true);
+  return {
+    isDesktop: !isMobile,
+    isWindows: false,
+    isMobile,
+  };
+}
+
+function getConfiguredPhysicalScannerUrl() {
+  const fromEnv = String(import.meta.env.VITE_PHYSICAL_SCANNER_URL || "").trim();
+  if (fromEnv) return fromEnv.replace(/\/+$/, "");
+
+  try {
+    const fromStorage = String(localStorage.getItem("pos_physical_scanner_url") || "").trim();
+    return fromStorage ? fromStorage.replace(/\/+$/, "") : "";
+  } catch {
+    return "";
+  }
+}
+
+async function probePhysicalScannerBridge() {
+  const baseUrl = getConfiguredPhysicalScannerUrl();
+  if (!baseUrl) {
+    return { configured: false, connected: false };
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 1200);
+
+  try {
+    const res = await fetch(`${baseUrl}/health`, {
+      method: "GET",
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!res.ok) return { configured: true, connected: false };
+    const data = await res.json().catch(() => ({}));
+    const connected = Boolean(
+      data?.readerConnected ?? data?.hardwareDetected ?? data?.connected
+    );
+    return { configured: true, connected };
+  } catch {
+    return { configured: true, connected: false };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Identifica si el equipo cuenta con biometría permitida y segura.
+ * - En PC/Windows bloquea Windows Hello / passkeys de escritorio para evitar
+ *   prompts molestos o fallback con PIN de Windows.
+ * - Solo habilita WebAuthn en dispositivos móviles/tablets con sensor local,
+ *   mientras se integre un SDK de lector físico USB en caja.
  */
 export async function getBiometricCapabilities() {
   const secureContext = typeof window !== "undefined" ? Boolean(window.isSecureContext) : false;
+  const platform = detectClientPlatform();
+
+  if (platform.isDesktop) {
+    const physical = await probePhysicalScannerBridge();
+    return {
+      supported: false,
+      platformAvailable: false,
+      secureContext,
+      isDesktop: true,
+      isWindows: platform.isWindows,
+      mode: "none",
+      physicalScannerConfigured: physical.configured,
+      physicalScannerConnected: physical.connected,
+      reason: physical.configured
+        ? "pc_physical_bridge_pending_sdk"
+        : "pc_no_physical_scanner",
+    };
+  }
+
   if (!secureContext) {
-    return { supported: false, platformAvailable: false, secureContext: false };
+    return {
+      supported: false,
+      platformAvailable: false,
+      secureContext: false,
+      isDesktop: false,
+      isWindows: false,
+      mode: "none",
+      physicalScannerConfigured: false,
+      physicalScannerConnected: false,
+      reason: "insecure_context",
+    };
   }
 
   try {
     const supported = browserSupportsWebAuthn();
     if (!supported) {
-      return { supported: false, platformAvailable: false, secureContext: true };
+      return {
+        supported: false,
+        platformAvailable: false,
+        secureContext: true,
+        isDesktop: false,
+        isWindows: false,
+        mode: "none",
+        physicalScannerConfigured: false,
+        physicalScannerConnected: false,
+        reason: "webauthn_unsupported",
+      };
     }
     const platformAvailable = await platformAuthenticatorIsAvailable();
-    return { supported: true, platformAvailable: Boolean(platformAvailable), secureContext: true };
+    return {
+      supported: true,
+      platformAvailable: Boolean(platformAvailable),
+      secureContext: true,
+      isDesktop: false,
+      isWindows: false,
+      mode: platformAvailable ? "mobile-webauthn" : "none",
+      physicalScannerConfigured: false,
+      physicalScannerConnected: false,
+      reason: platformAvailable ? "mobile_sensor_ready" : "mobile_no_biometrics",
+    };
   } catch {
-    return { supported: false, platformAvailable: false, secureContext };
+    return {
+      supported: false,
+      platformAvailable: false,
+      secureContext,
+      isDesktop: false,
+      isWindows: false,
+      mode: "none",
+      physicalScannerConfigured: false,
+      physicalScannerConnected: false,
+      reason: "probe_error",
+    };
   }
 }
 
@@ -136,7 +275,16 @@ export async function deleteMyBiometricApi(id) {
   });
 }
 
+function assertNonDesktopBiometricAllowed() {
+  if (detectClientPlatform().isDesktop) {
+    throw new Error(
+      "Windows Hello y passkeys de escritorio están deshabilitados por seguridad en PC."
+    );
+  }
+}
+
 export async function enrollMyBiometricApi(deviceLabel = "") {
+  assertNonDesktopBiometricAllowed();
   const { options } = await apiJson("/auth/webauthn/register/options", {
     method: "POST",
     auth: true,
@@ -171,6 +319,7 @@ export async function getUserBiometricStatusApi(userId) {
 }
 
 export async function loginWithBiometricsApi({ userId, email }) {
+  assertNonDesktopBiometricAllowed();
   const { options } = await apiJson("/auth/webauthn/login/options", {
     method: "POST",
     body: { userId, email },
@@ -201,6 +350,7 @@ export async function getAdminStepUpOptionsApi() {
 }
 
 export async function verifyAdminStepUpWithBiometricsApi(options) {
+  assertNonDesktopBiometricAllowed();
   let assertionResponse;
   try {
     assertionResponse = await startAuthentication({ optionsJSON: options });

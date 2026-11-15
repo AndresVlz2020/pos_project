@@ -6,7 +6,7 @@ import PosInfoCard from "./PosInfoCard";
 import { API_URL } from "@/features/config";
 
 // Reemplazo del listado ficticio de clientes por datos REALES del POS:
-// comandas registradas y totales del turno, conectados a PostgreSQL.
+// órdenes registradas y totales del turno, conectados a PostgreSQL.
 export default function PosCustomersPanel() {
   const [query, setQuery] = useState("");
   const [orders, setOrders] = useState([]);
@@ -75,12 +75,12 @@ export default function PosCustomersPanel() {
     <div className="space-y-4">
       <PosSectionHeader
         icon={Receipt}
-        title="Comandas & Facturación del turno"
-        subtitle="Comandas registradas en tiempo real."
+        title="Órdenes & Facturación del turno"
+        subtitle="Órdenes registradas en tiempo real."
         searchQuery={query}
         onSearchChange={setQuery}
         searchPlaceholder="Buscar por número, mesa, mesero o estado..."
-        actionLabel="Nueva Comanda"
+        actionLabel="Nueva Orden"
         actionIcon={Plus}
         actionLink="/CreateOrder"
       />
@@ -97,7 +97,7 @@ export default function PosCustomersPanel() {
         </div>
         <div className="rounded-md border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] px-2 py-2 text-center">
           <p className="text-[9px] uppercase tracking-wider text-[var(--color-gray-400)] font-semibold">
-            Comandas hoy
+            Órdenes hoy
           </p>
           <p className="text-sm font-bold text-[var(--color-white)] mt-0.5">
             {todayOrders.length}
@@ -116,8 +116,8 @@ export default function PosCustomersPanel() {
       <PosCardGrid
         emptyMessage={
           loading
-            ? "Cargando comandas desde la base de datos..."
-            : "No se encontraron comandas con el criterio de búsqueda."
+            ? "Cargando órdenes desde la base de datos..."
+            : "No se encontraron órdenes con el criterio de búsqueda."
         }
       >
         {filtered.map((order) => (

@@ -10,6 +10,21 @@ function sanitizeMessage(str) {
     .trim();
 }
 
+function getUnifiedCustomClass({ isDestructive = false } = {}) {
+  return {
+    container: "dpiero-swal-container",
+    popup: "dpiero-swal-popup dpiero-modal-in",
+    title: "dpiero-swal-title",
+    htmlContainer: "dpiero-swal-html",
+    actions: "dpiero-swal-actions",
+    confirmButton: `dpiero-swal-btn ${
+      isDestructive ? "dpiero-swal-btn-danger" : "dpiero-swal-btn-primary"
+    }`,
+    cancelButton: "dpiero-swal-btn dpiero-swal-btn-cancel",
+    timerProgressBar: "dpiero-swal-progress",
+  };
+}
+
 export function showSuccessAlert({
   title = "Éxito",
   text = "",
@@ -23,12 +38,7 @@ export function showSuccessAlert({
     confirmButtonText,
     timer,
     timerProgressBar: true,
-    customClass: {
-      popup: "rounded-2xl bg-[#0F152D] text-white border border-[#1B2246]",
-      title: "text-emerald-400 font-bold",
-      htmlContainer: "text-gray-300 text-sm",
-      confirmButton: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors cursor-pointer",
-    },
+    customClass: getUnifiedCustomClass({ isDestructive: false }),
     buttonsStyling: false,
   });
 }
@@ -53,12 +63,7 @@ export function showErrorAlert({
     title: sanitizeMessage(title) || "Error inesperado",
     text: sanitizeMessage(cleanText),
     confirmButtonText,
-    customClass: {
-      popup: "rounded-2xl bg-[#0F152D] text-white border border-[#1B2246]",
-      title: "text-red-400 font-bold",
-      htmlContainer: "text-gray-300 text-sm",
-      confirmButton: "bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors cursor-pointer",
-    },
+    customClass: getUnifiedCustomClass({ isDestructive: true }),
     buttonsStyling: false,
   });
 }
@@ -73,12 +78,7 @@ export function showWarningAlert({
     title: sanitizeMessage(title),
     text: sanitizeMessage(text),
     confirmButtonText,
-    customClass: {
-      popup: "rounded-2xl bg-[#0F152D] text-white border border-[#1B2246]",
-      title: "text-amber-400 font-bold",
-      htmlContainer: "text-gray-300 text-sm",
-      confirmButton: "bg-amber-600 hover:bg-amber-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors cursor-pointer",
-    },
+    customClass: getUnifiedCustomClass({ isDestructive: false }),
     buttonsStyling: false,
   });
 }
@@ -98,15 +98,7 @@ export function showConfirmAlert({
     confirmButtonText,
     cancelButtonText,
     reverseButtons: true,
-    customClass: {
-      popup: "rounded-2xl bg-[#0F152D] text-white border border-[#1B2246]",
-      title: "text-white font-bold",
-      htmlContainer: "text-gray-300 text-sm",
-      confirmButton: `${
-        isDestructive ? "bg-red-600 hover:bg-red-700" : "bg-[#B3673E] hover:bg-[#8C5132]"
-      } text-white font-semibold px-5 py-2.5 rounded-lg transition-colors cursor-pointer ml-3`,
-      cancelButtonText: "bg-[#1B2246] hover:bg-[#232B58] text-gray-200 font-semibold px-5 py-2.5 rounded-lg transition-colors cursor-pointer",
-    },
+    customClass: getUnifiedCustomClass({ isDestructive }),
     buttonsStyling: false,
   });
 }

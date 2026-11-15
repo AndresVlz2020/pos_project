@@ -37,7 +37,7 @@ export const posStaff = [
     role: "Cocinero",
     shift: "Turno Completo",
     station: "Cocina",
-    status: "En comanda",
+    status: "En preparación",
     phone: "300 123 4567",
     image: imgWorkerJuan
   },

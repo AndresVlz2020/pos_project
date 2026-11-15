@@ -66,7 +66,7 @@ export async function forgotPasswordApi(email) {
     return data;
   } catch (err) {
     if (err.name === "TypeError" || err.message?.includes("fetch")) {
-      throw new Error("Error inesperado de conexión con el servidor backend.");
+      throw new Error("Error inesperado de conexión con el servidor backend.", { cause: err });
     }
     throw err;
   }
@@ -101,16 +101,18 @@ export async function resetPasswordApi(params, maybePassword) {
     return data;
   } catch (err) {
     if (err.name === "TypeError" || err.message?.includes("fetch")) {
-      throw new Error("Error inesperado de conexión con el servidor backend.");
+      throw new Error("Error inesperado de conexión con el servidor backend.", { cause: err });
     }
     throw err;
   }
 }
 
 import { endCurrentSession } from "./sessionService";
+import { clearAllOrderDrafts } from "@/features/orders/utils/orderDraftStorage";
 
 export function logout() {
   endCurrentSession();
+  clearAllOrderDrafts();
   localStorage.removeItem("auth_user");
   localStorage.removeItem("auth_token");
   sessionStorage.removeItem("user");

@@ -20,7 +20,7 @@ export const orderRepository = {
         o.table_number,
         o.table_number AS "tableNumber",
         o.waiter_id,
-        COALESCE(u.user_name, 'Mesero General') AS waiter,
+        COALESCE(u.user_name, 'Sin asignar') AS waiter,
         o.status,
         o.status AS "orderStatus",
         o.observations,
@@ -69,7 +69,7 @@ export const orderRepository = {
         o.table_number,
         o.table_number AS "tableNumber",
         o.waiter_id,
-        COALESCE(u.user_name, 'Mesero General') AS waiter,
+        COALESCE(u.user_name, 'Sin asignar') AS waiter,
         o.status,
         o.status AS "orderStatus",
         o.observations,
@@ -121,11 +121,21 @@ export const orderRepository = {
         orderNumber = `ORD-${String(nextId).padStart(3, "0")}`;
       }
 
-      let waiterId = data.waiterId || null;
-      if (!waiterId && data.waiter) {
+      let waiterId = null;
+      const rawWaiterId = Number(data.waiterId);
+      if (Number.isInteger(rawWaiterId) && rawWaiterId > 0) {
+        const userByIdRes = await client.query(
+          "SELECT id FROM users WHERE id = $1 LIMIT 1",
+          [rawWaiterId]
+        );
+        if (userByIdRes.rows[0]) waiterId = userByIdRes.rows[0].id;
+      }
+
+      if (!waiterId && (data.waiter || data.waiterName)) {
+        const waiterText = String(data.waiter || data.waiterName).trim();
         const userRes = await client.query(
           "SELECT id FROM users WHERE LOWER(user_name) LIKE LOWER($1) LIMIT 1",
-          [`%${data.waiter}%`]
+          [`%${waiterText}%`]
         );
         if (userRes.rows[0]) waiterId = userRes.rows[0].id;
       }
@@ -227,6 +237,7 @@ export const orderRepository = {
       const tableNumber = data.tableNumber || current.table_number;
       const status = data.status || data.orderStatus || current.status;
       const observations = data.observations !== undefined ? data.observations : current.observations;
+      const waiterId = data.waiterId ? Number(data.waiterId) : null;
       // Conservar método de pago si no se envía uno nuevo
       const paymentMethod =
         data.paymentMethod !== undefined ? data.paymentMethod
@@ -274,9 +285,9 @@ export const orderRepository = {
 
       await client.query(
         `UPDATE orders
-         SET table_number = $1, status = $2, observations = $3, total_amount = $4, payment_method = $5, updated_at = NOW()
-         WHERE id = $6;`,
-        [tableNumber, status, observations, totalAmount, paymentMethod, current.numericId]
+         SET table_number = $1, status = $2, observations = $3, total_amount = $4, payment_method = $5, waiter_id = COALESCE(waiter_id, $6), updated_at = NOW()
+         WHERE id = $7;`,
+        [tableNumber, status, observations, totalAmount, paymentMethod, waiterId, current.numericId]
       );
 
       await this.syncTableStatus(client, current.table_number);
@@ -313,14 +324,15 @@ export const orderRepository = {
     );
   },
 
-  async updateStatus(orderIdentifier, newStatus) {
+  async updateStatus(orderIdentifier, newStatus, waiterId = null) {
+    const uid = waiterId ? Number(waiterId) : null;
     const query = `
       UPDATE orders
-      SET status = $1, updated_at = NOW()
+      SET status = $1, waiter_id = COALESCE(waiter_id, $3), updated_at = NOW()
       WHERE order_number = $2 OR (CASE WHEN $2 ~ '^[0-9]+$' THEN id = $2::int ELSE FALSE END)
       RETURNING *;
     `;
-    const result = await pool.query(query, [newStatus, String(orderIdentifier)]);
+    const result = await pool.query(query, [newStatus, String(orderIdentifier), uid]);
     if (!result.rows[0]) return null;
     await this.syncTableStatus(pool, result.rows[0].table_number);
     return await this.findById(result.rows[0].order_number);

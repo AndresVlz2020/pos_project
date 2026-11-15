@@ -238,4 +238,137 @@ html.theme-light .logo-light-theme {
   }
 }
 
+/* Estilo unificado D'Piero POS para todas las alertas SweetAlert2
+   (alineado con las confirmaciones de habilitar/inhabilitar en tema claro y oscuro) */
+.dpiero-swal-container {
+  --swal2-backdrop: rgba(11, 19, 43, 0.72);
+  --swal2-background: var(--color-secondary-900);
+  --swal2-color: var(--color-white);
+  --swal2-border: 1px solid var(--color-secondary-700);
+  --swal2-border-radius: 0.75rem;
+  --swal2-width: min(27rem, calc(100vw - 2rem));
+  --swal2-padding: 1.5rem;
+  --swal2-title-padding: 0.25rem 0 0;
+  --swal2-html-container-padding: 0.6rem 0 0;
+  --swal2-actions-margin: 1.35rem 0 0;
+  --swal2-timer-progress-bar-background: var(--color-primary-500);
+  backdrop-filter: blur(4px);
+}
+
+.dpiero-swal-container .dpiero-swal-popup {
+  background: var(--color-secondary-900);
+  color: var(--color-white);
+  border: 1px solid var(--color-secondary-700);
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+  font-family: var(--main-font);
+}
+
+.dpiero-swal-container .dpiero-swal-title {
+  color: var(--color-white);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.dpiero-swal-container .dpiero-swal-html {
+  color: var(--color-gray-300);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.dpiero-swal-container .swal2-icon {
+  transform: scale(0.82);
+  margin: 0 auto 0.35rem;
+}
+
+.dpiero-swal-container .swal2-icon.swal2-question {
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-400);
+}
+
+.dpiero-swal-container .swal2-icon.swal2-warning {
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.dpiero-swal-container .swal2-icon.swal2-error {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.dpiero-swal-container .swal2-icon.swal2-error [class^="swal2-x-mark-line"] {
+  background-color: var(--color-error);
+}
+
+.dpiero-swal-container .swal2-icon.swal2-success {
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.dpiero-swal-container .swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.dpiero-swal-container .swal2-icon.swal2-success [class^="swal2-success-line"] {
+  background-color: var(--color-success);
+}
+
+.dpiero-swal-container .dpiero-swal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.dpiero-swal-container .dpiero-swal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, opacity 150ms ease;
+  cursor: pointer;
+}
+
+.dpiero-swal-container .dpiero-swal-btn-primary {
+  background-color: var(--color-primary-500);
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+.dpiero-swal-container .dpiero-swal-btn-primary:hover {
+  background-color: var(--color-primary-600);
+}
+
+.dpiero-swal-container .dpiero-swal-btn-danger {
+  background-color: var(--color-error);
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+.dpiero-swal-container .dpiero-swal-btn-danger:hover {
+  background-color: #dc2626;
+}
+
+.dpiero-swal-container .dpiero-swal-btn-cancel {
+  background-color: var(--color-secondary-900);
+  color: var(--color-gray-200);
+  border: 1px solid var(--color-secondary-700);
+}
+
+.dpiero-swal-container .dpiero-swal-btn-cancel:hover {
+  background-color: var(--color-secondary-800);
+  color: var(--color-white);
+  border-color: var(--color-secondary-600);
+}
+
+.dpiero-swal-container .dpiero-swal-progress {
+  background: var(--color-primary-500);
+}
+
 

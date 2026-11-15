@@ -40,6 +40,7 @@ const SearchField = forwardRef(
             name = "search",
             ariaLabel = "Campo de búsqueda",
             autoComplete = "off",
+            asForm = true,
             icon,
             className,
         },
@@ -60,9 +61,20 @@ const SearchField = forwardRef(
             if (onSubmit) onSubmit(value);
         };
 
+        const handleKeyDown = (e) => {
+            if (!asForm && e.key === "Enter") {
+                e.preventDefault();
+                if (!disabled && !loading && onSubmit) {
+                    onSubmit(value);
+                }
+            }
+        };
+
+        const Container = asForm ? "form" : "div";
+
         return (
-            <form
-                onSubmit={handleSubmit}
+            <Container
+                {...(asForm ? { onSubmit: handleSubmit } : {})}
                 className={clsx(
                     baseStyles,
                     sizeStyles[size],
@@ -95,6 +107,7 @@ const SearchField = forwardRef(
                     aria-label={ariaLabel}
                     autoComplete={autoComplete}
                     onChange={(e) => onChange(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className="search__input flex-1 bg-transparent px-3 outline-none text-[var(--color-white)] placeholder:text-[var(--color-gray-400)] font-medium"
                 />
 
@@ -108,7 +121,7 @@ const SearchField = forwardRef(
                         <X className="size-4" />
                     </button>
                 )}
-            </form>
+            </Container>
         );
     }
 );
