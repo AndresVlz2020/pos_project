@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Clock, X, RefreshCw, Search, Calendar } from "lucide-react";
+import { Clock, X, RefreshCw, Users, Calendar } from "lucide-react";
 import { getSessionHistory, formatDuration } from "@/services/sessionService";
+import { getUsers } from "@/services/userService";
 import {
   toLocalDateKey,
   getSessionElapsedSeconds,
   formatTotalHours,
+  extractWorkerOptions,
   filterSessionRows,
   summarizeSessionsByDay,
 } from "@/shared/utils/sessionHistoryHelpers";
@@ -19,8 +21,10 @@ const DATE_PRESETS = [
 
 export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }) {
   const [rows, setRows] = useState([]);
+  const [directoryUsers, setDirectoryUsers] = useState([]);
+  const [loadedAtMs, setLoadedAtMs] = useState(() => Date.now());
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [selectedWorkerId, setSelectedWorkerId] = useState("");
   const [datePreset, setDatePreset] = useState("all");
   const [specificDate, setSpecificDate] = useState("");
   const [viewMode, setViewMode] = useState("sessions");
@@ -29,14 +33,21 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
   const loadHistory = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getSessionHistory();
-      setRows(Array.isArray(data) ? data : []);
+      const [historyData, usersData] = await Promise.all([
+        getSessionHistory(),
+        isAdmin ? getUsers().catch(() => []) : Promise.resolve([]),
+      ]);
+      const syncMs = Date.now();
+      setRows(Array.isArray(historyData) ? historyData : []);
+      setDirectoryUsers(Array.isArray(usersData) ? usersData : []);
+      setLoadedAtMs(syncMs);
+      setNowMs(syncMs);
     } catch {
       setRows([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -59,35 +70,45 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
 
   if (!isOpen) return null;
 
+  const workers = isAdmin ? extractWorkerOptions(rows, directoryUsers) : [];
+  const selectedWorker = workers.find((w) => w.id === selectedWorkerId) || null;
+
   const filtered = filterSessionRows(rows, {
-    search,
+    workerId: isAdmin ? selectedWorkerId : "",
     datePreset,
     specificDate,
     nowMs,
   });
 
   const totalSeconds = filtered.reduce(
-    (sum, row) => sum + getSessionElapsedSeconds(row, nowMs),
+    (sum, row) => sum + getSessionElapsedSeconds(row, nowMs, loadedAtMs),
     0
   );
 
   const todayKey = toLocalDateKey(nowMs);
   const todaySeconds = filtered.reduce((sum, row) => {
     if (toLocalDateKey(row.startedAt) !== todayKey) return sum;
-    return sum + getSessionElapsedSeconds(row, nowMs);
+    return sum + getSessionElapsedSeconds(row, nowMs, loadedAtMs);
   }, 0);
 
-  const dailySummary = summarizeSessionsByDay(filtered, nowMs);
+  const dailySummary = summarizeSessionsByDay(filtered, nowMs, loadedAtMs);
   const maxDaySeconds = Math.max(
     1,
     ...dailySummary.map((day) => day.totalSeconds)
   );
 
+  const hasWorkerFilter = Boolean(isAdmin && selectedWorkerId);
   const hasDateFilter = Boolean(specificDate) || datePreset !== "all";
+  const hasAnyFilter = hasWorkerFilter || hasDateFilter;
 
   const handleClearDateFilter = () => {
     setSpecificDate("");
     setDatePreset("all");
+  };
+
+  const handleClearAllFilters = () => {
+    setSelectedWorkerId("");
+    handleClearDateFilter();
   };
 
   const handleSelectDayFromSummary = (dateKey) => {
@@ -117,7 +138,9 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
               </h2>
               <p className="text-xs text-[var(--color-gray-400)] truncate">
                 {isAdmin
-                  ? "Entradas, salidas y horas trabajadas del personal."
+                  ? selectedWorker
+                    ? `Turnos y horas acumuladas de ${selectedWorker.userName}.`
+                    : "Entradas, salidas y horas trabajadas del personal."
                   : "Consulta tus turnos y horas acumuladas."}
               </p>
             </div>
@@ -143,37 +166,32 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
           </div>
         </div>
 
-        {/* Barra de búsqueda + pequeño filtro de fecha */}
-        <div className="px-4 sm:px-5 py-2.5 border-b border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]/50 flex flex-col sm:flex-row gap-2">
-          <div className="relative flex-1">
-            <Search className="size-3.5 text-[var(--color-gray-400)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              name="session-history-search"
-              autoComplete="off"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={
-                isAdmin
-                  ? "Buscar por colaborador, cargo, fecha (ej. 15/11) o estado..."
-                  : "Buscar por fecha (ej. 15/11) o estado..."
-              }
-              aria-label="Buscar turnos"
-              className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)]"
-            />
-            {search && (
-              <button
-                type="button"
-                onClick={() => setSearch("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-gray-400)] hover:text-[var(--color-white)] cursor-pointer"
-                aria-label="Limpiar búsqueda"
+        {/* Selección por trabajador (Admin) + filtro de fecha */}
+        <div className="px-4 sm:px-5 py-2.5 border-b border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]/50 flex flex-col sm:flex-row sm:items-center gap-2">
+          {isAdmin && (
+            <div className="relative flex-1 min-w-0">
+              <Users className="size-3.5 text-[var(--color-gray-400)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <select
+                value={selectedWorkerId}
+                onChange={(e) => setSelectedWorkerId(e.target.value)}
+                aria-label="Filtrar por trabajador"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] cursor-pointer truncate"
               >
-                <X className="size-3.5" />
-              </button>
-            )}
-          </div>
+                <option value="">Todos los trabajadores ({workers.length})</option>
+                {workers.map((worker) => (
+                  <option key={worker.id} value={worker.id}>
+                    {worker.userName} ({worker.userType || "Personal"})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div
+            className={`flex items-center gap-1.5 shrink-0 ${
+              !isAdmin ? "sm:ml-auto" : ""
+            }`}
+          >
             <select
               value={specificDate ? "custom" : datePreset}
               onChange={(e) => {
@@ -209,13 +227,13 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
               />
             </div>
 
-            {hasDateFilter && (
+            {hasAnyFilter && (
               <button
                 type="button"
-                onClick={handleClearDateFilter}
+                onClick={handleClearAllFilters}
                 className="p-1.5 rounded-lg border border-[var(--color-secondary-700)] bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] cursor-pointer transition"
-                title="Quitar filtro de fecha"
-                aria-label="Quitar filtro de fecha"
+                title="Limpiar filtros"
+                aria-label="Limpiar filtros"
               >
                 <X className="size-3.5" />
               </button>
@@ -289,14 +307,15 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
             </div>
           ) : filtered.length === 0 ? (
             <div className="py-10 text-center text-sm text-[var(--color-gray-400)] space-y-2">
-              <p>No hay turnos que coincidan con el filtro seleccionado.</p>
-              {(search || hasDateFilter) && (
+              <p>
+                {selectedWorker
+                  ? `No hay turnos registrados para ${selectedWorker.userName} con el filtro seleccionado.`
+                  : "No hay turnos que coincidan con el filtro seleccionado."}
+              </p>
+              {hasAnyFilter && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setSearch("");
-                    handleClearDateFilter();
-                  }}
+                  onClick={handleClearAllFilters}
                   className="text-xs font-semibold text-[var(--color-primary-400)] hover:underline cursor-pointer"
                 >
                   Limpiar filtros
@@ -356,9 +375,24 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                     {isAdmin && day.users.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-0.5">
                         {day.users.map((u) => (
-                          <span
+                          <button
                             key={u.userKey}
-                            className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-gray-300)]"
+                            type="button"
+                            onClick={() =>
+                              setSelectedWorkerId((prev) =>
+                                prev === u.userKey ? "" : u.userKey
+                              )
+                            }
+                            title={
+                              selectedWorkerId === u.userKey
+                                ? "Mostrar todos los trabajadores"
+                                : `Ver solo horas de ${u.userName}`
+                            }
+                            className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded border cursor-pointer transition ${
+                              selectedWorkerId === u.userKey
+                                ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/50 text-[var(--color-white)]"
+                                : "bg-[var(--color-secondary-900)] border-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:border-[var(--color-primary-500)]/40"
+                            }`}
                           >
                             <span className="font-medium text-[var(--color-white)]">
                               {u.userName}
@@ -367,7 +401,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                             <span className="font-mono text-[var(--color-primary-300)]">
                               {formatTotalHours(u.totalSeconds)}
                             </span>
-                          </span>
+                          </button>
                         ))}
                       </div>
                     )}
@@ -380,7 +414,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
               {/* Tarjetas en teléfono */}
               <div className="sm:hidden space-y-2.5">
                 {filtered.map((row) => {
-                  const elapsed = getSessionElapsedSeconds(row, nowMs);
+                  const elapsed = getSessionElapsedSeconds(row, nowMs, loadedAtMs);
                   return (
                     <div
                       key={row.id}
@@ -443,17 +477,33 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                   </thead>
                   <tbody className="divide-y divide-[var(--color-secondary-800)]">
                     {filtered.map((row) => {
-                      const elapsed = getSessionElapsedSeconds(row, nowMs);
+                      const elapsed = getSessionElapsedSeconds(row, nowMs, loadedAtMs);
                       return (
                         <tr key={row.id} className="hover:bg-[var(--color-secondary-800)]/40">
                           {isAdmin && (
                             <td className="py-2.5 pr-3">
-                              <div className="font-semibold text-[var(--color-white)]">
-                                {row.userName}
-                              </div>
-                              <div className="text-[11px] text-[var(--color-gray-400)]">
-                                {row.userType || "Personal"}
-                              </div>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  row.userId &&
+                                  setSelectedWorkerId((prev) =>
+                                    prev === String(row.userId) ? "" : String(row.userId)
+                                  )
+                                }
+                                title={
+                                  selectedWorkerId === String(row.userId)
+                                    ? "Mostrar todos los trabajadores"
+                                    : `Filtrar por ${row.userName}`
+                                }
+                                className="text-left cursor-pointer group"
+                              >
+                                <div className="font-semibold text-[var(--color-white)] group-hover:text-[var(--color-primary-400)] transition">
+                                  {row.userName}
+                                </div>
+                                <div className="text-[11px] text-[var(--color-gray-400)]">
+                                  {row.userType || "Personal"}
+                                </div>
+                              </button>
                             </td>
                           )}
                           <td className="py-2.5 pr-3 font-mono text-[var(--color-gray-200)]">

@@ -18,8 +18,9 @@ const STATIONS = {
 export default function PosStaffPanel() {
   const [query, setQuery] = useState("");
   const [staff, setStaff] = useState([]);
+  const [staffSyncedAt, setStaffSyncedAt] = useState(() => Date.now());
   const [loading, setLoading] = useState(true);
-  const [, setTick] = useState(0);
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   useEffect(() => {
@@ -29,7 +30,10 @@ export default function PosStaffPanel() {
       try {
         const data = await getActiveStaffSessions();
         if (active) {
+          const syncMs = Date.now();
           setStaff(Array.isArray(data) ? data : []);
+          setStaffSyncedAt(syncMs);
+          setNowMs(syncMs);
           setLoading(false);
         }
       } catch {
@@ -42,7 +46,7 @@ export default function PosStaffPanel() {
 
     loadActive();
     const pollId = setInterval(loadActive, 15000);
-    const tickId = setInterval(() => setTick((t) => t + 1), 1000);
+    const tickId = setInterval(() => setNowMs(Date.now()), 1000);
 
     return () => {
       active = false;
@@ -95,9 +99,9 @@ export default function PosStaffPanel() {
         {filtered.map((member) => {
           const role = member.userType || "Operativo";
           const station = STATIONS[role.toLowerCase()] || "Operativo";
-          const elapsed = member.startedAt
-            ? Math.max(0, Math.floor((Date.now() - new Date(member.startedAt).getTime()) / 1000))
-            : member.durationSeconds || 0;
+          const elapsed =
+            Math.max(0, Number(member.durationSeconds) || 0) +
+            Math.max(0, Math.floor((nowMs - staffSyncedAt) / 1000));
 
           return (
             <PosInfoCard

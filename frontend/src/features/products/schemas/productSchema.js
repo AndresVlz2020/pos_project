@@ -15,6 +15,16 @@ export const productSchema = z.object({
       return !isNaN(num) && num > 0;
     }, "El precio del platillo debe ser un valor numérico positivo mayor a 0"),
 
+  productStock: z
+    .string()
+    .trim()
+    .min(1, "El stock del producto es requerido")
+    .refine((val) => {
+      if (!/^\d+$/.test(val)) return false;
+      const num = Number(val);
+      return Number.isInteger(num) && num >= 0;
+    }, "El stock debe ser un número entero mayor o igual a 0"),
+
   productCategory: z
     .string()
     .min(1, "Debe seleccionar una categoría previamente registrada en el sistema"),

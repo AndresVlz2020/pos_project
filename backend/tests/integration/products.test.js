@@ -57,15 +57,34 @@ describe("actualización y estado de producto", () => {
     const res = await api
       .put(`/api/products/${id}`)
       .set(auth(adminToken))
-      .send({ price: 15000, description: "nueva descripción" });
+      .send({ price: 15000, description: "nueva descripción", stock: 25 });
     expect(res.status).toBe(200);
+    expect(Number(res.body.product.stock)).toBe(25);
 
     const row = await one(
-      "SELECT price::numeric AS price, description FROM products WHERE id = $1",
+      "SELECT price::numeric AS price, description, stock FROM products WHERE id = $1",
       [id]
     );
     expect(Number(row.price)).toBe(15000);
     expect(row.description).toBe("nueva descripción");
+    expect(Number(row.stock)).toBe(25);
+  });
+
+  it("PUT rechaza stock negativo (400)", async () => {
+    const created = await api.post("/api/products").set(auth(adminToken)).send({
+      name: "TEST Stock Negativo",
+      price: 12000,
+      code: "TEST-PROD-02B",
+      stock: 5,
+    });
+    const id = created.body.product.id;
+
+    const res = await api
+      .put(`/api/products/${id}`)
+      .set(auth(adminToken))
+      .send({ stock: -3 });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/stock/i);
   });
 
   it("PATCH status cambia disponibilidad (Disponible ↔ Inactivo)", async () => {

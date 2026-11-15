@@ -50,7 +50,7 @@ export default function Navbar() {
   const [canViewInventory, setCanViewInventory] = useState(
     initialIsAdmin || isCajero
   );
-  const [sessionStartedAt, setSessionStartedAt] = useState(null);
+  const [sessionAnchor, setSessionAnchor] = useState(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isBiometricsOpen, setIsBiometricsOpen] = useState(false);
@@ -64,11 +64,13 @@ export default function Navbar() {
       localStorage.getItem("auth_token") || sessionStorage.getItem("token");
 
     if (!token) {
-      setIsAdmin(false);
-      setCanViewUsers(false);
-      setCanViewInventory(false);
-      setCanViewSuppliers(false);
-      setCanCreateOrder(false);
+      Promise.resolve().then(() => {
+        setIsAdmin(false);
+        setCanViewUsers(false);
+        setCanViewInventory(false);
+        setCanViewSuppliers(false);
+        setCanCreateOrder(false);
+      });
       return;
     }
 
@@ -115,42 +117,73 @@ export default function Navbar() {
     navigate("/Auth");
   };
 
+  const currentUserId = currentUser?.id || null;
+
   // Seguimiento de sesión en tiempo real solo para personal no administrador
   useEffect(() => {
-    if (!currentUser || isAdmin) {
-      setSessionStartedAt(null);
+    if (!currentUserId || isAdmin) {
+      Promise.resolve().then(() => {
+        setSessionAnchor(null);
+        setElapsedSeconds(0);
+      });
       return;
     }
 
     let active = true;
 
-    getCurrentSession()
-      .then((data) => {
-        if (!active || !data?.session?.startedAt) return;
-        setSessionStartedAt(data.session.startedAt);
-        const startMs = new Date(data.session.startedAt).getTime();
-        setElapsedSeconds(Math.max(0, Math.floor((Date.now() - startMs) / 1000)));
-      })
-      .catch(() => {});
+    const applySession = (session) => {
+      if (!active || !session?.startedAt) return;
+      const baseSeconds = Math.max(
+        0,
+        Math.floor(Number(session.durationSeconds) || 0)
+      );
+      setSessionAnchor({
+        startedAt: session.startedAt,
+        baseSeconds,
+        syncedAtMs: Date.now(),
+      });
+      setElapsedSeconds(baseSeconds);
+    };
+
+    const syncCurrent = () => {
+      getCurrentSession()
+        .then((data) => applySession(data?.session))
+        .catch(() => {});
+    };
+
+    syncCurrent();
 
     const hbId = setInterval(() => {
-      sendSessionHeartbeat().catch(() => {});
+      sendSessionHeartbeat()
+        .then((data) => applySession(data?.session))
+        .catch(() => {});
     }, 45000);
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        syncCurrent();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       active = false;
       clearInterval(hbId);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [isAdmin, currentUser?.id]);
+  }, [isAdmin, currentUserId]);
 
   useEffect(() => {
-    if (!sessionStartedAt || isAdmin) return;
-    const startMs = new Date(sessionStartedAt).getTime();
+    if (!sessionAnchor || isAdmin) return;
     const tickId = setInterval(() => {
-      setElapsedSeconds(Math.max(0, Math.floor((Date.now() - startMs) / 1000)));
+      const delta = Math.max(
+        0,
+        Math.floor((Date.now() - sessionAnchor.syncedAtMs) / 1000)
+      );
+      setElapsedSeconds(sessionAnchor.baseSeconds + delta);
     }, 1000);
     return () => clearInterval(tickId);
-  }, [sessionStartedAt, isAdmin]);
+  }, [sessionAnchor, isAdmin]);
 
   return (
     <>
@@ -181,7 +214,7 @@ export default function Navbar() {
                   <span className="text-[9px] text-[var(--color-primary-400)] font-semibold truncate">
                     {currentUser.role}
                   </span>
-                  {!isAdmin && sessionStartedAt && (
+                  {!isAdmin && sessionAnchor && (
                     <button
                       type="button"
                       onClick={() => setIsHistoryOpen(true)}
@@ -266,7 +299,7 @@ export default function Navbar() {
                 <span className="text-[10px] px-1.5 py-0.2 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-400)] font-semibold">
                   {currentUser.role}
                 </span>
-                {!isAdmin && sessionStartedAt && (
+                {!isAdmin && sessionAnchor && (
                   <button
                     type="button"
                     onClick={() => setIsHistoryOpen(true)}

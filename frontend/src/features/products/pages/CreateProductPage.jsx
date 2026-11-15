@@ -10,6 +10,7 @@ export default function CreateProductPage() {
   const [formProduct, setProduct] = useState({
     productName: "",
     productPrice: "",
+    productStock: "0",
     productCategory: "2",
     productDescription: "",
     productStatus: "habilitado",
@@ -87,6 +88,7 @@ export default function CreateProductPage() {
         name: formProduct.productName,
         title: formProduct.productName,
         price: Number(formProduct.productPrice),
+        stock: Math.max(0, Math.trunc(Number(formProduct.productStock))),
         category: selectedCat,
         description: formProduct.productDescription,
         status: formProduct.productStatus === "habilitado" ? "Activo" : "Inactivo",
@@ -153,14 +155,16 @@ export default function CreateProductPage() {
 
           {/* Campos del formulario */}
           <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              label="Nombre del Platillo *"
-              name="productName"
-              placeholder="Ej: Churrasco 350g, Limonada de Coco..."
-              value={formProduct.productName}
-              onChange={handleChange}
-              error={errors.productName}
-            />
+            <div className="md:col-span-2">
+              <Input
+                label="Nombre del Platillo *"
+                name="productName"
+                placeholder="Ej: Churrasco 350g, Limonada de Coco..."
+                value={formProduct.productName}
+                onChange={handleChange}
+                error={errors.productName}
+              />
+            </div>
 
             <Input
               label="Precio (COP) *"
@@ -170,6 +174,18 @@ export default function CreateProductPage() {
               value={formProduct.productPrice}
               onChange={handleChange}
               error={errors.productPrice}
+            />
+
+            <Input
+              label="Stock inicial *"
+              name="productStock"
+              type="number"
+              min="0"
+              step="1"
+              placeholder="Ej: 20"
+              value={formProduct.productStock}
+              onChange={handleChange}
+              error={errors.productStock}
             />
 
             <Select

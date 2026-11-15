@@ -1,5 +1,5 @@
 import { Input, Button, Select, FileInput, showSuccessAlert, showErrorAlert } from "@/shared";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { productSchema } from "../schemas/productSchema";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { updateProduct } from "../services/productServices";
@@ -12,15 +12,14 @@ export default function EditProductPage() {
   const location = useLocation();
   const { granted: canToggleStatus } = usePermission("disable_product");
 
-  const productToEdit =
-    location.state?.product ||
-    (() => {
-      try {
-        return JSON.parse(sessionStorage.getItem("last_edited_product") || "null");
-      } catch {
-        return null;
-      }
-    })();
+  const productToEdit = useMemo(() => {
+    if (location.state?.product) return location.state.product;
+    try {
+      return JSON.parse(sessionStorage.getItem("last_edited_product") || "null");
+    } catch {
+      return null;
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (location.state?.product) {
@@ -31,6 +30,7 @@ export default function EditProductPage() {
   const [formProduct, setProduct] = useState({
     productName: "",
     productPrice: "",
+    productStock: "0",
     productCategory: "2",
     productDescription: "",
     productStatus: "habilitado",
@@ -53,15 +53,19 @@ export default function EditProductPage() {
 
       const catKey = (productToEdit.category || productToEdit.category_name || "").toLowerCase();
       const catVal = categoryMapReverse[catKey] || "2";
+      const parsedStock = Math.max(0, Math.trunc(Number(productToEdit.stock ?? 0)));
 
-      setProduct({
-        productName: productToEdit.title || productToEdit.name || "",
-        productPrice: String(productToEdit.price || ""),
-        productCategory: catVal,
-        productDescription: productToEdit.description || "",
-        productStatus: (productToEdit.is_active ?? (productToEdit.status === "Activo" || productToEdit.status === "disponible"))
-          ? "habilitado"
-          : "inhabilitado",
+      Promise.resolve().then(() => {
+        setProduct({
+          productName: productToEdit.title || productToEdit.name || "",
+          productPrice: String(productToEdit.price || ""),
+          productStock: String(Number.isFinite(parsedStock) ? parsedStock : 0),
+          productCategory: catVal,
+          productDescription: productToEdit.description || "",
+          productStatus: (productToEdit.is_active ?? (productToEdit.status === "Activo" || productToEdit.status === "disponible"))
+            ? "habilitado"
+            : "inhabilitado",
+        });
       });
     }
   }, [productToEdit]);
@@ -137,6 +141,7 @@ export default function EditProductPage() {
         name: formProduct.productName,
         title: formProduct.productName,
         price: Number(formProduct.productPrice),
+        stock: Math.max(0, Math.trunc(Number(formProduct.productStock))),
         category: selectedCat,
         description: formProduct.productDescription,
         imageUrl,
@@ -150,6 +155,7 @@ export default function EditProductPage() {
       await updateProduct(productId, payload);
 
       sessionStorage.removeItem("last_edited_product");
+      sessionStorage.removeItem("last_viewed_product");
 
       await showSuccessAlert({
         title: "Menú actualizado",
@@ -215,15 +221,17 @@ export default function EditProductPage() {
 
           {/* Campos */}
           <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              label="Nombre del Platillo *"
-              name="productName"
-              type="text"
-              value={formProduct.productName}
-              placeholder="Ingrese el nombre del platillo"
-              onChange={handleChange}
-              error={errors.productName}
-            />
+            <div className="md:col-span-2">
+              <Input
+                label="Nombre del Platillo *"
+                name="productName"
+                type="text"
+                value={formProduct.productName}
+                placeholder="Ingrese el nombre del platillo"
+                onChange={handleChange}
+                error={errors.productName}
+              />
+            </div>
             <Input
               label="Precio (COP) *"
               name="productPrice"
@@ -232,6 +240,17 @@ export default function EditProductPage() {
               placeholder="Ingrese el precio del producto"
               onChange={handleChange}
               error={errors.productPrice}
+            />
+            <Input
+              label="Stock disponible *"
+              name="productStock"
+              type="number"
+              min="0"
+              step="1"
+              value={formProduct.productStock}
+              placeholder="Ej: 20"
+              onChange={handleChange}
+              error={errors.productStock}
             />
             <Select
               label="Categoría *"

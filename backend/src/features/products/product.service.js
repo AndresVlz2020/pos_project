@@ -23,6 +23,14 @@ export const productService = {
       throw new Error("El precio debe ser un número mayor o igual a 0");
     }
 
+    let stock = 0;
+    if (data.stock !== undefined && data.stock !== null && data.stock !== "") {
+      stock = Number(data.stock);
+      if (!Number.isFinite(stock) || stock < 0) {
+        throw new Error("El stock debe ser un número mayor o igual a 0");
+      }
+    }
+
     const payload = {
       name: data.name || data.title || data.productName,
       code: data.code || null,
@@ -33,7 +41,7 @@ export const productService = {
       imageUrl: data.image || data.imageUrl || null,
       status: data.status || data.productStatus || "Disponible",
       isActive: data.isActive !== undefined ? data.isActive : (data.is_active !== undefined ? data.is_active : true),
-      stock: data.stock !== undefined ? Number(data.stock) : 0,
+      stock,
     };
 
     return await productRepository.create(payload);
@@ -47,7 +55,18 @@ export const productService = {
       }
     }
 
-    const updated = await productRepository.update(id, data);
+    const normalized = { ...data };
+    if (data.stock !== undefined && data.stock !== null && data.stock !== "") {
+      const stock = Number(data.stock);
+      if (!Number.isFinite(stock) || stock < 0) {
+        throw new Error("El stock debe ser un número mayor o igual a 0");
+      }
+      normalized.stock = Math.trunc(stock);
+    } else if (data.stock === "" || data.stock === null) {
+      delete normalized.stock;
+    }
+
+    const updated = await productRepository.update(id, normalized);
     if (!updated) {
       throw new Error("Producto no encontrado para actualizar");
     }

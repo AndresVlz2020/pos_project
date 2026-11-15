@@ -2,15 +2,6 @@
  * Utilidades puras para filtrar y sumar horas del historial de turnos/sesiones.
  */
 
-export function normalizeSearchText(value = "") {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 export function toLocalDateKey(value) {
   if (!value) return "";
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value.trim())) {
@@ -24,12 +15,23 @@ export function toLocalDateKey(value) {
   return `${year}-${month}-${day}`;
 }
 
-export function getSessionElapsedSeconds(session, nowMs = Date.now()) {
+export function getSessionElapsedSeconds(
+  session,
+  nowMs = Date.now(),
+  loadedAtMs = null
+) {
   if (!session) return 0;
-  if (session.isActive && session.startedAt) {
-    const startMs = new Date(session.startedAt).getTime();
-    if (!Number.isNaN(startMs)) {
-      return Math.max(0, Math.floor((nowMs - startMs) / 1000));
+  if (session.isActive) {
+    if (loadedAtMs != null && Number.isFinite(Number(session.durationSeconds))) {
+      const serverBase = Math.max(0, Math.floor(Number(session.durationSeconds)));
+      const localDelta = Math.max(0, Math.floor((nowMs - loadedAtMs) / 1000));
+      return serverBase + localDelta;
+    }
+    if (session.startedAt) {
+      const startMs = new Date(session.startedAt).getTime();
+      if (!Number.isNaN(startMs)) {
+        return Math.max(0, Math.floor((nowMs - startMs) / 1000));
+      }
     }
   }
   return Math.max(0, Math.floor(Number(session.durationSeconds) || 0));
@@ -63,52 +65,52 @@ export function formatDayHeading(dateKey, nowMs = Date.now()) {
   return formatted;
 }
 
-function buildDateSearchTokens(value) {
-  if (!value) return "";
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
+function isAdminAccount(user) {
+  if (!user) return false;
+  if (user.isSuperUser || user.isSuperuser || user.isAdmin) return true;
+  const roleText = `${user.userType || ""} ${user.role || ""}`.toLowerCase();
+  return roleText.includes("admin");
+}
 
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  const yy = String(yyyy).slice(-2);
-  const dNum = String(date.getDate());
-  const mNum = String(date.getMonth() + 1);
-  const hh24 = String(date.getHours()).padStart(2, "0");
-  const min = String(date.getMinutes()).padStart(2, "0");
+export function extractWorkerOptions(rows = [], directoryUsers = []) {
+  const map = new Map();
 
-  const shortStr = date.toLocaleString("es-CO", {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
-  const longMonth = date.toLocaleDateString("es-CO", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  for (const user of Array.isArray(directoryUsers) ? directoryUsers : []) {
+    if (!user?.id || isAdminAccount(user)) continue;
+    const id = String(user.id);
+    map.set(id, {
+      id,
+      userName: user.userName || user.name || "Colaborador",
+      userType: user.userType || user.role || "Personal",
+    });
+  }
 
-  return [
-    `${yyyy}-${mm}-${dd}`,
-    `${dd}/${mm}/${yyyy}`,
-    `${dd}/${mm}/${yy}`,
-    `${dNum}/${mNum}/${yyyy}`,
-    `${dd}/${mm}`,
-    `${dd}-${mm}-${yyyy}`,
-    `${dd}-${mm}`,
-    `${hh24}:${min}`,
-    shortStr,
-    longMonth,
-  ].join(" ");
+  for (const row of Array.isArray(rows) ? rows : []) {
+    const rawId = row?.userId;
+    if (!rawId) continue;
+    const id = String(rawId);
+    if (!map.has(id)) {
+      map.set(id, {
+        id,
+        userName: row.userName || "Colaborador",
+        userType: row.userType || "Personal",
+      });
+    }
+  }
+
+  return Array.from(map.values()).sort((a, b) =>
+    a.userName.localeCompare(b.userName, "es", { sensitivity: "base" })
+  );
 }
 
 export function filterSessionRows(
   rows = [],
-  { search = "", datePreset = "all", specificDate = "", nowMs = Date.now() } = {}
+  { workerId = "", datePreset = "all", specificDate = "", nowMs = Date.now() } = {}
 ) {
   const list = Array.isArray(rows) ? rows : [];
   const todayKey = toLocalDateKey(nowMs);
   const normalizedSpecific = specificDate ? specificDate.trim() : "";
+  const normalizedWorker = workerId ? String(workerId).trim() : "";
 
   const weekStartDate = new Date(nowMs);
   weekStartDate.setHours(0, 0, 0, 0);
@@ -116,49 +118,35 @@ export function filterSessionRows(
   const weekStartKey = toLocalDateKey(weekStartDate);
   const monthPrefix = todayKey.slice(0, 7);
 
-  const normalizedQuery = normalizeSearchText(search);
-  const queryTerms = normalizedQuery ? normalizedQuery.split(" ") : [];
-
   return list.filter((row) => {
+    if (normalizedWorker && String(row?.userId || "") !== normalizedWorker) {
+      return false;
+    }
+
     const rowDayKey = toLocalDateKey(row?.startedAt);
 
     if (normalizedSpecific) {
-      if (rowDayKey !== normalizedSpecific) return false;
-    } else if (datePreset === "today") {
-      if (rowDayKey !== todayKey) return false;
-    } else if (datePreset === "7d") {
-      if (!rowDayKey || rowDayKey < weekStartKey || rowDayKey > todayKey) {
-        return false;
-      }
-    } else if (datePreset === "month") {
-      if (!rowDayKey || !rowDayKey.startsWith(monthPrefix)) return false;
+      return rowDayKey === normalizedSpecific;
+    }
+    if (datePreset === "today") {
+      return rowDayKey === todayKey;
+    }
+    if (datePreset === "7d") {
+      return Boolean(rowDayKey && rowDayKey >= weekStartKey && rowDayKey <= todayKey);
+    }
+    if (datePreset === "month") {
+      return Boolean(rowDayKey && rowDayKey.startsWith(monthPrefix));
     }
 
-    if (queryTerms.length === 0) return true;
-
-    const statusLabel = row?.isActive
-      ? "en turno activa en curso"
-      : "finalizada terminada";
-    const dayLabel = formatDayHeading(rowDayKey, nowMs);
-    const searchable = normalizeSearchText(
-      [
-        row?.userName,
-        row?.userType,
-        statusLabel,
-        rowDayKey,
-        dayLabel,
-        buildDateSearchTokens(row?.startedAt),
-        row?.endedAt ? buildDateSearchTokens(row.endedAt) : "en curso",
-      ]
-        .filter(Boolean)
-        .join(" ")
-    );
-
-    return queryTerms.every((term) => searchable.includes(term));
+    return true;
   });
 }
 
-export function summarizeSessionsByDay(rows = [], nowMs = Date.now()) {
+export function summarizeSessionsByDay(
+  rows = [],
+  nowMs = Date.now(),
+  loadedAtMs = null
+) {
   const list = Array.isArray(rows) ? rows : [];
   const dayMap = new Map();
 
@@ -166,7 +154,7 @@ export function summarizeSessionsByDay(rows = [], nowMs = Date.now()) {
     const dateKey = toLocalDateKey(row?.startedAt);
     if (!dateKey) continue;
 
-    const elapsed = getSessionElapsedSeconds(row, nowMs);
+    const elapsed = getSessionElapsedSeconds(row, nowMs, loadedAtMs);
     if (!dayMap.has(dateKey)) {
       dayMap.set(dateKey, {
         dateKey,
