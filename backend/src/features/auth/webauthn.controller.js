@@ -14,7 +14,10 @@ function handleControllerError(res, err, fallbackStatus = 400) {
 export const webauthnController = {
   async listCredentials(req, res) {
     try {
-      const credentials = await webauthnService.listMyCredentials(req.user.id);
+      const credentials = await webauthnService.listMyCredentials(
+        req.user.id,
+        req.query?.deviceId
+      );
       res.status(200).json({ credentials });
     } catch (err) {
       handleControllerError(res, err, 500);
@@ -35,7 +38,8 @@ export const webauthnController = {
       const options = await webauthnService.createRegistrationOptions(
         req.user.id,
         req.get("origin"),
-        req.get("user-agent")
+        req.get("user-agent"),
+        req.body?.deviceId
       );
       res.status(200).json({ options });
     } catch (err) {
@@ -50,12 +54,13 @@ export const webauthnController = {
         {
           response: req.body?.response,
           deviceLabel: req.body?.deviceLabel,
+          deviceInstanceId: req.body?.deviceId,
           userAgent: req.get("user-agent"),
         },
         req.get("origin")
       );
       res.status(201).json({
-        message: "Huella/biometría registrada correctamente",
+        message: "Huella o Face ID registrado correctamente",
         credential,
       });
     } catch (err) {

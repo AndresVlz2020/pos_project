@@ -26,8 +26,8 @@ export const productRepository = {
         p.price::numeric AS price,
         COALESCE(c.name, 'general') AS category,
         p.category_id,
-        COALESCE(NULLIF(p.image_url, ''), '/assets/images/punta-de-anca-hd.jpg') AS image,
-        COALESCE(NULLIF(p.image_url, ''), '/assets/images/punta-de-anca-hd.jpg') AS image_url,
+        NULLIF(p.image_url, '') AS image,
+        NULLIF(p.image_url, '') AS image_url,
         p.status,
         p.is_active,
         COALESCE(p.stock, 0)::numeric AS stock,
@@ -54,8 +54,8 @@ export const productRepository = {
         p.price::numeric AS price,
         COALESCE(c.name, 'general') AS category,
         p.category_id,
-        COALESCE(NULLIF(p.image_url, ''), '/assets/images/punta-de-anca-hd.jpg') AS image,
-        COALESCE(NULLIF(p.image_url, ''), '/assets/images/punta-de-anca-hd.jpg') AS image_url,
+        NULLIF(p.image_url, '') AS image,
+        NULLIF(p.image_url, '') AS image_url,
         p.status,
         p.is_active,
         COALESCE(p.stock, 0)::numeric AS stock,
@@ -149,7 +149,10 @@ export const productRepository = {
     const status = data.status || current.status;
     const isActive = data.is_active !== undefined ? Boolean(data.is_active) : (data.isActive !== undefined ? Boolean(data.isActive) : current.is_active);
     const stock = data.stock !== undefined ? Number(data.stock) : current.stock;
-    const imageUrl = data.image || data.imageUrl || current.image;
+    const incomingImage = data.imageUrl !== undefined ? data.imageUrl : data.image;
+    const imageUrl = incomingImage !== undefined
+      ? (incomingImage && String(incomingImage).trim() ? String(incomingImage).trim() : null)
+      : (current.image_url || null);
 
     let categoryId = data.categoryId || current.category_id;
     if (data.category && (!data.categoryId || data.category !== current.category)) {

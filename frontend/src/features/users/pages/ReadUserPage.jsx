@@ -32,7 +32,7 @@ export default function ReadUser1() {
     }
   }, [location.state]);
 
-  const userPhoto = user?.photo || user?.user_avatar_url || getUserAvatar(user);
+  const userPhoto = getUserAvatar(user);
   const roleName = user?.role || user?.userType || (user?.isSuperUser ? "Administrador" : "Mesero");
   const isUserActive = user?.isActive ?? (user?.status === "Activo" || true);
   const statusText = isUserActive ? "Activo" : "Inactivo";

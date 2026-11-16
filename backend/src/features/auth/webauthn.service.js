@@ -163,17 +163,50 @@ function inferDeviceLabel(userAgent = "", customLabel = "") {
   return "Dispositivo biométrico";
 }
 
-function formatCredentialDTO(row) {
+function normalizeDeviceInstanceId(value) {
+  const cleaned = String(value || "").trim().slice(0, 120);
+  return cleaned.length >= 8 ? cleaned : null;
+}
+
+function formatCredentialDTO(row, currentDeviceId = null) {
+  const normalizedCurrent = normalizeDeviceInstanceId(currentDeviceId);
   return {
     id: row.id,
     credentialId: row.credential_id,
     deviceLabel: row.device_label,
     deviceType: row.device_type,
     backedUp: Boolean(row.backed_up),
+    isCurrentDevice: Boolean(
+      normalizedCurrent &&
+        row.device_instance_id &&
+        row.device_instance_id === normalizedCurrent
+    ),
     transports: Array.isArray(row.transports) ? row.transports : [],
     createdAt: row.created_at,
     lastUsedAt: row.last_used_at,
   };
+}
+
+async function assertDeviceInstanceAvailable(userId, deviceInstanceId) {
+  const normalized = normalizeDeviceInstanceId(deviceInstanceId);
+  if (!normalized) return null;
+
+  const existing = await webauthnRepository.findByDeviceInstanceId(normalized);
+  if (!existing) return normalized;
+
+  if (Number(existing.user_id) === Number(userId)) {
+    throw new AuthServiceError(
+      "Este dispositivo ya tiene su huella o Face ID registrado en tu cuenta.",
+      409,
+      { code: "BIOMETRIC_DEVICE_ALREADY_REGISTERED" }
+    );
+  }
+
+  throw new AuthServiceError(
+    "La biometría de este dispositivo ya está vinculada a otra cuenta.",
+    409,
+    { code: "BIOMETRIC_DEVICE_IN_USE" }
+  );
 }
 
 async function resolveActiveUser({ userId, email }) {
@@ -193,6 +226,15 @@ async function resolveActiveUser({ userId, email }) {
   return user;
 }
 
+function toCredentialDescriptor(cred) {
+  return {
+    id: cred.credential_id,
+    ...(Array.isArray(cred.transports) && cred.transports.length > 0
+      ? { transports: cred.transports }
+      : {}),
+  };
+}
+
 async function createAuthChallengeForUser(user, purpose, context) {
   const credentials = await webauthnRepository.listByUserId(user.id);
   if (credentials.length === 0) {
@@ -204,10 +246,7 @@ async function createAuthChallengeForUser(user, purpose, context) {
   const options = await generateAuthenticationOptions({
     rpID: context.rpID,
     userVerification: "required",
-    allowCredentials: credentials.map((cred) => ({
-      id: cred.credential_id,
-      transports: Array.isArray(cred.transports) ? cred.transports : undefined,
-    })),
+    allowCredentials: credentials.map(toCredentialDescriptor),
   });
 
   await webauthnRepository.saveChallenge({
@@ -288,9 +327,9 @@ async function verifyAuthChallengeForUser(user, purpose, response, requestOrigin
 }
 
 export const webauthnService = {
-  async listMyCredentials(userId) {
+  async listMyCredentials(userId, currentDeviceId = null) {
     const rows = await webauthnRepository.listByUserId(userId);
-    return rows.map(formatCredentialDTO);
+    return rows.map((row) => formatCredentialDTO(row, currentDeviceId));
   },
 
   async deleteMyCredential(userId, credentialDbId) {
@@ -301,10 +340,16 @@ export const webauthnService = {
     return deleted;
   },
 
-  async createRegistrationOptions(userId, requestOrigin, userAgent = "") {
+  async createRegistrationOptions(
+    userId,
+    requestOrigin,
+    userAgent = "",
+    deviceInstanceId = null
+  ) {
     assertNonWindowsWebAuthnClient(userAgent);
     const user = await resolveActiveUser({ userId });
     const context = resolveWebAuthnContext(requestOrigin);
+    await assertDeviceInstanceAvailable(user.id, deviceInstanceId);
     const existing = await webauthnRepository.listByUserId(user.id);
 
     const options = await generateRegistrationOptions({
@@ -314,10 +359,7 @@ export const webauthnService = {
       userName: user.user_email || `staff-${user.id}@dpiero.local`,
       userDisplayName: user.user_name || "Usuario D'Piero",
       attestationType: "none",
-      excludeCredentials: existing.map((cred) => ({
-        id: cred.credential_id,
-        transports: Array.isArray(cred.transports) ? cred.transports : undefined,
-      })),
+      excludeCredentials: existing.map(toCredentialDescriptor),
       authenticatorSelection: {
         authenticatorAttachment: "platform",
         residentKey: "discouraged",
@@ -337,10 +379,18 @@ export const webauthnService = {
     return options;
   },
 
-  async verifyAndSaveRegistration(userId, { response, deviceLabel, userAgent }, requestOrigin) {
+  async verifyAndSaveRegistration(
+    userId,
+    { response, deviceLabel, deviceInstanceId, userAgent },
+    requestOrigin
+  ) {
     assertNonWindowsWebAuthnClient(userAgent);
     const user = await resolveActiveUser({ userId });
     const context = resolveWebAuthnContext(requestOrigin);
+    const normalizedDeviceId = await assertDeviceInstanceAvailable(
+      user.id,
+      deviceInstanceId
+    );
     const challengeStr = extractChallengeFromResponse(response);
 
     const challengeRow = await webauthnRepository.consumeChallenge({
@@ -396,23 +446,52 @@ export const webauthnService = {
       );
     }
 
-    const existing = await webauthnRepository.findByCredentialIdAndUserId(credential.id, user.id);
-    if (existing) {
-      return formatCredentialDTO(existing);
+    const existingByCredId = await webauthnRepository.findByCredentialId(credential.id);
+    const existingByPubKey = existingByCredId
+      ? existingByCredId
+      : await webauthnRepository.findByPublicKey(credential.publicKey);
+    const conflict = existingByCredId || existingByPubKey;
+
+    if (conflict) {
+      if (Number(conflict.user_id) === Number(user.id)) {
+        throw new AuthServiceError(
+          "Esta huella o Face ID ya está registrado en tu cuenta.",
+          409,
+          { code: "BIOMETRIC_ALREADY_REGISTERED" }
+        );
+      }
+      throw new AuthServiceError(
+        "Esta huella o Face ID ya está vinculado a otra cuenta.",
+        409,
+        { code: "BIOMETRIC_IN_USE" }
+      );
     }
 
-    const saved = await webauthnRepository.createCredential({
-      userId: user.id,
-      credentialId: credential.id,
-      publicKey: credential.publicKey,
-      counter: credential.counter,
-      transports: response?.response?.transports || credential.transports || [],
-      deviceType: credentialDeviceType,
-      backedUp: credentialBackedUp,
-      deviceLabel: inferDeviceLabel(userAgent, deviceLabel),
-    });
+    let saved;
+    try {
+      saved = await webauthnRepository.createCredential({
+        userId: user.id,
+        credentialId: credential.id,
+        publicKey: credential.publicKey,
+        counter: credential.counter,
+        transports: response?.response?.transports || credential.transports || [],
+        deviceType: credentialDeviceType,
+        backedUp: credentialBackedUp,
+        deviceLabel: inferDeviceLabel(userAgent, deviceLabel),
+        deviceInstanceId: normalizedDeviceId,
+      });
+    } catch (err) {
+      if (err?.code === "23505") {
+        throw new AuthServiceError(
+          "Esta huella o Face ID ya está registrado.",
+          409,
+          { code: "BIOMETRIC_ALREADY_REGISTERED" }
+        );
+      }
+      throw err;
+    }
 
-    return formatCredentialDTO(saved);
+    return formatCredentialDTO(saved, normalizedDeviceId);
   },
 
   async checkEmailForLogin(email, clientKey = "unknown") {

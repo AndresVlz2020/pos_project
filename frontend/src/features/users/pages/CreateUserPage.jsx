@@ -5,6 +5,7 @@ import { createUser, getUsers } from "../../../services/userService";
 import { createUserSchema } from "../schemas/userSchema";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
+import resizeImageFile from "@/utils/imageFile";
 
 export default function CreateUser() {
   const navigate = useNavigate();
@@ -30,11 +31,13 @@ export default function CreateUser() {
     endDate: "",
     pin: "",
     userPassword: "",
+    userImage: [],
   });
 
   const [errors, setErrors] = useState({});
   const [documentTypes, setDocumentTypes] = useState([]);
   const [existingUsers, setExistingUsers] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     getDocumentTypes()
@@ -58,7 +61,6 @@ export default function CreateUser() {
     { value: "cajero", label: "Cajero (Acceso por PIN)" },
     { value: "mesero", label: "Mesero (Acceso por PIN)" },
     { value: "cocina", label: "Cocina / Parrilla (Acceso por PIN)" },
-    { value: "proveedor", label: "Proveedor (Acceso por PIN)" },
     { 
       value: "admin", 
       label: adminCount >= 2 ? "Administrador (Límite 2/2 alcanzado)" : "Administrador (Acceso por Contraseña)" 
@@ -79,6 +81,7 @@ export default function CreateUser() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
 
     if (isRoleAdmin && adminCount >= 2) {
       await showWarningAlert({
@@ -88,7 +91,10 @@ export default function CreateUser() {
       return;
     }
 
-    const result = createUserSchema.safeParse(form);
+    const result = createUserSchema.safeParse({
+      ...form,
+      userImage: form.userImage?.length ? form.userImage : undefined,
+    });
     if (!result.success) {
       const fieldErrors = {};
       result.error.issues.forEach((issue) => {
@@ -99,11 +105,19 @@ export default function CreateUser() {
     }
 
     setErrors({});
+    setSubmitting(true);
 
     try {
+      let userAvatarUrl = null;
+      if (form.userImage?.length) {
+        userAvatarUrl = await resizeImageFile(form.userImage[0]);
+      }
+
       // Enviar datos al backend para persistencia en PostgreSQL
       const payload = {
         ...result.data,
+        userImage: undefined,
+        userAvatarUrl,
         corporateEmail: result.data.userEmail,
         isSuperuser: isRoleAdmin,
         isStaff: true,
@@ -130,6 +144,8 @@ export default function CreateUser() {
           ? "Error inesperado de conexión con el servidor backend."
           : (err.message || "Error inesperado al procesar la solicitud.")
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -165,14 +181,27 @@ export default function CreateUser() {
           <div className="col-span-1 flex flex-col items-center">
             <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cargar Imagen</span>
             <div className="w-full h-56 md:h-64 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
-                <FileInput className="flex items-center justify-center"
+                <FileInput
+                  className="flex items-center justify-center"
                   value={form.userImage}
-                  onChange={(files) => 
-                    setForm((prev) => ({ ...prev, userImage: files}))
-                  }
-                  multiple={true}
+                  onChange={(files) => {
+                    setForm((prev) => ({ ...prev, userImage: files }));
+                    if (errors.userImage) {
+                      setErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.userImage;
+                        return next;
+                      });
+                    }
+                  }}
+                  multiple={false}
+                  maxFiles={1}
+                  accept="image/jpeg,image/png,image/webp"
                 />
             </div>
+            {errors.userImage && (
+              <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+            )}
             {/* Sin switch: solo texto descriptivo si se requiere en el futuro */}
           </div>
 
@@ -303,7 +332,9 @@ export default function CreateUser() {
                 Cancelar
               </Button>
             </Link>
-          <Button variant="primary" size="md" type="submit">Crear</Button>
+          <Button variant="primary" size="md" type="submit" disabled={submitting}>
+            {submitting ? "Creando..." : "Crear"}
+          </Button>
         </div>
       </form>
     </div>

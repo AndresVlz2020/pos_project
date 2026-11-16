@@ -69,7 +69,7 @@ export const userRepository = {
 
         const isSuper = isSuperuser !== undefined ? isSuperuser : (isSuperUser !== undefined ? isSuperUser : (userType === 'admin' || userType === 'Admin'));
         const staff = isStaff || userType === 'mesero' || userType === 'cajero' || userType === 'cocina';
-        const avatar = userAvatarUrl || (typeof userImage === 'string' ? userImage : null);
+        const avatar = userAvatarUrl || (typeof userImage === 'string' && userImage.trim() ? userImage.trim() : null);
         const parsedStartDate = startDate && startDate.trim() !== '' ? startDate : null;
         const parsedEndDate = endDate && endDate.trim() !== '' ? endDate : null;
 
@@ -172,7 +172,14 @@ export const userRepository = {
             userType: userData.userType ?? current.user_type,
             startDate: parseNullableDate(userData.startDate, current.start_date),
             endDate: parseNullableDate(userData.endDate, current.end_date),
-            avatar: userData.userAvatarUrl ?? (typeof userData.userImage === 'string' ? userData.userImage : null),
+            avatar: (() => {
+                const hasIncomingAvatar =
+                    userData.userAvatarUrl !== undefined || typeof userData.userImage === 'string';
+                if (!hasIncomingAvatar) return current.user_avatar_url;
+                const rawIncoming =
+                    userData.userAvatarUrl !== undefined ? userData.userAvatarUrl : userData.userImage;
+                return rawIncoming && String(rawIncoming).trim() ? String(rawIncoming).trim() : null;
+            })(),
             isStaff: userData.isStaff !== undefined ? Boolean(userData.isStaff) : current.is_staff,
             isActive: userData.isActive !== undefined ? Boolean(userData.isActive) : current.is_active,
             isSuper: userData.isSuperuser !== undefined ? Boolean(userData.isSuperuser)
@@ -199,7 +206,7 @@ export const userRepository = {
                     user_type = $9,
                     start_date = $10,
                     end_date = $11,
-                    user_avatar_url = COALESCE($12, user_avatar_url),
+                    user_avatar_url = $12,
                     is_staff = $13,
                     is_active = $14,
                     is_superuser = $15
@@ -211,6 +218,8 @@ export const userRepository = {
                     corporate_email AS "corporateEmail",
                     pin,
                     user_type AS "userType",
+                    user_avatar_url AS "userAvatarUrl",
+                    NULLIF(user_avatar_url, '') AS "photo",
                     is_staff AS "isStaff", 
                     is_active AS "isActive", 
                     is_superuser AS "isSuperUser";
@@ -246,7 +255,7 @@ export const userRepository = {
                     user_type = $8,
                     start_date = $9,
                     end_date = $10,
-                    user_avatar_url = COALESCE($11, user_avatar_url),
+                    user_avatar_url = $11,
                     is_staff = $12,
                     is_active = $13,
                     is_superuser = $14
@@ -258,6 +267,8 @@ export const userRepository = {
                     corporate_email AS "corporateEmail",
                     pin,
                     user_type AS "userType",
+                    user_avatar_url AS "userAvatarUrl",
+                    NULLIF(user_avatar_url, '') AS "photo",
                     is_staff AS "isStaff", 
                     is_active AS "isActive", 
                     is_superuser AS "isSuperUser";
@@ -316,9 +327,9 @@ export const userRepository = {
                 start_date AS "startDate",
                 end_date AS "endDate",
                 user_avatar_url AS "userAvatarUrl",
-                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "photo",
-                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "avatar",
-                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "image",
+                NULLIF(user_avatar_url, '') AS "photo",
+                NULLIF(user_avatar_url, '') AS "avatar",
+                NULLIF(user_avatar_url, '') AS "image",
                 is_staff AS "isStaff",
                 COALESCE(is_active, TRUE) AS "isActive",
                 is_superuser AS "isSuperUser",
@@ -357,9 +368,9 @@ export const userRepository = {
                 start_date AS "startDate",
                 end_date AS "endDate",
                 user_avatar_url AS "userAvatarUrl",
-                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "photo",
-                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "avatar",
-                COALESCE(NULLIF(user_avatar_url, ''), '/assets/images/worker-juan.jpg') AS "image",
+                NULLIF(user_avatar_url, '') AS "photo",
+                NULLIF(user_avatar_url, '') AS "avatar",
+                NULLIF(user_avatar_url, '') AS "image",
                 is_staff AS "isStaff",
                 COALESCE(is_active, TRUE) AS "isActive",
                 is_superuser AS "isSuperUser",

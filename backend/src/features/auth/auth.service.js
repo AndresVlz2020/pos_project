@@ -97,6 +97,8 @@ export async function issueSessionForUser(user) {
       email: user.user_email,
       name: user.user_name,
       role,
+      userAvatarUrl: user.user_avatar_url || null,
+      photo: user.user_avatar_url || null,
       isSuperuser,
       isAdmin,
     },

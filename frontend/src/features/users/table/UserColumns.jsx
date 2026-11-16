@@ -3,7 +3,6 @@ import { StatusSwitch } from "@/shared";
 
 // Componente que contiene los botones de acciones (editar y ver) para cada usuario
 import UserRowActions from "../components/UserRowActions";
-import { updateUserStatus } from "@/services/userService";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
 
 // Definición de las columnas de la tabla de usuarios
@@ -25,7 +24,7 @@ export const getUserColumns = ({ onRequestStatusChange, canToggleStatus = false 
     header: "Nombre",
     cell: ({ row }) => {
       const user = row.original;
-      const avatarSrc = user.photo || user.userAvatarUrl || getUserAvatar(user);
+      const avatarSrc = getUserAvatar(user);
       const name = user.userName || user.name || "—";
       return (
         <div className="flex items-center gap-3">

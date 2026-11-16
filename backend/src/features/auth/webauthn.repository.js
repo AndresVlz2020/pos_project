@@ -16,6 +16,7 @@ export const webauthnRepository = {
         device_type,
         backed_up,
         device_label,
+        device_instance_id,
         created_at,
         last_used_at
       FROM user_biometric_credentials
@@ -34,6 +35,55 @@ export const webauthnRepository = {
     return Number(result.rows[0]?.total || 0);
   },
 
+  async findByCredentialId(credentialId) {
+    const query = `
+      SELECT
+        id,
+        user_id,
+        credential_id,
+        device_label,
+        device_instance_id
+      FROM user_biometric_credentials
+      WHERE credential_id = $1
+      LIMIT 1;
+    `;
+    const result = await pool.query(query, [credentialId]);
+    return result.rows[0];
+  },
+
+  async findByPublicKey(publicKey) {
+    const query = `
+      SELECT
+        id,
+        user_id,
+        credential_id,
+        device_label,
+        device_instance_id
+      FROM user_biometric_credentials
+      WHERE public_key = $1
+      LIMIT 1;
+    `;
+    const result = await pool.query(query, [Buffer.from(publicKey)]);
+    return result.rows[0];
+  },
+
+  async findByDeviceInstanceId(deviceInstanceId) {
+    if (!deviceInstanceId) return null;
+    const query = `
+      SELECT
+        id,
+        user_id,
+        credential_id,
+        device_label,
+        device_instance_id
+      FROM user_biometric_credentials
+      WHERE device_instance_id = $1
+      LIMIT 1;
+    `;
+    const result = await pool.query(query, [deviceInstanceId]);
+    return result.rows[0] || null;
+  },
+
   async findByCredentialIdAndUserId(credentialId, userId) {
     const query = `
       SELECT
@@ -45,7 +95,8 @@ export const webauthnRepository = {
         transports,
         device_type,
         backed_up,
-        device_label
+        device_label,
+        device_instance_id
       FROM user_biometric_credentials
       WHERE credential_id = $1 AND user_id = $2
       LIMIT 1;
@@ -63,7 +114,12 @@ export const webauthnRepository = {
     deviceType = "singleDevice",
     backedUp = false,
     deviceLabel = "Dispositivo biométrico",
+    deviceInstanceId = null,
   }) {
+    const normalizedDeviceId = deviceInstanceId
+      ? String(deviceInstanceId).trim().slice(0, 120) || null
+      : null;
+
     const query = `
       INSERT INTO user_biometric_credentials (
         user_id,
@@ -73,9 +129,10 @@ export const webauthnRepository = {
         transports,
         device_type,
         backed_up,
-        device_label
+        device_label,
+        device_instance_id
       )
-      VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8)
+      VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9)
       RETURNING
         id,
         user_id,
@@ -85,6 +142,7 @@ export const webauthnRepository = {
         device_type,
         backed_up,
         device_label,
+        device_instance_id,
         created_at,
         last_used_at;
     `;
@@ -97,6 +155,7 @@ export const webauthnRepository = {
       deviceType || "singleDevice",
       Boolean(backedUp),
       String(deviceLabel || "Dispositivo biométrico").trim().slice(0, 120),
+      normalizedDeviceId,
     ]);
     return result.rows[0];
   },

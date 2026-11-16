@@ -10,6 +10,26 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
+const BIOMETRIC_DEVICE_ID_KEY = "dpiero_biometric_device_id";
+
+export function getBiometricDeviceId() {
+  if (typeof window === "undefined") return "";
+  try {
+    let existing = window.localStorage.getItem(BIOMETRIC_DEVICE_ID_KEY);
+    if (existing && existing.trim().length >= 8) {
+      return existing.trim();
+    }
+    const generated =
+      typeof window.crypto?.randomUUID === "function"
+        ? window.crypto.randomUUID()
+        : `dev-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+    window.localStorage.setItem(BIOMETRIC_DEVICE_ID_KEY, generated);
+    return generated;
+  } catch {
+    return "";
+  }
+}
+
 export function getAuthToken() {
   return (
     localStorage.getItem("auth_token") ||
@@ -91,7 +111,7 @@ export function mapWebAuthnError(err, fallback = "No se pudo completar la verifi
   }
 
   if (name === "InvalidStateError") {
-    return new Error("Este dispositivo ya tiene registrada esta credencial en tu cuenta.");
+    return new Error("Esta huella o Face ID ya está registrado en tu cuenta desde este dispositivo.");
   }
 
   if (name === "SecurityError" || name === "NotSupportedError") {
@@ -264,7 +284,9 @@ export async function getBiometricCapabilities() {
 }
 
 export async function listMyBiometricsApi() {
-  const data = await apiJson("/auth/webauthn/credentials", { auth: true });
+  const deviceId = getBiometricDeviceId();
+  const query = deviceId ? `?deviceId=${encodeURIComponent(deviceId)}` : "";
+  const data = await apiJson(`/auth/webauthn/credentials${query}`, { auth: true });
   return Array.isArray(data?.credentials) ? data.credentials : [];
 }
 
@@ -285,16 +307,18 @@ function assertNonDesktopBiometricAllowed() {
 
 export async function enrollMyBiometricApi(deviceLabel = "") {
   assertNonDesktopBiometricAllowed();
+  const deviceId = getBiometricDeviceId();
   const { options } = await apiJson("/auth/webauthn/register/options", {
     method: "POST",
     auth: true,
+    body: { deviceId },
   });
 
   let attestationResponse;
   try {
     attestationResponse = await startRegistration({ optionsJSON: options });
   } catch (err) {
-    throw mapWebAuthnError(err, "No se pudo capturar la huella en este dispositivo.");
+    throw mapWebAuthnError(err, "No se pudo capturar la huella o Face ID en este dispositivo.");
   }
 
   return apiJson("/auth/webauthn/register/verify", {
@@ -303,6 +327,7 @@ export async function enrollMyBiometricApi(deviceLabel = "") {
     body: {
       response: attestationResponse,
       deviceLabel,
+      deviceId,
     },
   });
 }

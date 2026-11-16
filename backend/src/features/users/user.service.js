@@ -4,6 +4,10 @@ import bcrypt from "bcrypt";
 export const userService = {
     // Método para crear un usuario
     async create(data) {
+        if (String(data.userType || "").trim().toLowerCase() === "proveedor") {
+            throw new Error("Proveedor no es un rol de usuario válido en el POS");
+        }
+
         const isAdmin = Boolean(
             data.isSuperuser || 
             data.isSuperUser || 
@@ -37,6 +41,10 @@ export const userService = {
 
     // Método para actualizar un usuario
     async update(id, data) {
+        if (String(data.userType || "").trim().toLowerCase() === "proveedor") {
+            throw new Error("Proveedor no es un rol de usuario válido en el POS");
+        }
+
         let hashedPassword = null;
         if (data.userPassword && data.userPassword.trim() !== "" && data.userPassword !== "Password12345#") {
             hashedPassword = await bcrypt.hash(data.userPassword, 10);

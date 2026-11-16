@@ -1,24 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input, Select, Button, FileInput, showSuccessAlert, showErrorAlert } from "@/shared";
 import { getDocumentTypes } from "../../../services/selectServices";
 import { updateUser } from "../../../services/userService";
 import { createUserSchema } from "../schemas/userSchema";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
+import resizeImageFile from "@/utils/imageFile";
+import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
 
 export default function EditUser1() {
   const navigate = useNavigate();
   const location = useLocation();
-  const rawUser = location.state?.user;
-  const editUser =
-    rawUser ||
-    (() => {
-      try {
-        return JSON.parse(sessionStorage.getItem("last_edited_user") || "null");
-      } catch {
-        return null;
-      }
-    })();
+  const editUser = useMemo(() => {
+    if (location.state?.user) return location.state.user;
+    try {
+      return JSON.parse(sessionStorage.getItem("last_edited_user") || "null");
+    } catch {
+      return null;
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (location.state?.user) {
@@ -49,7 +49,7 @@ export default function EditUser1() {
     if (raw.includes("caj")) return "cajero";
     if (raw.includes("meser")) return "mesero";
     if (raw.includes("cocin") || raw.includes("parrill")) return "cocina";
-    if (raw.includes("proveed")) return "proveedor";
+    if (raw.includes("proveed")) return "mesero";
     return raw || "mesero";
   })();
 
@@ -64,10 +64,12 @@ export default function EditUser1() {
     endDate: formatDateVal(editUser?.endDate || editUser?.contract_end),
     pin: editUser?.pin || "",
     userPassword: "",
+    userImage: [],
   });
 
   const [errors, setErrors] = useState({});
   const [documentTypes, setDocumentTypes] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     getDocumentTypes()
@@ -81,7 +83,6 @@ export default function EditUser1() {
     { value: "cajero", label: "Cajero (Acceso por PIN)" },
     { value: "mesero", label: "Mesero (Acceso por PIN)" },
     { value: "cocina", label: "Cocina / Parrilla (Acceso por PIN)" },
-    { value: "proveedor", label: "Proveedor (Acceso por PIN)" },
     { value: "admin", label: "Administrador (Acceso por Contraseña)" },
   ];
 
@@ -99,9 +100,13 @@ export default function EditUser1() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
 
     // Si es admin y no ingresó nueva contraseña, usamos una temporal para pasar validación de esquema
-    const formToValidate = { ...form };
+    const formToValidate = {
+      ...form,
+      userImage: form.userImage?.length ? form.userImage : undefined,
+    };
     if (isRoleAdmin && (!formToValidate.userPassword || formToValidate.userPassword.trim() === "")) {
       formToValidate.userPassword = "Password12345#"; // No se sobreescribe en BD si no se cambió
     }
@@ -116,9 +121,35 @@ export default function EditUser1() {
       return;
     }
 
+    setSubmitting(true);
     try {
+      let userAvatarUrl;
+      if (form.userImage?.length) {
+        userAvatarUrl = await resizeImageFile(form.userImage[0]);
+      }
+
+      const payload = {
+        ...formToValidate,
+        userImage: undefined,
+        ...(userAvatarUrl !== undefined ? { userAvatarUrl } : {}),
+      };
+
       if (editUser?.id) {
-        await updateUser(editUser.id, formToValidate);
+        const res = await updateUser(editUser.id, payload);
+        sessionStorage.removeItem("last_edited_user");
+        sessionStorage.removeItem("last_viewed_user");
+
+        // Si el administrador editó su propia cuenta, reflejar foto/nombre al instante en localStorage
+        if (Number(currentUser?.id) === Number(editUser.id)) {
+          const nextAvatar = res?.data?.userAvatarUrl ?? userAvatarUrl ?? currentUser.userAvatarUrl;
+          const updatedLocal = {
+            ...currentUser,
+            name: payload.userName || currentUser.name,
+            email: payload.userEmail || currentUser.email,
+            ...(nextAvatar !== undefined ? { userAvatarUrl: nextAvatar, photo: nextAvatar } : {}),
+          };
+          localStorage.setItem("auth_user", JSON.stringify(updatedLocal));
+        }
       }
       setErrors({});
       await showSuccessAlert({
@@ -132,6 +163,8 @@ export default function EditUser1() {
         title: "Error al actualizar",
         text: err.message || "No se pudo actualizar el usuario en el servidor."
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -163,18 +196,43 @@ export default function EditUser1() {
         <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-5 sm:mb-8 text-[var(--color-white)]">Editar Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8 items-start">
-          {/* Left: upload placeholder */}
+          {/* Left: foto actual + upload */}
           <div className="col-span-1 flex flex-col items-center">
-            <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cargar Imagen</span>
-            <div className="w-full h-56 md:h-64 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
-                <FileInput className="flex items-center justify-center"
+            <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Foto actual</span>
+            <div className="w-36 h-36 rounded-full overflow-hidden border border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)]">
+              <img
+                src={getUserAvatar(editUser)}
+                alt={form.userName || "Usuario"}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = imgWorkerCarlos;
+                }}
+              />
+            </div>
+            <span className="text-center mt-3 mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cambiar Imagen</span>
+            <div className="w-full h-52 md:h-56 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
+                <FileInput
+                  className="flex items-center justify-center"
                   value={form.userImage}
-                  onChange={(files) => 
-                    setForm((prev) => ({ ...prev, userImage: files }))
-                  }
-                  multiple={true}
+                  onChange={(files) => {
+                    setForm((prev) => ({ ...prev, userImage: files }));
+                    if (errors.userImage) {
+                      setErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.userImage;
+                        return next;
+                      });
+                    }
+                  }}
+                  multiple={false}
+                  maxFiles={1}
+                  accept="image/jpeg,image/png,image/webp"
                 />
             </div>
+            {errors.userImage && (
+              <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+            )}
             {/* Sin switch: solo texto descriptivo si se requiere en el futuro */}
           </div>
 
@@ -305,7 +363,9 @@ export default function EditUser1() {
                 Cancelar
               </Button>
             </Link>
-  <Button variant="primary" size="md" type="submit">Guardar</Button>
+          <Button variant="primary" size="md" type="submit" disabled={submitting}>
+            {submitting ? "Guardando..." : "Guardar"}
+          </Button>
         </div>
       </form>
     </div>

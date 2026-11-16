@@ -9,6 +9,7 @@ const USER_AUTH_SELECT = `
     COALESCE(u.user_password, '') AS password,
     u.pin,
     u.user_type,
+    u.user_avatar_url,
     u.is_active,
     u.is_staff,
     u.is_superuser,

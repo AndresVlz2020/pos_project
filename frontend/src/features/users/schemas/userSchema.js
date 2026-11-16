@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { optionalFiles } from "../../../shared/schemas/fileSchema";
+import { singleOptionalImage } from "../../../shared/schemas/fileSchema";
 
 // Esquema para la vista Crear y Editar Usuario (CreateUserPage.jsx / EditUserPage.jsx)
 export const createUserSchema = z
@@ -17,7 +17,11 @@ export const createUserSchema = z
 
     userType: z
       .string()
-      .min(1, "Debe seleccionar un tipo de usuario"),
+      .min(1, "Debe seleccionar un tipo de usuario")
+      .refine(
+        (val) => val.trim().toLowerCase() !== "proveedor",
+        "Proveedor no es un tipo de usuario válido"
+      ),
 
     userPhone: z
       .string()
@@ -42,7 +46,7 @@ export const createUserSchema = z
 
     userPassword: z.string().optional().or(z.literal("")),
 
-    userImage: optionalFiles,
+    userImage: singleOptionalImage,
   })
   .superRefine((data, ctx) => {
     const isAdmin = ["admin", "Admin", "Administrador"].includes(data.userType);
@@ -56,7 +60,7 @@ export const createUserSchema = z
           path: ["userPassword"],
           message: "La contraseña debe tener al menos 10 caracteres para el rol Administrador",
         });
-      } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/.test(pwd)) {
+      } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])/.test(pwd)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["userPassword"],
@@ -129,7 +133,7 @@ export const userSchema = z.object({
   isActive: z.boolean().optional(),
   isSuperUser: z.boolean().optional(),
 
-  userImage: optionalFiles,
+  userImage: singleOptionalImage,
 });
 
 // Esquema específico para el login (solo email y contraseña)

@@ -500,3 +500,97 @@ describe("bloqueo estricto de Windows Hello, passkeys sincronizadas y PC Windows
     expect(syncedRes.body.code).toBe("SYNCED_PASSKEY_FORBIDDEN");
   });
 });
+
+describe("prevención de registro biométrico duplicado (misma huella o dispositivo)", () => {
+  it("impide registrar dos veces la misma credencial o el mismo dispositivo (misma cuenta y otra cuenta)", async () => {
+    const phoneAuth = createVirtualAuthenticator("localhost", "http://localhost:5173");
+    const samePhoneDeviceId = "phone-device-uuid-1234";
+
+    // 1. Primer registro de Mesero con su teléfono
+    const opts1 = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken))
+      .send({ deviceId: samePhoneDeviceId });
+    expect(opts1.status).toBe(200);
+
+    const reg1 = await api
+      .post("/api/auth/webauthn/register/verify")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken))
+      .send({
+        response: phoneAuth.buildRegistration(opts1.body.options.challenge),
+        deviceLabel: "Celular Mesero",
+        deviceId: samePhoneDeviceId,
+      });
+    expect(reg1.status).toBe(201);
+    const credDbId = reg1.body.credential.id;
+
+    // 2. El mismo usuario intentando iniciar otro registro desde el mismo dispositivo → 409
+    const dupDeviceSameUser = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken))
+      .send({ deviceId: samePhoneDeviceId });
+    expect(dupDeviceSameUser.status).toBe(409);
+    expect(dupDeviceSameUser.body.code).toBe("BIOMETRIC_DEVICE_ALREADY_REGISTERED");
+
+    // 3. Otro usuario intentando registrar el mismo dispositivo → 409
+    const dupDeviceOtherUser = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(adminToken))
+      .send({ deviceId: samePhoneDeviceId });
+    expect(dupDeviceOtherUser.status).toBe(409);
+    expect(dupDeviceOtherUser.body.code).toBe("BIOMETRIC_DEVICE_IN_USE");
+
+    // 4. Mismo usuario sin enviar deviceId pero devolviendo misma credencial/llave → 409
+    const optsNoDevice = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken));
+    expect(optsNoDevice.status).toBe(200);
+    expect(optsNoDevice.body.options.excludeCredentials).toHaveLength(1);
+    expect(optsNoDevice.body.options.excludeCredentials[0].id).toBe(phoneAuth.credentialId);
+
+    const dupSameCred = await api
+      .post("/api/auth/webauthn/register/verify")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken))
+      .send({
+        response: phoneAuth.buildRegistration(optsNoDevice.body.options.challenge),
+        deviceLabel: "Duplicado directo",
+      });
+    expect(dupSameCred.status).toBe(409);
+    expect(dupSameCred.body.code).toBe("BIOMETRIC_ALREADY_REGISTERED");
+
+    // 5. Otro usuario intentando verificar con la misma credencial → 409
+    const optsAdmin = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(adminToken));
+    const dupOtherUserCred = await api
+      .post("/api/auth/webauthn/register/verify")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(adminToken))
+      .send({
+        response: phoneAuth.buildRegistration(optsAdmin.body.options.challenge),
+        deviceLabel: "Intento otra cuenta",
+      });
+    expect(dupOtherUserCred.status).toBe(409);
+    expect(dupOtherUserCred.body.code).toBe("BIOMETRIC_IN_USE");
+
+    // 6. Tras desvincular el registro, ese mismo dispositivo vuelve a poder registrarse
+    const delRes = await api
+      .delete(`/api/auth/webauthn/credentials/${credDbId}`)
+      .set(auth(meseroToken));
+    expect(delRes.status).toBe(200);
+
+    const reOpts = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(meseroToken))
+      .send({ deviceId: samePhoneDeviceId });
+    expect(reOpts.status).toBe(200);
+  });
+});

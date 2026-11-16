@@ -224,11 +224,42 @@ export function getSupplierImage(supplier) {
   return { image: imgLacteos, category: "Insumos Generales de Restaurante" };
 }
 
+const WORKER_ASSETS = {
+  "worker-carlos.jpg": imgWorkerCarlos,
+  "worker-maria.jpg": imgWorkerMaria,
+  "worker-juan.jpg": imgWorkerJuan,
+  "worker-ana.jpg": imgWorkerAna,
+};
+
 /**
  * Resuelve la imagen de avatar para un usuario del sistema POS
  */
 export function getUserAvatar(user) {
   if (!user) return imgWorkerCarlos;
+
+  const rawUrl = String(
+    user.userAvatarUrl ||
+      user.user_avatar_url ||
+      user.photo ||
+      user.avatar ||
+      user.image ||
+      ""
+  ).trim();
+
+  // Imágenes personalizadas cargadas por el usuario (Data URL / HTTP / HTTPS)
+  if (
+    rawUrl.startsWith("data:image/") ||
+    rawUrl.startsWith("http://") ||
+    rawUrl.startsWith("https://")
+  ) {
+    return rawUrl;
+  }
+
+  // Assets conocidos de empleados (solo si fueron guardados explícitamente)
+  const filename = rawUrl.split("/").pop()?.split("?")[0]?.toLowerCase() || "";
+  if (filename && WORKER_ASSETS[filename]) {
+    return WORKER_ASSETS[filename];
+  }
 
   const text = `${user.userName || user.name || ""} ${user.role || user.userType || ""} ${user.userEmail || user.email || ""}`.toLowerCase();
 

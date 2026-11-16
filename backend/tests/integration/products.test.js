@@ -108,4 +108,40 @@ describe("actualización y estado de producto", () => {
     expect(row.is_active).toBe(false);
     expect(row.status).toBe("Inactivo");
   });
+
+  it("conserva la imagen personalizada en BD al crear, editar parcial y consultar", async () => {
+    const customImg = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/";
+    const created = await api.post("/api/products").set(auth(adminToken)).send({
+      name: "TEST Imagen Producto",
+      price: 19000,
+      code: "TEST-IMG-01",
+      stock: 10,
+      imageUrl: customImg,
+    });
+    expect(created.status).toBe(201);
+    const id = created.body.product.id;
+    expect(created.body.product.image).toBe(customImg);
+
+    const partialUpdate = await api
+      .put(`/api/products/${id}`)
+      .set(auth(adminToken))
+      .send({ stock: 18 });
+    expect(partialUpdate.status).toBe(200);
+    expect(partialUpdate.body.product.image).toBe(customImg);
+
+    const fetched = await api.get(`/api/products/${id}`);
+    expect(fetched.status).toBe(200);
+    expect(fetched.body.image).toBe(customImg);
+    expect(fetched.body.image_url).toBe(customImg);
+
+    const withoutImg = await api.post("/api/products").set(auth(adminToken)).send({
+      name: "TEST Sin Imagen",
+      price: 9000,
+      code: "TEST-IMG-02",
+    });
+    const noImgId = withoutImg.body.product.id;
+    await api.put(`/api/products/${noImgId}`).set(auth(adminToken)).send({ stock: 7 });
+    const rowNoImg = await one("SELECT image_url FROM products WHERE id = $1", [noImgId]);
+    expect(rowNoImg.image_url).toBeNull();
+  });
 });

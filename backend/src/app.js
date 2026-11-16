@@ -85,8 +85,8 @@ app.use(
   })
 );
 
-// Middleware para parsear cuerpos de petición en formato JSON
-app.use(express.json());
+// Middleware para parsear cuerpos de petición en formato JSON (soporta imágenes Data URL redimensionadas)
+app.use(express.json({ limit: "2mb" }));
 
 // Registro de routers por feature
 app.use("/api/users", userRoutes);

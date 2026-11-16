@@ -140,6 +140,7 @@ export default function BiometricSettingsModal({
   if (!isOpen) return null;
 
   const canEnroll = capabilities.supported && capabilities.platformAvailable;
+  const currentDeviceCred = credentials.find((cred) => cred.isCurrentDevice) || null;
 
   return createPortal(
     <div
@@ -184,8 +185,8 @@ export default function BiometricSettingsModal({
             </div>
             <p className="leading-relaxed">
               {isAdmin
-                ? "Por seguridad, en PC/Windows confirmarás siempre con tu contraseña (Windows Hello está deshabilitado). Solo se admite biometría sin claves guardadas en nube desde dispositivos con sensor compatible o un lector USB físico dedicado."
-                : "Opcional: puedes seguir usando tu PIN siempre, o vincular huella desde un dispositivo móvil compatible (Windows Hello en PC está deshabilitado por seguridad)."}
+                ? "Por seguridad, en PC/Windows confirmarás siempre con tu contraseña (Windows Hello está deshabilitado). Desde celular o tablet compatible puedes vincular Huella o Face ID (sin claves guardadas en la nube)."
+                : "Opcional: puedes seguir usando tu PIN siempre, o vincular Huella o Face ID desde un celular o tablet compatible (Windows Hello en PC está deshabilitado por seguridad)."}
             </p>
           </div>
 
@@ -224,6 +225,20 @@ export default function BiometricSettingsModal({
                     </p>
                   </div>
                 </div>
+              ) : currentDeviceCred ? (
+                <div className="rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-primary-500)]/40 p-4 space-y-1.5 text-xs">
+                  <div className="flex items-center gap-2 font-semibold text-[var(--color-primary-400)]">
+                    <CheckCircle2 className="size-4 shrink-0" />
+                    <span>Este dispositivo ya está vinculado</span>
+                  </div>
+                  <p className="text-[var(--color-gray-300)] leading-relaxed">
+                    Tu huella o Face ID de{" "}
+                    <strong className="text-[var(--color-white)]">
+                      {currentDeviceCred.deviceLabel}
+                    </strong>{" "}
+                    ya está registrado en tu cuenta. Si deseas volver a registrarlo, primero desvincula el registro actual abajo.
+                  </p>
+                </div>
               ) : canEnroll ? (
                 <form
                   onSubmit={handleEnroll}
@@ -231,7 +246,7 @@ export default function BiometricSettingsModal({
                 >
                   <div className="flex items-center gap-2 text-xs font-semibold text-[var(--color-primary-400)]">
                     <CheckCircle2 className="size-4 shrink-0" />
-                    <span>Este dispositivo tiene biometría compatible disponible</span>
+                    <span>Este dispositivo admite Huella o Face ID</span>
                   </div>
 
                   <div>
@@ -260,8 +275,8 @@ export default function BiometricSettingsModal({
                     )}
                     <span>
                       {enrolling
-                        ? "Toca el sensor de tu dispositivo..."
-                        : "Registrar huella de este dispositivo"}
+                        ? "Confirma con tu huella o Face ID..."
+                        : "Registrar huella o Face ID de este dispositivo"}
                     </span>
                   </button>
                 </form>
@@ -305,9 +320,16 @@ export default function BiometricSettingsModal({
                         <div className="flex items-center gap-2.5 min-w-0">
                           <Smartphone className="size-4 text-[var(--color-primary-400)] shrink-0" />
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-[var(--color-white)] truncate">
-                              {cred.deviceLabel}
-                            </p>
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <p className="text-xs font-semibold text-[var(--color-white)] truncate">
+                                {cred.deviceLabel}
+                              </p>
+                              {cred.isCurrentDevice && (
+                                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border border-[var(--color-primary-500)]/30 shrink-0">
+                                  Este dispositivo
+                                </span>
+                              )}
+                            </div>
                             <p className="text-[11px] text-[var(--color-gray-400)] truncate">
                               Registrado: {formatDateTime(cred.createdAt)} · Último uso:{" "}
                               {formatDateTime(cred.lastUsedAt)}

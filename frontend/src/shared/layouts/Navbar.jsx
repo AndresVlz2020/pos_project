@@ -285,7 +285,7 @@ export default function Navbar() {
             {currentUser && (
               <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-2.5 py-1 rounded border border-[var(--color-secondary-800)]">
                 <img
-                  src={currentUser.photo || currentUser.userAvatarUrl || getUserAvatar(currentUser)}
+                  src={getUserAvatar(currentUser)}
                   alt={currentUser.name || "Usuario"}
                   className="size-6 rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0"
                   onError={(e) => {

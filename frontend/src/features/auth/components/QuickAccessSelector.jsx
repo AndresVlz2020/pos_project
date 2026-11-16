@@ -24,7 +24,7 @@ export const formatRole = (role = "") => {
 export function StaffAvatar({ staff, sizeClass = "size-9" }) {
   return (
     <img
-      src={staff?.photo || staff?.userAvatarUrl || getUserAvatar(staff)}
+      src={getUserAvatar(staff)}
       alt={staff?.userName || staff?.name || "Colaborador"}
       className={`${sizeClass} rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0`}
       onError={(e) => {

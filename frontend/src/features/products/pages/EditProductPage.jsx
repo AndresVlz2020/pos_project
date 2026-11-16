@@ -214,9 +214,13 @@ export default function EditProductPage() {
                 value={userImage}
                 onChange={setUserImage}
                 multiple={false}
+                maxFiles={1}
                 accept="image/jpeg,image/png,image/webp"
               />
             </div>
+            {errors.userImage && (
+              <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+            )}
           </div>
 
           {/* Campos */}

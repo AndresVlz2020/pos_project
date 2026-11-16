@@ -15,6 +15,7 @@ import {
  import { useNavigate } from "react-router-dom";
  import { userSchema } from "../schemas/userSchema";
  import { ArrowLeft } from "lucide-react";
+ import resizeImageFile from "@/utils/imageFile";
 
 export default function UserRegisterForm() {
 
@@ -35,6 +36,7 @@ export default function UserRegisterForm() {
         userDocumentTypes: "",
         userDocumentNumber: "",
         userPassword: "",
+        userImage: [],
         isStaff: false,
         isActive: true,
         isSuperUser: false,
@@ -67,7 +69,10 @@ export default function UserRegisterForm() {
         // Evita que el formulario recargue la pagina 
         e.preventDefault();
 
-        const result = userSchema.safeParse(formData);
+        const result = userSchema.safeParse({
+            ...formData,
+            userImage: formData.userImage?.length ? formData.userImage : undefined,
+        });
 
         if (!result.success) {
             const fieldErrors = {};
@@ -86,8 +91,17 @@ export default function UserRegisterForm() {
         setIsSubmitting(true);
 
         try {
+          let userAvatarUrl = null;
+          if (formData.userImage?.length) {
+            userAvatarUrl = await resizeImageFile(formData.userImage[0]);
+          }
+
           // Llamamos al servicio frontend para que consuma la API
-          const response = await createUser(result.data);
+          const response = await createUser({
+            ...result.data,
+            userImage: undefined,
+            userAvatarUrl,
+          });
 
           console.log("✅ Usuario registrado exitosamente:", response);
           await showSuccessAlert({
@@ -201,10 +215,12 @@ export default function UserRegisterForm() {
 
           <FileInput
             value={formData.userImage}
-          onChange={(files) =>
-            setFormData((prev) => ({ ...prev, userImage: files }))
-          }
-          multiple={true}
+            onChange={(files) =>
+              setFormData((prev) => ({ ...prev, userImage: files }))
+            }
+            multiple={false}
+            maxFiles={1}
+            accept="image/jpeg,image/png,image/webp"
           />
           {errors.userImage && (
             <span className="text-[var(--color-error)] text-sm">{errors.userImage}</span>
