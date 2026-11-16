@@ -51,7 +51,7 @@ export const webauthnRepository = {
     return result.rows[0];
   },
 
-  async findByPublicKey(publicKey) {
+  async findByPublicKeyAndUserId(publicKey, userId) {
     const query = `
       SELECT
         id,
@@ -60,14 +60,14 @@ export const webauthnRepository = {
         device_label,
         device_instance_id
       FROM user_biometric_credentials
-      WHERE public_key = $1
+      WHERE public_key = $1 AND user_id = $2
       LIMIT 1;
     `;
-    const result = await pool.query(query, [Buffer.from(publicKey)]);
-    return result.rows[0];
+    const result = await pool.query(query, [Buffer.from(publicKey), userId]);
+    return result.rows[0] || null;
   },
 
-  async findByDeviceInstanceId(deviceInstanceId) {
+  async findByDeviceInstanceIdAndUserId(deviceInstanceId, userId) {
     if (!deviceInstanceId) return null;
     const query = `
       SELECT
@@ -77,10 +77,10 @@ export const webauthnRepository = {
         device_label,
         device_instance_id
       FROM user_biometric_credentials
-      WHERE device_instance_id = $1
+      WHERE device_instance_id = $1 AND user_id = $2
       LIMIT 1;
     `;
-    const result = await pool.query(query, [deviceInstanceId]);
+    const result = await pool.query(query, [deviceInstanceId, userId]);
     return result.rows[0] || null;
   },
 

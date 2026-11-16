@@ -62,16 +62,18 @@ export default function EditSupplierPage() {
         sessionStorage.setItem("last_edited_supplier", JSON.stringify(supplier));
     };
 
+    const hasInitialSupplier = Boolean(initialSupplier);
+
     // Sincronizar si cambia location.state o si se recarga con queryId
     useEffect(() => {
         if (location.state?.supplier) {
-            populateFromSupplier(location.state.supplier);
+            Promise.resolve().then(() => populateFromSupplier(location.state.supplier));
             return;
         }
 
         // Si no hay datos en memoria ni state, pero hay un id en la query, consultarlo de PostgreSQL
-        if (!initialSupplier && queryId) {
-            setLoadingData(true);
+        if (!hasInitialSupplier && queryId) {
+            Promise.resolve().then(() => setLoadingData(true));
             fetch(`${API_URL}/suppliers/${queryId}`)
                 .then((res) => {
                     if (!res.ok) throw new Error("No se pudo obtener el proveedor");
@@ -89,7 +91,7 @@ export default function EditSupplierPage() {
                     setLoadingData(false);
                 });
         }
-    }, [location.state, queryId]);
+    }, [location.state, queryId, hasInitialSupplier]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -194,28 +196,25 @@ export default function EditSupplierPage() {
             ) : (
                 <form onSubmit={handleSubmit}>
                     <div className="flex flex-col md:flex-row gap-12 md:gap-16 justify-center items-start">
-                        {/* Previsualización del Logo Corporativo */}
+                        {/* Previsualización del Logo Corporativo con '+' superpuesto */}
                         <div className="w-48 flex flex-col items-center">
-                            <div className="size-36 rounded-xl border-2 border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)] overflow-hidden shadow-md flex items-center justify-center p-1">
-                                <img
-                                    src={logoPreview}
-                                    alt={formSupliers.supplierName || "Logo"}
-                                    className="w-full h-full object-cover rounded-lg"
-                                />
-                            </div>
-                            <p className="text-center text-[var(--color-gray-300)] text-xs mt-2 font-medium">
+                            <p className="text-center text-[var(--color-gray-300)] text-xs mb-3 font-medium">
                                 Logo de Suministros
                             </p>
-                            <div className="w-full mt-4">
-                                <FileInput 
-                                    className="flex items-center justify-center"
-                                    value={formSupliers.userImage}
-                                    onChange={(files) => 
-                                        setFormSupliers((prev) => ({ ...prev, userImage: files}))
-                                    }
-                                    multiple={false}
-                                />
-                            </div>
+                            <FileInput
+                                value={formSupliers.userImage}
+                                onChange={(files) =>
+                                    setFormSupliers((prev) => ({ ...prev, userImage: files }))
+                                }
+                                multiple={false}
+                                maxFiles={1}
+                                accept="image/*"
+                                existingImageUrl={logoPreview}
+                                altText={formSupliers.supplierName || "Logo de suministros"}
+                            />
+                            {errors.userImage && (
+                                <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+                            )}
                         </div>
 
                         {/* Columna 1 de Inputs */}

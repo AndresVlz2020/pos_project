@@ -66,7 +66,8 @@ export default function CreateInventory() {
     }, []);
 
     useEffect(() => {
-        if (editItem) {
+        if (!editItem) return;
+        Promise.resolve().then(() => {
             setInventory({
                 inventorySupplierSelect: String(editItem.supplier_id || editItem.supplier || ""),
                 inventoryProductName: editItem.productName || editItem.name || "",
@@ -80,7 +81,7 @@ export default function CreateInventory() {
                 priceBuy: editItem.priceBuy !== undefined ? String(editItem.priceBuy) : "45000",
                 expirationDate: editItem.expirationDate || editItem.lastUpdated || "2026-12-31",
             });
-        }
+        });
     }, [editItem]);
 
     const handleChange = (e) => {
@@ -240,16 +241,21 @@ export default function CreateInventory() {
             <form onSubmit={handleSubmit}>
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 justify-center items-start">
                     <div className="w-full lg:w-48 flex flex-col items-center">
-                        <FileInput 
-                            className="flex items-center justify-center"
+                        <p className="text-center text-[var(--color-gray-300)] text-sm mb-3 font-medium">
+                            Código de barras / Imagen
+                        </p>
+                        <FileInput
                             value={formInventory.userImage}
                             disabled={isReadOnly}
                             onChange={(files) => setInventory((prev) => ({ ...prev, userImage: files }))}
-                            multiple={true}
+                            multiple={false}
+                            maxFiles={1}
+                            accept="image/*"
+                            altText={formInventory.inventoryProductName || "Insumo"}
                         />
-                        <p className="text-center text-[var(--color-gray-300)] text-sm mt-2">
-                            Código de barras / Imagen
-                        </p>
+                        {errors.userImage && (
+                            <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+                        )}
                     </div>
 
                     <div className="flex-1 flex flex-col gap-1 w-full">

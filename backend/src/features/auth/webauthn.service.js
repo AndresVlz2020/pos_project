@@ -191,21 +191,16 @@ async function assertDeviceInstanceAvailable(userId, deviceInstanceId) {
   const normalized = normalizeDeviceInstanceId(deviceInstanceId);
   if (!normalized) return null;
 
-  const existing = await webauthnRepository.findByDeviceInstanceId(normalized);
+  const existing = await webauthnRepository.findByDeviceInstanceIdAndUserId(
+    normalized,
+    userId
+  );
   if (!existing) return normalized;
 
-  if (Number(existing.user_id) === Number(userId)) {
-    throw new AuthServiceError(
-      "Este dispositivo ya tiene su huella o Face ID registrado en tu cuenta.",
-      409,
-      { code: "BIOMETRIC_DEVICE_ALREADY_REGISTERED" }
-    );
-  }
-
   throw new AuthServiceError(
-    "La biometría de este dispositivo ya está vinculada a otra cuenta.",
+    "Este dispositivo ya tiene su huella o Face ID registrado en tu cuenta.",
     409,
-    { code: "BIOMETRIC_DEVICE_IN_USE" }
+    { code: "BIOMETRIC_DEVICE_ALREADY_REGISTERED" }
   );
 }
 
@@ -449,7 +444,7 @@ export const webauthnService = {
     const existingByCredId = await webauthnRepository.findByCredentialId(credential.id);
     const existingByPubKey = existingByCredId
       ? existingByCredId
-      : await webauthnRepository.findByPublicKey(credential.publicKey);
+      : await webauthnRepository.findByPublicKeyAndUserId(credential.publicKey, user.id);
     const conflict = existingByCredId || existingByPubKey;
 
     if (conflict) {

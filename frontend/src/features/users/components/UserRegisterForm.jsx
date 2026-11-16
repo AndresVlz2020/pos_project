@@ -220,7 +220,9 @@ export default function UserRegisterForm() {
             }
             multiple={false}
             maxFiles={1}
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/*"
+            shape="circle"
+            altText={formData.userName || "Usuario"}
           />
           {errors.userImage && (
             <span className="text-[var(--color-error)] text-sm">{errors.userImage}</span>

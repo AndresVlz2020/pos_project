@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { optionalFiles } from "../../../shared/schemas/fileSchema";
+import { singleOptionalImage } from "../../../shared/schemas/fileSchema";
 
 export const supplierSchema = z.object({
   supplierNit: z
@@ -36,5 +36,5 @@ export const supplierSchema = z.object({
   isActive: z.boolean().optional(),
   isSuperUser: z.boolean().optional(),
 
-  userImage: optionalFiles,
+  userImage: singleOptionalImage,
 });

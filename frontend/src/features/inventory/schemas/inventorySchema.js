@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { optionalFiles } from "../../../shared/schemas/fileSchema";
+import { singleOptionalImage } from "../../../shared/schemas/fileSchema";
 
 export const inventorySchema = z.object ({
 
@@ -48,6 +48,6 @@ export const inventorySchema = z.object ({
     .string()
     .min(1, "Debe ingresar una fecha de vencimiento"),
     
-    userImage: optionalFiles
+    userImage: singleOptionalImage
     
 })

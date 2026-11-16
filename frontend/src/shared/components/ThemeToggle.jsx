@@ -3,11 +3,12 @@ import { Sun, Moon } from "lucide-react";
 import { IconButton } from "@/shared";
 
 export function ThemeToggle({ className = "", hitSize = 48, iconSize = 24 }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
+  const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "light");
   const isDark = theme === "dark";
 
   useEffect(() => {
     document.documentElement.classList.toggle("theme-dark", isDark);
+    document.documentElement.classList.toggle("dark", isDark);
     document.documentElement.classList.toggle("theme-light", !isDark);
     localStorage.setItem("app_theme", theme);
   }, [theme, isDark]);

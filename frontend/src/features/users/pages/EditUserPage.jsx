@@ -196,40 +196,31 @@ export default function EditUser1() {
         <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-5 sm:mb-8 text-[var(--color-white)]">Editar Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8 items-start">
-          {/* Left: foto actual + upload */}
+          {/* Left: foto actual con '+' superpuesto para cambiarla */}
           <div className="col-span-1 flex flex-col items-center">
-            <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Foto actual</span>
-            <div className="w-36 h-36 rounded-full overflow-hidden border border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)]">
-              <img
-                src={getUserAvatar(editUser)}
-                alt={form.userName || "Usuario"}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = imgWorkerCarlos;
-                }}
-              />
-            </div>
-            <span className="text-center mt-3 mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cambiar Imagen</span>
-            <div className="w-full h-52 md:h-56 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
-                <FileInput
-                  className="flex items-center justify-center"
-                  value={form.userImage}
-                  onChange={(files) => {
-                    setForm((prev) => ({ ...prev, userImage: files }));
-                    if (errors.userImage) {
-                      setErrors((prev) => {
-                        const next = { ...prev };
-                        delete next.userImage;
-                        return next;
-                      });
-                    }
-                  }}
-                  multiple={false}
-                  maxFiles={1}
-                  accept="image/jpeg,image/png,image/webp"
-                />
-            </div>
+            <span className="text-center mb-3 text-[var(--color-gray-300)] text-sm font-medium">
+              Foto de Perfil
+            </span>
+            <FileInput
+              value={form.userImage}
+              onChange={(files) => {
+                setForm((prev) => ({ ...prev, userImage: files }));
+                if (errors.userImage) {
+                  setErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.userImage;
+                    return next;
+                  });
+                }
+              }}
+              multiple={false}
+              maxFiles={1}
+              accept="image/*"
+              existingImageUrl={getUserAvatar(editUser)}
+              fallbackImageUrl={imgWorkerCarlos}
+              shape="circle"
+              altText={form.userName || "Usuario"}
+            />
             {errors.userImage && (
               <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
             )}

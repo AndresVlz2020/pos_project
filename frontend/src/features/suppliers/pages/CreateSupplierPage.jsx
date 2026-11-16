@@ -19,6 +19,7 @@ export default function CreateSuppliers() {
         supplierPhone:"",
         supplierDirection:"",
         supplierObservation:"",
+        userImage: [],
         isStaff: false,
         isSuperUser: false,
     })
@@ -98,17 +99,23 @@ export default function CreateSuppliers() {
                         items-start
                     "
                 >
-                    <div className="w-40 mt-12">
-                        <FileInput className="flex items-center justify-center"
-                            value={formSupliers.userImage}
-                            onChange={(files) => 
-                                setFormSupliers((prev) => ({ ...prev, userImage: files}))
-                            }
-                            multiple={true}
-                        />
-                        <p className="text-center text-[var(--color-gray-300)] text-sm mt-2">
+                    <div className="w-48 flex flex-col items-center">
+                        <p className="text-center text-[var(--color-gray-300)] text-sm mb-3 font-medium">
                             Suba el Logo
                         </p>
+                        <FileInput
+                            value={formSupliers.userImage}
+                            onChange={(files) =>
+                                setFormSupliers((prev) => ({ ...prev, userImage: files }))
+                            }
+                            multiple={false}
+                            maxFiles={1}
+                            accept="image/*"
+                            altText={formSupliers.supplierName || "Logo proveedor"}
+                        />
+                        {errors.userImage && (
+                            <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+                        )}
                     </div>
 
                     <div className="flex-1 flex flex-col gap-4 max-w-md w-full">

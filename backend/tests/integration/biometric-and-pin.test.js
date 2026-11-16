@@ -501,17 +501,18 @@ describe("bloqueo estricto de Windows Hello, passkeys sincronizadas y PC Windows
   });
 });
 
-describe("prevención de registro biométrico duplicado (misma huella o dispositivo)", () => {
-  it("impide registrar dos veces la misma credencial o el mismo dispositivo (misma cuenta y otra cuenta)", async () => {
-    const phoneAuth = createVirtualAuthenticator("localhost", "http://localhost:5173");
-    const samePhoneDeviceId = "phone-device-uuid-1234";
+describe("prevención de registro biométrico duplicado dentro de la misma cuenta", () => {
+  it("impide duplicar en la misma cuenta pero sí permite el mismo dispositivo en cuentas distintas", async () => {
+    const phoneMeseroAuth = createVirtualAuthenticator("localhost", "http://localhost:5173");
+    const phoneAdminAuth = createVirtualAuthenticator("localhost", "http://localhost:5173");
+    const sharedPhoneDeviceId = "shared-phone-device-uuid-5678";
 
     // 1. Primer registro de Mesero con su teléfono
     const opts1 = await api
       .post("/api/auth/webauthn/register/options")
       .set("Origin", "http://localhost:5173")
       .set(auth(meseroToken))
-      .send({ deviceId: samePhoneDeviceId });
+      .send({ deviceId: sharedPhoneDeviceId });
     expect(opts1.status).toBe(200);
 
     const reg1 = await api
@@ -519,9 +520,9 @@ describe("prevención de registro biométrico duplicado (misma huella o disposit
       .set("Origin", "http://localhost:5173")
       .set(auth(meseroToken))
       .send({
-        response: phoneAuth.buildRegistration(opts1.body.options.challenge),
-        deviceLabel: "Celular Mesero",
-        deviceId: samePhoneDeviceId,
+        response: phoneMeseroAuth.buildRegistration(opts1.body.options.challenge),
+        deviceLabel: "Teléfono Restaurante",
+        deviceId: sharedPhoneDeviceId,
       });
     expect(reg1.status).toBe(201);
     const credDbId = reg1.body.credential.id;
@@ -531,18 +532,28 @@ describe("prevención de registro biométrico duplicado (misma huella o disposit
       .post("/api/auth/webauthn/register/options")
       .set("Origin", "http://localhost:5173")
       .set(auth(meseroToken))
-      .send({ deviceId: samePhoneDeviceId });
+      .send({ deviceId: sharedPhoneDeviceId });
     expect(dupDeviceSameUser.status).toBe(409);
     expect(dupDeviceSameUser.body.code).toBe("BIOMETRIC_DEVICE_ALREADY_REGISTERED");
 
-    // 3. Otro usuario intentando registrar el mismo dispositivo → 409
-    const dupDeviceOtherUser = await api
+    // 3. Otra cuenta (Admin) intentando registrar ese mismo dispositivo → SÍ permitido (200/201)
+    const optsAdmin = await api
       .post("/api/auth/webauthn/register/options")
       .set("Origin", "http://localhost:5173")
       .set(auth(adminToken))
-      .send({ deviceId: samePhoneDeviceId });
-    expect(dupDeviceOtherUser.status).toBe(409);
-    expect(dupDeviceOtherUser.body.code).toBe("BIOMETRIC_DEVICE_IN_USE");
+      .send({ deviceId: sharedPhoneDeviceId });
+    expect(optsAdmin.status).toBe(200);
+
+    const regAdminSamePhone = await api
+      .post("/api/auth/webauthn/register/verify")
+      .set("Origin", "http://localhost:5173")
+      .set(auth(adminToken))
+      .send({
+        response: phoneAdminAuth.buildRegistration(optsAdmin.body.options.challenge),
+        deviceLabel: "Teléfono Restaurante (Admin)",
+        deviceId: sharedPhoneDeviceId,
+      });
+    expect(regAdminSamePhone.status).toBe(201);
 
     // 4. Mismo usuario sin enviar deviceId pero devolviendo misma credencial/llave → 409
     const optsNoDevice = await api
@@ -551,36 +562,20 @@ describe("prevención de registro biométrico duplicado (misma huella o disposit
       .set(auth(meseroToken));
     expect(optsNoDevice.status).toBe(200);
     expect(optsNoDevice.body.options.excludeCredentials).toHaveLength(1);
-    expect(optsNoDevice.body.options.excludeCredentials[0].id).toBe(phoneAuth.credentialId);
+    expect(optsNoDevice.body.options.excludeCredentials[0].id).toBe(phoneMeseroAuth.credentialId);
 
     const dupSameCred = await api
       .post("/api/auth/webauthn/register/verify")
       .set("Origin", "http://localhost:5173")
       .set(auth(meseroToken))
       .send({
-        response: phoneAuth.buildRegistration(optsNoDevice.body.options.challenge),
+        response: phoneMeseroAuth.buildRegistration(optsNoDevice.body.options.challenge),
         deviceLabel: "Duplicado directo",
       });
     expect(dupSameCred.status).toBe(409);
     expect(dupSameCred.body.code).toBe("BIOMETRIC_ALREADY_REGISTERED");
 
-    // 5. Otro usuario intentando verificar con la misma credencial → 409
-    const optsAdmin = await api
-      .post("/api/auth/webauthn/register/options")
-      .set("Origin", "http://localhost:5173")
-      .set(auth(adminToken));
-    const dupOtherUserCred = await api
-      .post("/api/auth/webauthn/register/verify")
-      .set("Origin", "http://localhost:5173")
-      .set(auth(adminToken))
-      .send({
-        response: phoneAuth.buildRegistration(optsAdmin.body.options.challenge),
-        deviceLabel: "Intento otra cuenta",
-      });
-    expect(dupOtherUserCred.status).toBe(409);
-    expect(dupOtherUserCred.body.code).toBe("BIOMETRIC_IN_USE");
-
-    // 6. Tras desvincular el registro, ese mismo dispositivo vuelve a poder registrarse
+    // 5. Tras desvincular el registro, esa misma cuenta vuelve a poder registrar ese dispositivo
     const delRes = await api
       .delete(`/api/auth/webauthn/credentials/${credDbId}`)
       .set(auth(meseroToken));
@@ -590,7 +585,7 @@ describe("prevención de registro biométrico duplicado (misma huella o disposit
       .post("/api/auth/webauthn/register/options")
       .set("Origin", "http://localhost:5173")
       .set(auth(meseroToken))
-      .send({ deviceId: samePhoneDeviceId });
+      .send({ deviceId: sharedPhoneDeviceId });
     expect(reOpts.status).toBe(200);
   });
 });

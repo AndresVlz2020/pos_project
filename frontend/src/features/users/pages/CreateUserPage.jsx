@@ -177,28 +177,29 @@ export default function CreateUser() {
         <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-5 sm:mb-8 text-[var(--color-white)]">Crear Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8 items-start">
-          {/* Left: upload placeholder */}
+          {/* Left: avatar de usuario */}
           <div className="col-span-1 flex flex-col items-center">
-            <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cargar Imagen</span>
-            <div className="w-full h-56 md:h-64 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
-                <FileInput
-                  className="flex items-center justify-center"
-                  value={form.userImage}
-                  onChange={(files) => {
-                    setForm((prev) => ({ ...prev, userImage: files }));
-                    if (errors.userImage) {
-                      setErrors((prev) => {
-                        const next = { ...prev };
-                        delete next.userImage;
-                        return next;
-                      });
-                    }
-                  }}
-                  multiple={false}
-                  maxFiles={1}
-                  accept="image/jpeg,image/png,image/webp"
-                />
-            </div>
+            <span className="text-center mb-3 text-[var(--color-gray-300)] text-sm font-medium">
+              Foto de Perfil
+            </span>
+            <FileInput
+              value={form.userImage}
+              onChange={(files) => {
+                setForm((prev) => ({ ...prev, userImage: files }));
+                if (errors.userImage) {
+                  setErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.userImage;
+                    return next;
+                  });
+                }
+              }}
+              multiple={false}
+              maxFiles={1}
+              accept="image/*"
+              shape="circle"
+              altText={form.userName || "Nuevo usuario"}
+            />
             {errors.userImage && (
               <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
             )}

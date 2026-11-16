@@ -139,19 +139,19 @@ export default function CreateProductPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-          {/* Columna izquierda: carga de imagen (mismo patrón que usuarios) */}
+          {/* Columna izquierda: carga de imagen */}
           <div className="col-span-1 flex flex-col items-center">
-            <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cargar Imagen</span>
-            <div className="w-full h-56 md:h-64 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
-              <FileInput
-                className="flex items-center justify-center"
-                value={userImage}
-                onChange={setUserImage}
-                multiple={false}
-                maxFiles={1}
-                accept="image/jpeg,image/png,image/webp"
-              />
-            </div>
+            <span className="text-center mb-3 text-[var(--color-gray-300)] text-sm font-medium">
+              Imagen del Platillo
+            </span>
+            <FileInput
+              value={userImage}
+              onChange={setUserImage}
+              multiple={false}
+              maxFiles={1}
+              accept="image/*"
+              altText={formProduct.productName || "Nuevo platillo"}
+            />
             {errors.userImage && (
               <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
             )}

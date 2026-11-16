@@ -193,31 +193,21 @@ export default function EditProductPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-          {/* Columna izquierda: foto actual + carga (mismo patrón que usuarios) */}
+          {/* Columna izquierda: foto única con '+' superpuesto para cambiarla */}
           <div className="col-span-1 flex flex-col items-center">
-            <span className="text-center mb-2 text-[var(--color-gray-300)] text-sm font-medium">Foto actual</span>
-            <div className="w-40 h-40 rounded-xl overflow-hidden border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]">
-              <img
-                src={currentImage}
-                alt={formProduct.productName || "Platillo"}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = imgPunta;
-                }}
-              />
-            </div>
-            <span className="text-center mt-3 mb-2 text-[var(--color-gray-300)] text-sm font-medium">Cargar Imagen</span>
-            <div className="w-full h-52 md:h-56 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] flex flex-col items-center justify-center text-[var(--color-white)] place-items-center">
-              <FileInput
-                className="flex items-center justify-center"
-                value={userImage}
-                onChange={setUserImage}
-                multiple={false}
-                maxFiles={1}
-                accept="image/jpeg,image/png,image/webp"
-              />
-            </div>
+            <span className="text-center mb-3 text-[var(--color-gray-300)] text-sm font-medium">
+              Imagen del Platillo
+            </span>
+            <FileInput
+              value={userImage}
+              onChange={setUserImage}
+              multiple={false}
+              maxFiles={1}
+              accept="image/*"
+              existingImageUrl={currentImage}
+              fallbackImageUrl={imgPunta}
+              altText={formProduct.productName || "Platillo"}
+            />
             {errors.userImage && (
               <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
             )}
