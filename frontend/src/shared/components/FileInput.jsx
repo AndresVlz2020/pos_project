@@ -301,12 +301,13 @@ export default function FileInput({
       <input
         ref={inputRef}
         type="file"
-        hidden
+        className="sr-only"
+        tabIndex={-1}
         disabled={disabled}
         multiple={allowMultiple}
         accept={accept}
         onChange={(e) => {
-          const picked = e.target.files;
+          const picked = Array.from(e.target.files || []);
           e.target.value = "";
           handleFiles(picked);
         }}

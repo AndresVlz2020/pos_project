@@ -44,6 +44,11 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
     setBiometricHint("");
 
     try {
+      const caps = await getBiometricCapabilities();
+      if (caps.isDesktop || !caps.supported || !caps.platformAvailable) {
+        setBiometricsReadyHere(false);
+        return;
+      }
       await onBiometricLogin(email);
     } catch (err) {
       if (err?.isUserCancelled && silentOnCancel) {
@@ -100,6 +105,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
       }
 
       const canUseBioHere =
+        !caps.isDesktop &&
         Boolean(emailStatus.hasBiometrics) &&
         Boolean(caps.supported) &&
         Boolean(caps.platformAvailable);

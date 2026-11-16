@@ -39,7 +39,8 @@ export const webauthnController = {
         req.user.id,
         req.get("origin"),
         req.get("user-agent"),
-        req.body?.deviceId
+        req.body?.deviceId,
+        req.get("sec-ch-ua-platform")
       );
       res.status(200).json({ options });
     } catch (err) {
@@ -56,6 +57,7 @@ export const webauthnController = {
           deviceLabel: req.body?.deviceLabel,
           deviceInstanceId: req.body?.deviceId,
           userAgent: req.get("user-agent"),
+          secChUaPlatform: req.get("sec-ch-ua-platform"),
         },
         req.get("origin")
       );
@@ -94,6 +96,7 @@ export const webauthnController = {
           userId: req.body?.userId,
           email: req.body?.email,
           userAgent: req.get("user-agent"),
+          secChUaPlatform: req.get("sec-ch-ua-platform"),
         },
         req.get("origin")
       );
@@ -111,6 +114,7 @@ export const webauthnController = {
           email: req.body?.email,
           response: req.body?.response,
           userAgent: req.get("user-agent"),
+          secChUaPlatform: req.get("sec-ch-ua-platform"),
         },
         req.get("origin")
       );
@@ -128,7 +132,8 @@ export const webauthnController = {
       const result = await webauthnService.createStepUpOptions(
         req.user.id,
         req.get("origin"),
-        req.get("user-agent")
+        req.get("user-agent"),
+        req.get("sec-ch-ua-platform")
       );
       res.status(200).json(result);
     } catch (err) {
@@ -144,6 +149,7 @@ export const webauthnController = {
           response: req.body?.response,
           password: req.body?.password,
           userAgent: req.get("user-agent"),
+          secChUaPlatform: req.get("sec-ch-ua-platform"),
         },
         req.get("origin")
       );

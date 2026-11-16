@@ -499,6 +499,65 @@ describe("bloqueo estricto de Windows Hello, passkeys sincronizadas y PC Windows
     expect(syncedRes.status).toBe(400);
     expect(syncedRes.body.code).toBe("SYNCED_PASSKEY_FORBIDDEN");
   });
+
+  it("bloquea por Sec-CH-UA-Platform Windows aun con User-Agent móvil y omite transporte hybrid", async () => {
+    const spoofedMobileUa =
+      "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36";
+
+    const regChBlocked = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set("User-Agent", spoofedMobileUa)
+      .set("Sec-CH-UA-Platform", '"Windows"')
+      .set(auth(meseroToken));
+    expect(regChBlocked.status).toBe(403);
+    expect(regChBlocked.body.code).toBe("DESKTOP_BIOMETRICS_DISABLED");
+
+    const stepUpChBlocked = await api
+      .post("/api/auth/step-up/options")
+      .set("Origin", "http://localhost:5173")
+      .set("User-Agent", spoofedMobileUa)
+      .set("Sec-CH-UA-Platform", '"Windows"')
+      .set(auth(adminToken));
+    expect(stepUpChBlocked.status).toBe(200);
+    expect(stepUpChBlocked.body.hasBiometrics).toBe(false);
+    expect(stepUpChBlocked.body.options).toBeNull();
+    expect(stepUpChBlocked.body.reason).toBe("DESKTOP_BIOMETRICS_DISABLED");
+
+    const regHybridOpts = await api
+      .post("/api/auth/webauthn/register/options")
+      .set("Origin", "http://localhost:5173")
+      .set("User-Agent", spoofedMobileUa)
+      .set("Sec-CH-UA-Platform", '"Android"')
+      .set(auth(adminToken));
+    expect(regHybridOpts.status).toBe(200);
+
+    const mobileAuth = createVirtualAuthenticator("localhost", "http://localhost:5173");
+    const att = mobileAuth.buildRegistration(regHybridOpts.body.options.challenge);
+    att.response.transports = ["internal", "hybrid"];
+
+    const regVerify = await api
+      .post("/api/auth/webauthn/register/verify")
+      .set("Origin", "http://localhost:5173")
+      .set("User-Agent", spoofedMobileUa)
+      .set("Sec-CH-UA-Platform", '"Android"')
+      .set(auth(adminToken))
+      .send({ response: att, deviceLabel: "Android Hybrid Test" });
+    expect(regVerify.status).toBe(201);
+
+    const stepUpAndroid = await api
+      .post("/api/auth/step-up/options")
+      .set("Origin", "http://localhost:5173")
+      .set("User-Agent", spoofedMobileUa)
+      .set("Sec-CH-UA-Platform", '"Android"')
+      .set(auth(adminToken));
+    expect(stepUpAndroid.status).toBe(200);
+    expect(stepUpAndroid.body.hasBiometrics).toBe(true);
+    const allTransports = (stepUpAndroid.body.options?.allowCredentials || []).flatMap(
+      (c) => c.transports || []
+    );
+    expect(allTransports).not.toContain("hybrid");
+  });
 });
 
 describe("prevención de registro biométrico duplicado dentro de la misma cuenta", () => {

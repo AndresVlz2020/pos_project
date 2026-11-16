@@ -33,15 +33,23 @@ function normalizeAaguid(value) {
   return String(value || "").trim().toLowerCase();
 }
 
-export function isWindowsDesktopUserAgent(userAgent = "") {
+export function isWindowsDesktopUserAgent(userAgent = "", secChUaPlatform = "") {
+  const chPlatform = String(secChUaPlatform || "")
+    .replace(/["']/g, "")
+    .trim()
+    .toLowerCase();
+  if (chPlatform === "windows") {
+    return true;
+  }
+
   const ua = String(userAgent || "").trim().toLowerCase();
   if (!ua) return false;
   if (ua.includes("windows phone")) return false;
   return /windows nt|win64|wow64/.test(ua);
 }
 
-function assertNonWindowsWebAuthnClient(userAgent) {
-  if (isWindowsDesktopUserAgent(userAgent)) {
+function assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform = "") {
+  if (isWindowsDesktopUserAgent(userAgent, secChUaPlatform)) {
     throw new AuthServiceError(
       "Windows Hello está deshabilitado por seguridad en equipos PC/Windows. Usa tu contraseña, PIN o un lector físico dedicado.",
       403,
@@ -222,11 +230,14 @@ async function resolveActiveUser({ userId, email }) {
 }
 
 function toCredentialDescriptor(cred) {
+  const safeTransports = Array.isArray(cred.transports)
+    ? cred.transports.filter(
+        (transport) => transport && String(transport).trim().toLowerCase() !== "hybrid"
+      )
+    : [];
   return {
     id: cred.credential_id,
-    ...(Array.isArray(cred.transports) && cred.transports.length > 0
-      ? { transports: cred.transports }
-      : {}),
+    ...(safeTransports.length > 0 ? { transports: safeTransports } : {}),
   };
 }
 
@@ -339,9 +350,10 @@ export const webauthnService = {
     userId,
     requestOrigin,
     userAgent = "",
-    deviceInstanceId = null
+    deviceInstanceId = null,
+    secChUaPlatform = ""
   ) {
-    assertNonWindowsWebAuthnClient(userAgent);
+    assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
     const user = await resolveActiveUser({ userId });
     const context = resolveWebAuthnContext(requestOrigin);
     await assertDeviceInstanceAvailable(user.id, deviceInstanceId);
@@ -376,10 +388,10 @@ export const webauthnService = {
 
   async verifyAndSaveRegistration(
     userId,
-    { response, deviceLabel, deviceInstanceId, userAgent },
+    { response, deviceLabel, deviceInstanceId, userAgent, secChUaPlatform = "" },
     requestOrigin
   ) {
-    assertNonWindowsWebAuthnClient(userAgent);
+    assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
     const user = await resolveActiveUser({ userId });
     const context = resolveWebAuthnContext(requestOrigin);
     const normalizedDeviceId = await assertDeviceInstanceAvailable(
@@ -550,15 +562,18 @@ export const webauthnService = {
     };
   },
 
-  async createLoginOptions({ userId, email, userAgent = "" }, requestOrigin) {
-    assertNonWindowsWebAuthnClient(userAgent);
+  async createLoginOptions({ userId, email, userAgent = "", secChUaPlatform = "" }, requestOrigin) {
+    assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
     const user = await resolveActiveUser({ userId, email });
     const context = resolveWebAuthnContext(requestOrigin);
     return createAuthChallengeForUser(user, "login", context);
   },
 
-  async verifyLoginAssertion({ userId, email, response, userAgent = "" }, requestOrigin) {
-    assertNonWindowsWebAuthnClient(userAgent);
+  async verifyLoginAssertion(
+    { userId, email, response, userAgent = "", secChUaPlatform = "" },
+    requestOrigin
+  ) {
+    assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
     const user = await resolveActiveUser({ userId, email });
     await verifyAuthChallengeForUser(user, "login", response, requestOrigin);
 
@@ -569,8 +584,8 @@ export const webauthnService = {
     return issueSessionForUser(user);
   },
 
-  async createStepUpOptions(userId, requestOrigin, userAgent = "") {
-    if (isWindowsDesktopUserAgent(userAgent)) {
+  async createStepUpOptions(userId, requestOrigin, userAgent = "", secChUaPlatform = "") {
+    if (isWindowsDesktopUserAgent(userAgent, secChUaPlatform)) {
       return { hasBiometrics: false, options: null, reason: "DESKTOP_BIOMETRICS_DISABLED" };
     }
     const user = await resolveActiveUser({ userId });
@@ -583,12 +598,16 @@ export const webauthnService = {
     return { hasBiometrics: true, options };
   },
 
-  async verifyStepUp(userId, { response, password, userAgent = "" }, requestOrigin) {
+  async verifyStepUp(
+    userId,
+    { response, password, userAgent = "", secChUaPlatform = "" },
+    requestOrigin
+  ) {
     const user = await resolveActiveUser({ userId });
     let verifiedMethod = null;
 
     if (response) {
-      assertNonWindowsWebAuthnClient(userAgent);
+      assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
       await verifyAuthChallengeForUser(user, "step_up", response, requestOrigin);
       verifiedMethod = "biometric";
     } else if (password !== undefined && password !== null && String(password).trim() !== "") {

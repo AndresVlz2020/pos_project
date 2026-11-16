@@ -32,6 +32,11 @@ export default function PinKeypad({
     setBiometricHint("");
 
     try {
+      const caps = await getBiometricCapabilities();
+      if (caps.isDesktop || !caps.supported || !caps.platformAvailable) {
+        setBiometricsAvailableHere(false);
+        return;
+      }
       await onBiometricLogin(selectedStaff);
     } catch (err) {
       if (err?.isUserCancelled && silentOnCancel) {
@@ -65,6 +70,7 @@ export default function PinKeypad({
       }
 
       const canUseBio =
+        !caps.isDesktop &&
         Boolean(status?.hasBiometrics) &&
         Boolean(caps.supported) &&
         Boolean(caps.platformAvailable);

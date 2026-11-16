@@ -60,13 +60,26 @@ export default function BiometricSettingsModal({
 
     const fetchInitial = async () => {
       try {
-        const [caps, list] = await Promise.all([
+        const [capsResult, listResult] = await Promise.allSettled([
           getBiometricCapabilities(),
           listMyBiometricsApi(),
         ]);
         if (!active) return;
-        setCapabilities(caps);
-        setCredentials(list);
+
+        if (capsResult.status === "fulfilled") {
+          setCapabilities(capsResult.value);
+        }
+
+        if (listResult.status === "fulfilled") {
+          setCredentials(listResult.value);
+        } else {
+          setFeedback({
+            type: "error",
+            message:
+              listResult.reason?.message ||
+              "No se pudieron cargar tus datos biométricos.",
+          });
+        }
       } catch (err) {
         if (!active) return;
         setFeedback({
@@ -139,7 +152,10 @@ export default function BiometricSettingsModal({
 
   if (!isOpen) return null;
 
-  const canEnroll = capabilities.supported && capabilities.platformAvailable;
+  const canEnroll =
+    !capabilities.isDesktop &&
+    capabilities.supported &&
+    capabilities.platformAvailable;
   const currentDeviceCred = credentials.find((cred) => cred.isCurrentDevice) || null;
 
   return createPortal(
@@ -212,7 +228,19 @@ export default function BiometricSettingsModal({
           ) : (
             <>
               {/* Bloque de compatibilidad del dispositivo actual */}
-              {!capabilities.secureContext ? (
+              {capabilities.isDesktop ? (
+                <div className="rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] p-3.5 flex items-start gap-2.5 text-xs text-[var(--color-gray-300)]">
+                  <AlertTriangle className="size-4 shrink-0 mt-0.5 text-[var(--color-warning)]" />
+                  <div>
+                    <p className="font-semibold text-[var(--color-white)]">
+                      Este equipo PC no cuenta con lector de huella físico
+                    </p>
+                    <p className="text-[var(--color-gray-400)] mt-0.5 leading-relaxed">
+                      Por seguridad no se utiliza Windows Hello ni llaves guardadas en el navegador. En PC se requiere un lector USB biométrico físico dedicado; mientras tanto usa tu contraseña o PIN.
+                    </p>
+                  </div>
+                </div>
+              ) : !capabilities.secureContext ? (
                 <div className="rounded-xl bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] p-3.5 flex items-start gap-2.5 text-xs text-[var(--color-white)]">
                   <AlertTriangle className="size-4 shrink-0 mt-0.5 text-[var(--color-warning)]" />
                   <div>

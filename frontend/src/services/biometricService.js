@@ -8,7 +8,7 @@ import {
   startAuthentication,
 } from "@simplewebauthn/browser";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_BASE_URL = import.meta.env?.VITE_API_URL || "http://localhost:4000/api";
 
 const BIOMETRIC_DEVICE_ID_KEY = "dpiero_biometric_device_id";
 
@@ -123,35 +123,90 @@ export function mapWebAuthnError(err, fallback = "No se pudo completar la verifi
   return err instanceof Error ? err : new Error(fallback);
 }
 
+const windowsGpuCache = new WeakMap();
+
+/**
+ * Detecta si el navegador corre físicamente sobre Windows leyendo el renderer WebGL
+ * (Direct3D / D3D11 / D3D9 / Microsoft Basic Render), que no se falsea al usar
+ * la emulación móvil de DevTools en Chrome/Edge.
+ */
+function hasWindowsDirect3DRenderer(doc = typeof document !== "undefined" ? document : null) {
+  if (!doc || typeof doc.createElement !== "function") return false;
+  if (windowsGpuCache.has(doc)) return windowsGpuCache.get(doc);
+
+  let detected = false;
+  try {
+    const canvas = doc.createElement("canvas");
+    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (gl) {
+      const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+      const renderer = dbg
+        ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || "")
+        : String(gl.getParameter(gl.RENDERER) || "");
+      detected = /direct3d|d3d11|d3d9|microsoft basic render/i.test(renderer);
+      gl.getExtension("WEBGL_lose_context")?.loseContext?.();
+    }
+  } catch {
+    detected = false;
+  }
+
+  windowsGpuCache.set(doc, detected);
+  return detected;
+}
+
 /**
  * Detecta la plataforma cliente actual para impedir por completo Windows Hello
  * y prompts biométricos nativos en equipos de escritorio (PC/Windows/macOS/Linux).
  */
-export function detectClientPlatform() {
-  if (typeof navigator === "undefined") {
+export function detectClientPlatform(
+  nav = typeof navigator !== "undefined" ? navigator : null,
+  doc = typeof document !== "undefined" ? document : null
+) {
+  if (!nav) {
     return { isDesktop: true, isWindows: false, isMobile: false };
   }
 
-  const ua = String(navigator.userAgent || "").toLowerCase();
-  const uaData = navigator.userAgentData;
+  const ua = String(nav.userAgent || "").toLowerCase();
+  const platformProp = String(nav.platform || "").toLowerCase();
+  const uaData = nav.userAgentData;
   const uaPlatform = String(uaData?.platform || "").toLowerCase();
-  const maxTouch = Number(navigator.maxTouchPoints || 0);
+  const maxTouch = Number(nav.maxTouchPoints || 0);
 
-  const isWindows =
+  const isWindowsUa =
     !ua.includes("windows phone") &&
-    (/windows nt|win64|wow64/.test(ua) || uaPlatform === "windows");
+    /windows nt|win64|wow64|windows 10|windows 11/.test(ua);
+  const isWindowsNavPlatform =
+    /^win/i.test(platformProp) && !platformProp.includes("phone");
+  const isWindowsUaData = uaPlatform === "windows";
+  const isWindowsGpu = hasWindowsDirect3DRenderer(doc);
 
-  if (isWindows) {
+  if (isWindowsUa || isWindowsNavPlatform || isWindowsUaData || isWindowsGpu) {
     return { isDesktop: true, isWindows: true, isMobile: false };
   }
 
-  const isAndroid = /android/.test(ua) || uaPlatform === "android";
-  const isAppleTouch =
+  const hasAndroidToken = /android/.test(ua) || uaPlatform === "android";
+  const hasAppleTouchToken =
     /iphone|ipad|ipod/.test(ua) ||
     uaPlatform === "ios" ||
-    ((/macintosh/.test(ua) || uaPlatform === "macos") && maxTouch > 1);
+    ((/macintosh/.test(ua) || uaPlatform === "macos" || /^mac/i.test(platformProp)) &&
+      maxTouch > 1);
 
-  const isMobile = Boolean(isAndroid || isAppleTouch || uaData?.mobile === true);
+  const isDesktopMac =
+    !hasAppleTouchToken &&
+    (/macintosh/.test(ua) || uaPlatform === "macos" || /^mac/i.test(platformProp));
+  const isDesktopLinux =
+    !hasAndroidToken &&
+    (/linux (x86_64|i686|amd64)|x11;\s*linux|\bcros\b/.test(ua) ||
+      /^linux\s*(x86_64|i686|i386|amd64)/.test(platformProp) ||
+      uaPlatform === "linux" ||
+      uaPlatform === "chrome os" ||
+      uaPlatform === "chromium os");
+
+  if (isDesktopMac || isDesktopLinux) {
+    return { isDesktop: true, isWindows: false, isMobile: false };
+  }
+
+  const isMobile = Boolean(hasAndroidToken || hasAppleTouchToken || uaData?.mobile === true);
   return {
     isDesktop: !isMobile,
     isWindows: false,
@@ -160,7 +215,7 @@ export function detectClientPlatform() {
 }
 
 function getConfiguredPhysicalScannerUrl() {
-  const fromEnv = String(import.meta.env.VITE_PHYSICAL_SCANNER_URL || "").trim();
+  const fromEnv = String(import.meta.env?.VITE_PHYSICAL_SCANNER_URL || "").trim();
   if (fromEnv) return fromEnv.replace(/\/+$/, "");
 
   try {
@@ -199,6 +254,19 @@ async function probePhysicalScannerBridge() {
   }
 }
 
+async function hasHighEntropyDesktopPlatform() {
+  if (typeof navigator === "undefined") return false;
+  const uaData = navigator.userAgentData;
+  if (!uaData || typeof uaData.getHighEntropyValues !== "function") return false;
+  try {
+    const hints = await uaData.getHighEntropyValues(["platform"]);
+    const p = String(hints?.platform || "").toLowerCase();
+    return p === "windows" || p === "linux" || p === "chrome os" || p === "chromium os";
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Identifica si el equipo cuenta con biometría permitida y segura.
  * - En PC/Windows bloquea Windows Hello / passkeys de escritorio para evitar
@@ -208,7 +276,11 @@ async function probePhysicalScannerBridge() {
  */
 export async function getBiometricCapabilities() {
   const secureContext = typeof window !== "undefined" ? Boolean(window.isSecureContext) : false;
-  const platform = detectClientPlatform();
+  let platform = detectClientPlatform();
+
+  if (!platform.isDesktop && (await hasHighEntropyDesktopPlatform())) {
+    platform = { isDesktop: true, isWindows: true, isMobile: false };
+  }
 
   if (platform.isDesktop) {
     const physical = await probePhysicalScannerBridge();
@@ -297,8 +369,8 @@ export async function deleteMyBiometricApi(id) {
   });
 }
 
-function assertNonDesktopBiometricAllowed() {
-  if (detectClientPlatform().isDesktop) {
+async function assertNonDesktopBiometricAllowed() {
+  if (detectClientPlatform().isDesktop || (await hasHighEntropyDesktopPlatform())) {
     throw new Error(
       "Windows Hello y passkeys de escritorio están deshabilitados por seguridad en PC."
     );
@@ -306,7 +378,7 @@ function assertNonDesktopBiometricAllowed() {
 }
 
 export async function enrollMyBiometricApi(deviceLabel = "") {
-  assertNonDesktopBiometricAllowed();
+  await assertNonDesktopBiometricAllowed();
   const deviceId = getBiometricDeviceId();
   const { options } = await apiJson("/auth/webauthn/register/options", {
     method: "POST",
@@ -344,7 +416,7 @@ export async function getUserBiometricStatusApi(userId) {
 }
 
 export async function loginWithBiometricsApi({ userId, email }) {
-  assertNonDesktopBiometricAllowed();
+  await assertNonDesktopBiometricAllowed();
   const { options } = await apiJson("/auth/webauthn/login/options", {
     method: "POST",
     body: { userId, email },
@@ -375,7 +447,7 @@ export async function getAdminStepUpOptionsApi() {
 }
 
 export async function verifyAdminStepUpWithBiometricsApi(options) {
-  assertNonDesktopBiometricAllowed();
+  await assertNonDesktopBiometricAllowed();
   let assertionResponse;
   try {
     assertionResponse = await startAuthentication({ optionsJSON: options });
