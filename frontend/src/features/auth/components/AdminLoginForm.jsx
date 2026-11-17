@@ -174,7 +174,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
               onChange={handleChange}
               placeholder="admin@dpiero.com"
               autoFocus
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-white)] text-xs border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-500)] transition-colors"
+              className="w-full h-11 pl-10 pr-3.5 rounded-md bg-[var(--color-secondary-950)] text-[var(--color-white)] text-base sm:text-sm border border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 outline-none placeholder:text-[var(--color-gray-400)] transition-colors"
             />
           </div>
           {errors.userEmail && (
@@ -185,7 +185,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
         <div className="flex items-center justify-center text-xs pt-1">
           <Link
             to="/Auth/forgot-password"
-            className="text-[var(--color-primary-400)] hover:underline"
+            className="inline-flex items-center min-h-[36px] px-2 rounded-md text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
           >
             ¿Olvidó su contraseña?
           </Link>
@@ -197,7 +197,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
             variant="primary"
             size="md"
             disabled={checkingEmail}
-            className="w-full text-xs font-bold py-2.5 flex items-center justify-center gap-2"
+            className="w-full"
           >
             {checkingEmail && <Loader2 className="size-4 animate-spin" />}
             <span>{checkingEmail ? "Validando correo..." : "Validar correo y continuar"}</span>
@@ -232,7 +232,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
         <button
           type="button"
           onClick={handleChangeEmail}
-          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-primary-400)] hover:underline cursor-pointer shrink-0"
+          className="inline-flex items-center gap-1 min-h-[36px] px-2 rounded-md text-[11px] font-semibold text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0"
         >
           <ArrowLeft className="size-3" />
           <span>Cambiar</span>
@@ -246,7 +246,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
             type="button"
             onClick={() => triggerBiometricAttempt(validatedAccount.email, false)}
             disabled={biometricBusy}
-            className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-[var(--color-primary-500)]/15 hover:bg-[var(--color-primary-500)]/25 border border-[var(--color-primary-500)]/50 text-[var(--color-primary-300)] font-semibold text-xs transition-colors cursor-pointer disabled:opacity-60"
+            className="w-full min-h-[44px] flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-[var(--color-primary-500)]/15 hover:bg-[var(--color-primary-500)]/25 border border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] font-semibold text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer disabled:opacity-60"
           >
             {biometricBusy ? (
               <Loader2 className="size-4 animate-spin" />
@@ -298,7 +298,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
             onChange={handleChange}
             placeholder="••••••••"
             autoFocus={!biometricsReadyHere}
-            className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-white)] text-xs border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-500)] transition-colors"
+            className="w-full h-11 pl-10 pr-3.5 rounded-md bg-[var(--color-secondary-950)] text-[var(--color-white)] text-base sm:text-sm border border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 outline-none placeholder:text-[var(--color-gray-400)] transition-colors"
           />
         </div>
         {errors.userPassword && (
@@ -309,7 +309,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
       <div className="flex items-center justify-center text-xs pt-1">
         <Link
           to="/Auth/forgot-password"
-          className="text-[var(--color-primary-400)] hover:underline"
+          className="inline-flex items-center min-h-[36px] px-2 rounded-md text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
         >
           ¿Olvidó su contraseña?
         </Link>
@@ -321,7 +321,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
           variant="primary"
           size="md"
           disabled={biometricBusy}
-          className="w-full text-xs font-bold py-2.5"
+          className="w-full"
         >
           Ingresar al Panel Administrativo
         </Button>

@@ -209,7 +209,7 @@ export default function AdminStepUpModal() {
             type="button"
             onClick={handleCloseCancel}
             aria-label="Cancelar confirmación"
-            className="text-[var(--color-gray-400)] hover:text-white p-1.5 rounded-lg transition-colors cursor-pointer"
+            className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
           >
             <X className="size-5" />
           </button>
@@ -228,7 +228,7 @@ export default function AdminStepUpModal() {
               type="button"
               onClick={() => runBiometricVerification(false)}
               disabled={biometricBusy || passwordBusy}
-              className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-white font-semibold text-sm transition-colors cursor-pointer disabled:opacity-60"
+              className="w-full min-h-[44px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-semibold text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer disabled:opacity-60"
             >
               {biometricBusy ? (
                 <Loader2 className="size-5 animate-spin" />
@@ -257,7 +257,7 @@ export default function AdminStepUpModal() {
         )}
 
         {errorMsg && (
-          <div className="mb-3 rounded-lg bg-red-500/15 border border-red-500/40 px-3 py-2 text-xs text-red-200 font-medium">
+          <div className="mb-3 rounded-lg bg-[var(--color-error-bg)] border border-[var(--color-error-border)] px-3 py-2 text-xs text-[var(--color-error)] font-medium">
             {errorMsg}
           </div>
         )}
@@ -275,7 +275,7 @@ export default function AdminStepUpModal() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus={!hasBiometricOption}
                 placeholder="••••••••"
-                className="w-full rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] pl-9 pr-3 py-2.5 text-sm text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)]"
+                className="w-full min-h-[44px] rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] pl-9 pr-3 py-2.5 text-sm text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30"
               />
             </div>
           </div>
@@ -284,14 +284,14 @@ export default function AdminStepUpModal() {
             <button
               type="button"
               onClick={handleCloseCancel}
-              className="px-4 py-2 rounded-xl border border-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] transition-colors cursor-pointer"
+              className="min-h-[36px] px-4 py-2 rounded-xl border border-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={passwordBusy || biometricBusy}
-              className="px-4 py-2 rounded-xl bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-600)] text-xs font-semibold text-white transition-colors cursor-pointer disabled:opacity-60"
+              className="min-h-[36px] px-4 py-2 rounded-xl bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-600)] text-xs font-semibold text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer disabled:opacity-60"
             >
               {passwordBusy ? "Verificando..." : "Confirmar acción"}
             </button>

@@ -68,7 +68,7 @@ export default function AccessPage() {
   };
 
   return (
-    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-4 sm:p-6 shadow-md text-[var(--color-white)]">
+    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-md text-[var(--color-white)]">
       <h1 className="text-xl font-bold mb-4 sm:mb-6 text-[var(--color-white)]">
         Gestión de permisos
       </h1>

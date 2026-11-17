@@ -6,7 +6,9 @@
 --semantic-brand-hover: var(--color-secondary-950);
 
 --semantic-brand-soft: var(--color-secondary-200);
---semantic-brand-soft-hover: var(--color-secondary-350);
+--semantic-brand-soft-hover: var(--color-secondary-300);
+--semantic-on-brand: var(--color-on-primary);
+--semantic-on-error: var(--color-on-error);
 
 /* ====================Background============== */
 

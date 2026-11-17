@@ -31,7 +31,7 @@ export function Modal({
   return createPortal(
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
       <div
-        className={`dpiero-modal-in w-full ${maxWidth} max-h-[90dvh] flex flex-col overflow-hidden rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] p-4 sm:p-6 shadow-2xl text-[var(--color-white)] transition-all ${className}`}
+        className={`dpiero-modal-in w-full ${maxWidth} max-h-[90dvh] flex flex-col overflow-hidden rounded-2xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] p-4 sm:p-6 shadow-2xl text-[var(--color-white)] transition-all ${className}`}
       >
         <div className="flex items-center justify-between pb-3 mb-3 sm:mb-4 border-b border-[var(--color-secondary-800)] shrink-0">
           {title && <h3 className="text-base sm:text-lg font-bold text-[var(--color-white)]">{title}</h3>}
@@ -40,7 +40,7 @@ export function Modal({
               type="button"
               onClick={onClose}
               aria-label="Cerrar modal"
-              className="text-[var(--color-gray-400)] hover:text-white p-1.5 rounded-md transition-colors cursor-pointer"
+              className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
             >
               <X className="size-5" />
             </button>

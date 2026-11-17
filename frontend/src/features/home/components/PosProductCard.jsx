@@ -54,13 +54,13 @@ export default function PosProductCard({ product, onSelect }) {
             }}
           />
           {!isInhabilitado && (
-            <div className="hidden sm:flex items-center gap-1 absolute bottom-2 right-2 px-2 py-1 rounded-full bg-black/65 text-[#ffffff] text-[10px] font-semibold border border-white/15 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <div className="hidden sm:flex items-center gap-1 absolute bottom-2 right-2 px-2 py-1 rounded-full bg-black/65 text-[var(--color-on-primary)] text-[length:var(--fs-xxxxs)] font-semibold border border-[var(--color-on-primary)]/20 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               <Eye className="size-3 text-[var(--color-primary-300)]" />
               <span>Ver detalle</span>
             </div>
           )}
           {isInhabilitado && (
-            <div className="absolute top-2.5 right-2.5 bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[var(--color-secondary-700)] shadow-md flex items-center gap-1">
+            <div className="absolute top-2.5 right-2.5 bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] text-[length:var(--fs-xxxxs)] font-bold px-2 py-0.5 rounded-full border border-[var(--color-secondary-700)] shadow-md flex items-center gap-1">
               <Ban className="size-3" />
               Inhabilitado
             </div>
@@ -91,7 +91,7 @@ export default function PosProductCard({ product, onSelect }) {
           </div>
 
           <span
-            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+            className={`text-[length:var(--fs-xxxxs)] font-semibold px-2 py-0.5 rounded-full ${
               isInhabilitado
                 ? "bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error-border)]"
                 : "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-300)] border border-[var(--color-primary-500)]/40"

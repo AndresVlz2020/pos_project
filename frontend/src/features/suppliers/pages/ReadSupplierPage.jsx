@@ -93,7 +93,7 @@ export default function ReadSupplierPage() {
             ) : null}
             <div className={`avatar-fallback ${supplierImage ? "hidden" : "flex"} w-full h-full flex-col items-center justify-center bg-[var(--color-secondary-800)] text-[var(--color-primary-400)]`}>
               <Building2 className="size-10" />
-              <span className="text-[10px] font-bold mt-1 text-[var(--color-gray-300)] uppercase">
+              <span className="text-[length:var(--fs-xxxxs)] font-bold mt-1 text-[var(--color-gray-300)] uppercase">
                 {supplierName.slice(0, 3)}
               </span>
             </div>

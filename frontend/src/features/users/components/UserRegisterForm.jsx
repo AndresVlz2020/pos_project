@@ -260,13 +260,13 @@ export default function UserRegisterForm() {
 
 
           {/* Actions */}
-            <div className="flex gap-6 items-center justify-center w-full">
+            <div className="flex gap-4 items-center justify-center w-full">
            <Button
             variant="secondary"
-            size="sm"
+            size="md"
             type="button"
-            onClick= {() => console.log("Boton Cancelar")}
-            > cancelar
+            onClick= {() => navigate(-1)}
+            >Cancelar
             </Button>
             
             <Button

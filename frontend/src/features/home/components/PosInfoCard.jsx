@@ -24,12 +24,12 @@ export default function PosInfoCard({
         {(tagLeft || tagRight) && (
           <div className="flex items-center justify-between gap-2 mb-2">
             {tagLeft && (
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-300)] font-bold">
+              <span className="text-[length:var(--fs-xxxxs)] font-mono px-2 py-0.5 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-300)] font-bold">
                 {tagLeft}
               </span>
             )}
             {tagRight && (
-              <span className="text-[10px] font-semibold text-[var(--color-primary-300)] bg-[var(--color-secondary-800)] px-2 py-0.5 rounded border border-[var(--color-secondary-700)]">
+              <span className="text-[length:var(--fs-xxxxs)] font-semibold text-[var(--color-primary-300)] bg-[var(--color-secondary-800)] px-2 py-0.5 rounded border border-[var(--color-secondary-700)]">
                 {tagRight}
               </span>
             )}
@@ -52,7 +52,7 @@ export default function PosInfoCard({
       {/* Fila Inferior: Información + Botón de Acción plano */}
       <div className={`pt-2.5 border-t border-[var(--color-secondary-800)] flex items-center ${bottomText || BottomIcon ? "justify-between" : "justify-end"} text-xs`}>
         {(bottomText || BottomIcon) && (
-          <div className="flex items-center gap-1 text-[var(--color-primary-300)] font-semibold text-[11px]">
+          <div className="flex items-center gap-1 text-[var(--color-primary-300)] font-semibold text-[length:var(--fs-xxxxs)]">
             {BottomIcon && <BottomIcon className="size-3.5 shrink-0" />}
             {bottomText && <span>{bottomText}</span>}
           </div>
@@ -62,9 +62,9 @@ export default function PosInfoCard({
           <Link
             to={actionLink}
             aria-label={actionAriaLabel || actionLabel}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[11px] font-semibold text-[#ffffff] transition-colors cursor-pointer"
+            className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[length:var(--fs-xxxxs)] font-semibold text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
           >
-            {ActionIcon && <ActionIcon className="size-3" />}
+            {ActionIcon && <ActionIcon className="size-3.5" />}
             <span>{actionLabel}</span>
           </Link>
         ) : onActionClick ? (
@@ -72,7 +72,7 @@ export default function PosInfoCard({
             type="button"
             onClick={onActionClick}
             aria-label={actionAriaLabel || actionLabel}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[11px] font-semibold text-[#ffffff] transition-colors cursor-pointer"
+            className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[length:var(--fs-xxxxs)] font-semibold text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
           >
             {ActionIcon && <ActionIcon className="size-3" />}
             <span>{actionLabel}</span>

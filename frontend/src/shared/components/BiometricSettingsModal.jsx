@@ -186,7 +186,7 @@ export default function BiometricSettingsModal({
             type="button"
             onClick={handleCloseModal}
             aria-label="Cerrar configuración biométrica"
-            className="text-[var(--color-gray-400)] hover:text-white p-1.5 rounded-lg transition-colors cursor-pointer"
+            className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
           >
             <X className="size-5" />
           </button>
@@ -287,14 +287,14 @@ export default function BiometricSettingsModal({
                       value={deviceLabel}
                       onChange={(e) => setDeviceLabel(e.target.value)}
                       placeholder="Ej: Celular Caja, Tablet Cocina, Mi iPhone..."
-                      className="w-full rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] px-3 py-2 text-xs text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)]"
+                      className="w-full min-h-[40px] rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] px-3 py-2 text-xs text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={enrolling}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60"
+                    className="w-full min-h-[44px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] text-xs sm:text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer disabled:opacity-60"
                   >
                     {enrolling ? (
                       <Loader2 className="size-4 animate-spin" />
@@ -353,7 +353,7 @@ export default function BiometricSettingsModal({
                                 {cred.deviceLabel}
                               </p>
                               {cred.isCurrentDevice && (
-                                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border border-[var(--color-primary-500)]/30 shrink-0">
+                                <span className="text-[length:var(--fs-xxxxs)] font-semibold px-1.5 py-0.5 rounded bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border border-[var(--color-primary-500)]/30 shrink-0">
                                   Este dispositivo
                                 </span>
                               )}
@@ -369,8 +369,9 @@ export default function BiometricSettingsModal({
                           type="button"
                           onClick={() => handleDelete(cred)}
                           disabled={deletingId === cred.id}
+                          aria-label={`Desvincular ${cred.deviceLabel}`}
                           title="Desvincular este dispositivo"
-                          className="p-2 rounded-lg text-[var(--color-gray-400)] hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                          className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg text-[var(--color-gray-400)] hover:text-[var(--color-error)] hover:bg-[var(--color-error-bg)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0 disabled:opacity-50"
                         >
                           {deletingId === cred.id ? (
                             <Loader2 className="size-4 animate-spin" />

@@ -21,7 +21,7 @@ export function ThemeToggle({ className = "", hitSize = 48, iconSize = 24 }) {
       iconSize={iconSize}
       ariaLabel={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className={`text-white hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] ${className}`}
+      className={`text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] ${className}`}
     >
       <Icon className="size-4.5 sm:size-5 text-[var(--color-primary-400)]" />
     </IconButton>

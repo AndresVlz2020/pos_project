@@ -107,7 +107,7 @@ export default function ListReportModal({
 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-      <div className="w-full max-w-md rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] p-6 shadow-2xl">
+      <div className="dpiero-modal-in w-full max-w-md rounded-2xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] p-6 shadow-2xl">
         <h2 className="mb-4 text-xl font-bold text-[var(--color-white)]">
           Generar reporte de {title}
         </h2>

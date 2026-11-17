@@ -91,9 +91,9 @@ export default function PosProductsSection({
                   ? `Orden: ${SORT_OPTIONS.find((opt) => opt.value === sortBy).label}`
                   : "Ordenar productos"
               }
-              className={`inline-flex items-center justify-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-md border transition-all cursor-pointer ${
+              className={`min-h-[36px] inline-flex items-center justify-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-md border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer ${
                 sortBy !== "default"
-                  ? "bg-[var(--color-primary-500)] text-[#ffffff] border-[var(--color-primary-600)]"
+                  ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)] border-[var(--color-primary-600)]"
                   : "bg-[var(--color-secondary-900)] text-[var(--color-primary-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border-[var(--color-secondary-800)]"
               }`}
             >
@@ -147,7 +147,7 @@ export default function PosProductsSection({
           <button
             type="button"
             onClick={handleResetFilters}
-            className="text-[var(--color-primary-300)] hover:text-[var(--color-primary-200)] hover:underline cursor-pointer font-semibold"
+            className="min-h-[36px] px-2 rounded-md text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer font-semibold"
           >
             Restablecer filtros
           </button>
@@ -180,7 +180,7 @@ export default function PosProductsSection({
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-xs font-semibold text-[#ffffff] transition-colors cursor-pointer"
+            className="min-h-[40px] inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-xs font-semibold text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
           >
             Ver todos los productos
           </button>

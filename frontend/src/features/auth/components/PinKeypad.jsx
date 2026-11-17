@@ -141,7 +141,7 @@ export default function PinKeypad({
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-primary-400)] hover:underline cursor-pointer"
+          className="inline-flex items-center gap-1 min-h-[36px] px-2 rounded-md text-[11px] font-semibold text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
         >
           <ArrowLeft className="size-3" />
           <span>Cambiar</span>
@@ -150,11 +150,11 @@ export default function PinKeypad({
 
       {/* Alerta de bloqueo temporal de 60 segundos por 5 intentos fallidos */}
       {isLocked && (
-        <div className="rounded-xl bg-amber-500/15 border border-amber-500/40 px-3.5 py-2.5 flex items-center gap-2.5 text-xs text-amber-100">
-          <ShieldAlert className="size-4 text-amber-400 shrink-0" />
+        <div className="rounded-xl bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] px-3.5 py-2.5 flex items-center gap-2.5 text-xs text-[var(--color-white)]">
+          <ShieldAlert className="size-4 text-[var(--color-warning)] shrink-0" />
           <span>
             PIN bloqueado temporalmente por intentos fallidos. Intenta de nuevo en{" "}
-            <strong className="font-mono text-amber-300">{lockSeconds}s</strong>.
+            <strong className="font-mono text-[var(--color-warning)]">{lockSeconds}s</strong>.
           </span>
         </div>
       )}
@@ -191,7 +191,7 @@ export default function PinKeypad({
             type="button"
             disabled={isLocked || biometricBusy}
             onClick={() => handleNumpadPress(num.toString())}
-            className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {num}
           </button>
@@ -202,7 +202,7 @@ export default function PinKeypad({
           disabled={isLocked || biometricBusy}
           onClick={handleNumpadDelete}
           aria-label="Borrar dígito"
-          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Delete className="size-5" />
         </button>
@@ -211,7 +211,7 @@ export default function PinKeypad({
           type="button"
           disabled={isLocked || biometricBusy}
           onClick={() => handleNumpadPress("0")}
-          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           0
         </button>
@@ -221,7 +221,7 @@ export default function PinKeypad({
           disabled={isLocked || biometricBusy || pinInput.length < 4}
           onClick={handleConfirm}
           aria-label="Confirmar PIN"
-          className="bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[#ffffff] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Check className="size-6" />
         </button>
@@ -234,7 +234,7 @@ export default function PinKeypad({
             type="button"
             disabled={biometricBusy}
             onClick={() => triggerBiometricAuth(false)}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[var(--color-primary-500)]/15 hover:bg-[var(--color-primary-500)]/25 border border-[var(--color-primary-500)]/50 text-[var(--color-primary-300)] text-xs font-semibold transition-colors cursor-pointer disabled:opacity-60"
+            className="w-full min-h-[44px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[var(--color-primary-500)]/15 hover:bg-[var(--color-primary-500)]/25 border border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer disabled:opacity-60"
           >
             {biometricBusy ? (
               <Loader2 className="size-4 animate-spin" />
@@ -263,7 +263,7 @@ export default function PinKeypad({
         <button
           type="button"
           onClick={handleNumpadClear}
-          className="text-[11px] text-[var(--color-gray-500)] hover:text-[var(--color-gray-300)] cursor-pointer"
+          className="min-h-[36px] px-3 rounded-md text-[11px] text-[var(--color-gray-400)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
         >
           Limpiar
         </button>

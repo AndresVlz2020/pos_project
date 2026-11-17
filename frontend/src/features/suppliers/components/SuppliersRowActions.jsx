@@ -26,19 +26,23 @@ export default function SuppliersRowActions({ supplier, canEdit = true }) {
         <div className="flex gap-2">
             {canEdit && (
                 <button
+                    type="button"
                     onClick={handleEdit}
-                    className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-500)] text-[var(--color-white)] transition cursor-pointer border border-[var(--color-secondary-700)]"
+                    aria-label="Editar proveedor"
+                    className="size-9 inline-flex items-center justify-center rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-500)] text-[var(--color-white)] hover:text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition cursor-pointer border border-[var(--color-secondary-700)]"
                     title="Editar proveedor"
                 >
-                    <Pencil size={15}/>
+                    <Pencil size={15} />
                 </button>
             )}
             <button
+                type="button"
                 onClick={handleView}
-                className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-600)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] transition cursor-pointer border border-[var(--color-secondary-700)]"
+                aria-label="Ver proveedor"
+                className="size-9 inline-flex items-center justify-center rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-600)] text-[var(--color-gray-300)] hover:text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition cursor-pointer border border-[var(--color-secondary-700)]"
                 title="Ver proveedor"
-            >     
-                <Eye size={15}/>
+            >
+                <Eye size={15} />
             </button>
         </div>
     );

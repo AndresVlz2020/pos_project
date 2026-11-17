@@ -52,6 +52,7 @@ body {
 --color-success: var(--semantic-success);
 --color-warning: var(--semantic-warning);
 --color-error: var(--semantic-error);
+--color-on-brand: var(--semantic-on-brand);
 
 /* TYPOGRAPHY */
 
@@ -127,6 +128,25 @@ html.theme-light {
   --color-gray-200: #1E293B;
   --color-gray-100: #0F172A;
   --color-gray-50:  #020617;
+
+  /* Material Design 3 Light Surface / Outline Tokens */
+  --md-sys-color-background: #F4F6F9;
+  --md-sys-color-surface: #FFFFFF;
+  --md-sys-color-surface-container: #F8FAFC;
+  --md-sys-color-surface-container-high: #F1F5F9;
+  --md-sys-color-surface-variant: #E2E8F0;
+  --md-sys-color-on-surface: #0F172A;
+  --md-sys-color-on-surface-variant: #334155;
+  --md-sys-color-outline: #64748B;
+  --md-sys-color-outline-variant: #CBD5E1;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 html.theme-light body {
@@ -337,7 +357,7 @@ html.theme-light .logo-light-theme {
 
 .dpiero-swal-container .dpiero-swal-btn-primary {
   background-color: var(--color-primary-500);
-  color: #ffffff;
+  color: var(--color-on-primary);
   border: 1px solid transparent;
 }
 
@@ -347,12 +367,12 @@ html.theme-light .logo-light-theme {
 
 .dpiero-swal-container .dpiero-swal-btn-danger {
   background-color: var(--color-error);
-  color: #ffffff;
+  color: var(--color-on-error);
   border: 1px solid transparent;
 }
 
 .dpiero-swal-container .dpiero-swal-btn-danger:hover {
-  background-color: #dc2626;
+  background-color: color-mix(in srgb, var(--color-error) 85%, black);
 }
 
 .dpiero-swal-container .dpiero-swal-btn-cancel {

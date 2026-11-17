@@ -39,11 +39,11 @@ export default function ReadUser1() {
 
   return (
     <div className="my-auto font-[family-name:var(--main-font)]">
-      <h1 className="text-[length:var(--fs-md)] font-bold place-self-center mt-8 text-[var(--color-white)]">
+      <h1 className="text-[length:var(--fs-md)] font-bold text-center mt-8 text-[var(--color-white)]">
         Ver Usuario
       </h1>
 
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] max-w-3xl mx-auto mt-6 rounded-lg p-6 shadow-md text-[var(--color-white)]">
+      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] max-w-3xl mx-auto mt-6 rounded-xl p-6 shadow-xl text-[var(--color-white)]">
         <h2 className="text-[length:var(--fs-sm)] font-bold text-center py-2 text-[var(--color-primary-300)]">
           Información del Usuario
         </h2>

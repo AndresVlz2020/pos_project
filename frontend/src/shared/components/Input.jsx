@@ -4,33 +4,20 @@ export default function Input({
     htmlFor,
     type= "text",
     variant= "primary",
-    size= "md",
+    size= "lg",
     className = "",
     ...props
 }){
 
-    // Obligatorio que estos valores tienen que ser con variables
     const variants = {
-        primary:`
-        border-color-primary-950
-        bg-background
-        `,
-        secondary:`
-        border-color-secondary-300  `,
-        tertiary:`
-        border-color-tertiary-800
-        `,
+        primary: "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] bg-[var(--color-secondary-900)]",
+        secondary: "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] bg-[var(--color-secondary-950)]",
+        tertiary: "border-[var(--color-secondary-600)] focus:border-[var(--color-primary-400)] bg-[var(--color-secondary-900)]",
     }
     const sizes = {
-        sm:`
-        h-8
-        `,
-        md:`
-        h-10
-        `,
-        lg:`
-        h-12
-        `,
+        sm: "h-9",
+        md: "h-10",
+        lg: "h-12",
     }
 
     
@@ -61,21 +48,20 @@ export default function Input({
                     type={type}
                     className={`
                     w-full
-                    h-12
+                    ${sizes[size] || sizes.lg}
                     rounded-md
                     border
                     text-base sm:text-sm
-                    ${error ? "border-[var(--color-error)] focus:border-[var(--color-error)]" : "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)]"}
                     px-4
                     text-[var(--color-white)]
-                    bg-[var(--color-secondary-900)]
                     placeholder:text-[var(--color-gray-400)]
                     focus:outline-none
                     focus:ring-2
                     focus:ring-[var(--color-primary-400)]/30
                     disabled:opacity-50 disabled:cursor-not-allowed
                     transition-colors
-                    ${variants[variant]}
+                    ${variants[variant] || variants.primary}
+                    ${error ? "border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-[var(--color-error)]/30" : ""}
                     ${className}
                     `}
                     {...props}

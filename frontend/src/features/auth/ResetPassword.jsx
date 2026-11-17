@@ -114,7 +114,7 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8">
+    <div className="w-full flex flex-col justify-center items-center px-4 py-8">
       <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-2xl p-8 shadow-2xl text-[var(--color-white)] relative z-10">
         <div className="flex flex-col items-center text-center mb-6">
           <BrandLogo className="h-10 w-auto object-contain mb-3" alt="D,PIERO" />
@@ -148,7 +148,7 @@ export default function ResetPassword() {
                   if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
                 }}
                 placeholder="correo@ejemplo.com"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-white)] text-xs border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-500)]"
+                className="w-full h-12 pl-10 pr-3.5 rounded-md bg-[var(--color-secondary-950)] text-[var(--color-white)] text-base sm:text-sm border border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 outline-none placeholder:text-[var(--color-gray-400)] transition-colors"
               />
             </div>
             {errors.email && <p className="text-[11px] text-[var(--color-error)] mt-1">{errors.email}</p>}
@@ -170,7 +170,7 @@ export default function ResetPassword() {
                   if (errors.code) setErrors((prev) => ({ ...prev, code: "" }));
                 }}
                 placeholder="123456"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-primary-400)] font-mono text-base font-bold tracking-[0.3em] border border-[var(--color-secondary-800)] focus:border-[var(--color-primary-500)] outline-none placeholder:text-[var(--color-gray-600)] placeholder:tracking-normal placeholder:font-sans"
+                className="w-full h-12 pl-10 pr-3.5 rounded-md bg-[var(--color-secondary-950)] text-[var(--color-primary-400)] font-mono text-base font-bold tracking-[0.3em] border border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 outline-none placeholder:text-[var(--color-gray-500)] placeholder:tracking-normal placeholder:font-sans transition-colors"
               />
             </div>
             {errors.code && <p className="text-[11px] text-[var(--color-error)] mt-1">{errors.code}</p>}
@@ -223,14 +223,14 @@ export default function ResetPassword() {
               type="button"
               onClick={handleResendCode}
               disabled={isResending}
-              className="text-[var(--color-primary-400)] hover:underline cursor-pointer disabled:opacity-50"
+              className="min-h-[36px] px-2 rounded-md text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer disabled:opacity-50"
             >
               {isResending ? "Reenviando..." : "¿No recibiste el código? Reenviar"}
             </button>
 
             <Link
               to="/Auth"
-              className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] transition-colors"
+              className="inline-flex items-center min-h-[36px] px-2 rounded-md text-[var(--color-gray-400)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors"
             >
               Volver al Login
             </Link>

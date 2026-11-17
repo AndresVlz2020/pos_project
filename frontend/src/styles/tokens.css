@@ -54,8 +54,8 @@
   --color-gray-50:  #F6F6F6;
 
   /* Font-family */
-  --main-font: Helvetica, arial, sans-serif;
-  --secondary-font: Calibri, Helvetica, Arial;
+  --main-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --secondary-font: 'Plus Jakarta Sans', Calibri, Helvetica, Arial, sans-serif;
 
   /* Font-size (alineado a escala Material Design 3: mínimo 11px Label Small) */
   --fs-xxxxl: 5rem;      /* Ultra grande */
@@ -97,6 +97,11 @@
   --md-sys-color-on-surface-variant: #c4c6d0;
   --md-sys-color-outline: #8e9099;
   --md-sys-color-outline-variant: #44474e;
+
+  /* Primer plano fijo sobre superficies sólidas de marca/estado (inmutable entre temas) */
+  --color-on-primary: #ffffff;
+  --color-on-error: #ffffff;
+  --color-on-dark: #ffffff;
 
   /* Estados semánticos consistentes con variables CSS */
   --color-success: #10B981;

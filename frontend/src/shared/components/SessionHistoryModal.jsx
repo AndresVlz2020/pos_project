@@ -127,7 +127,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4">
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] rounded-xl shadow-2xl w-full max-w-3xl max-h-[88vh] flex flex-col text-[var(--color-white)]">
+      <div className="dpiero-modal-in bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] rounded-2xl shadow-2xl w-full max-w-3xl max-h-[88vh] flex flex-col text-[var(--color-white)]">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-[var(--color-secondary-800)]">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -150,7 +150,8 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
             <button
               type="button"
               onClick={loadHistory}
-              className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] cursor-pointer transition"
+              aria-label="Actualizar historial"
+              className="size-9 inline-flex items-center justify-center rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer transition"
               title="Actualizar"
             >
               <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
@@ -158,7 +159,8 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] cursor-pointer transition"
+              aria-label="Cerrar historial"
+              className="size-9 inline-flex items-center justify-center rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer transition"
               title="Cerrar"
             >
               <X className="size-4" />
@@ -175,7 +177,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 value={selectedWorkerId}
                 onChange={(e) => setSelectedWorkerId(e.target.value)}
                 aria-label="Filtrar por trabajador"
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] cursor-pointer truncate"
+                className="w-full h-9 pl-8 pr-3 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 cursor-pointer truncate"
               >
                 <option value="">Todos los trabajadores ({workers.length})</option>
                 {workers.map((worker) => (
@@ -201,7 +203,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 setDatePreset(next);
               }}
               aria-label="Rango de fechas"
-              className="px-2.5 py-1.5 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] cursor-pointer"
+              className="h-9 px-2.5 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 cursor-pointer"
             >
               {DATE_PRESETS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -223,7 +225,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 }}
                 aria-label="Filtrar por día específico"
                 title="Filtrar por día específico"
-                className="pl-7 sm:pl-2.5 pr-2 py-1.5 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] dark:[color-scheme:dark] cursor-pointer"
+                className="h-9 pl-7 sm:pl-2.5 pr-2 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 dark:[color-scheme:dark] cursor-pointer"
               />
             </div>
 
@@ -231,7 +233,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
               <button
                 type="button"
                 onClick={handleClearAllFilters}
-                className="p-1.5 rounded-lg border border-[var(--color-secondary-700)] bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] cursor-pointer transition"
+                className="size-9 inline-flex items-center justify-center rounded-lg border border-[var(--color-secondary-700)] bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer transition"
                 title="Limpiar filtros"
                 aria-label="Limpiar filtros"
               >
@@ -275,9 +277,9 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
               role="tab"
               aria-selected={viewMode === "sessions"}
               onClick={() => setViewMode("sessions")}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold cursor-pointer transition ${
+              className={`px-2.5 py-1 rounded-md text-[length:var(--fs-xxxxs)] font-semibold cursor-pointer transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
                 viewMode === "sessions"
-                  ? "bg-[var(--color-primary-500)] text-[#ffffff]"
+                  ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)]"
                   : "text-[var(--color-gray-300)] hover:text-[var(--color-white)]"
               }`}
             >
@@ -288,9 +290,9 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
               role="tab"
               aria-selected={viewMode === "daily"}
               onClick={() => setViewMode("daily")}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold cursor-pointer transition ${
+              className={`px-2.5 py-1 rounded-md text-[length:var(--fs-xxxxs)] font-semibold cursor-pointer transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
                 viewMode === "daily"
-                  ? "bg-[var(--color-primary-500)] text-[#ffffff]"
+                  ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)]"
                   : "text-[var(--color-gray-300)] hover:text-[var(--color-white)]"
               }`}
             >
@@ -316,7 +318,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 <button
                   type="button"
                   onClick={handleClearAllFilters}
-                  className="text-xs font-semibold text-[var(--color-primary-400)] hover:underline cursor-pointer"
+                  className="inline-flex items-center min-h-[36px] px-2 rounded-md text-xs font-semibold text-[var(--color-primary-400)] hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
                 >
                   Limpiar filtros
                 </button>
@@ -339,7 +341,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                         <button
                           type="button"
                           onClick={() => handleSelectDayFromSummary(day.dateKey)}
-                          className="text-xs sm:text-sm font-semibold text-[var(--color-white)] hover:text-[var(--color-primary-300)] capitalize cursor-pointer transition text-left"
+                          className="inline-flex items-center min-h-[32px] px-1.5 -mx-1.5 rounded-md text-xs sm:text-sm font-semibold text-[var(--color-white)] hover:text-[var(--color-primary-300)] capitalize cursor-pointer transition text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
                           title="Ver turnos de este día"
                         >
                           {day.label}
@@ -358,7 +360,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                         <div className="font-mono text-xs sm:text-sm font-bold text-[var(--color-primary-300)]">
                           {formatTotalHours(day.totalSeconds)}
                         </div>
-                        <div className="font-mono text-[10px] text-[var(--color-gray-400)]">
+                        <div className="font-mono text-[length:var(--fs-xxxxs)] text-[var(--color-gray-400)]">
                           {formatDuration(day.totalSeconds)}
                         </div>
                       </div>
@@ -388,7 +390,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                                 ? "Mostrar todos los trabajadores"
                                 : `Ver solo horas de ${u.userName}`
                             }
-                            className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded border cursor-pointer transition ${
+                            className={`inline-flex items-center gap-1 min-h-[32px] text-[11px] px-2.5 py-1 rounded-md border cursor-pointer transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
                               selectedWorkerId === u.userKey
                                 ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/50 text-[var(--color-white)]"
                                 : "bg-[var(--color-secondary-900)] border-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:border-[var(--color-primary-500)]/40"
@@ -495,7 +497,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                                     ? "Mostrar todos los trabajadores"
                                     : `Filtrar por ${row.userName}`
                                 }
-                                className="text-left cursor-pointer group"
+                                className="text-left cursor-pointer group rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
                               >
                                 <div className="font-semibold text-[var(--color-white)] group-hover:text-[var(--color-primary-400)] transition">
                                   {row.userName}

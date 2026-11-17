@@ -435,7 +435,8 @@ export default function EditOrder() {
                         type="button"
                         disabled={count === 0 || isClosedOrPaid || isCanceled}
                         onClick={() => handleDecrement(dish)}
-                        className="w-10 h-10 sm:w-9 sm:h-9 rounded-md bg-[var(--color-secondary-800)] flex items-center justify-center text-base font-bold disabled:opacity-30 cursor-pointer"
+                        aria-label={`Disminuir ${dish.name}`}
+                        className="w-10 h-10 sm:w-9 sm:h-9 rounded-md bg-[var(--color-secondary-800)] text-[var(--color-white)] flex items-center justify-center text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
                       >
                         -
                       </button>
@@ -444,7 +445,8 @@ export default function EditOrder() {
                         type="button"
                         disabled={isClosedOrPaid || isCanceled || isInactive}
                         onClick={() => handleIncrement(dish)}
-                        className="w-10 h-10 sm:w-9 sm:h-9 rounded-md bg-[var(--color-primary-500)] text-[#ffffff] flex items-center justify-center text-base font-bold disabled:opacity-30 cursor-pointer"
+                        aria-label={`Aumentar ${dish.name}`}
+                        className="w-10 h-10 sm:w-9 sm:h-9 rounded-md bg-[var(--color-primary-500)] text-[var(--color-on-primary)] flex items-center justify-center text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
                       >
                         +
                       </button>
@@ -463,7 +465,7 @@ export default function EditOrder() {
                   <button
                     type="button"
                     onClick={loadMoreDishes}
-                    className="font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] cursor-pointer"
+                    className="min-h-[36px] px-2 rounded-md font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
                   >
                     Cargar más platillos
                   </button>

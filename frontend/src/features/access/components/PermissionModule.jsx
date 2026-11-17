@@ -119,7 +119,7 @@ export default function PermissionModule({
                 {permissions.map((permission) => (
                   <div
                     key={permission.permission_id}
-                    className="p-3 rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] hover:border-[var(--color-secondary-700)] transition"
+                    className="p-3 min-h-[44px] flex items-center rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] hover:border-[var(--color-secondary-700)] focus-within:border-[var(--color-primary-400)] transition"
                   >
                     <Checkbox
                       id={permission.permission_codename}
@@ -127,6 +127,7 @@ export default function PermissionModule({
                       label={permission.permission_name}
                       checked={hasPermission(permission.permission_codename)}
                       disabled={!isEditing}
+                      className="w-full"
                       onChange={(e) =>
                         handlePermissionChange(permission, e.target.checked)
                       }

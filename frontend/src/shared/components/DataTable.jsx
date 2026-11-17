@@ -147,7 +147,7 @@ export default function DataTable({ data, columns, compact = false }) {
                         : cell.column.id;
                     return (
                       <div key={cell.id} className="min-w-0">
-                        <span className="block text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-semibold truncate">
+                        <span className="block text-[length:var(--fs-xxxxs)] uppercase tracking-wider text-[var(--color-gray-400)] font-semibold truncate">
                           {headerText}
                         </span>
                         <div className="text-xs text-[var(--color-white)] mt-0.5 break-words">
@@ -316,7 +316,7 @@ export default function DataTable({ data, columns, compact = false }) {
             const page = e.target.value ? Number(e.target.value) - 1 : 0;
             table.setPageIndex(page);
           }}
-          className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] rounded-lg px-2.5 py-1 w-16 text-center outline-none focus:border-[var(--color-primary-400)]"
+          className="h-9 bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] rounded-lg px-2.5 w-16 text-center outline-none focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 transition-colors"
         />
       </div>
     </div>

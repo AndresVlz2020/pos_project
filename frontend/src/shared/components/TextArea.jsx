@@ -39,7 +39,7 @@ export const TextArea = forwardRef(function TextArea(
           {showCounter && maxLength && (
             <span
               className={clsx(
-                "text-[10px]",
+                "text-[length:var(--fs-xxxxs)]",
                 currentLength >= maxLength
                   ? "text-[var(--color-error)] font-bold"
                   : "text-[var(--color-gray-400)]"

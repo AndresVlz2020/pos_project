@@ -6,8 +6,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl flex items-center justify-between gap-4 text-[11px]">
         {/* Izquierda: Indicador de conexión */}
         <div className="flex items-center gap-2">
-          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="font-medium text-emerald-400">Sistema en Línea</span>
+          <span className="size-2 rounded-full bg-[var(--color-success)] animate-pulse" />
+          <span className="font-medium text-[var(--color-success)]">Sistema en Línea</span>
         </div>
 
         {/* Centro: Versión y estación */}
@@ -17,7 +17,7 @@ export function Footer() {
 
         {/* Derecha: Atajo de ayuda */}
         <div className="flex items-center gap-1.5 text-[var(--color-gray-400)]">
-          <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[10px] font-mono text-[var(--color-gray-300)]">
+          <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[length:var(--fs-xxxxs)] font-mono text-[var(--color-gray-300)]">
             F1
           </kbd>
           <span>Soporte</span>

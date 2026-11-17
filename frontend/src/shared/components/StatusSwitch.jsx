@@ -59,15 +59,15 @@ export default function StatusSwitch({
       {/* Knob del switch (el círculo que se desplaza de izquierda a derecha) */}
       <span
         className={`
-          absolute left-0.5 flex items-center justify-center rounded-full bg-[var(--color-white)] shadow transition-transform duration-200
+          absolute left-0.5 flex items-center justify-center rounded-full bg-[var(--color-on-primary)] shadow transition-transform duration-200
           ${knobSizes[size]}
           ${isChecked ? "translate-x-full" : "translate-x-0"}
         `}
       >
         {isChecked ? (
-          <Check size={12} className="text-[var(--color-secondary-950)]" />
+          <Check size={12} className="text-[var(--color-primary-600)]" />
         ) : (
-          <X size={12} className="text-[var(--color-secondary-700)]" />
+          <X size={12} className="text-[var(--color-gray-500)]" />
         )}
       </span>
     </button>

@@ -51,7 +51,7 @@ export default function PosSuppliersPanel() {
 
         <Link
           to="/supplierList"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-primary-300)] hover:text-[var(--color-primary-200)] hover:underline"
+          className="inline-flex items-center min-h-[36px] px-2 -mx-2 rounded-md gap-1.5 text-xs font-semibold text-[var(--color-primary-300)] hover:text-[var(--color-primary-200)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
         >
           <span>Ver todos los proveedores</span>
           <ArrowRight className="size-3.5" />
@@ -119,7 +119,7 @@ export default function PosSuppliersPanel() {
                 <div className="p-3.5 pt-0">
                   <Link
                     to="/supplierList"
-                    className="w-full block text-center py-1.5 px-3 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[11px] font-semibold text-[var(--color-gray-200)] hover:text-white transition-colors"
+                    className="w-full min-h-[36px] flex items-center justify-center py-1.5 px-3 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[11px] font-semibold text-[var(--color-gray-200)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors"
                   >
                     Consultar Ficha Técnica
                   </Link>

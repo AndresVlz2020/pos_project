@@ -106,7 +106,7 @@ export default function Navbar() {
     pathname.includes("access") || pathname.includes("usersmanagement");
 
   const getLinkClass = (isActive) =>
-    `transition-all py-1 px-1 flex items-center gap-1.5 text-sm font-medium cursor-pointer ${
+    `transition-all min-h-[40px] py-1 px-2 rounded-t-md flex items-center gap-1.5 text-sm font-medium cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
       isActive
         ? "text-[var(--color-primary-400)] font-bold border-b-2 border-[var(--color-primary-400)]"
         : "text-[var(--color-gray-300)] hover:text-[var(--color-white)]"
@@ -194,7 +194,7 @@ export default function Navbar() {
           <div className="flex items-center shrink-0">
             <Link
               to={"/"}
-              className="flex items-center gap-2 group transition-transform hover:scale-105"
+              className="flex items-center gap-2 group transition-transform hover:scale-105 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
             >
               <BrandLogo
                 className="h-5 sm:h-11 w-auto object-contain drop-shadow"
@@ -211,7 +211,7 @@ export default function Navbar() {
                   {currentUser.name}
                 </span>
                 <div className="flex items-center justify-center gap-1.5 mt-0.5 min-w-0 max-w-full">
-                  <span className="text-[9px] text-[var(--color-primary-400)] font-semibold truncate">
+                  <span className="text-[length:var(--fs-xxxxs)] text-[var(--color-primary-400)] font-semibold truncate">
                     {currentUser.role}
                   </span>
                   {!isAdmin && sessionAnchor && (
@@ -219,7 +219,7 @@ export default function Navbar() {
                       type="button"
                       onClick={() => setIsHistoryOpen(true)}
                       title="Ver mi historial de sesiones"
-                      className="inline-flex items-center gap-0.5 px-1 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[9px] font-semibold shrink-0 cursor-pointer"
+                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[length:var(--fs-xxxxs)] font-semibold shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
                     >
                       <Clock className="size-2.5" />
                       {formatDuration(elapsedSeconds)}
@@ -296,7 +296,7 @@ export default function Navbar() {
                 <span className="font-medium text-[var(--color-white)] truncate max-w-[120px]">
                   {currentUser.name}
                 </span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-400)] font-semibold">
+                <span className="text-[length:var(--fs-xxxxs)] px-1.5 py-0.5 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-400)] font-semibold">
                   {currentUser.role}
                 </span>
                 {!isAdmin && sessionAnchor && (
@@ -304,7 +304,7 @@ export default function Navbar() {
                     type="button"
                     onClick={() => setIsHistoryOpen(true)}
                     title="Ver mi historial de sesiones"
-                    className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[11px] font-semibold hover:bg-[var(--color-primary-500)]/25 transition cursor-pointer"
+                    className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[11px] font-semibold hover:bg-[var(--color-primary-500)]/25 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
                   >
                     <Clock className="size-3" />
                     {formatDuration(elapsedSeconds)}
@@ -323,7 +323,7 @@ export default function Navbar() {
                     hitSize={38}
                     iconSize={18}
                     ariaLabel="Menu"
-                    className="sm:!w-11 sm:!h-11 text-white hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)]"
+                    className="sm:!w-11 sm:!h-11 text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)]"
                   >
                     <Menu className="size-4.5 sm:size-5" />
                   </IconButton>
@@ -331,7 +331,7 @@ export default function Navbar() {
               </div>
 
               {/* Contenido: Opciones de navegación móvil, Admin y autenticación */}
-              <DropdownContent className="right-0 min-w-[210px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-white shadow-lg">
+              <DropdownContent className="right-0 min-w-[210px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] shadow-lg">
                 <div className="lg:hidden pb-2 mb-2 border-b border-[var(--color-secondary-800)]">
                   <DropdownItem
                     onClick={() => navigate("/")}

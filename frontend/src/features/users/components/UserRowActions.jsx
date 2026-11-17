@@ -8,19 +8,23 @@ export default function UserRowActions({ user }) {
         <div className="flex gap-2">
             {/* Botón de edición */}
             <button
+                type="button"
                 onClick={() => navigate("/edituser", { state: { user } })}
-                className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-500)] text-[var(--color-white)] transition cursor-pointer border border-[var(--color-secondary-700)]"
+                aria-label="Editar usuario"
+                className="size-9 inline-flex items-center justify-center rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-500)] text-[var(--color-white)] hover:text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition cursor-pointer border border-[var(--color-secondary-700)]"
                 title="Editar usuario"
             >
-                <Pencil size={15}/>
+                <Pencil size={15} />
             </button>
             {/* Botón de visualización */}
             <button
+                type="button"
                 onClick={() => navigate("/readuser", { state: { user } })}
-                className="p-2 rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-600)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] transition cursor-pointer border border-[var(--color-secondary-700)]"
+                aria-label="Ver usuario"
+                className="size-9 inline-flex items-center justify-center rounded-lg bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-600)] text-[var(--color-gray-300)] hover:text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition cursor-pointer border border-[var(--color-secondary-700)]"
                 title="Ver usuario"
-            >     
-                <Eye size={15}/>
+            >
+                <Eye size={15} />
             </button>
         </div>
     );

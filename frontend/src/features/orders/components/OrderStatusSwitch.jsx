@@ -16,7 +16,7 @@ export default function OrderStatusSwitch({
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         {label && (
-          <span className="block text-[var(--fs-xxxs)] font-semibold text-[var(--color-gray-300)]">
+          <span className="block text-[length:var(--fs-xxxs)] font-semibold text-[var(--color-gray-300)]">
             {label}
           </span>
         )}
@@ -40,7 +40,7 @@ export default function OrderStatusSwitch({
           onClick={() => {
             if (!disabled) onChange?.("No Pagada");
           }}
-          className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all duration-150 ${
+          className={`min-h-[40px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
             isUnpaid
               ? "bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] shadow-xs"
               : "border border-transparent text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-900)]"
@@ -57,7 +57,7 @@ export default function OrderStatusSwitch({
           onClick={() => {
             if (!disabled) onChange?.("Pagada");
           }}
-          className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all duration-150 ${
+          className={`min-h-[40px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
             isPaid
               ? "bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] shadow-xs"
               : "border border-transparent text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-900)]"

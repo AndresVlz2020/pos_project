@@ -78,8 +78,8 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
   if (!showWarning) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60">
-      <div className="w-full max-w-sm bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-6 shadow-xl text-[var(--color-white)] text-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+      <div className="dpiero-modal-in w-full max-w-sm bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-2xl p-6 shadow-2xl text-[var(--color-white)] text-center">
         <div className="mx-auto w-12 h-12 rounded-lg bg-[var(--color-warning-bg)] text-[var(--color-warning)] border border-[var(--color-warning-border)] flex items-center justify-center mb-4">
           <AlertTriangle className="size-6" />
         </div>

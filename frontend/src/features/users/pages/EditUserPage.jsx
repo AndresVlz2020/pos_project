@@ -171,7 +171,7 @@ export default function EditUser1() {
   if (!isAdmin) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4">
-        <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-8 shadow-md text-center max-w-lg w-full">
+        <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-8 shadow-md text-center max-w-lg w-full">
           <div className="size-14 rounded-full bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] flex items-center justify-center mx-auto mb-4 text-[var(--color-warning)]">
             <ShieldAlert className="size-7" />
           </div>
@@ -192,7 +192,7 @@ export default function EditUser1() {
   return (
     <div className="w-full">
       {/* Body */}
-      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
+      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
         <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-5 sm:mb-8 text-[var(--color-white)]">Editar Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8 items-start">

@@ -160,7 +160,7 @@ export default function HomePage() {
                   type="button"
                   onClick={() => handleTabChange(tab.id)}
                   className={`
-                    inline-flex items-center gap-2 py-3 px-1 border-b-2 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap
+                    min-h-[44px] inline-flex items-center gap-2 py-2.5 px-2.5 border-b-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer whitespace-nowrap
                     ${isActive
                       ? "border-[var(--color-primary-500)] text-[var(--color-primary-300)]"
                       : "border-transparent text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:border-[var(--color-secondary-700)]"

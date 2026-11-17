@@ -164,12 +164,12 @@ export default function ReadInventoryPage() {
               <span className="text-[var(--color-gray-400)] block">Stock Actual:</span>
               <span
                 className={`font-bold text-sm inline-flex items-center gap-1.5 mt-0.5 ${
-                  isLowStock ? "text-[var(--color-primary-400)]" : "text-[var(--color-white)]"
+                  isLowStock ? "text-[var(--color-warning)]" : "text-[var(--color-white)]"
                 }`}
               >
                 {currentStock} {unit}
                 {isLowStock && (
-                  <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40">
+                  <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-[var(--color-warning-bg)] text-[var(--color-warning)] border border-[var(--color-warning-border)]">
                     <AlertTriangle className="size-3" /> Stock bajo
                   </span>
                 )}

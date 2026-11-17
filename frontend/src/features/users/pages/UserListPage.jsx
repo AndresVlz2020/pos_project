@@ -113,7 +113,7 @@ export default function UserListPage() {
 
   if (!canViewUsers && !loading) {
     return (
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-8 shadow-md text-center max-w-lg mx-auto my-12 text-[var(--color-white)]">
+      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-8 shadow-md text-center max-w-lg mx-auto my-12 text-[var(--color-white)]">
         <div className="size-14 rounded-full bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] flex items-center justify-center mx-auto mb-4 text-[var(--color-warning)]">
           <ShieldAlert className="size-7" />
         </div>
@@ -134,7 +134,7 @@ export default function UserListPage() {
   }
 
   return (
-    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg p-4 sm:p-6 shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
+    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
           <h1 className="text-xl font-bold text-[var(--color-white)]">

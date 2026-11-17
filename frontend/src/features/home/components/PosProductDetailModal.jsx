@@ -130,11 +130,11 @@ export default function PosProductDetailModal({
           {/* Fila superior: Categoría + Código y botón cerrar */}
           <div className="absolute top-3 inset-x-3 sm:top-4 sm:inset-x-4 flex items-start justify-between gap-2">
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-black/55 text-[#ffffff] border border-white/15 backdrop-blur-md capitalize">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-black/55 text-[var(--color-on-primary)] border border-[var(--color-on-primary)]/20 backdrop-blur-md capitalize">
                 <CategoryIcon className="size-3.5 text-[var(--color-primary-300)]" />
                 {category}
               </span>
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold bg-black/55 text-[#ffffff]/90 border border-white/15 backdrop-blur-md">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold bg-black/55 text-[var(--color-on-primary)]/90 border border-[var(--color-on-primary)]/20 backdrop-blur-md">
                 {code}
               </span>
             </div>
@@ -143,7 +143,7 @@ export default function PosProductDetailModal({
               type="button"
               onClick={() => onClose?.()}
               aria-label="Cerrar detalle del platillo"
-              className="size-9 rounded-full bg-black/55 hover:bg-black/80 text-[#ffffff] border border-white/20 backdrop-blur-md flex items-center justify-center transition-colors cursor-pointer shrink-0"
+              className="size-9 rounded-full bg-black/55 hover:bg-black/80 text-[var(--color-on-primary)] border border-[var(--color-on-primary)]/25 backdrop-blur-md flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60 transition-colors cursor-pointer shrink-0"
             >
               <X className="size-4.5" />
             </button>
@@ -154,12 +154,12 @@ export default function PosProductDetailModal({
             <div className="min-w-0 space-y-1.5">
               <div className="flex flex-wrap items-center gap-1.5">
                 {isInhabilitado ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[var(--color-error)] text-[#ffffff] shadow-xs">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[var(--color-error)] text-[var(--color-on-error)] shadow-xs">
                     <Ban className="size-3" />
                     No disponible
                   </span>
                 ) : (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[var(--color-primary-500)] text-[#ffffff] shadow-xs">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[var(--color-primary-500)] text-[var(--color-on-primary)] shadow-xs">
                     Disponible
                   </span>
                 )}
@@ -167,17 +167,17 @@ export default function PosProductDetailModal({
 
               <h2
                 id="product-detail-title"
-                className="text-lg sm:text-2xl font-bold text-[#ffffff] leading-tight drop-shadow"
+                className="text-lg sm:text-2xl font-bold text-[var(--color-on-primary)] leading-tight drop-shadow"
               >
                 {displayName}
               </h2>
             </div>
 
-            <div className="self-start sm:self-end shrink-0 px-3 py-1.5 rounded-xl bg-black/60 border border-white/15 backdrop-blur-md text-left sm:text-right">
-              <span className="block text-[10px] uppercase tracking-wider text-white/75 font-semibold leading-none">
+            <div className="self-start sm:self-end shrink-0 px-3 py-1.5 rounded-xl bg-black/60 border border-[var(--color-on-primary)]/20 backdrop-blur-md text-left sm:text-right">
+              <span className="block text-[length:var(--fs-xxxxs)] uppercase tracking-wider text-[var(--color-on-primary)]/80 font-semibold leading-none">
                 Precio unitario
               </span>
-              <span className="text-base sm:text-lg font-extrabold text-[#ffffff] tabular-nums">
+              <span className="text-base sm:text-lg font-extrabold text-[var(--color-on-primary)] tabular-nums">
                 ${formattedUnitPrice} COP
               </span>
             </div>
@@ -200,7 +200,7 @@ export default function PosProductDetailModal({
           {/* Ficha operativa compacta */}
           <div className="grid grid-cols-3 gap-2.5">
             <div className="p-3 rounded-xl bg-[var(--color-secondary-950)]/55 border border-[var(--color-secondary-800)] min-w-0">
-              <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-gray-400)]">
+              <span className="flex items-center gap-1.5 text-[length:var(--fs-xxxxs)] uppercase tracking-wider font-semibold text-[var(--color-gray-400)]">
                 <CategoryIcon className="size-3 text-[var(--color-primary-400)] shrink-0" />
                 Categoría
               </span>
@@ -210,7 +210,7 @@ export default function PosProductDetailModal({
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--color-secondary-950)]/55 border border-[var(--color-secondary-800)] min-w-0">
-              <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-gray-400)]">
+              <span className="flex items-center gap-1.5 text-[length:var(--fs-xxxxs)] uppercase tracking-wider font-semibold text-[var(--color-gray-400)]">
                 <Hash className="size-3 text-[var(--color-primary-400)] shrink-0" />
                 Código
               </span>
@@ -220,7 +220,7 @@ export default function PosProductDetailModal({
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--color-secondary-950)]/55 border border-[var(--color-secondary-800)] min-w-0">
-              <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-gray-400)]">
+              <span className="flex items-center gap-1.5 text-[length:var(--fs-xxxxs)] uppercase tracking-wider font-semibold text-[var(--color-gray-400)]">
                 <Package className="size-3 text-[var(--color-primary-400)] shrink-0" />
                 Stock
               </span>
@@ -264,7 +264,7 @@ export default function PosProductDetailModal({
                 onClick={handleDecrease}
                 disabled={orderBlocked || quantity <= 1}
                 aria-label="Disminuir cantidad"
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-white)] disabled:opacity-35 cursor-pointer transition-colors"
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-35 cursor-pointer transition-colors"
               >
                 <Minus className="size-4" />
               </button>
@@ -276,7 +276,7 @@ export default function PosProductDetailModal({
                 onClick={handleIncrease}
                 disabled={orderBlocked}
                 aria-label="Aumentar cantidad"
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] disabled:opacity-35 cursor-pointer transition-colors"
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-35 cursor-pointer transition-colors"
               >
                 <Plus className="size-4" />
               </button>

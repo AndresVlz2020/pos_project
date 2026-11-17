@@ -40,7 +40,7 @@ export default function PosSectionHeader({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder={searchPlaceholder}
-              className="pl-8 pr-3 py-1.5 rounded-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-xs text-white placeholder:text-[var(--color-gray-400)] outline-none focus:border-[var(--color-primary-400)] w-full sm:w-60 font-[family-name:var(--main-font)] transition-colors"
+              className="min-h-[36px] pl-8 pr-3 py-1.5 rounded-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-xs text-[var(--color-white)] placeholder:text-[var(--color-gray-400)] outline-none focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 w-full sm:w-60 font-[family-name:var(--main-font)] transition-colors"
             />
           </div>
         )}
@@ -48,7 +48,7 @@ export default function PosSectionHeader({
         {actionLabel && actionLink && (
           <Link
             to={actionLink}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-secondary-700)] transition-colors font-[family-name:var(--main-font)] whitespace-nowrap shrink-0"
+            className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-secondary-700)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors font-[family-name:var(--main-font)] whitespace-nowrap shrink-0"
           >
             {ActionIcon && <ActionIcon className="size-3.5" />}
             <span>{actionLabel}</span>
@@ -59,7 +59,7 @@ export default function PosSectionHeader({
           <button
             type="button"
             onClick={onActionClick}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-secondary-700)] transition-colors font-[family-name:var(--main-font)] cursor-pointer"
+            className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-white)] border border-[var(--color-secondary-700)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors font-[family-name:var(--main-font)] cursor-pointer"
           >
             {ActionIcon && <ActionIcon className="size-3.5" />}
             <span>{actionLabel}</span>

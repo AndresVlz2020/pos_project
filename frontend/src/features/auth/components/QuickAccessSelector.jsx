@@ -115,7 +115,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="text-[var(--color-primary-400)] hover:underline cursor-pointer text-[11px]"
+              className="min-h-[36px] px-2 rounded-md text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer text-[11px]"
             >
               Limpiar filtro
             </button>
@@ -128,7 +128,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                   key={staff.id}
                   type="button"
                   onClick={() => onSelectStaff(staff)}
-                  className="w-full p-3 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left transition-all cursor-pointer flex items-center justify-between gap-3 active:scale-[0.99] group"
+                  className="w-full p-3 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer flex items-center justify-between gap-3 active:scale-[0.99] group"
                 >
                   <StaffAvatar staff={staff} />
                   <div className="min-w-0 flex-1">
@@ -159,7 +159,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="text-xs text-[var(--color-primary-400)] hover:underline font-semibold cursor-pointer"
+                className="min-h-[36px] px-3 rounded-md text-xs text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 font-semibold cursor-pointer"
               >
                 Restablecer búsqueda
               </button>
@@ -180,7 +180,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                 key={staff.id}
                 type="button"
                 onClick={() => onSelectStaff(staff)}
-                className="p-3 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left transition-all cursor-pointer active:scale-[0.98] group flex items-center gap-2.5"
+                className="p-3 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer active:scale-[0.98] group flex items-center gap-2.5"
               >
                 <StaffAvatar staff={staff} />
                 <div className="min-w-0 flex-1">

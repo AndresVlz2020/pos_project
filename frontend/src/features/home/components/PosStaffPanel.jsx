@@ -82,7 +82,7 @@ export default function PosStaffPanel() {
         <button
           type="button"
           onClick={() => setIsHistoryOpen(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-primary-300)] border border-[var(--color-secondary-700)] cursor-pointer transition shrink-0"
+          className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-primary-300)] border border-[var(--color-secondary-700)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer transition shrink-0"
         >
           <History className="size-4" />
           Historial de Sesiones

@@ -62,17 +62,17 @@ const Card = ({
             {/* Badges superiores tipo Material Chips */}
             <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1 pointer-events-none">
               {displayCategory && (
-                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-md border border-[var(--color-secondary-700)] shadow-sm">
+                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-[length:var(--fs-xxxxs)] uppercase tracking-wide font-bold px-2 py-0.5 rounded-md border border-[var(--color-secondary-700)] shadow-sm">
                   {displayCategory}
                 </span>
               )}
               {isPopular && (
-                <span className="bg-[var(--color-primary-500)] text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+                <span className="bg-[var(--color-primary-500)] text-[var(--color-on-primary)] text-[length:var(--fs-xxxxs)] font-bold px-2 py-0.5 rounded-md shadow-sm">
                   ★ Popular
                 </span>
               )}
               {!isPopular && rating && (
-                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-[11px] font-semibold px-2 py-0.5 rounded-md border border-[var(--color-secondary-700)] flex items-center gap-1 shadow-sm">
+                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-[length:var(--fs-xxxxs)] font-semibold px-2 py-0.5 rounded-md border border-[var(--color-secondary-700)] flex items-center gap-1 shadow-sm">
                   ★ {rating}
                 </span>
               )}
@@ -137,7 +137,8 @@ const Card = ({
               <button
                 type="button"
                 onClick={onDecrement}
-                className="w-8 h-8 flex items-center justify-center rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-white font-bold text-[length:var(--fs-sm)] cursor-pointer transition-colors shadow-sm"
+                aria-label="Disminuir cantidad"
+                className="w-9 h-9 flex items-center justify-center rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-bold text-[length:var(--fs-sm)] cursor-pointer transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
               >
                 -
               </button>
@@ -149,7 +150,8 @@ const Card = ({
               <button
                 type="button"
                 onClick={onIncrement}
-                className="w-8 h-8 flex items-center justify-center rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-white font-bold text-[length:var(--fs-sm)] cursor-pointer transition-colors shadow-sm"
+                aria-label="Aumentar cantidad"
+                className="w-9 h-9 flex items-center justify-center rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-bold text-[length:var(--fs-sm)] cursor-pointer transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
               >
                 +
               </button>

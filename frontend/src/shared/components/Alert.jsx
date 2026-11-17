@@ -63,7 +63,7 @@ export function Alert({
           type="button"
           onClick={onClose}
           aria-label="Cerrar notificación"
-          className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] transition-colors p-1 rounded-md"
+          className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] transition-colors p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
         >
           <X className="size-4" />
         </button>

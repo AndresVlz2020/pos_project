@@ -186,7 +186,7 @@ export default function Login() {
         </p>
       </div>
 
-      <div className="dpiero-fade-up w-full max-w-lg rounded-2xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-6 sm:p-7 text-[var(--color-white)] shadow-none transition-all">
+      <div className="dpiero-fade-up w-full max-w-lg rounded-2xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-6 sm:p-7 text-[var(--color-white)] shadow-2xl transition-all">
         <div className="flex rounded-xl bg-[var(--color-secondary-950)] p-1 border border-[var(--color-secondary-800)] mb-5">
           <button
             type="button"
@@ -195,7 +195,7 @@ export default function Login() {
               setPinError("");
               setPinLockSeconds(0);
             }}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+            className={`flex-1 min-h-[40px] flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer ${
               authMode === "pin"
                 ? "bg-[var(--color-secondary-800)] text-[var(--color-white)] border border-[var(--color-secondary-700)]"
                 : "text-[var(--color-gray-400)] hover:text-[var(--color-white)]"
@@ -212,7 +212,7 @@ export default function Login() {
               setPinError("");
               setPinLockSeconds(0);
             }}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+            className={`flex-1 min-h-[40px] flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer ${
               authMode === "admin"
                 ? "bg-[var(--color-secondary-800)] text-[var(--color-white)] border border-[var(--color-secondary-700)]"
                 : "text-[var(--color-gray-400)] hover:text-[var(--color-white)]"

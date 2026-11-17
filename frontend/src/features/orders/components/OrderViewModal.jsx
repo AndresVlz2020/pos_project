@@ -11,7 +11,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
       return "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40";
     }
     if (s.includes("pagada")) {
-      return "bg-[var(--color-white)]/10 text-[var(--color-white)] border-[var(--color-white)]/30";
+      return "bg-[var(--color-success-bg)] text-[var(--color-success)] border-[var(--color-success-border)]";
     }
     return "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]";
   };

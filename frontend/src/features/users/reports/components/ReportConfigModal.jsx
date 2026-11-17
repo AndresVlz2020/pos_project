@@ -101,9 +101,9 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
   return createPortal(
 
     // Overlay del modal
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
       {/* Contenedor del modal */}
-      <div className="w-full max-w-md rounded-lg bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] px-6 py-6 shadow-xl">
+      <div className="dpiero-modal-in w-full max-w-md rounded-2xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] px-6 py-6 shadow-2xl">
         {/* Título */}
         <h2 className="mb-4 text-xl font-semibold text-[var(--color-white)]">
           Generar reporte de usuarios
@@ -136,7 +136,7 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
 
         {/* Selección de campos */}
         <div className="mb-4">
-          <p className="mb-2 font-medium text-[var(--color-gray-200)]">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-gray-300)]">
             Campos del reporte:
           </p>
 

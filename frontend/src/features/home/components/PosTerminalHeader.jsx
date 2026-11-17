@@ -91,7 +91,7 @@ export default function PosTerminalHeader({
         {/* Métricas Operativas Conectadas a PostgreSQL */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5">
           <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-2 sm:px-4 sm:py-3.5">
-            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
+            <p className="text-[length:var(--fs-xxxxs)] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Venta de Turno
             </p>
             <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
@@ -100,7 +100,7 @@ export default function PosTerminalHeader({
           </div>
 
           <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-2 sm:px-4 sm:py-3.5">
-            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
+            <p className="text-[length:var(--fs-xxxxs)] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Órdenes Cocina
             </p>
             <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
@@ -111,7 +111,7 @@ export default function PosTerminalHeader({
           </div>
 
           <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-2 sm:px-4 sm:py-3.5">
-            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
+            <p className="text-[length:var(--fs-xxxxs)] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Mesas Ocupadas
             </p>
             <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
@@ -122,7 +122,7 @@ export default function PosTerminalHeader({
           </div>
 
           <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-lg px-3 py-2 sm:px-4 sm:py-3.5">
-            <p className="text-[10px] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
+            <p className="text-[length:var(--fs-xxxxs)] uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
               Personal Turno
             </p>
             <p className="text-base sm:text-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">

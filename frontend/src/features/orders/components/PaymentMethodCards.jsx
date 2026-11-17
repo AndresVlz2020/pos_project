@@ -161,7 +161,7 @@ export default function PaymentMethodCards({
   return (
     <div className="space-y-2.5">
       {label && (
-        <span className="block text-[var(--fs-xxxs)] font-semibold text-[var(--color-gray-300)]">
+        <span className="block text-[length:var(--fs-xxxs)] font-semibold text-[var(--color-gray-300)]">
           {label}
         </span>
       )}
@@ -183,7 +183,7 @@ export default function PaymentMethodCards({
               onClick={() => {
                 if (!disabled) onChange?.(method.value);
               }}
-              className={`group relative flex flex-col items-center justify-center gap-2 p-3.5 rounded-xl border text-center transition-all duration-150 min-h-[110px] ${
+              className={`group relative flex flex-col items-center justify-center gap-2 p-3.5 rounded-xl border text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all duration-150 min-h-[110px] ${
                 isSelected
                   ? "bg-[var(--color-primary-500)]/12 border-2 border-[var(--color-primary-500)] shadow-sm ring-1 ring-[var(--color-primary-500)]/20"
                   : "bg-[var(--color-secondary-950)] border-[var(--color-secondary-800)] hover:border-[var(--color-primary-500)]/55 hover:bg-[var(--color-secondary-900)]"
@@ -193,7 +193,7 @@ export default function PaymentMethodCards({
               <span
                 className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-colors ${
                   isSelected
-                    ? "bg-[var(--color-primary-500)] text-[#ffffff]"
+                    ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)]"
                     : "border border-[var(--color-secondary-600)] bg-transparent group-hover:border-[var(--color-primary-400)]"
                 }`}
                 aria-hidden="true"
@@ -203,7 +203,7 @@ export default function PaymentMethodCards({
 
               {/* Contenedor visual del icono o logo oficial */}
               {method.kind === "brand" ? (
-                <div className="h-11 min-w-[104px] px-3 py-1.5 rounded-lg bg-[#ffffff] border border-black/10 shadow-2xs flex items-center justify-center">
+                <div className="h-11 min-w-[104px] px-3 py-1.5 rounded-lg bg-[var(--color-on-primary)] border border-[var(--color-secondary-700)] shadow-2xs flex items-center justify-center">
                   <method.Logo
                     className={
                       method.value === "Daviplata" ? "h-8 w-auto" : "h-5 w-auto"
@@ -228,7 +228,7 @@ export default function PaymentMethodCards({
                 >
                   {method.label}
                 </span>
-                <span className="block text-[10px] text-[var(--color-gray-400)] leading-tight">
+                <span className="block text-[length:var(--fs-xxxxs)] text-[var(--color-gray-400)] leading-tight">
                   {method.subtitle}
                 </span>
               </div>
@@ -238,7 +238,7 @@ export default function PaymentMethodCards({
       </div>
 
       {error && (
-        <span className="text-[var(--fs-xxxs)] text-[var(--color-error)] font-medium block">
+        <span className="text-[length:var(--fs-xxxs)] text-[var(--color-error)] font-medium block">
           {error}
         </span>
       )}
@@ -259,7 +259,7 @@ export function PaymentMethodBadge({ method, showPaidTitle = true }) {
   if (entry.kind === "brand" && entry.Logo) {
     return (
       <span
-        className="inline-flex h-8 px-2.5 rounded-lg bg-[#ffffff] border border-black/10 items-center justify-center shadow-2xs"
+        className="inline-flex h-8 px-2.5 rounded-lg bg-[var(--color-on-primary)] border border-[var(--color-secondary-700)] items-center justify-center shadow-2xs"
         title={labelText}
         aria-label={labelText}
       >

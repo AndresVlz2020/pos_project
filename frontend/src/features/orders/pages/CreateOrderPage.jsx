@@ -430,7 +430,7 @@ export default function CreateOrder() {
                 setActiveTab("create");
                 fetchInitialData();
               }}
-              className={`flex items-center justify-center gap-2 min-h-[42px] px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold border transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center justify-center gap-2 min-h-[42px] px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "create"
                   ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] shadow-xs"
                   : "bg-[var(--color-secondary-900)]/70 border-[var(--color-secondary-800)] text-[var(--color-white)] hover:border-[var(--color-primary-500)]/45 hover:text-[var(--color-primary-400)]"
@@ -445,7 +445,7 @@ export default function CreateOrder() {
               role="tab"
               aria-selected={activeTab === "list"}
               onClick={() => setActiveTab("list")}
-              className={`flex items-center justify-center gap-2 min-h-[42px] px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold border transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center justify-center gap-2 min-h-[42px] px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "list"
                   ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] shadow-xs"
                   : "bg-[var(--color-secondary-900)]/70 border-[var(--color-secondary-800)] text-[var(--color-white)] hover:border-[var(--color-primary-500)]/45 hover:text-[var(--color-primary-400)]"
@@ -546,7 +546,7 @@ export default function CreateOrder() {
 
                         <div className="flex-1 min-w-0">
                           <span
-                            className={`text-[10px] font-mono block ${
+                            className={`text-[length:var(--fs-xxxxs)] font-mono block ${
                               isInactive ? "text-[var(--color-gray-500)]" : "text-[var(--color-gray-400)]"
                             }`}
                           >
@@ -578,7 +578,8 @@ export default function CreateOrder() {
                             type="button"
                             disabled={count === 0}
                             onClick={() => handleDecrement(dish)}
-                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-md flex items-center justify-center text-base font-bold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-white disabled:opacity-30 cursor-pointer"
+                            aria-label={`Disminuir ${dish.name}`}
+                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-md flex items-center justify-center text-base font-bold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
                           >
                             -
                           </button>
@@ -589,7 +590,8 @@ export default function CreateOrder() {
                             type="button"
                             disabled={isInactive}
                             onClick={() => handleIncrement(dish)}
-                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-md flex items-center justify-center text-base font-bold text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] disabled:opacity-30 cursor-pointer"
+                            aria-label={`Aumentar ${dish.name}`}
+                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-md flex items-center justify-center text-base font-bold text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
                           >
                             +
                           </button>
@@ -608,7 +610,7 @@ export default function CreateOrder() {
                       <button
                         type="button"
                         onClick={loadMoreDishes}
-                        className="font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] cursor-pointer"
+                        className="min-h-[36px] px-2 rounded-md font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
                       >
                         Cargar más platillos
                       </button>
@@ -633,7 +635,7 @@ export default function CreateOrder() {
                           setPinnedDishIds(new Set());
                           clearOrderDraft();
                         }}
-                        className="font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline cursor-pointer"
+                        className="min-h-[36px] px-2 rounded-md font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
                       >
                         Vaciar
                       </button>

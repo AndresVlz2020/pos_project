@@ -76,7 +76,7 @@ export default function CreateSuppliers() {
 
 
     return (
-        <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
+        <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
             <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-6 text-[var(--color-white)]">Crear Proveedor</h1>
             {feedback && (
                 <div className="mb-6 max-w-xl mx-auto">
@@ -176,7 +176,7 @@ export default function CreateSuppliers() {
                             onChange={handleChange}
                             error={errors.supplierObservation} 
                         />
-                        <div className="flex gap-6 mt-4 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-white)] w-48 p-2 rounded-lg">
+                        <div className="flex items-center gap-6 mt-4 min-h-[44px] bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-white)] w-full sm:w-fit px-3.5 py-2 rounded-lg">
                             <Checkbox
                                 className="cursor-pointer text-[var(--color-white)]"
                                 id="isSuperUser"
@@ -200,7 +200,7 @@ export default function CreateSuppliers() {
                     <Link to="/supplierList">
                         <Button
                             variant="secondary"
-                            size="sm"
+                            size="md"
                             type="button"
                         >
                             Cancelar
@@ -208,7 +208,7 @@ export default function CreateSuppliers() {
                     </Link>
                     <Button
                         variant="primary"
-                        size="sm"
+                        size="md"
                         type="submit"
                     >
                         Confirmar Información

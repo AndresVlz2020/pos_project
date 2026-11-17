@@ -174,7 +174,7 @@ export default function EditSupplierPage() {
     });
 
     return (
-        <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
+        <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
             <div className="flex flex-wrap items-center justify-between gap-3 pb-4 sm:pb-6 mb-5 sm:mb-6 border-b border-[var(--color-secondary-800)]">
                 <div>
                     <h1 className="text-xl font-bold text-[var(--color-white)] flex items-center gap-2">
@@ -283,7 +283,7 @@ export default function EditSupplierPage() {
                                 error={errors.supplierObservation} 
                                 placeholder="Línea de insumos, crédito o notas de entrega"
                             />
-                            <div className="flex items-center gap-6 mt-4 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-white)] w-52 p-2.5 rounded-lg">
+                            <div className="flex items-center gap-6 mt-4 min-h-[44px] bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-white)] w-full sm:w-fit px-3.5 py-2 rounded-lg">
                                 <Checkbox
                                     className="cursor-pointer text-[var(--color-white)]"
                                     id="isSuperUser"
@@ -307,7 +307,7 @@ export default function EditSupplierPage() {
                         <Link to="/supplierList">
                             <Button
                                 variant="secondary"
-                                size="sm"
+                                size="md"
                                 type="button"
                                 disabled={submitting}
                             >
@@ -316,7 +316,7 @@ export default function EditSupplierPage() {
                         </Link>
                         <Button
                             variant="primary"
-                            size="sm"
+                            size="md"
                             type="submit"
                             disabled={submitting}
                         >

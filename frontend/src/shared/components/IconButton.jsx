@@ -56,7 +56,7 @@ export const IconButton = React.forwardRef(function IconButton(
       cursor-pointer
     `,
     primary: `
-      text-[var(--color-white)]
+      text-[var(--color-on-primary)]
       bg-[var(--color-primary-500)]
       hover:bg-[var(--color-primary-600)]
       border border-[var(--color-primary-600)]

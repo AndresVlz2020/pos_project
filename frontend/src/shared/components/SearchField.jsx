@@ -82,7 +82,7 @@ const SearchField = forwardRef(
                     fullWidth && "w-full",
                     disabled && "opacity-60 pointer-events-none",
                     error
-                        ? "border-red-500 focus-within:ring-2 focus-within:ring-red-500"
+                        ? "border-[var(--color-error)] focus-within:ring-2 focus-within:ring-[var(--color-error)]/40"
                         : "focus-within:ring-2 focus-within:ring-[var(--color-primary-400)]/30",
                     className
                 )}
@@ -116,7 +116,7 @@ const SearchField = forwardRef(
                         type="button"
                         onClick={handleClear}
                         aria-label="Limpia búsqueda"
-                        className="search__clear rounded-full p-1 transition-colors hover:bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] cursor-pointer"
+                        className="search__clear size-7 inline-flex items-center justify-center rounded-full p-1 transition-colors hover:bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
                     >
                         <X className="size-4" />
                     </button>

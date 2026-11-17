@@ -159,10 +159,10 @@ export default function FileInput({
                         strokeLength="0.15"
                         bgOpacity="0.1"
                         speed="1.3"
-                        color="#ffffff"
+                        color="var(--color-on-primary)"
                       />
                     ) : (
-                      <div className="size-11 rounded-full bg-black/60 group-hover:bg-[var(--color-primary-500)] border border-white/35 text-white flex items-center justify-center shadow-lg transition-all group-hover:scale-105">
+                      <div className="size-11 rounded-full bg-black/60 group-hover:bg-[var(--color-primary-500)] border border-[var(--color-on-primary)]/35 text-[var(--color-on-primary)] flex items-center justify-center shadow-lg transition-all group-hover:scale-105">
                         <Plus className="size-5" />
                       </div>
                     )}
@@ -205,14 +205,14 @@ export default function FileInput({
                 onClick={(e) => remove(0, e)}
                 className={`absolute ${
                   shape === "circle" ? "top-2 right-2" : "top-2 right-2"
-                } z-10 size-7 rounded-full bg-black/75 hover:bg-[var(--color-error)] border border-white/25 text-white flex items-center justify-center shadow cursor-pointer transition-colors`}
+                } z-10 size-8 rounded-full bg-black/75 hover:bg-[var(--color-error)] border border-[var(--color-on-primary)]/25 text-[var(--color-on-primary)] flex items-center justify-center shadow cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60`}
               >
                 <X className="size-3.5" />
               </button>
             )}
           </div>
 
-          <p className="text-center text-[var(--color-gray-400)] text-[11px] font-medium">
+          <p className="text-center text-[var(--color-gray-400)] text-[length:var(--fs-xxxxs)] font-medium">
             {hasSingleVisual
               ? "Toca la imagen para cambiar · Máx 1 imagen (10MB)"
               : "Máx 1 imagen (10MB)"}
@@ -240,7 +240,7 @@ export default function FileInput({
                     className="w-full h-full object-contain bg-[var(--color-secondary-950)]"
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-[var(--color-secondary-800)] text-[var(--color-white)] text-[10px] px-1">
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-[var(--color-secondary-800)] text-[var(--color-white)] text-[length:var(--fs-xxxxs)] px-1">
                     <span className="font-semibold">PDF</span>
                     <span className="truncate w-full text-center">{file.name}</span>
                   </div>
@@ -250,7 +250,7 @@ export default function FileInput({
                   <button
                     type="button"
                     aria-label="Reordenar archivo"
-                    className="w-6 h-6 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-secondary-700)] cursor-grab"
+                    className="size-7 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-secondary-700)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60 cursor-grab"
                   >
                     ↕
                   </button>
@@ -259,7 +259,7 @@ export default function FileInput({
                     aria-label="Eliminar archivo"
                     disabled={disabled}
                     onClick={(e) => remove(i, e)}
-                    className="w-6 h-6 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-error)] cursor-pointer disabled:opacity-50"
+                    className="size-7 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-error)] hover:text-[var(--color-on-error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60 cursor-pointer disabled:opacity-50"
                   >
                     ✕
                   </button>
