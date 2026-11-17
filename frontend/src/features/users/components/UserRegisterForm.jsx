@@ -141,8 +141,8 @@ export default function UserRegisterForm() {
 
 
     return(
-        <div className="flex flex-col items-center justify-center my-6">
-           <div className="w-full max-w-md p-8 bg-[var(--color-secondary-900)] rounded-lg border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
+        <div className="flex flex-col items-center justify-center px-3 sm:px-4 my-6">
+           <div className="w-full max-w-md p-5 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
              <h1 className="text-center mb-8 text-2xl font-bold text-[var(--color-white)]">Registro de Usuarios</h1>            
              <form
               action=""

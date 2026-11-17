@@ -91,7 +91,7 @@ export default function PosProductsSection({
                   ? `Orden: ${SORT_OPTIONS.find((opt) => opt.value === sortBy).label}`
                   : "Ordenar productos"
               }
-              className={`min-h-[36px] inline-flex items-center justify-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-md border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer ${
+              className={`size-10 inline-flex items-center justify-center rounded-full border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer ${
                 sortBy !== "default"
                   ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)] border-[var(--color-primary-600)]"
                   : "bg-[var(--color-secondary-900)] text-[var(--color-primary-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border-[var(--color-secondary-800)]"
@@ -101,8 +101,8 @@ export default function PosProductsSection({
             </button>
           </DropdownTrigger>
 
-          <DropdownContent className="left-0 min-w-[185px]">
-            <p className="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-gray-400)]">
+          <DropdownContent className="left-0 min-w-[192px]">
+            <p className="px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-[var(--color-gray-400)]">
               Ordenar por
             </p>
             <div className="space-y-0.5 mt-0.5">
@@ -138,7 +138,7 @@ export default function PosProductsSection({
 
       {/* Indicador de Filtro o Búsqueda Activa */}
       {(searchQuery || selectedCategory !== "all") && (
-        <div className="flex items-center justify-between p-2.5 rounded-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-xs">
           <span className="text-[var(--color-gray-300)]">
             Mostrando <strong className="text-[var(--color-white)] font-bold">{filteredProducts.length}</strong> productos
             {searchQuery && <> para <strong className="text-[var(--color-primary-300)] font-semibold">"{searchQuery}"</strong></>}
@@ -147,7 +147,7 @@ export default function PosProductsSection({
           <button
             type="button"
             onClick={handleResetFilters}
-            className="min-h-[36px] px-2 rounded-md text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer font-semibold"
+            className="min-h-[40px] px-4 rounded-full text-sm text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer font-medium"
           >
             Restablecer filtros
           </button>
@@ -168,19 +168,19 @@ export default function PosProductsSection({
       ) : (
         /* Estado vacío si no hay coincidencias */
         <div className="py-14 text-center max-w-md mx-auto">
-          <div className="size-16 mx-auto rounded-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] flex items-center justify-center text-[var(--color-primary-400)] mb-3">
+          <div className="size-16 mx-auto rounded-2xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] flex items-center justify-center text-[var(--color-primary-400)] mb-3">
             <SearchX className="size-8" />
           </div>
-          <h3 className="text-base font-bold text-[var(--color-white)] mb-1">
+          <h3 className="text-base leading-6 font-bold text-[var(--color-white)] mb-1">
             Sin productos coincidentes
           </h3>
-          <p className="text-xs text-[var(--color-gray-400)] mb-4 leading-relaxed">
+          <p className="text-xs leading-4 text-[var(--color-gray-400)] mb-4">
             No se encontraron productos con el filtro aplicado. Verifica el término de búsqueda o selecciona otra categoría.
           </p>
           <button
             type="button"
             onClick={handleResetFilters}
-            className="min-h-[40px] inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-xs font-semibold text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
+            className="min-h-[40px] inline-flex items-center gap-2 px-6 py-2 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-sm font-medium text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
           >
             Ver todos los productos
           </button>

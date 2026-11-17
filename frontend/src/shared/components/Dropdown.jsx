@@ -127,8 +127,8 @@ export function DropdownItem({
       role="menuitem"
       onClick={handleClick}
       className={`
-        w-full text-left px-3 py-2 rounded-md text-sm font-medium
-        hover:bg-[var(--color-secondary-800)] focus:bg-[var(--color-secondary-800)]
+        w-full min-h-[48px] flex items-center text-left px-3 py-2.5 rounded-lg text-sm font-medium
+        hover:bg-[var(--color-secondary-800)] focus:bg-[var(--color-secondary-800)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary-400)]/50
         text-[var(--color-white)]
         transition-colors cursor-pointer
         ${className}

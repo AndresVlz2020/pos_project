@@ -52,7 +52,7 @@ export const getUserColumns = ({ onRequestStatusChange, canToggleStatus = false 
     cell: ({ row }) => {
       const role = row.original.role || row.original.userType || "Mesero";
       return (
-        <span className="text-xs px-2 py-0.5 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-300)] font-semibold border border-[var(--color-secondary-700)]">
+        <span className="text-xs px-2.5 py-0.5 rounded-full bg-[var(--color-secondary-800)] text-[var(--color-primary-300)] font-semibold border border-[var(--color-secondary-700)]">
           {role}
         </span>
       );

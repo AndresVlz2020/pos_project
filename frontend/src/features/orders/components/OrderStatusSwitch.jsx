@@ -16,13 +16,13 @@ export default function OrderStatusSwitch({
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         {label && (
-          <span className="block text-[length:var(--fs-xxxs)] font-semibold text-[var(--color-gray-300)]">
+          <span className="block text-xs font-medium leading-4 text-[var(--color-gray-300)]">
             {label}
           </span>
         )}
         {isCanceled && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error-border)]">
-            <Ban className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error-border)]">
+            <Ban className="w-3.5 h-3.5" />
             Anulada
           </span>
         )}
@@ -31,7 +31,7 @@ export default function OrderStatusSwitch({
       <div
         role="group"
         aria-label={label || "Estado de la Orden"}
-        className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)]"
+        className="grid grid-cols-2 gap-1.5 p-1 rounded-full bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)]"
       >
         <button
           type="button"
@@ -40,7 +40,7 @@ export default function OrderStatusSwitch({
           onClick={() => {
             if (!disabled) onChange?.("No Pagada");
           }}
-          className={`min-h-[40px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
+          className={`min-h-[40px] flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
             isUnpaid
               ? "bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] shadow-xs"
               : "border border-transparent text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-900)]"
@@ -57,7 +57,7 @@ export default function OrderStatusSwitch({
           onClick={() => {
             if (!disabled) onChange?.("Pagada");
           }}
-          className={`min-h-[40px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
+          className={`min-h-[40px] flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
             isPaid
               ? "bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] shadow-xs"
               : "border border-transparent text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-900)]"
@@ -68,7 +68,7 @@ export default function OrderStatusSwitch({
         </button>
       </div>
 
-      <p className="text-[11px] text-[var(--color-gray-400)] leading-snug">
+      <p className="text-xs leading-4 text-[var(--color-gray-400)]">
         {isCanceled
           ? "La orden fue anulada y no admite cambios."
           : isPaid

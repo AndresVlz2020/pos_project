@@ -165,15 +165,15 @@ export default function BiometricSettingsModal({
       aria-modal="true"
       aria-labelledby="biometric-settings-title"
     >
-      <div className="dpiero-modal-in w-full max-w-lg max-h-[90dvh] flex flex-col overflow-hidden rounded-2xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] p-5 sm:p-6 shadow-2xl text-[var(--color-white)]">
+      <div className="dpiero-modal-in w-full max-w-lg max-h-[90dvh] flex flex-col overflow-hidden rounded-[28px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] p-6 shadow-2xl text-[var(--color-white)]">
         {/* Cabecera */}
         <div className="flex items-start justify-between gap-3 pb-3 mb-4 border-b border-[var(--color-secondary-800)] shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="size-10 rounded-xl bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 flex items-center justify-center shrink-0">
+            <div className="size-10 rounded-full bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 flex items-center justify-center shrink-0">
               <Fingerprint className="size-5 text-[var(--color-primary-400)]" />
             </div>
             <div>
-              <h3 id="biometric-settings-title" className="text-base sm:text-lg font-bold">
+              <h3 id="biometric-settings-title" className="text-title-lg font-bold">
                 Datos Biométricos (Opcional)
               </h3>
               <p className="text-xs text-[var(--color-gray-400)]">
@@ -186,7 +186,7 @@ export default function BiometricSettingsModal({
             type="button"
             onClick={handleCloseModal}
             aria-label="Cerrar configuración biométrica"
-            className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
+            className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] size-10 flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer shrink-0"
           >
             <X className="size-5" />
           </button>
@@ -287,14 +287,14 @@ export default function BiometricSettingsModal({
                       value={deviceLabel}
                       onChange={(e) => setDeviceLabel(e.target.value)}
                       placeholder="Ej: Celular Caja, Tablet Cocina, Mi iPhone..."
-                      className="w-full min-h-[40px] rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] px-3 py-2 text-xs text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30"
+                      className="w-full h-12 rounded-lg bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] px-4 py-2.5 text-base text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={enrolling}
-                    className="w-full min-h-[44px] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] text-xs sm:text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer disabled:opacity-60"
+                    className="w-full min-h-[44px] flex items-center justify-center gap-2 py-2.5 px-6 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer disabled:opacity-60"
                   >
                     {enrolling ? (
                       <Loader2 className="size-4 animate-spin" />
@@ -349,16 +349,16 @@ export default function BiometricSettingsModal({
                           <Smartphone className="size-4 text-[var(--color-primary-400)] shrink-0" />
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5 min-w-0">
-                              <p className="text-xs font-semibold text-[var(--color-white)] truncate">
+                              <p className="text-sm font-semibold text-[var(--color-white)] truncate">
                                 {cred.deviceLabel}
                               </p>
                               {cred.isCurrentDevice && (
-                                <span className="text-[length:var(--fs-xxxxs)] font-semibold px-1.5 py-0.5 rounded bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border border-[var(--color-primary-500)]/30 shrink-0">
+                                <span className="text-label-sm font-semibold px-2 py-0.5 rounded-full bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border border-[var(--color-primary-500)]/30 shrink-0">
                                   Este dispositivo
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-[var(--color-gray-400)] truncate">
+                            <p className="text-xs text-[var(--color-gray-400)] truncate">
                               Registrado: {formatDateTime(cred.createdAt)} · Último uso:{" "}
                               {formatDateTime(cred.lastUsedAt)}
                             </p>
@@ -371,7 +371,7 @@ export default function BiometricSettingsModal({
                           disabled={deletingId === cred.id}
                           aria-label={`Desvincular ${cred.deviceLabel}`}
                           title="Desvincular este dispositivo"
-                          className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg text-[var(--color-gray-400)] hover:text-[var(--color-error)] hover:bg-[var(--color-error-bg)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0 disabled:opacity-50"
+                          className="size-10 flex items-center justify-center rounded-full text-[var(--color-gray-400)] hover:text-[var(--color-error)] hover:bg-[var(--color-error-bg)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0 disabled:opacity-50"
                         >
                           {deletingId === cred.id ? (
                             <Loader2 className="size-4 animate-spin" />

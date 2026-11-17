@@ -171,11 +171,11 @@ export default function EditUser1() {
   if (!isAdmin) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4">
-        <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-8 shadow-md text-center max-w-lg w-full">
+        <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-5 sm:p-8 shadow-md text-center max-w-lg w-full">
           <div className="size-14 rounded-full bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] flex items-center justify-center mx-auto mb-4 text-[var(--color-warning)]">
             <ShieldAlert className="size-7" />
           </div>
-          <h2 className="text-lg font-bold text-[var(--color-white)] mb-2">Acceso Exclusivo de Administrador</h2>
+          <h2 className="text-title-lg font-bold text-[var(--color-white)] mb-2">Acceso Exclusivo de Administrador</h2>
           <p className="text-sm text-[var(--color-gray-400)] leading-relaxed mb-6">
             La edición de usuarios solo está habilitada para el administrador central (<span className="text-[var(--color-primary-400)] font-medium">admin@dpiero.com</span>).
           </p>
@@ -193,7 +193,7 @@ export default function EditUser1() {
     <div className="w-full">
       {/* Body */}
       <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-        <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-5 sm:mb-8 text-[var(--color-white)]">Editar Usuario</h1>
+        <h1 className="text-2xl leading-8 font-bold text-center mb-5 sm:mb-8 text-[var(--color-white)]">Editar Usuario</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8 items-start">
           {/* Left: foto actual con '+' superpuesto para cambiarla */}
@@ -301,7 +301,7 @@ export default function EditUser1() {
                   htmlFor="user-password"
                   error={errors.userPassword}
                 />
-                <p className="text-[11px] text-[var(--color-gray-400)] mt-1.5">
+                <p className="text-xs leading-4 text-[var(--color-gray-400)] mt-1.5">
                   Ingrese una nueva contraseña únicamente si desea modificar las credenciales del administrador.
                 </p>
               </div>

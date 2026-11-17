@@ -43,7 +43,7 @@ export default function PosSuppliersPanel() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-[family-name:var(--main-font)]">
         <div>
-          <h2 className="text-lg font-bold text-[var(--color-white)] flex items-center gap-2">
+          <h2 className="text-title-lg font-bold text-[var(--color-white)] flex items-center gap-2">
             <Truck className="size-5 text-[var(--color-primary-400)]" />
             Proveedores de Insumos & Materia Prima
           </h2>
@@ -51,19 +51,19 @@ export default function PosSuppliersPanel() {
 
         <Link
           to="/supplierList"
-          className="inline-flex items-center min-h-[36px] px-2 -mx-2 rounded-md gap-1.5 text-xs font-semibold text-[var(--color-primary-300)] hover:text-[var(--color-primary-200)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+          className="inline-flex items-center min-h-[40px] px-4 rounded-full gap-1.5 text-sm font-medium text-[var(--color-primary-300)] hover:text-[var(--color-primary-200)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
         >
           <span>Ver todos los proveedores</span>
-          <ArrowRight className="size-3.5" />
+          <ArrowRight className="size-4" />
         </Link>
       </div>
 
       {loading ? (
-        <p className="text-xs text-[var(--color-gray-400)] py-8 text-center">
+        <p className="text-sm text-[var(--color-gray-400)] py-8 text-center">
           Cargando proveedores desde la base de datos...
         </p>
       ) : suppliers.length === 0 ? (
-        <p className="text-xs text-[var(--color-gray-400)] py-8 text-center border border-dashed border-[var(--color-secondary-800)] rounded-lg">
+        <p className="text-sm text-[var(--color-gray-400)] py-8 text-center border border-dashed border-[var(--color-secondary-800)] rounded-xl">
           No hay proveedores activos registrados.
         </p>
       ) : (
@@ -74,7 +74,7 @@ export default function PosSuppliersPanel() {
             return (
               <div
                 key={supplier.id}
-                className="rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] overflow-hidden flex flex-col justify-between hover:border-[var(--color-secondary-700)] transition-colors"
+                className="rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] overflow-hidden flex flex-col justify-between hover:border-[var(--color-secondary-700)] transition-colors"
               >
                 <div>
                   <div className="h-28 w-full overflow-hidden bg-[var(--color-secondary-950)]">
@@ -89,12 +89,12 @@ export default function PosSuppliersPanel() {
                     />
                   </div>
 
-                  <div className="p-3.5 space-y-2">
-                    <h4 className="text-sm font-bold text-[var(--color-white)] line-clamp-1">
+                  <div className="p-4 space-y-2">
+                    <h4 className="text-base leading-6 font-bold text-[var(--color-white)] line-clamp-1">
                       {name}
                     </h4>
 
-                    <p className="text-[11px] text-[var(--color-gray-400)] font-mono">
+                    <p className="text-xs text-[var(--color-gray-400)] font-mono">
                       NIT: {supplier.nit}
                     </p>
 
@@ -108,7 +108,7 @@ export default function PosSuppliersPanel() {
                         <span className="truncate">{supplier.email || "—"}</span>
                       </div>
                       {supplier.observation ? (
-                        <p className="text-[11px] text-[var(--color-gray-400)] line-clamp-1 pt-0.5">
+                        <p className="text-xs text-[var(--color-gray-400)] line-clamp-1 pt-0.5">
                           {supplier.observation}
                         </p>
                       ) : null}
@@ -116,10 +116,10 @@ export default function PosSuppliersPanel() {
                   </div>
                 </div>
 
-                <div className="p-3.5 pt-0">
+                <div className="p-4 pt-0">
                   <Link
                     to="/supplierList"
-                    className="w-full min-h-[36px] flex items-center justify-center py-1.5 px-3 rounded-md bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[11px] font-semibold text-[var(--color-gray-200)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors"
+                    className="w-full min-h-[40px] flex items-center justify-center py-2 px-6 rounded-full bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-sm font-medium text-[var(--color-gray-200)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors"
                   >
                     Consultar Ficha Técnica
                   </Link>

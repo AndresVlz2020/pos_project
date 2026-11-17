@@ -28,7 +28,7 @@ const Card = ({
       className={`
         w-full
         group
-        rounded-lg
+        rounded-xl
         border
         border-[var(--color-secondary-800)]
         bg-[var(--color-secondary-900)]
@@ -62,17 +62,17 @@ const Card = ({
             {/* Badges superiores tipo Material Chips */}
             <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1 pointer-events-none">
               {displayCategory && (
-                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-[length:var(--fs-xxxxs)] uppercase tracking-wide font-bold px-2 py-0.5 rounded-md border border-[var(--color-secondary-700)] shadow-sm">
+                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-xs uppercase tracking-wide font-semibold px-2.5 py-0.5 rounded-lg border border-[var(--color-secondary-700)] shadow-sm">
                   {displayCategory}
                 </span>
               )}
               {isPopular && (
-                <span className="bg-[var(--color-primary-500)] text-[var(--color-on-primary)] text-[length:var(--fs-xxxxs)] font-bold px-2 py-0.5 rounded-md shadow-sm">
+                <span className="bg-[var(--color-primary-500)] text-[var(--color-on-primary)] text-xs font-bold px-2.5 py-0.5 rounded-lg shadow-sm">
                   ★ Popular
                 </span>
               )}
               {!isPopular && rating && (
-                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-[length:var(--fs-xxxxs)] font-semibold px-2 py-0.5 rounded-md border border-[var(--color-secondary-700)] flex items-center gap-1 shadow-sm">
+                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-xs font-semibold px-2.5 py-0.5 rounded-lg border border-[var(--color-secondary-700)] flex items-center gap-1 shadow-sm">
                   ★ {rating}
                 </span>
               )}
@@ -80,7 +80,7 @@ const Card = ({
 
             {status && (
               <span
-                className={`absolute bottom-2 left-2.5 text-[length:var(--fs-xxxs)] font-semibold px-2 py-0.5 rounded-md border ${
+                className={`absolute bottom-2 left-2.5 text-xs font-semibold px-2.5 py-0.5 rounded-lg border ${
                   status === "Inactivo" || status === "inhabilitado" || status === "No disponible"
                     ? "bg-[var(--color-secondary-800)] text-[var(--color-gray-400)] border-[var(--color-secondary-700)]"
                     : "bg-[var(--color-secondary-950)] text-[var(--color-white)] border-[var(--color-secondary-700)]"
@@ -93,30 +93,30 @@ const Card = ({
 
         <div className="p-4 space-y-2">
           {displayTitle && (
-            <h3 className="text-[length:var(--fs-sm)] font-bold text-[var(--color-white)] line-clamp-1">
+            <h3 className="text-base leading-6 font-bold text-[var(--color-white)] line-clamp-1">
               {displayTitle}
             </h3>
           )}
 
           {displayDesc && (
-            <p className="text-[length:var(--fs-xxs)] text-[var(--color-gray-300)] line-clamp-2">
+            <p className="text-sm leading-5 text-[var(--color-gray-300)] line-clamp-2">
               {displayDesc}
             </p>
           )}
 
           {displayPrice && (
             <div className="flex items-center justify-between pt-1">
-              <span className="text-[length:var(--fs-xxs)] text-[var(--color-gray-300)]">
+              <span className="text-sm text-[var(--color-gray-300)]">
                 Precio unitario:
               </span>
-              <span className="text-[length:var(--fs-xs)] font-bold text-[var(--color-primary-300)]">
+              <span className="text-base font-bold text-[var(--color-primary-300)]">
                 {formattedPrice}
               </span>
             </div>
           )}
 
           {typeof qty === "number" && qty > 0 && (
-            <div className="flex items-center justify-between text-[length:var(--fs-xxxs)] text-[var(--color-primary-200)] pt-1 border-t border-[var(--color-white)]/10">
+            <div className="flex items-center justify-between text-xs text-[var(--color-primary-200)] pt-1 border-t border-[var(--color-white)]/10">
               <span>Subtotal:</span>
               <span className="font-bold">${dishSubtotal.toLocaleString()}</span>
             </div>
@@ -129,21 +129,21 @@ const Card = ({
       {typeof qty === "number" && (onIncrement || onDecrement) && (
         <div className="p-4 pt-0">
           {status === "Inactivo" || status === "inhabilitado" || status === "No disponible" ? (
-            <div className="bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-gray-400)] text-[11px] py-2 px-3 rounded-lg text-center font-semibold">
+            <div className="min-h-[40px] flex items-center justify-center bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-gray-400)] text-xs py-2 px-3 rounded-lg text-center font-semibold">
               Inhabilitado • Excluido de órdenes
             </div>
           ) : (
-            <div className="flex items-center justify-between bg-[var(--color-secondary-950)] rounded-lg p-1.5 border border-[var(--color-secondary-800)]">
+            <div className="flex items-center justify-between bg-[var(--color-secondary-950)] rounded-full p-1 border border-[var(--color-secondary-800)]">
               <button
                 type="button"
                 onClick={onDecrement}
                 aria-label="Disminuir cantidad"
-                className="w-9 h-9 flex items-center justify-center rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-bold text-[length:var(--fs-sm)] cursor-pointer transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                className="size-10 flex items-center justify-center rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-bold text-base cursor-pointer transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
               >
                 -
               </button>
 
-              <span className="font-bold text-[length:var(--fs-xs)] text-[var(--color-white)] px-2">
+              <span className="font-bold text-base text-[var(--color-white)] px-2 tabular-nums">
                 {qty}
               </span>
 
@@ -151,7 +151,7 @@ const Card = ({
                 type="button"
                 onClick={onIncrement}
                 aria-label="Aumentar cantidad"
-                className="w-9 h-9 flex items-center justify-center rounded-md bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-bold text-[length:var(--fs-sm)] cursor-pointer transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                className="size-10 flex items-center justify-center rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-bold text-base cursor-pointer transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
               >
                 +
               </button>

@@ -129,10 +129,10 @@ export default function PinKeypad({
         <div className="flex items-center gap-2.5 min-w-0">
           <StaffAvatar staff={selectedStaff} sizeClass="size-10" />
           <div className="min-w-0">
-            <p className="text-xs font-bold text-[var(--color-white)] leading-tight truncate">
+            <p className="text-sm font-bold text-[var(--color-white)] leading-tight truncate">
               {selectedStaff.userName || selectedStaff.name}
             </p>
-            <p className="text-[11px] text-[var(--color-primary-400)] font-medium mt-0.5 truncate">
+            <p className="text-xs text-[var(--color-primary-400)] font-medium mt-0.5 truncate">
               {formatRole(selectedStaff.role)}
             </p>
           </div>
@@ -141,9 +141,9 @@ export default function PinKeypad({
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1 min-h-[36px] px-2 rounded-md text-[11px] font-semibold text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+          className="inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0"
         >
-          <ArrowLeft className="size-3" />
+          <ArrowLeft className="size-3.5" />
           <span>Cambiar</span>
         </button>
       </div>
@@ -191,7 +191,7 @@ export default function PinKeypad({
             type="button"
             disabled={isLocked || biometricBusy}
             onClick={() => handleNumpadPress(num.toString())}
-            className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-2xl font-bold rounded-full h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {num}
           </button>
@@ -202,7 +202,7 @@ export default function PinKeypad({
           disabled={isLocked || biometricBusy}
           onClick={handleNumpadDelete}
           aria-label="Borrar dígito"
-          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] text-2xl font-bold rounded-full h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Delete className="size-5" />
         </button>
@@ -211,7 +211,7 @@ export default function PinKeypad({
           type="button"
           disabled={isLocked || biometricBusy}
           onClick={() => handleNumpadPress("0")}
-          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-2xl font-bold rounded-full h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           0
         </button>
@@ -221,7 +221,7 @@ export default function PinKeypad({
           disabled={isLocked || biometricBusy || pinInput.length < 4}
           onClick={handleConfirm}
           aria-label="Confirmar PIN"
-          className="bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] text-xl font-bold rounded-xl h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] text-2xl font-bold rounded-full h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Check className="size-6" />
         </button>
@@ -234,7 +234,7 @@ export default function PinKeypad({
             type="button"
             disabled={biometricBusy}
             onClick={() => triggerBiometricAuth(false)}
-            className="w-full min-h-[44px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[var(--color-primary-500)]/15 hover:bg-[var(--color-primary-500)]/25 border border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer disabled:opacity-60"
+            className="w-full min-h-[48px] flex items-center justify-center gap-2 py-2.5 px-6 rounded-full bg-[var(--color-primary-500)]/15 hover:bg-[var(--color-primary-500)]/25 border border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer disabled:opacity-60"
           >
             {biometricBusy ? (
               <Loader2 className="size-4 animate-spin" />
@@ -247,12 +247,12 @@ export default function PinKeypad({
           </button>
 
           {biometricHint && (
-            <p className="text-[11px] text-center text-[var(--color-gray-400)]">
+            <p className="text-xs text-center text-[var(--color-gray-400)]">
               {biometricHint}
             </p>
           )}
           {localBioError && (
-            <p className="text-[11px] text-center text-[var(--color-error)]">
+            <p className="text-xs text-center text-[var(--color-error)]">
               {localBioError}
             </p>
           )}
@@ -263,7 +263,7 @@ export default function PinKeypad({
         <button
           type="button"
           onClick={handleNumpadClear}
-          className="min-h-[36px] px-3 rounded-md text-[11px] text-[var(--color-gray-400)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+          className="min-h-[40px] px-4 rounded-full text-sm font-medium text-[var(--color-gray-400)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
         >
           Limpiar
         </button>

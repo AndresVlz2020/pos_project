@@ -189,14 +189,14 @@ export default function AdminStepUpModal() {
       aria-modal="true"
       aria-labelledby="stepup-modal-title"
     >
-      <div className="dpiero-modal-in w-full max-w-md rounded-2xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] p-5 sm:p-6 shadow-2xl text-[var(--color-white)]">
+      <div className="dpiero-modal-in w-full max-w-md rounded-[28px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] p-6 shadow-2xl text-[var(--color-white)]">
         <div className="flex items-start justify-between gap-3 pb-3 mb-4 border-b border-[var(--color-secondary-800)]">
           <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-xl bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 flex items-center justify-center shrink-0">
+            <div className="size-10 rounded-full bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 flex items-center justify-center shrink-0">
               <ShieldAlert className="size-5 text-[var(--color-primary-400)]" />
             </div>
             <div>
-              <h3 id="stepup-modal-title" className="text-base font-bold text-[var(--color-white)]">
+              <h3 id="stepup-modal-title" className="text-title-lg font-bold text-[var(--color-white)]">
                 Confirmación de Administrador
               </h3>
               <p className="text-xs text-[var(--color-gray-400)]">
@@ -209,7 +209,7 @@ export default function AdminStepUpModal() {
             type="button"
             onClick={handleCloseCancel}
             aria-label="Cancelar confirmación"
-            className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+            className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] size-10 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0"
           >
             <X className="size-5" />
           </button>
@@ -228,7 +228,7 @@ export default function AdminStepUpModal() {
               type="button"
               onClick={() => runBiometricVerification(false)}
               disabled={biometricBusy || passwordBusy}
-              className="w-full min-h-[44px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-semibold text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer disabled:opacity-60"
+              className="w-full min-h-[48px] flex items-center justify-center gap-2.5 py-3 px-6 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer disabled:opacity-60"
             >
               {biometricBusy ? (
                 <Loader2 className="size-5 animate-spin" />
@@ -242,7 +242,7 @@ export default function AdminStepUpModal() {
               </span>
             </button>
 
-            <div className="flex items-center gap-2 my-3 text-[11px] text-[var(--color-gray-400)]">
+            <div className="flex items-center gap-2 my-3 text-xs text-[var(--color-gray-400)]">
               <div className="h-px flex-1 bg-[var(--color-secondary-800)]" />
               <span>o confirma con contraseña</span>
               <div className="h-px flex-1 bg-[var(--color-secondary-800)]" />
@@ -251,13 +251,13 @@ export default function AdminStepUpModal() {
         )}
 
         {infoMsg && (
-          <div className="mb-3 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] px-3 py-2 text-xs text-[var(--color-gray-300)]">
+          <div className="mb-3 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] px-3.5 py-2.5 text-xs text-[var(--color-gray-300)]">
             {infoMsg}
           </div>
         )}
 
         {errorMsg && (
-          <div className="mb-3 rounded-lg bg-[var(--color-error-bg)] border border-[var(--color-error-border)] px-3 py-2 text-xs text-[var(--color-error)] font-medium">
+          <div className="mb-3 rounded-xl bg-[var(--color-error-bg)] border border-[var(--color-error-border)] px-3.5 py-2.5 text-xs text-[var(--color-error)] font-medium">
             {errorMsg}
           </div>
         )}
@@ -268,30 +268,30 @@ export default function AdminStepUpModal() {
               Contraseña de Administrador
             </label>
             <div className="relative">
-              <KeyRound className="size-4 text-[var(--color-gray-400)] absolute left-3 top-1/2 -translate-y-1/2" />
+              <KeyRound className="size-4 text-[var(--color-gray-400)] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus={!hasBiometricOption}
                 placeholder="••••••••"
-                className="w-full min-h-[44px] rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] pl-9 pr-3 py-2.5 text-sm text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30"
+                className="w-full h-14 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] pl-10 pr-4 py-2.5 text-base text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2">
+          <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={handleCloseCancel}
-              className="min-h-[36px] px-4 py-2 rounded-xl border border-[var(--color-secondary-700)] text-xs font-semibold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
+              className="min-h-[40px] px-6 py-2 rounded-full border border-[var(--color-secondary-700)] text-sm font-medium text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={passwordBusy || biometricBusy}
-              className="min-h-[36px] px-4 py-2 rounded-xl bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-600)] text-xs font-semibold text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer disabled:opacity-60"
+              className="min-h-[40px] px-6 py-2 rounded-full bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] border border-[var(--color-secondary-600)] text-sm font-medium text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer disabled:opacity-60"
             >
               {passwordBusy ? "Verificando..." : "Confirmar acción"}
             </button>

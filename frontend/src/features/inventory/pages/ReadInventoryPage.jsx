@@ -25,15 +25,15 @@ export default function ReadInventoryPage() {
 
   if (!item) {
     return (
-      <div className="max-w-3xl mx-auto my-12 px-4 text-center font-[family-name:var(--main-font)]">
-        <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-8 shadow-xl text-[var(--color-white)] space-y-4">
+      <div className="max-w-3xl mx-auto my-12 px-3 sm:px-4 text-center font-[family-name:var(--main-font)]">
+        <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-5 sm:p-8 shadow-xl text-[var(--color-white)] space-y-4">
           <Package className="size-10 mx-auto text-[var(--color-primary-400)]" />
-          <h1 className="text-lg font-bold">No se encontró información del insumo</h1>
+          <h1 className="text-title-lg font-bold">No se encontró información del insumo</h1>
           <p className="text-sm text-[var(--color-gray-400)]">
             Selecciona un insumo desde el listado de inventario para consultar su ficha técnica.
           </p>
           <Link to="/inventoryList">
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="md">
               Volver al Listado
             </Button>
           </Link>
@@ -77,22 +77,22 @@ export default function ReadInventoryPage() {
   const statusLabel = item.status || (isActive ? "Activo" : "Inactivo");
 
   return (
-    <div className="max-w-4xl mx-auto my-6 px-4 font-[family-name:var(--main-font)]">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-4xl mx-auto my-6 px-3 sm:px-4 font-[family-name:var(--main-font)]">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-xl font-bold text-[var(--color-white)]">Ficha del Insumo</h1>
+          <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">Ficha del Insumo</h1>
           <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
             Consulta organizada en modo lectura de existencias, proveedor y trazabilidad.
           </p>
         </div>
         <Link to="/inventoryList">
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="md">
             Volver al Listado
           </Button>
         </Link>
       </div>
 
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-6 shadow-xl text-[var(--color-white)] space-y-6">
+      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-xl text-[var(--color-white)] space-y-6">
         {/* Cabecera del insumo */}
         <div className="flex flex-col sm:flex-row items-center gap-5 pb-6 border-b border-[var(--color-secondary-800)]">
           <div className="size-20 rounded-xl border-2 border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)] flex items-center justify-center shrink-0 text-[var(--color-primary-400)] shadow-md">
@@ -101,7 +101,7 @@ export default function ReadInventoryPage() {
 
           <div className="flex-1 text-center sm:text-left">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-              <h2 className="text-lg font-bold text-[var(--color-white)]">{name}</h2>
+              <h2 className="text-title-lg font-bold text-[var(--color-white)]">{name}</h2>
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
                   isActive
@@ -123,7 +123,7 @@ export default function ReadInventoryPage() {
             <Tag className="size-4" />
             1. Información General
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
             <div>
               <span className="text-[var(--color-gray-400)] block">Nombre del Insumo:</span>
               <span className="font-semibold text-[var(--color-white)] text-sm">{name}</span>
@@ -159,7 +159,7 @@ export default function ReadInventoryPage() {
             <DollarSign className="size-4" />
             2. Control de Stock y Costos
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
             <div>
               <span className="text-[var(--color-gray-400)] block">Stock Actual:</span>
               <span
@@ -169,8 +169,8 @@ export default function ReadInventoryPage() {
               >
                 {currentStock} {unit}
                 {isLowStock && (
-                  <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-[var(--color-warning-bg)] text-[var(--color-warning)] border border-[var(--color-warning-border)]">
-                    <AlertTriangle className="size-3" /> Stock bajo
+                  <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-[var(--color-warning-bg)] text-[var(--color-warning)] border border-[var(--color-warning-border)]">
+                    <AlertTriangle className="size-3.5" /> Stock bajo
                   </span>
                 )}
               </span>
@@ -196,7 +196,7 @@ export default function ReadInventoryPage() {
             <Warehouse className="size-4" />
             3. Ubicación y Trazabilidad
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
             <div>
               <span className="text-[var(--color-gray-400)] block">Número de Lote:</span>
               <span className="font-semibold text-[var(--color-white)] font-mono">{batchNumber}</span>

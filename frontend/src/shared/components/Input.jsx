@@ -15,9 +15,9 @@ export default function Input({
         tertiary: "border-[var(--color-secondary-600)] focus:border-[var(--color-primary-400)] bg-[var(--color-secondary-900)]",
     }
     const sizes = {
-        sm: "h-9",
-        md: "h-10",
-        lg: "h-12",
+        sm: "h-10",
+        md: "h-12",
+        lg: "h-14",
     }
 
     
@@ -49,9 +49,9 @@ export default function Input({
                     className={`
                     w-full
                     ${sizes[size] || sizes.lg}
-                    rounded-md
+                    rounded-lg
                     border
-                    text-base sm:text-sm
+                    text-base
                     px-4
                     text-[var(--color-white)]
                     placeholder:text-[var(--color-gray-400)]
@@ -69,7 +69,7 @@ export default function Input({
             </div>
             {/* Feedback */}
             {error && (
-                <p className="text-caption text-[var(--color-error)] place-self-start mt-1">{error}</p>
+                <p className="text-xs leading-4 text-[var(--color-error)] place-self-start mt-1">{error}</p>
             )}
         </div>
     )

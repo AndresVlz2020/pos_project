@@ -115,7 +115,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="min-h-[36px] px-2 rounded-md text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer text-[11px]"
+              className="min-h-[40px] px-3 rounded-full text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer text-sm font-medium"
             >
               Limpiar filtro
             </button>
@@ -132,10 +132,10 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                 >
                   <StaffAvatar staff={staff} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
+                    <p className="text-sm font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
                       {staff.userName || staff.name}
                     </p>
-                    <p className="text-[11px] text-[var(--color-gray-400)] truncate mt-0.5">
+                    <p className="text-xs text-[var(--color-gray-400)] truncate mt-0.5">
                       <span className="text-[var(--color-primary-300)] font-medium">
                         {formatRole(staff.role || staff.userType)}
                       </span>{" "}
@@ -150,16 +150,16 @@ export default function QuickAccessSelector({ onSelectStaff }) {
           ) : (
             <div className="py-8 text-center bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-xl p-4">
               <SearchX className="size-8 mx-auto text-[var(--color-primary-400)] mb-2" />
-              <p className="text-xs font-bold text-[var(--color-white)]">
+              <p className="text-sm font-bold text-[var(--color-white)]">
                 Sin coincidencias en la plantilla
               </p>
-              <p className="text-[11px] text-[var(--color-gray-400)] mt-0.5 mb-3">
+              <p className="text-xs text-[var(--color-gray-400)] mt-0.5 mb-3">
                 No se encontró ningún colaborador activo con "{searchQuery}".
               </p>
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="min-h-[36px] px-3 rounded-md text-xs text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 font-semibold cursor-pointer"
+                className="min-h-[40px] px-4 rounded-full text-sm text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 font-medium cursor-pointer"
               >
                 Restablecer búsqueda
               </button>
@@ -184,10 +184,10 @@ export default function QuickAccessSelector({ onSelectStaff }) {
               >
                 <StaffAvatar staff={staff} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
+                  <p className="text-sm font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
                     {staff.userName || staff.name}
                   </p>
-                  <p className="text-[11px] text-[var(--color-primary-400)] font-medium truncate mt-0.5">
+                  <p className="text-xs text-[var(--color-primary-400)] font-medium truncate mt-0.5">
                     {formatRole(staff.role || staff.userType)}
                   </p>
                 </div>
@@ -195,7 +195,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
             ))}
           </div>
 
-          <p className="text-[11px] text-center text-[var(--color-gray-500)] pt-1">
+          <p className="text-xs text-center text-[var(--color-gray-500)] pt-1">
             ¿No apareces en esta lista? Escribe tu nombre o documento en el buscador superior.
           </p>
         </div>

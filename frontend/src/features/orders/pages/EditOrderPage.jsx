@@ -318,16 +318,16 @@ export default function EditOrder() {
   };
 
   return (
-    <div className="pb-24">
-      <div className="max-w-4xl mx-auto my-8 p-6 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-xl text-[var(--color-white)]">
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
+    <div className="pb-24 px-3 sm:px-4">
+      <div className="max-w-4xl mx-auto my-4 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-xl text-[var(--color-white)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
           <div>
-            <h1 className="text-xl font-bold text-[var(--color-white)]">
+            <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">
               Editar Orden {formOrder.id}
             </h1>
           </div>
           <Link to="/orderList">
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="md">
               Volver al Listado
             </Button>
           </Link>
@@ -414,14 +414,14 @@ export default function EditOrder() {
                       </div>
                       <div className="min-w-0">
                         <h5
-                          className={`text-xs font-bold truncate ${
+                          className={`text-sm leading-5 font-semibold truncate ${
                             isInactive ? "text-[var(--color-gray-400)]" : "text-[var(--color-white)]"
                           }`}
                         >
                           {dish.name}
                         </h5>
                         <span
-                          className={`text-[11px] font-semibold ${
+                          className={`text-xs leading-4 font-medium ${
                             isInactive ? "text-[var(--color-gray-500)]" : "text-[var(--color-white)]"
                           }`}
                         >
@@ -436,17 +436,17 @@ export default function EditOrder() {
                         disabled={count === 0 || isClosedOrPaid || isCanceled}
                         onClick={() => handleDecrement(dish)}
                         aria-label={`Disminuir ${dish.name}`}
-                        className="w-10 h-10 sm:w-9 sm:h-9 rounded-md bg-[var(--color-secondary-800)] text-[var(--color-white)] flex items-center justify-center text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
+                        className="size-10 rounded-full bg-[var(--color-secondary-800)] text-[var(--color-white)] flex items-center justify-center text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
                       >
                         -
                       </button>
-                      <span className="text-xs font-bold w-5 text-center">{count}</span>
+                      <span className="text-sm font-semibold w-6 text-center">{count}</span>
                       <button
                         type="button"
                         disabled={isClosedOrPaid || isCanceled || isInactive}
                         onClick={() => handleIncrement(dish)}
                         aria-label={`Aumentar ${dish.name}`}
-                        className="w-10 h-10 sm:w-9 sm:h-9 rounded-md bg-[var(--color-primary-500)] text-[var(--color-on-primary)] flex items-center justify-center text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
+                        className="size-10 rounded-full bg-[var(--color-primary-500)] text-[var(--color-on-primary)] flex items-center justify-center text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
                       >
                         +
                       </button>
@@ -457,7 +457,7 @@ export default function EditOrder() {
             </div>
 
             {totalFilteredDishes > 0 && (
-              <div className="mt-2.5 pt-2 border-t border-[var(--color-secondary-800)]/70 flex items-center justify-between gap-2 text-[11px] text-[var(--color-gray-400)]">
+              <div className="mt-2.5 pt-2 border-t border-[var(--color-secondary-800)]/70 flex items-center justify-between gap-2 text-xs leading-4 text-[var(--color-gray-400)]">
                 <span>
                   Mostrando {visibleDishesCount} de {totalFilteredDishes} platillos
                 </span>
@@ -465,7 +465,7 @@ export default function EditOrder() {
                   <button
                     type="button"
                     onClick={loadMoreDishes}
-                    className="min-h-[36px] px-2 rounded-md font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+                    className="min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:bg-[var(--color-secondary-800)]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
                   >
                     Cargar más platillos
                   </button>
@@ -502,7 +502,7 @@ export default function EditOrder() {
 
         {/* Panel informativo cuando la orden está bloqueada */}
         {(isClosedOrPaid || isCanceled) && (
-          <div className="p-4 rounded-lg bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] text-[var(--color-warning)] text-xs">
+          <div className="p-4 rounded-xl bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] text-[var(--color-warning)] text-xs">
             <strong className="block mb-1">
               {isClosedOrPaid ? "Esta orden está PAGADA." : "Esta orden está ANULADA."}
             </strong>
@@ -518,7 +518,7 @@ export default function EditOrder() {
                 variant="destructive"
                 onClick={() => setIsCancelConfirmOpen(true)}
                 disabled={submitting || loading}
-                className="flex-1 sm:flex-none sm:mr-auto px-2.5 sm:px-4 text-xs sm:text-sm min-h-[36px] sm:min-h-[40px] whitespace-nowrap"
+                className="flex-1 sm:flex-none sm:mr-auto px-2.5 sm:px-4 text-xs sm:text-sm min-h-[40px] whitespace-nowrap"
               >
                 Anular<span className="hidden sm:inline">&nbsp;Orden</span>
               </Button>
@@ -534,7 +534,7 @@ export default function EditOrder() {
                 variant="secondary"
                 type="button"
                 disabled={submitting}
-                className="w-full sm:w-auto px-2.5 sm:px-4 text-xs sm:text-sm min-h-[36px] sm:min-h-[40px] whitespace-nowrap"
+                className="w-full sm:w-auto px-2.5 sm:px-4 text-xs sm:text-sm min-h-[40px] whitespace-nowrap"
               >
                 Cancelar
               </Button>
@@ -545,7 +545,7 @@ export default function EditOrder() {
                 variant="primary"
                 type="submit"
                 disabled={submitting || loading}
-                className="flex-1 sm:flex-none px-2.5 sm:px-4 text-xs sm:text-sm min-h-[36px] sm:min-h-[40px] whitespace-nowrap"
+                className="flex-1 sm:flex-none px-2.5 sm:px-4 text-xs sm:text-sm min-h-[40px] whitespace-nowrap"
               >
                 {loading ? (
                   "Cargando..."

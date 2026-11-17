@@ -224,7 +224,7 @@ export default function CreateInventory() {
 
     return (
         <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-            <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-6 text-[var(--color-white)]">
+            <h1 className="text-2xl leading-8 font-bold text-center mb-6 text-[var(--color-white)]">
                 {pageTitle}
             </h1>
             {feedback && (
@@ -258,7 +258,7 @@ export default function CreateInventory() {
                         )}
                     </div>
 
-                    <div className="flex-1 flex flex-col gap-1 w-full">
+                    <div className="flex-1 flex flex-col gap-3 w-full">
                         <Select
                             label="Proveedor"
                             name="inventorySupplierSelect"
@@ -315,7 +315,7 @@ export default function CreateInventory() {
                         />
                     </div>
             
-                    <div className="flex-1 flex flex-col gap-1 w-full">
+                    <div className="flex-1 flex flex-col gap-3 w-full">
                         <Select
                             label="Marca del producto"
                             name="productBrandSelect"
@@ -339,7 +339,7 @@ export default function CreateInventory() {
                                 error={errors.numberBatch}
                             />
                             {isEditing && (
-                                <span className="text-[length:var(--fs-xxxxs)] text-[var(--color-warning)] block -mt-1 mb-2">
+                                <span className="text-xs text-[var(--color-warning)] block mt-1">
                                     * El lote queda bloqueado por trazabilidad según norma RFADMIN11.
                                 </span>
                             )}
@@ -379,7 +379,7 @@ export default function CreateInventory() {
                         />
                     </div>
 
-                    <div className="flex-1 flex flex-col gap-1 w-full">
+                    <div className="flex-1 flex flex-col gap-3 w-full">
                         <Input
                             label="Fecha de vencimiento"
                             name="expirationDate"

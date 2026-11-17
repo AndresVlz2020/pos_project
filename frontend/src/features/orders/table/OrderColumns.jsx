@@ -27,7 +27,7 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true }
             number={tableNum || "—"}
             isAvailable
             isSelected={false}
-            sizeClassName="w-12 h-[38px]"
+            sizeClassName="w-12 h-9"
           />
         </div>
       );
@@ -88,7 +88,7 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true }
         ? "bg-[var(--color-error-bg)] text-[var(--color-error)] border-[var(--color-error-border)]"
         : "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40";
       return (
-        <span className={`inline-block px-2.5 py-1 text-xs font-medium rounded-md border ${style}`}>
+        <span className={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full border ${style}`}>
           {isCanceled ? "Anulada" : normalizedStatus}
         </span>
       );

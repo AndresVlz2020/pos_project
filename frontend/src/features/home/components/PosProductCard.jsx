@@ -32,7 +32,7 @@ export default function PosProductCard({ product, onSelect }) {
       aria-label={`Ver detalle de ${displayName}`}
       onClick={handleActivate}
       onKeyDown={handleKeyDown}
-      className={`group rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] text-[var(--color-white)] transition-all duration-200 overflow-hidden flex flex-col justify-between cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-500)] ${
+      className={`group rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] text-[var(--color-white)] transition-all duration-200 overflow-hidden flex flex-col justify-between cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-500)] ${
         isInhabilitado
           ? "opacity-75 hover:border-[var(--color-secondary-700)]"
           : "hover:border-[var(--color-primary-500)] hover:-translate-y-0.5 shadow-xs hover:shadow-md"
@@ -54,13 +54,13 @@ export default function PosProductCard({ product, onSelect }) {
             }}
           />
           {!isInhabilitado && (
-            <div className="hidden sm:flex items-center gap-1 absolute bottom-2 right-2 px-2 py-1 rounded-full bg-black/65 text-[var(--color-on-primary)] text-[length:var(--fs-xxxxs)] font-semibold border border-[var(--color-on-primary)]/20 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <div className="hidden sm:flex items-center gap-1 absolute bottom-2 right-2 px-2.5 py-1 rounded-full bg-black/65 text-[var(--color-on-primary)] text-xs font-semibold border border-[var(--color-on-primary)]/20 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               <Eye className="size-3 text-[var(--color-primary-300)]" />
               <span>Ver detalle</span>
             </div>
           )}
           {isInhabilitado && (
-            <div className="absolute top-2.5 right-2.5 bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] text-[length:var(--fs-xxxxs)] font-bold px-2 py-0.5 rounded-full border border-[var(--color-secondary-700)] shadow-md flex items-center gap-1">
+            <div className="absolute top-2.5 right-2.5 bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[var(--color-secondary-700)] shadow-md flex items-center gap-1">
               <Ban className="size-3" />
               Inhabilitado
             </div>
@@ -68,30 +68,30 @@ export default function PosProductCard({ product, onSelect }) {
         </div>
 
         {/* Información del Producto */}
-        <div className="p-2.5 sm:p-3.5 space-y-1 sm:space-y-1.5">
-          <h3 className="text-[length:var(--fs-xxs)] font-bold text-[var(--color-white)] line-clamp-1 group-hover:text-[var(--color-primary-300)] transition-colors">
+        <div className="p-3 sm:p-4 space-y-1 sm:space-y-1.5">
+          <h3 className="text-base leading-6 font-bold text-[var(--color-white)] line-clamp-1 group-hover:text-[var(--color-primary-300)] transition-colors">
             {displayName}
           </h3>
-          <p className="line-clamp-1 sm:line-clamp-2 text-[length:var(--fs-xxxs)] text-[var(--color-gray-400)] leading-relaxed">
+          <p className="line-clamp-1 sm:line-clamp-2 text-xs leading-4 text-[var(--color-gray-400)]">
             {description}
           </p>
         </div>
       </div>
 
       {/* Footer de Tarjeta con Precio y Botón de Venta POS */}
-      <div className="p-2.5 sm:p-3.5 pt-0">
-        <div className="pt-2 sm:pt-2.5 border-t border-[var(--color-secondary-800)] flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+      <div className="p-3 sm:p-4 pt-0">
+        <div className="pt-2.5 border-t border-[var(--color-secondary-800)] flex flex-wrap items-center justify-between gap-2">
           <div>
-            <span className="text-[length:var(--fs-xxxxs)] text-[var(--color-gray-400)] uppercase font-medium block">
+            <span className="text-label-sm text-[var(--color-gray-400)] uppercase font-medium block">
               Precio
             </span>
-            <span className="text-[length:var(--fs-xs)] font-bold text-[var(--color-white)]">
+            <span className="text-base leading-6 font-bold text-[var(--color-white)]">
               ${formattedPrice} COP
             </span>
           </div>
 
           <span
-            className={`text-[length:var(--fs-xxxxs)] font-semibold px-2 py-0.5 rounded-full ${
+            className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
               isInhabilitado
                 ? "bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error-border)]"
                 : "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-300)] border border-[var(--color-primary-500)]/40"

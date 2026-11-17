@@ -15,8 +15,8 @@ export default function Button({
   };
 
   const sizes = {
-    sm: "min-h-[36px] px-3 text-xs font-medium gap-1.5",
-    md: "min-h-[40px] px-4 text-sm font-medium gap-2",
+    sm: "min-h-[40px] px-4 text-sm font-medium gap-2",
+    md: "min-h-[40px] px-6 text-sm font-medium gap-2",
     lg: "min-h-[48px] px-6 text-sm font-semibold gap-2",
   };
 
@@ -25,7 +25,7 @@ export default function Button({
       type={type}
       className={`
         inline-flex items-center justify-center
-        rounded-md
+        rounded-full
         transition-colors
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50
         ${variants[variant] || variants.primary}

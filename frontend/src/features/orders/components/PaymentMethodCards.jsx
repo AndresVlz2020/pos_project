@@ -161,7 +161,7 @@ export default function PaymentMethodCards({
   return (
     <div className="space-y-2.5">
       {label && (
-        <span className="block text-[length:var(--fs-xxxs)] font-semibold text-[var(--color-gray-300)]">
+        <span className="block text-xs font-medium leading-4 text-[var(--color-gray-300)]">
           {label}
         </span>
       )}
@@ -183,7 +183,7 @@ export default function PaymentMethodCards({
               onClick={() => {
                 if (!disabled) onChange?.(method.value);
               }}
-              className={`group relative flex flex-col items-center justify-center gap-2 p-3.5 rounded-xl border text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all duration-150 min-h-[110px] ${
+              className={`group relative flex flex-col items-center justify-center gap-2 p-3.5 rounded-xl border text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all duration-150 min-h-[112px] ${
                 isSelected
                   ? "bg-[var(--color-primary-500)]/12 border-2 border-[var(--color-primary-500)] shadow-sm ring-1 ring-[var(--color-primary-500)]/20"
                   : "bg-[var(--color-secondary-950)] border-[var(--color-secondary-800)] hover:border-[var(--color-primary-500)]/55 hover:bg-[var(--color-secondary-900)]"
@@ -220,7 +220,7 @@ export default function PaymentMethodCards({
 
               <div className="space-y-0.5">
                 <span
-                  className={`block text-xs font-bold leading-tight ${
+                  className={`block text-sm font-semibold leading-5 ${
                     isSelected
                       ? "text-[var(--color-white)]"
                       : "text-[var(--color-gray-200)]"
@@ -228,7 +228,7 @@ export default function PaymentMethodCards({
                 >
                   {method.label}
                 </span>
-                <span className="block text-[length:var(--fs-xxxxs)] text-[var(--color-gray-400)] leading-tight">
+                <span className="block text-xs text-[var(--color-gray-400)] leading-4">
                   {method.subtitle}
                 </span>
               </div>
@@ -238,7 +238,7 @@ export default function PaymentMethodCards({
       </div>
 
       {error && (
-        <span className="text-[length:var(--fs-xxxs)] text-[var(--color-error)] font-medium block">
+        <span className="text-xs leading-4 text-[var(--color-error)] font-medium block">
           {error}
         </span>
       )}
@@ -273,7 +273,7 @@ export function PaymentMethodBadge({ method, showPaidTitle = true }) {
   const Icon = entry.Icon || Banknote;
   return (
     <span
-      className={`inline-flex w-9 h-9 rounded-lg border items-center justify-center ${entry.iconBoxClass}`}
+      className={`inline-flex size-8 rounded-lg border items-center justify-center ${entry.iconBoxClass}`}
       title={labelText}
       aria-label={labelText}
     >

@@ -147,7 +147,7 @@ export default function DataTable({ data, columns, compact = false }) {
                         : cell.column.id;
                     return (
                       <div key={cell.id} className="min-w-0">
-                        <span className="block text-[length:var(--fs-xxxxs)] uppercase tracking-wider text-[var(--color-gray-400)] font-semibold truncate">
+                        <span className="block text-xs uppercase tracking-wider text-[var(--color-gray-400)] font-semibold truncate">
                           {headerText}
                         </span>
                         <div className="text-xs text-[var(--color-white)] mt-0.5 break-words">
@@ -260,9 +260,9 @@ export default function DataTable({ data, columns, compact = false }) {
         </span>
 
         {/* ================== CONTROLES DE PAGINACIÓN ================== */}
-        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-1.5 sm:gap-2">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2">
           <Button
-            size="sm"
+            size="md"
             variant="secondary"
             className="hidden sm:inline-flex"
             onClick={() => table.setPageIndex(0)}
@@ -272,7 +272,7 @@ export default function DataTable({ data, columns, compact = false }) {
           </Button>
 
           <Button
-            size="sm"
+            size="md"
             variant="secondary"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
@@ -280,13 +280,13 @@ export default function DataTable({ data, columns, compact = false }) {
             Anterior
           </Button>
 
-          <span className="text-xs sm:text-sm px-1.5 sm:px-2 text-[var(--color-gray-300)]">
+          <span className="text-sm px-2 text-[var(--color-gray-300)]">
             Pág. <strong className="text-[var(--color-white)]">{table.getState().pagination.pageIndex + 1}</strong> /{" "}
             <strong className="text-[var(--color-white)]">{table.getPageCount() || 1}</strong>
           </span>
 
           <Button
-            size="sm"
+            size="md"
             variant="secondary"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
@@ -295,7 +295,7 @@ export default function DataTable({ data, columns, compact = false }) {
           </Button>
 
           <Button
-            size="sm"
+            size="md"
             variant="secondary"
             className="hidden sm:inline-flex"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
@@ -307,7 +307,7 @@ export default function DataTable({ data, columns, compact = false }) {
       </div>
 
       {/* ================== IR A PÁGINA ================== */}
-      <div className="flex items-center gap-2 text-xs sm:text-sm text-[var(--color-gray-400)]">
+      <div className="flex items-center gap-2 text-sm text-[var(--color-gray-400)]">
         <span>Ir a página:</span>
         <input
           type="number"
@@ -316,7 +316,7 @@ export default function DataTable({ data, columns, compact = false }) {
             const page = e.target.value ? Number(e.target.value) - 1 : 0;
             table.setPageIndex(page);
           }}
-          className="h-9 bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] rounded-lg px-2.5 w-16 text-center outline-none focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 transition-colors"
+          className="h-10 bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] text-base sm:text-sm rounded-lg px-2.5 w-16 text-center outline-none focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 transition-colors"
         />
       </div>
     </div>

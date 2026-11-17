@@ -114,7 +114,7 @@ export default function OrderListPage() {
     <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-md text-[var(--color-white)]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-xl font-bold text-[var(--color-white)]">
+          <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">
             Listado de Órdenes
           </h1>
         </div>

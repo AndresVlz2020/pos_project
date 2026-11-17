@@ -11,10 +11,11 @@ export default function Checkbox({
         <label 
             htmlFor={id}
             className={`
-                flex items-center gap-2
+                min-h-[44px] py-1.5
+                flex items-center gap-3
                 text-sm
                 cursor-pointer
-                ${disabled ? "opacity-50 cursor-not-allowed opacity-50" :""}
+                ${disabled ? "opacity-50 cursor-not-allowed" :""}
                 ${className}
             `}
         >
@@ -28,7 +29,7 @@ export default function Checkbox({
             checked={checked}
             onChange={onChange}
             disabled={disabled}
-            className="w-4 h-4 rounded border border-[var(--color-secondary-600)] accent-[var(--color-primary-500)] bg-[var(--color-secondary-900)] cursor-pointer focus:ring-2 focus:ring-[var(--color-primary-400)]/40 transition-all"
+            className="size-[18px] shrink-0 rounded-[2px] border border-[var(--color-secondary-600)] accent-[var(--color-primary-500)] bg-[var(--color-secondary-900)] cursor-pointer focus:ring-2 focus:ring-[var(--color-primary-400)]/40 transition-all"
         />
 
         {/* {Texto} */}

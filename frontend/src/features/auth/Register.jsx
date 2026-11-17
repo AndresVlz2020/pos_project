@@ -84,8 +84,8 @@ export default function Register() {
 
         {/* Right form */}
         <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto">
-          <div className="rounded-2xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-8 shadow-2xl text-[var(--color-white)]">
-            <h2 className="text-xl font-bold text-center mb-6 text-[var(--color-white)]">Registro de Cuenta</h2>
+          <div className="rounded-2xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-5 sm:p-8 shadow-2xl text-[var(--color-white)]">
+            <h2 className="text-title-lg font-bold text-center mb-6 text-[var(--color-white)]">Registro de Cuenta</h2>
             <div className="grid gap-3">
               <Input
                 label="Nombre"
@@ -172,9 +172,9 @@ export default function Register() {
               <Button variant="primary" type="submit" className="w-full">Registrarse</Button>
             </div>
 
-            <div className="mt-6 text-xs text-center text-[var(--color-gray-300)]">
+            <div className="mt-6 text-sm text-center text-[var(--color-gray-300)]">
               ¿Ya tienes cuenta?{" "}
-              <Link to="/Auth" className="inline-flex items-center min-h-[36px] px-1.5 rounded-md font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50">Inicia Sesión</Link>
+              <Link to="/Auth" className="inline-flex items-center min-h-[40px] px-3 rounded-full font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50">Inicia Sesión</Link>
             </div>
           </div>
         </form>

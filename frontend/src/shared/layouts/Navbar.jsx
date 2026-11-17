@@ -106,9 +106,9 @@ export default function Navbar() {
     pathname.includes("access") || pathname.includes("usersmanagement");
 
   const getLinkClass = (isActive) =>
-    `transition-all min-h-[40px] py-1 px-2 rounded-t-md flex items-center gap-1.5 text-sm font-medium cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
+    `transition-all min-h-[48px] py-1 px-3 rounded-t-lg flex items-center gap-1.5 text-sm font-medium cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
       isActive
-        ? "text-[var(--color-primary-400)] font-bold border-b-2 border-[var(--color-primary-400)]"
+        ? "text-[var(--color-primary-400)] font-semibold border-b-2 border-[var(--color-primary-400)]"
         : "text-[var(--color-gray-300)] hover:text-[var(--color-white)]"
     }`;
 
@@ -194,7 +194,7 @@ export default function Navbar() {
           <div className="flex items-center shrink-0">
             <Link
               to={"/"}
-              className="flex items-center gap-2 group transition-transform hover:scale-105 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+              className="flex items-center gap-2 group transition-transform hover:scale-105 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
             >
               <BrandLogo
                 className="h-5 sm:h-11 w-auto object-contain drop-shadow"
@@ -206,26 +206,26 @@ export default function Navbar() {
           {/* Info de perfil y turno centrada en teléfonos (sin avatar para priorizar espacio) */}
           {currentUser && (
             <div className="sm:hidden flex-1 flex justify-center min-w-0 px-1">
-              <div className="inline-flex flex-col items-center justify-center min-w-0 max-w-full overflow-hidden bg-[var(--color-secondary-900)] px-2.5 py-1 rounded-md border border-[var(--color-secondary-800)] text-[var(--color-gray-300)] leading-tight">
-                <span className="block w-full text-center text-[11px] font-semibold text-[var(--color-white)] truncate">
-                  {currentUser.name}
-                </span>
-                <div className="flex items-center justify-center gap-1.5 mt-0.5 min-w-0 max-w-full">
-                  <span className="text-[length:var(--fs-xxxxs)] text-[var(--color-primary-400)] font-semibold truncate">
+              <div className="inline-flex items-center justify-center gap-2 min-w-0 max-w-full min-h-[44px] overflow-hidden bg-[var(--color-secondary-900)] px-2.5 py-1 rounded-full border border-[var(--color-secondary-800)] text-[var(--color-gray-300)] leading-tight">
+                <div className="min-w-0 flex flex-col">
+                  <span className="block w-full text-xs font-semibold text-[var(--color-white)] truncate">
+                    {currentUser.name}
+                  </span>
+                  <span className="text-label-sm text-[var(--color-primary-400)] font-semibold truncate">
                     {currentUser.role}
                   </span>
-                  {!isAdmin && sessionAnchor && (
-                    <button
-                      type="button"
-                      onClick={() => setIsHistoryOpen(true)}
-                      title="Ver mi historial de sesiones"
-                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[length:var(--fs-xxxxs)] font-semibold shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
-                    >
-                      <Clock className="size-2.5" />
-                      {formatDuration(elapsedSeconds)}
-                    </button>
-                  )}
                 </div>
+                {!isAdmin && sessionAnchor && (
+                  <button
+                    type="button"
+                    onClick={() => setIsHistoryOpen(true)}
+                    title="Ver mi historial de sesiones"
+                    className="inline-flex items-center gap-1 min-h-[40px] px-2.5 rounded-full bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-xs font-semibold shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                  >
+                    <Clock className="size-3" />
+                    {formatDuration(elapsedSeconds)}
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -283,11 +283,11 @@ export default function Navbar() {
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Indicador sutil de rol activo con avatar */}
             {currentUser && (
-              <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-2.5 py-1 rounded border border-[var(--color-secondary-800)]">
+              <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-3 py-0.5 rounded-full border border-[var(--color-secondary-800)]">
                 <img
                   src={getUserAvatar(currentUser)}
                   alt={currentUser.name || "Usuario"}
-                  className="size-6 rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0"
+                  className="size-7 rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = imgWorkerCarlos;
@@ -296,7 +296,7 @@ export default function Navbar() {
                 <span className="font-medium text-[var(--color-white)] truncate max-w-[120px]">
                   {currentUser.name}
                 </span>
-                <span className="text-[length:var(--fs-xxxxs)] px-1.5 py-0.5 rounded bg-[var(--color-secondary-800)] text-[var(--color-primary-400)] font-semibold">
+                <span className="text-label-sm px-2 py-0.5 rounded-full bg-[var(--color-secondary-800)] text-[var(--color-primary-400)] font-semibold">
                   {currentUser.role}
                 </span>
                 {!isAdmin && sessionAnchor && (
@@ -304,9 +304,9 @@ export default function Navbar() {
                     type="button"
                     onClick={() => setIsHistoryOpen(true)}
                     title="Ver mi historial de sesiones"
-                    className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-[11px] font-semibold hover:bg-[var(--color-primary-500)]/25 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                    className="ml-1 inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-xs font-semibold hover:bg-[var(--color-primary-500)]/25 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
                   >
-                    <Clock className="size-3" />
+                    <Clock className="size-3.5" />
                     {formatDuration(elapsedSeconds)}
                   </button>
                 )}
@@ -314,13 +314,13 @@ export default function Navbar() {
             )}
 
             {/* Botón de cambio de tema */}
-            <ThemeToggle hitSize={38} iconSize={18} className="sm:!w-11 sm:!h-11" />
+            <ThemeToggle hitSize={40} iconSize={18} className="sm:!w-11 sm:!h-11" />
 
             <Dropdown>
               <div>
                 <DropdownTrigger>
                   <IconButton
-                    hitSize={38}
+                    hitSize={40}
                     iconSize={18}
                     ariaLabel="Menu"
                     className="sm:!w-11 sm:!h-11 text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)]"
@@ -331,7 +331,7 @@ export default function Navbar() {
               </div>
 
               {/* Contenido: Opciones de navegación móvil, Admin y autenticación */}
-              <DropdownContent className="right-0 min-w-[210px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] shadow-lg">
+              <DropdownContent className="right-0 min-w-[224px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] shadow-lg">
                 <div className="lg:hidden pb-2 mb-2 border-b border-[var(--color-secondary-800)]">
                   <DropdownItem
                     onClick={() => navigate("/")}

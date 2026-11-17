@@ -203,16 +203,14 @@ export default function FileInput({
                 aria-label="Quitar imagen seleccionada"
                 title="Quitar imagen"
                 onClick={(e) => remove(0, e)}
-                className={`absolute ${
-                  shape === "circle" ? "top-2 right-2" : "top-2 right-2"
-                } z-10 size-8 rounded-full bg-black/75 hover:bg-[var(--color-error)] border border-[var(--color-on-primary)]/25 text-[var(--color-on-primary)] flex items-center justify-center shadow cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60`}
+                className="absolute top-2 right-2 z-10 size-10 rounded-full bg-black/75 hover:bg-[var(--color-error)] border border-[var(--color-on-primary)]/25 text-[var(--color-on-primary)] flex items-center justify-center shadow cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60"
               >
-                <X className="size-3.5" />
+                <X className="size-4" />
               </button>
             )}
           </div>
 
-          <p className="text-center text-[var(--color-gray-400)] text-[length:var(--fs-xxxxs)] font-medium">
+          <p className="text-center text-[var(--color-gray-400)] text-xs font-medium">
             {hasSingleVisual
               ? "Toca la imagen para cambiar · Máx 1 imagen (10MB)"
               : "Máx 1 imagen (10MB)"}
@@ -231,7 +229,7 @@ export default function FileInput({
                 onDragStart={() => setDragIndex(i)}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={() => reorder(dragIndex, i)}
-                className="relative w-24 h-24 border border-[var(--color-secondary-700)] rounded-xl overflow-hidden group bg-[var(--color-secondary-950)]"
+                className="relative w-28 h-28 border border-[var(--color-secondary-700)] rounded-xl overflow-hidden group bg-[var(--color-secondary-950)]"
               >
                 {isImageFile(file) ? (
                   <img
@@ -240,17 +238,17 @@ export default function FileInput({
                     className="w-full h-full object-contain bg-[var(--color-secondary-950)]"
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-[var(--color-secondary-800)] text-[var(--color-white)] text-[length:var(--fs-xxxxs)] px-1">
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-[var(--color-secondary-800)] text-[var(--color-white)] text-xs px-1.5">
                     <span className="font-semibold">PDF</span>
                     <span className="truncate w-full text-center">{file.name}</span>
                   </div>
                 )}
 
-                <div className="absolute top-1 right-1 flex flex-col gap-1 opacity-95 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-1.5 right-1.5 flex flex-col gap-1.5 opacity-95 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   <button
                     type="button"
                     aria-label="Reordenar archivo"
-                    className="size-7 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-secondary-700)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60 cursor-grab"
+                    className="size-10 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-full text-[var(--color-white)] text-sm flex items-center justify-center hover:bg-[var(--color-secondary-700)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60 cursor-grab"
                   >
                     ↕
                   </button>
@@ -259,7 +257,7 @@ export default function FileInput({
                     aria-label="Eliminar archivo"
                     disabled={disabled}
                     onClick={(e) => remove(i, e)}
-                    className="size-7 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-md text-[var(--color-white)] text-xs flex items-center justify-center hover:bg-[var(--color-error)] hover:text-[var(--color-on-error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60 cursor-pointer disabled:opacity-50"
+                    className="size-10 bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] rounded-full text-[var(--color-white)] text-sm flex items-center justify-center hover:bg-[var(--color-error)] hover:text-[var(--color-on-error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/60 cursor-pointer disabled:opacity-50"
                   >
                     ✕
                   </button>
@@ -270,7 +268,7 @@ export default function FileInput({
             {safeValue.length < limit && (
               <div
                 onClick={openPicker}
-                className={`w-24 h-24 border-2 border-dashed border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] bg-[var(--color-secondary-900)]/60 rounded-xl flex items-center justify-center transition-colors ${
+                className={`w-28 h-28 border-2 border-dashed border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] bg-[var(--color-secondary-900)]/60 rounded-xl flex items-center justify-center transition-colors ${
                   disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
                 }`}
               >

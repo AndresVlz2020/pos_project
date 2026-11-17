@@ -81,14 +81,14 @@ export default function PermissionModule({
   const activeTypeLabel = selectedUser ? "Usuario" : "Grupo";
 
   return (
-    <section className="rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] p-6 text-[var(--color-white)] shadow-sm">
+    <section className="rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] p-4 sm:p-6 text-[var(--color-white)] shadow-sm">
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
         <div>
           <p className="text-xs uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
             {activeTypeLabel}
           </p>
 
-          <h2 className="text-lg font-semibold text-[var(--color-white)] mt-0.5">
+          <h2 className="text-base leading-6 font-semibold text-[var(--color-white)] mt-0.5">
             {activeName || "Seleccione un grupo o usuario"}
           </h2>
         </div>

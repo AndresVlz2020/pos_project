@@ -27,18 +27,24 @@ export default function StatusSwitch({
     }
   };
 
-  // Clases de tamaño del contenedor del switch
+  // Clases de tamaño del contenedor del switch (M3 Track estándar: 52x32dp)
   const sizes = {
-    sm: "h-5 w-9",
-    md: "h-6 w-11",
-    lg: "h-7 w-14",
+    sm: "h-7 w-12",
+    md: "h-8 w-[52px]",
+    lg: "h-9 w-16",
   };
 
-  // Clases de tamaño del "knob" (el círculo que se mueve)
+  // Clases de tamaño del "knob" (M3 Thumb: 24x24dp en md)
   const knobSizes = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
+    sm: "size-5",
+    md: "size-6",
+    lg: "size-7",
+  };
+
+  const knobTranslate = {
+    sm: "translate-x-5",
+    md: "translate-x-5",
+    lg: "translate-x-7",
   };
 
   return (
@@ -51,7 +57,7 @@ export default function StatusSwitch({
       disabled={disabled}
       className={`
         relative inline-flex items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/40
-        ${sizes[size]}
+        ${sizes[size] || sizes.md}
         ${isChecked ? "bg-[var(--color-primary-500)]" : "bg-[var(--color-secondary-700)]"}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
@@ -59,9 +65,9 @@ export default function StatusSwitch({
       {/* Knob del switch (el círculo que se desplaza de izquierda a derecha) */}
       <span
         className={`
-          absolute left-0.5 flex items-center justify-center rounded-full bg-[var(--color-on-primary)] shadow transition-transform duration-200
-          ${knobSizes[size]}
-          ${isChecked ? "translate-x-full" : "translate-x-0"}
+          absolute left-1 flex items-center justify-center rounded-full bg-[var(--color-on-primary)] shadow transition-transform duration-200
+          ${knobSizes[size] || knobSizes.md}
+          ${isChecked ? (knobTranslate[size] || knobTranslate.md) : "translate-x-0"}
         `}
       >
         {isChecked ? (

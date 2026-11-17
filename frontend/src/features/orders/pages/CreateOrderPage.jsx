@@ -390,9 +390,9 @@ export default function CreateOrder() {
             <Button
               type="button"
               variant="secondary"
-              size="sm"
+              size="md"
               aria-label="Volver"
-              className="shrink-0 w-9 h-9 px-0 flex items-center justify-center"
+              className="shrink-0 w-10 h-10 px-0 flex items-center justify-center"
               onClick={() => {
                 if (activeTab === "list") {
                   setActiveTab("create");
@@ -406,21 +406,21 @@ export default function CreateOrder() {
             </Button>
 
             <div className="min-w-0 text-center md:text-left">
-              <h1 className="text-lg sm:text-xl font-bold text-[var(--color-white)] leading-tight">
+              <h1 className="text-title-lg sm:text-2xl sm:leading-8 font-bold text-[var(--color-white)]">
                 {activeTab === "create" ? "Crear Nueva Orden" : "Listado de Órdenes"}
               </h1>
-              <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
+              <p className="text-xs leading-4 text-[var(--color-gray-400)] mt-0.5">
                 Gestión en tiempo real de mesas y órdenes del restaurante
               </p>
             </div>
 
-            <div className="w-9 md:hidden" aria-hidden="true" />
+            <div className="w-10 md:hidden" aria-hidden="true" />
           </div>
 
           <div
             role="tablist"
             aria-label="Cambiar vista del módulo de órdenes"
-            className="grid grid-cols-2 gap-2 p-1.5 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] w-full md:w-auto md:min-w-[390px] shrink-0"
+            className="grid grid-cols-2 gap-1.5 p-1 rounded-full bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] w-full md:w-auto md:min-w-[384px] shrink-0"
           >
             <button
               type="button"
@@ -430,10 +430,10 @@ export default function CreateOrder() {
                 setActiveTab("create");
                 fetchInitialData();
               }}
-              className={`flex items-center justify-center gap-2 min-h-[42px] px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center justify-center gap-2 min-h-[48px] px-4 py-2 rounded-full text-sm font-medium border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "create"
                   ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] shadow-xs"
-                  : "bg-[var(--color-secondary-900)]/70 border-[var(--color-secondary-800)] text-[var(--color-white)] hover:border-[var(--color-primary-500)]/45 hover:text-[var(--color-primary-400)]"
+                  : "bg-[var(--color-secondary-900)]/70 border-transparent text-[var(--color-white)] hover:border-[var(--color-primary-500)]/45 hover:text-[var(--color-primary-400)]"
               }`}
             >
               <PlusCircle className="size-4 shrink-0" />
@@ -445,15 +445,15 @@ export default function CreateOrder() {
               role="tab"
               aria-selected={activeTab === "list"}
               onClick={() => setActiveTab("list")}
-              className={`flex items-center justify-center gap-2 min-h-[42px] px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center justify-center gap-2 min-h-[48px] px-4 py-2 rounded-full text-sm font-medium border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "list"
                   ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] shadow-xs"
-                  : "bg-[var(--color-secondary-900)]/70 border-[var(--color-secondary-800)] text-[var(--color-white)] hover:border-[var(--color-primary-500)]/45 hover:text-[var(--color-primary-400)]"
+                  : "bg-[var(--color-secondary-900)]/70 border-transparent text-[var(--color-white)] hover:border-[var(--color-primary-500)]/45 hover:text-[var(--color-primary-400)]"
               }`}
             >
               <ClipboardList className="size-4 shrink-0 text-[var(--color-primary-400)]" />
               <span>Ver Órdenes</span>
-              <span className="inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 rounded-full text-[11px] font-bold bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)]">
+              <span className="inline-flex items-center justify-center min-w-6 h-5 px-2 rounded-full text-xs font-semibold bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)]">
                 {orders.length}
               </span>
             </button>
@@ -507,7 +507,7 @@ export default function CreateOrder() {
               <div
                 ref={dishesScrollRef}
                 onScroll={handleDishesScroll}
-                className="mt-3 max-h-[390px] sm:max-h-[465px] overflow-y-auto overscroll-contain pr-1"
+                className="mt-3 max-h-[400px] sm:max-h-[464px] overflow-y-auto overscroll-contain pr-1"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                   {visibleDishes.length === 0 ? (
@@ -546,14 +546,14 @@ export default function CreateOrder() {
 
                         <div className="flex-1 min-w-0">
                           <span
-                            className={`text-[length:var(--fs-xxxxs)] font-mono block ${
+                            className={`text-label-sm leading-4 font-mono block ${
                               isInactive ? "text-[var(--color-gray-500)]" : "text-[var(--color-gray-400)]"
                             }`}
                           >
                             {dish.code}
                           </span>
                           <h4
-                            className={`text-sm font-bold truncate ${
+                            className={`text-sm leading-5 font-semibold truncate ${
                               isInactive ? "text-[var(--color-gray-400)]" : "text-[var(--color-white)]"
                             }`}
                           >
@@ -561,7 +561,7 @@ export default function CreateOrder() {
                           </h4>
                           <div className="flex items-center gap-2 mt-1">
                             <span
-                              className={`text-xs font-semibold ${
+                              className={`text-xs leading-4 font-medium ${
                                 isInactive
                                   ? "text-[var(--color-gray-500)]"
                                   : "text-[var(--color-white)]"
@@ -572,18 +572,18 @@ export default function CreateOrder() {
                           </div>
                         </div>
 
-                        {/* Contador de unidades (touch target cómodo en móvil) */}
-                        <div className="flex items-center gap-1.5 bg-[var(--color-secondary-900)] px-1.5 py-1 rounded-lg border border-[var(--color-secondary-800)] shrink-0">
+                        {/* Contador de unidades (touch target M3 de 40dp circular) */}
+                        <div className="flex items-center gap-1 bg-[var(--color-secondary-900)] p-1 rounded-full border border-[var(--color-secondary-800)] shrink-0">
                           <button
                             type="button"
                             disabled={count === 0}
                             onClick={() => handleDecrement(dish)}
                             aria-label={`Disminuir ${dish.name}`}
-                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-md flex items-center justify-center text-base font-bold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
+                            className="size-10 rounded-full flex items-center justify-center text-base font-bold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
                           >
                             -
                           </button>
-                          <span className="text-xs font-bold w-5 text-center text-[var(--color-white)]">
+                          <span className="text-sm font-semibold w-6 text-center text-[var(--color-white)]">
                             {count}
                           </span>
                           <button
@@ -591,7 +591,7 @@ export default function CreateOrder() {
                             disabled={isInactive}
                             onClick={() => handleIncrement(dish)}
                             aria-label={`Aumentar ${dish.name}`}
-                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-md flex items-center justify-center text-base font-bold text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
+                            className="size-10 rounded-full flex items-center justify-center text-base font-bold text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
                           >
                             +
                           </button>
@@ -602,7 +602,7 @@ export default function CreateOrder() {
                 </div>
 
                 {totalFilteredDishes > 0 && (
-                  <div className="mt-3 pt-2.5 border-t border-[var(--color-secondary-800)]/70 flex items-center justify-between gap-2 text-[11px] text-[var(--color-gray-400)]">
+                  <div className="mt-3 pt-2.5 border-t border-[var(--color-secondary-800)]/70 flex items-center justify-between gap-2 text-xs leading-4 text-[var(--color-gray-400)]">
                     <span>
                       Mostrando {visibleDishesCount} de {totalFilteredDishes} platillos
                     </span>
@@ -610,7 +610,7 @@ export default function CreateOrder() {
                       <button
                         type="button"
                         onClick={loadMoreDishes}
-                        className="min-h-[36px] px-2 rounded-md font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+                        className="min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:bg-[var(--color-secondary-800)]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
                       >
                         Cargar más platillos
                       </button>
@@ -623,7 +623,7 @@ export default function CreateOrder() {
             <div className="fixed bottom-0 inset-x-0 z-40 bg-[var(--color-secondary-950)]/95 backdrop-blur border-t border-[var(--color-secondary-800)] shadow-2xl">
               <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 text-[11px] sm:text-xs text-[var(--color-gray-400)] leading-tight">
+                  <div className="flex items-center gap-2 text-xs leading-4 text-[var(--color-gray-400)]">
                     <span>
                       {totalItems} {totalItems === 1 ? "ítem" : "ítems"} • {form.tableNumber || "Sin mesa"}
                     </span>
@@ -635,13 +635,13 @@ export default function CreateOrder() {
                           setPinnedDishIds(new Set());
                           clearOrderDraft();
                         }}
-                        className="min-h-[36px] px-2 rounded-md font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+                        className="min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:bg-[var(--color-secondary-800)]/60 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
                       >
                         Vaciar
                       </button>
                     )}
                   </div>
-                  <p className="text-sm sm:text-base font-bold text-[var(--color-white)] truncate">
+                  <p className="text-base leading-6 font-bold text-[var(--color-white)] truncate">
                     ${totalAmount.toLocaleString("es-CO")} COP
                   </p>
                 </div>

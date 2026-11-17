@@ -34,11 +34,11 @@ export function ConfirmDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--color-secondary-950)]/80 backdrop-blur-xs animate-fade-in font-[family-name:var(--main-font)]">
-      <div className="dpiero-modal-in w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] rounded-2xl p-6 shadow-2xl text-[var(--color-white)]">
+      <div className="dpiero-modal-in w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] rounded-[28px] p-6 shadow-2xl text-[var(--color-white)]">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
             <div
-              className={`p-2.5 rounded-lg ${
+              className={`size-10 flex items-center justify-center rounded-full shrink-0 ${
                 isDestructive
                   ? "bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error-border)]"
                   : "bg-[var(--color-primary-500)]/20 text-[var(--color-primary-400)] border border-[var(--color-primary-500)]/30"
@@ -46,19 +46,19 @@ export function ConfirmDialog({
             >
               <AlertTriangle className="size-5" />
             </div>
-            <h3 className="text-base font-bold text-[var(--color-white)]">{title}</h3>
+            <h3 className="text-title-lg font-bold text-[var(--color-white)]">{title}</h3>
           </div>
           <button
             type="button"
             onClick={onCancel}
             aria-label="Cerrar diálogo"
-            className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+            className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] size-10 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0"
           >
-            <X className="size-4" />
+            <X className="size-5" />
           </button>
         </div>
 
-        <p className="text-xs text-[var(--color-gray-300)] leading-relaxed mb-6">
+        <p className="text-sm leading-5 text-[var(--color-gray-300)] mb-6">
           {description}
         </p>
 
@@ -66,7 +66,7 @@ export function ConfirmDialog({
           <Button
             type="button"
             variant="secondary"
-            size="sm"
+            size="md"
             onClick={onCancel}
             disabled={isLoading}
           >
@@ -75,7 +75,7 @@ export function ConfirmDialog({
           <Button
             type="button"
             variant={isDestructive ? "destructive" : "primary"}
-            size="sm"
+            size="md"
             onClick={onConfirm}
             disabled={isLoading}
           >

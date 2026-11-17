@@ -187,7 +187,7 @@ export default function Login() {
       </div>
 
       <div className="dpiero-fade-up w-full max-w-lg rounded-2xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-6 sm:p-7 text-[var(--color-white)] shadow-2xl transition-all">
-        <div className="flex rounded-xl bg-[var(--color-secondary-950)] p-1 border border-[var(--color-secondary-800)] mb-5">
+        <div className="flex rounded-full bg-[var(--color-secondary-950)] p-1 border border-[var(--color-secondary-800)] mb-5">
           <button
             type="button"
             onClick={() => {
@@ -195,13 +195,13 @@ export default function Login() {
               setPinError("");
               setPinLockSeconds(0);
             }}
-            className={`flex-1 min-h-[40px] flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer ${
+            className={`flex-1 min-h-[40px] flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer ${
               authMode === "pin"
                 ? "bg-[var(--color-secondary-800)] text-[var(--color-white)] border border-[var(--color-secondary-700)]"
                 : "text-[var(--color-gray-400)] hover:text-[var(--color-white)]"
             }`}
           >
-            <Users className="size-3.5 text-[var(--color-primary-400)]" />
+            <Users className="size-4 text-[var(--color-primary-400)]" />
             <span>Acceso Rápido</span>
           </button>
 
@@ -212,13 +212,13 @@ export default function Login() {
               setPinError("");
               setPinLockSeconds(0);
             }}
-            className={`flex-1 min-h-[40px] flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer ${
+            className={`flex-1 min-h-[40px] flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer ${
               authMode === "admin"
                 ? "bg-[var(--color-secondary-800)] text-[var(--color-white)] border border-[var(--color-secondary-700)]"
                 : "text-[var(--color-gray-400)] hover:text-[var(--color-white)]"
             }`}
           >
-            <Shield className="size-3.5 text-[var(--color-primary-400)]" />
+            <Shield className="size-4 text-[var(--color-primary-400)]" />
             <span>Administración</span>
           </button>
         </div>

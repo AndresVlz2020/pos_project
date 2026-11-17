@@ -153,8 +153,10 @@ export default function Select({
 
   const sizeClasses =
     size === "sm"
-      ? "h-9 px-3 text-xs sm:text-sm rounded-xl"
-      : "h-12 px-4 text-base sm:text-sm rounded-md";
+      ? "h-10 px-3 text-sm rounded-lg"
+      : size === "md"
+      ? "h-12 px-4 text-base rounded-lg"
+      : "h-14 px-4 text-base rounded-lg";
 
   return (
     <div className={`w-full mb-3 ${className}`}>
@@ -188,7 +190,7 @@ export default function Select({
           ${sizeClasses}
           border
           flex items-center justify-between gap-2 text-left
-          transition-colors outline-none cursor-pointer
+          transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/30 cursor-pointer
           ${
             error
               ? "border-[var(--color-error)] focus:border-[var(--color-error)]"
@@ -245,7 +247,7 @@ export default function Select({
                     disabled={opt.disabled}
                     onClick={() => handleSelectOption(opt)}
                     className={`
-                      w-full flex items-center justify-between gap-2 text-left px-3 py-2 rounded-lg text-xs sm:text-sm transition-colors
+                      w-full min-h-[48px] flex items-center justify-between gap-2 text-left px-3 py-2.5 rounded-lg text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary-400)]/50
                       ${
                         opt.disabled
                           ? "opacity-45 cursor-not-allowed text-[var(--color-gray-500)]"
@@ -266,7 +268,7 @@ export default function Select({
         )}
 
       {error && (
-        <p className="text-caption text-[var(--color-error)] mt-1">{error}</p>
+        <p className="text-xs leading-4 text-[var(--color-error)] mt-1">{error}</p>
       )}
     </div>
   );

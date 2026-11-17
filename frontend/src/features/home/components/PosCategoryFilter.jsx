@@ -28,16 +28,16 @@ export default function PosCategoryFilter({ selectedCategory, onSelectCategory, 
             type="button"
             onClick={() => onSelectCategory(cat.id)}
             className={`
-              shrink-0 snap-start inline-flex items-center gap-1.5 sm:gap-2 min-h-[36px] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-md text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer whitespace-nowrap
+              shrink-0 snap-start inline-flex items-center gap-2 min-h-[40px] px-4 py-2 rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer whitespace-nowrap
               ${isActive
                 ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)] border border-[var(--color-primary-600)] shadow-none"
                 : "bg-[var(--color-secondary-900)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-800)]"
               }
             `}
           >
-            <Icon className={`size-3.5 ${isActive ? "text-[var(--color-on-primary)]" : "text-[var(--color-primary-400)]"}`} />
+            <Icon className={`size-4 ${isActive ? "text-[var(--color-on-primary)]" : "text-[var(--color-primary-400)]"}`} />
             <span>{cat.label}</span>
-            <span className={`px-1.5 py-0.5 rounded-md text-[length:var(--fs-xxxxs)] font-bold ${
+            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
               isActive ? "bg-black/30 text-[var(--color-on-primary)]" : "bg-[var(--color-secondary-800)] text-[var(--color-gray-300)]"
             }`}>
               {count}

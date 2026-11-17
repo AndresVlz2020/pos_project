@@ -65,6 +65,15 @@ body {
 --font-size-small: var(--semantic-font-size-small);
 --font-size-caption: var(--semantic-font-size-caption);
 
+/* Material Design 3 Tailwind v4 utilities exactas */
+--text-title-lg: 1.375rem;
+--text-title-lg--line-height: 1.75rem;
+--text-headline-sm: 1.5rem;
+--text-headline-sm--line-height: 2rem;
+--text-label-sm: 0.6875rem;
+--text-label-sm--line-height: 1rem;
+--text-label-sm--letter-spacing: 0.03125rem;
+
 /* FONT WEIGHT */
 
 --font-weight-heading: var(--semantic-font-weight-heading);
@@ -227,13 +236,13 @@ html.theme-light .logo-light-theme {
   }
 }
 
-/* Micro-animaciones sutiles para tarjetas, pestañas y modales */
+/* Micro-animaciones Material Design 3 (Emphasized Decelerate) */
 .dpiero-fade-up {
-  animation: dpieroFadeUp 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: dpieroFadeUp 220ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
 }
 
 .dpiero-modal-in {
-  animation: dpieroModalIn 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: dpieroModalIn 200ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
 }
 
 @keyframes dpieroFadeUp {
@@ -265,12 +274,12 @@ html.theme-light .logo-light-theme {
   --swal2-background: var(--color-secondary-900);
   --swal2-color: var(--color-white);
   --swal2-border: 1px solid var(--color-secondary-700);
-  --swal2-border-radius: 0.75rem;
+  --swal2-border-radius: 1.75rem;
   --swal2-width: min(27rem, calc(100vw - 2rem));
   --swal2-padding: 1.5rem;
   --swal2-title-padding: 0.25rem 0 0;
-  --swal2-html-container-padding: 0.6rem 0 0;
-  --swal2-actions-margin: 1.35rem 0 0;
+  --swal2-html-container-padding: 0.5rem 0 0;
+  --swal2-actions-margin: 1.5rem 0 0;
   --swal2-timer-progress-bar-background: var(--color-primary-500);
   backdrop-filter: blur(4px);
 }
@@ -279,22 +288,22 @@ html.theme-light .logo-light-theme {
   background: var(--color-secondary-900);
   color: var(--color-white);
   border: 1px solid var(--color-secondary-700);
-  border-radius: 0.75rem;
+  border-radius: 1.75rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
   font-family: var(--main-font);
 }
 
 .dpiero-swal-container .dpiero-swal-title {
   color: var(--color-white);
-  font-size: 1.0625rem;
-  font-weight: 700;
-  line-height: 1.35;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 2rem;
 }
 
 .dpiero-swal-container .dpiero-swal-html {
   color: var(--color-gray-300);
-  font-size: 0.84rem;
-  line-height: 1.55;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
 .dpiero-swal-container .swal2-icon {
@@ -346,11 +355,12 @@ html.theme-light .logo-light-theme {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 38px;
-  padding: 0.5rem 1.25rem;
-  border-radius: 0.5rem;
+  min-height: 40px;
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
   font-size: 0.875rem;
-  font-weight: 600;
+  line-height: 1.25rem;
+  font-weight: 500;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, opacity 150ms ease;
   cursor: pointer;
 }

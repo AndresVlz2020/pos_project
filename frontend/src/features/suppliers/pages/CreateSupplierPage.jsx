@@ -77,7 +77,7 @@ export default function CreateSuppliers() {
 
     return (
         <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-            <h1 className="text-[length:var(--fs-md)] font-bold text-center mb-6 text-[var(--color-white)]">Crear Proveedor</h1>
+            <h1 className="text-2xl leading-8 font-bold text-center mb-6 text-[var(--color-white)]">Crear Proveedor</h1>
             {feedback && (
                 <div className="mb-6 max-w-xl mx-auto">
                     <Alert
@@ -94,12 +94,12 @@ export default function CreateSuppliers() {
                 <div className=" 
                         flex 
                         flex-col md:flex-row
-                        gap-12 md:gap-16
+                        gap-8 md:gap-12
                         justify-center
                         items-start
                     "
                 >
-                    <div className="w-48 flex flex-col items-center">
+                    <div className="w-48 mx-auto md:mx-0 flex flex-col items-center">
                         <p className="text-center text-[var(--color-gray-300)] text-sm mb-3 font-medium">
                             Suba el Logo
                         </p>

@@ -107,8 +107,8 @@ export default function ListReportModal({
 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-      <div className="dpiero-modal-in w-full max-w-md rounded-2xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] p-6 shadow-2xl">
-        <h2 className="mb-4 text-xl font-bold text-[var(--color-white)]">
+      <div className="dpiero-modal-in w-full max-w-md rounded-[28px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] p-6 shadow-2xl">
+        <h2 className="mb-4 text-title-lg font-bold text-[var(--color-white)]">
           Generar reporte de {title}
         </h2>
 
@@ -162,12 +162,12 @@ export default function ListReportModal({
         </div>
 
         <div className="flex justify-end gap-3 pt-3 border-t border-[var(--color-secondary-800)]">
-          <Button variant="secondary" size="sm" onClick={onClose}>
+          <Button variant="secondary" size="md" onClick={onClose}>
             Cancelar
           </Button>
           <Button
             variant="primary"
-            size="sm"
+            size="md"
             onClick={handleGenerate}
             disabled={!selectedKeys.length}
           >

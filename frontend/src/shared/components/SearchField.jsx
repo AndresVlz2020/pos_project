@@ -4,12 +4,12 @@ import { Search, X, LoaderCircle } from "lucide-react";
 import clsx from "clsx";
 
 const baseStyles =
-  "search flex items-center rounded-md px-4 transition-all border";
+  "search flex items-center rounded-full px-4 transition-all border";
 
 const sizeStyles = {
-    sm: "h-10 text-xs sm:text-sm",
-    md: "h-11 text-base sm:text-sm",
-    lg: "h-12 text-base",
+    sm: "h-10 text-sm",
+    md: "h-12 text-base",
+    lg: "h-14 text-base",
 };
 
 const variantStyles = {
@@ -116,7 +116,7 @@ const SearchField = forwardRef(
                         type="button"
                         onClick={handleClear}
                         aria-label="Limpia búsqueda"
-                        className="search__clear size-7 inline-flex items-center justify-center rounded-full p-1 transition-colors hover:bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+                        className="search__clear size-10 -mr-1.5 inline-flex items-center justify-center rounded-full p-2 transition-colors hover:bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
                     >
                         <X className="size-4" />
                     </button>

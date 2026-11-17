@@ -117,10 +117,10 @@ export default function CreateProductPage() {
     <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5 sm:mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
         <div>
-          <h1 className="text-xl font-bold text-[var(--color-white)]">Crear Platillo / Menú</h1>
+          <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">Crear Platillo / Menú</h1>
         </div>
         <Link to="/productList">
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="md">
             Volver al Menú
           </Button>
         </Link>

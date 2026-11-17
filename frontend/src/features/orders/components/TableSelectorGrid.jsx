@@ -128,15 +128,15 @@ export default function TableSelectorGrid({
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[length:var(--fs-xxxs)] font-semibold text-[var(--color-gray-300)]">
+        <span className="text-xs font-medium leading-4 text-[var(--color-gray-300)]">
           Mesa *{" "}
           {selectedTableNumber && (
-            <span className="ml-1 font-bold text-[var(--color-primary-400)]">
+            <span className="ml-1 font-semibold text-[var(--color-primary-400)]">
               · {selectedTableNumber}
             </span>
           )}
         </span>
-        <span className="text-[length:var(--fs-xxxxs)] font-semibold text-[var(--color-primary-400)]">
+        <span className="text-xs font-medium leading-4 text-[var(--color-primary-400)]">
           {freeCount} {freeCount === 1 ? "libre" : "libres"}
         </span>
       </div>
@@ -194,7 +194,7 @@ export default function TableSelectorGrid({
 
                 <div className="flex flex-col items-center gap-0.5 w-full">
                   <span
-                    className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[length:var(--fs-xxxxs)] font-semibold leading-none border ${
+                    className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-label-sm font-medium leading-4 border ${
                       t.isAvailable
                         ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/35 text-[var(--color-primary-400)]"
                         : "bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)]"
@@ -202,7 +202,7 @@ export default function TableSelectorGrid({
                   >
                     {t.isAvailable ? "Libre" : "Ocupada"}
                   </span>
-                  <span className="text-[length:var(--fs-xxxxs)] text-[var(--color-gray-400)] leading-none">
+                  <span className="text-label-sm leading-4 text-[var(--color-gray-400)]">
                     {t.capacity || 4} pers.
                   </span>
                 </div>
@@ -213,7 +213,7 @@ export default function TableSelectorGrid({
       </div>
 
       {tables.length > 9 && (
-        <p className="text-[length:var(--fs-xxxxs)] text-[var(--color-gray-400)] leading-tight">
+        <p className="text-xs leading-4 text-[var(--color-gray-400)]">
           Desliza dentro del recuadro para ver las {tables.length} mesas.
         </p>
       )}

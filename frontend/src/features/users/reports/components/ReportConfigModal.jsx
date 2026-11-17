@@ -103,9 +103,9 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
     // Overlay del modal
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
       {/* Contenedor del modal */}
-      <div className="dpiero-modal-in w-full max-w-md rounded-2xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] px-6 py-6 shadow-2xl">
+      <div className="dpiero-modal-in w-full max-w-md rounded-[28px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] p-6 shadow-2xl">
         {/* Título */}
-        <h2 className="mb-4 text-xl font-semibold text-[var(--color-white)]">
+        <h2 className="mb-4 text-title-lg font-bold text-[var(--color-white)]">
           Generar reporte de usuarios
         </h2>
 

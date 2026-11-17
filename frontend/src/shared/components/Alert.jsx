@@ -48,22 +48,22 @@ export function Alert({
     <div
       role="alert"
       className={clsx(
-        "flex items-start gap-3 p-3.5 rounded-md border shadow-md transition-all",
+        "flex items-start gap-3 p-3.5 rounded-xl border shadow-md transition-all",
         styles[type],
         className
       )}
     >
       <Icon className={clsx("size-5 shrink-0 mt-0.5", iconColors[type])} />
       <div className="flex-1">
-        {title && <h4 className="font-bold text-sm leading-tight mb-0.5">{title}</h4>}
-        {message && <p className="text-xs text-[var(--color-gray-300)] leading-relaxed">{message}</p>}
+        {title && <h4 className="font-bold text-sm leading-5 mb-0.5">{title}</h4>}
+        {message && <p className="text-xs text-[var(--color-gray-300)] leading-4">{message}</p>}
       </div>
       {onClose && (
         <button
           type="button"
           onClick={onClose}
           aria-label="Cerrar notificación"
-          className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] transition-colors p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+          className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] transition-colors size-10 flex items-center justify-center rounded-full hover:bg-[var(--color-secondary-800)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0"
         >
           <X className="size-4" />
         </button>

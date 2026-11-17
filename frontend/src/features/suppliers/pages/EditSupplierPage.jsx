@@ -177,13 +177,13 @@ export default function EditSupplierPage() {
         <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
             <div className="flex flex-wrap items-center justify-between gap-3 pb-4 sm:pb-6 mb-5 sm:mb-6 border-b border-[var(--color-secondary-800)]">
                 <div>
-                    <h1 className="text-xl font-bold text-[var(--color-white)] flex items-center gap-2">
+                    <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)] flex items-center gap-2">
                         <Building2 className="size-6 text-[var(--color-primary-400)]" />
                         Editar Proveedor
                     </h1>
                 </div>
                 <Link to="/supplierList">
-                    <Button variant="secondary" size="sm">
+                    <Button variant="secondary" size="md">
                         Volver al Listado
                     </Button>
                 </Link>
@@ -195,9 +195,9 @@ export default function EditSupplierPage() {
                 </div>
             ) : (
                 <form onSubmit={handleSubmit}>
-                    <div className="flex flex-col md:flex-row gap-12 md:gap-16 justify-center items-start">
+                    <div className="flex flex-col md:flex-row gap-8 md:gap-12 justify-center items-start">
                         {/* Previsualización del Logo Corporativo con '+' superpuesto */}
-                        <div className="w-48 flex flex-col items-center">
+                        <div className="w-48 mx-auto md:mx-0 flex flex-col items-center">
                             <p className="text-center text-[var(--color-gray-300)] text-xs mb-3 font-medium">
                                 Logo de Suministros
                             </p>

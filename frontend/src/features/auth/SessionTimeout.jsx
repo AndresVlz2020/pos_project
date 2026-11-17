@@ -79,12 +79,12 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-      <div className="dpiero-modal-in w-full max-w-sm bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-2xl p-6 shadow-2xl text-[var(--color-white)] text-center">
-        <div className="mx-auto w-12 h-12 rounded-lg bg-[var(--color-warning-bg)] text-[var(--color-warning)] border border-[var(--color-warning-border)] flex items-center justify-center mb-4">
+      <div className="dpiero-modal-in w-full max-w-sm bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-[28px] p-6 shadow-2xl text-[var(--color-white)] text-center">
+        <div className="mx-auto size-12 rounded-full bg-[var(--color-warning-bg)] text-[var(--color-warning)] border border-[var(--color-warning-border)] flex items-center justify-center mb-4">
           <AlertTriangle className="size-6" />
         </div>
-        <h3 className="text-base font-bold mb-2">Sesión a punto de expirar</h3>
-        <p className="text-xs text-[var(--color-gray-300)] mb-4">
+        <h3 className="text-title-lg font-bold mb-2">Sesión a punto de expirar</h3>
+        <p className="text-sm text-[var(--color-gray-300)] mb-6">
           Por inactividad, tu sesión se cerrará automáticamente en{" "}
           <strong className="text-[var(--color-primary-400)] font-mono">{remainingSeconds}s</strong>.
         </p>
@@ -92,7 +92,7 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
           <Button
             type="button"
             variant="secondary"
-            size="sm"
+            size="md"
             onClick={() => {
               localStorage.removeItem("auth_token");
               navigate("/Auth");
@@ -103,7 +103,7 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
           <Button
             type="button"
             variant="primary"
-            size="sm"
+            size="md"
             onClick={resetTimers}
           >
             Mantener sesión activa

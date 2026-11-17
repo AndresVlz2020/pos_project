@@ -40,10 +40,10 @@ export default function ForgotPassword() {
   return (
     <div className="w-full flex flex-col justify-center items-center px-4 py-8">
       {/* Container */}
-      <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-2xl p-8 shadow-2xl text-[var(--color-white)] relative z-10">
+      <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-2xl p-5 sm:p-8 shadow-2xl text-[var(--color-white)] relative z-10">
         <div className="flex flex-col items-center text-center mb-6">
           <BrandLogo className="h-10 w-auto object-contain mb-3" alt="D,PIERO" />
-          <h2 className="text-xl font-bold text-[var(--color-white)]">Recuperar Contraseña</h2>
+          <h2 className="text-title-lg font-bold text-[var(--color-white)]">Recuperar Contraseña</h2>
           <p className="text-xs text-[var(--color-gray-400)] mt-1">
             Ingresa tu correo registrado para recibir un código de seguridad de 6 dígitos.
           </p>
@@ -67,7 +67,7 @@ export default function ForgotPassword() {
             <div className="text-center pt-2">
               <Link
                 to="/Auth"
-                className="inline-flex items-center justify-center min-h-[36px] px-3 rounded-md text-xs text-[var(--color-gray-400)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors"
+                className="inline-flex items-center justify-center min-h-[40px] px-4 rounded-full text-sm text-[var(--color-gray-400)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors"
               >
                 Volver al Inicio de Sesión
               </Link>
@@ -102,7 +102,7 @@ export default function ForgotPassword() {
             <div className="text-center mt-4">
               <Link
                 to="/Auth"
-                className="inline-flex items-center min-h-[36px] px-2 rounded-md text-xs text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                className="inline-flex items-center min-h-[40px] px-4 rounded-full text-sm text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
               >
                 ← Volver a Iniciar Sesión
               </Link>

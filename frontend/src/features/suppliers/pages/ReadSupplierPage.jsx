@@ -63,19 +63,19 @@ export default function ReadSupplierPage() {
     <div className="max-w-4xl mx-auto my-6 px-4 font-[family-name:var(--main-font)]">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-[var(--color-white)]">Ficha del Proveedor</h1>
+          <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">Ficha del Proveedor</h1>
           <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
             Consulta organizada en modo lectura de información corporativa y comercial.
           </p>
         </div>
         <Link to="/supplierList">
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="md">
             Volver al Listado
           </Button>
         </Link>
       </div>
 
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-6 shadow-xl text-[var(--color-white)] space-y-6">
+      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-xl text-[var(--color-white)] space-y-6">
         {/* Cabecera del proveedor */}
         <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-[var(--color-secondary-800)]">
           <div className="size-28 rounded-xl border-2 border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)] overflow-hidden shadow-md shrink-0 relative flex items-center justify-center">
@@ -93,7 +93,7 @@ export default function ReadSupplierPage() {
             ) : null}
             <div className={`avatar-fallback ${supplierImage ? "hidden" : "flex"} w-full h-full flex-col items-center justify-center bg-[var(--color-secondary-800)] text-[var(--color-primary-400)]`}>
               <Building2 className="size-10" />
-              <span className="text-[length:var(--fs-xxxxs)] font-bold mt-1 text-[var(--color-gray-300)] uppercase">
+              <span className="text-label-sm font-bold mt-1 text-[var(--color-gray-300)] uppercase">
                 {supplierName.slice(0, 3)}
               </span>
             </div>
@@ -101,7 +101,7 @@ export default function ReadSupplierPage() {
 
           <div className="flex-1 text-center sm:text-left">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-              <h2 className="text-lg font-bold text-[var(--color-white)]">{supplierName}</h2>
+              <h2 className="text-title-lg font-bold text-[var(--color-white)]">{supplierName}</h2>
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
                   isActive
@@ -123,7 +123,7 @@ export default function ReadSupplierPage() {
             <Building2 className="size-4" />
             1. Información General
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
             <div>
               <span className="text-[var(--color-gray-400)] block">Razón Social:</span>
               <span className="font-semibold text-[var(--color-white)] text-sm">{supplierName}</span>
@@ -151,7 +151,7 @@ export default function ReadSupplierPage() {
             <Mail className="size-4" />
             2. Datos de Contacto y Ubicación
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
             <div>
               <span className="text-[var(--color-gray-400)] block">Correo Electrónico:</span>
               <span className="font-medium text-[var(--color-gray-200)] flex items-center gap-1.5 mt-0.5">
@@ -182,7 +182,7 @@ export default function ReadSupplierPage() {
             <FileText className="size-4" />
             3. Datos Comerciales & Términos
           </h3>
-          <div className="p-4 rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs space-y-3">
+          <div className="p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs space-y-3">
             <div>
               <span className="text-[var(--color-gray-400)] block">Términos de Negociación:</span>
               <span className="font-semibold text-[var(--color-white)]">Crédito a 30 días</span>

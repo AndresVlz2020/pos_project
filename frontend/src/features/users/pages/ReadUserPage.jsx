@@ -38,21 +38,21 @@ export default function ReadUser1() {
   const statusText = isUserActive ? "Activo" : "Inactivo";
 
   return (
-    <div className="my-auto font-[family-name:var(--main-font)]">
-      <h1 className="text-[length:var(--fs-md)] font-bold text-center mt-8 text-[var(--color-white)]">
+    <div className="my-auto px-3 sm:px-4 py-4 sm:py-6 font-[family-name:var(--main-font)]">
+      <h1 className="text-2xl leading-8 font-bold text-center mt-4 sm:mt-8 text-[var(--color-white)]">
         Ver Usuario
       </h1>
 
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] max-w-3xl mx-auto mt-6 rounded-xl p-6 shadow-xl text-[var(--color-white)]">
-        <h2 className="text-[length:var(--fs-sm)] font-bold text-center py-2 text-[var(--color-primary-300)]">
+      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] max-w-3xl mx-auto mt-6 rounded-xl p-4 sm:p-6 shadow-xl text-[var(--color-white)]">
+        <h2 className="text-base leading-6 font-bold text-center py-2 text-[var(--color-primary-300)]">
           Información del Usuario
         </h2>
-        <div className="flex flex-col sm:flex-row justify-center items-center mt-6 gap-8">
+        <div className="flex flex-col sm:flex-row justify-center items-center mt-6 gap-6 sm:gap-8">
           <div>
             <img 
               src={userPhoto} 
               alt={user?.userName} 
-              className="rounded-full border-2 border-[var(--color-secondary-700)] size-44 object-cover shadow-md"
+              className="rounded-full border-2 border-[var(--color-secondary-700)] size-36 sm:size-44 object-cover shadow-md"
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = imgWorkerCarlos;
@@ -60,8 +60,8 @@ export default function ReadUser1() {
             />
           </div>
 
-          <div className="flex flex-col px-8 py-6 gap-y-2.5 bg-[var(--color-secondary-800)]/70 border border-[var(--color-secondary-700)] rounded-md flex-1">
-            <h3 className="text-lg font-bold text-[var(--color-white)] mb-1">
+          <div className="flex flex-col p-4 sm:px-8 sm:py-6 gap-y-2.5 bg-[var(--color-secondary-800)]/70 border border-[var(--color-secondary-700)] rounded-xl flex-1 w-full">
+            <h3 className="text-title-lg font-bold text-[var(--color-white)] mb-1">
               {user?.userName}
             </h3>
             <div className="text-sm flex flex-col gap-2 text-[var(--color-gray-300)]">
@@ -73,7 +73,7 @@ export default function ReadUser1() {
               <p className="flex items-center gap-2">
                 Estado:{" "}
                 <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
                     isUserActive
                       ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40"
                       : "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"

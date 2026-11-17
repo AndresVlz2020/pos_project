@@ -142,7 +142,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-lg" title={`Orden ${order.idCode || order.id}`}>
       <div className="space-y-4 text-[var(--color-white)] text-sm font-[family-name:var(--main-font)]">
         {/* Cabecera de orden */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-lg">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-xl">
           <div>
             <span className="text-xs text-[var(--color-gray-400)] block">Ubicación</span>
             <span className="text-base font-bold text-[var(--color-primary-400)]">
@@ -153,7 +153,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
           <div>
             <span className="text-xs text-[var(--color-gray-400)] block">Estado</span>
             <span
-              className={`inline-block px-2.5 py-0.5 text-xs font-semibold rounded border ${getStatusBadge(
+              className={`inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full border ${getStatusBadge(
                 order.status
               )}`}
             >
@@ -191,8 +191,8 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
             <Utensils size={14} className="text-[var(--color-primary-400)]" />
             Resumen de Platillos Ordenados ({(order.items || []).length})
           </h4>
-          <div className="border border-[var(--color-secondary-800)] rounded-lg max-h-[36dvh] overflow-y-auto overflow-x-hidden bg-[var(--color-secondary-950)]">
-            <table className="w-full text-left text-[11px] sm:text-xs">
+          <div className="border border-[var(--color-secondary-800)] rounded-xl max-h-[36dvh] overflow-y-auto overflow-x-hidden bg-[var(--color-secondary-950)]">
+            <table className="w-full text-left text-xs leading-4">
               <thead className="sticky top-0 z-10 bg-[var(--color-secondary-900)] text-[var(--color-gray-400)] border-b border-[var(--color-secondary-800)]">
                 <tr>
                   <th className="py-2 px-2 sm:px-3 font-semibold w-9 sm:w-auto">Cant.</th>
@@ -215,7 +215,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
                         <img
                           src={getProductImage({ name: item.name })}
                           alt={item.name}
-                          className="size-6 sm:size-7 rounded object-cover border border-[var(--color-secondary-700)] shrink-0"
+                          className="size-7 rounded-lg object-cover border border-[var(--color-secondary-700)] shrink-0"
                           onError={(e) => { e.currentTarget.style.display = 'none'; }}
                         />
                         <span className="min-w-0 break-words leading-snug">{item.name}</span>
@@ -236,7 +236,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
 
         {/* Observaciones de cocina */}
         {order.observations && (
-          <div className="p-3 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-lg text-xs">
+          <div className="p-3.5 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-xl text-xs">
             <span className="font-semibold text-[var(--color-warning)] block mb-1">
               Notas para Cocina / Observaciones:
             </span>
@@ -249,20 +249,20 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
           <span className="text-sm font-semibold text-[var(--color-gray-300)]">
             Total Liquidado:
           </span>
-          <span className="text-lg sm:text-xl font-bold text-[var(--color-white)] whitespace-nowrap">
+          <span className="text-title-lg font-bold text-[var(--color-white)] whitespace-nowrap">
             ${Number(order.total || 0).toLocaleString("es-CO")} COP
           </span>
         </div>
 
         {/* Acciones del Modal: Imprimir Factura solo si está Pagada */}
         <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--color-secondary-800)]">
-          <Button variant="secondary" size="sm" onClick={onClose}>
+          <Button variant="secondary" size="md" onClick={onClose}>
             Cerrar
           </Button>
           {String(order.status || "").toLowerCase() === "pagada" && (
             <Button
               variant="primary"
-              size="sm"
+              size="md"
               onClick={handlePrintInvoice}
               className="flex items-center gap-1.5 shadow-md font-semibold"
             >

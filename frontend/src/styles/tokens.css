@@ -57,18 +57,43 @@
   --main-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --secondary-font: 'Plus Jakarta Sans', Calibri, Helvetica, Arial, sans-serif;
 
-  /* Font-size (alineado a escala Material Design 3: mínimo 11px Label Small) */
-  --fs-xxxxl: 5rem;      /* Ultra grande */
-  --fs-xxxl:  4rem;      /* Súper grande */
-  --fs-xxl:   3rem;      /* 48px */
-  --fs-xl:    2.25rem;   /* 36px - M3 Display Small */
+  /* Font-size (escala literal Material Design 3 Type Scale) */
+  --fs-xxxxl: 3.5625rem; /* 57px - M3 Display Large */
+  --fs-xxxl:  2.8125rem; /* 45px - M3 Display Medium */
+  --fs-xxl:   2.25rem;   /* 36px - M3 Display Small */
+  --fs-xl:    2rem;      /* 32px - M3 Headline Large */
   --fs-lg:    1.75rem;   /* 28px - M3 Headline Medium */
   --fs-md:    1.5rem;    /* 24px - M3 Headline Small */
-  --fs-sm:    1.25rem;   /* 20px - M3 Title Large/Medium */
-  --fs-xs:    1rem;      /* 16px - M3 Body Large */
-  --fs-xxs:   0.875rem;  /* 14px - M3 Body Medium / Label Large */
-  --fs-xxxs:  0.75rem;   /* 12px - M3 Body Small / Label Medium */
+  --fs-sm:    1.375rem;  /* 22px - M3 Title Large */
+  --fs-xs:    1rem;      /* 16px - M3 Title Medium / Body Large */
+  --fs-xxs:   0.875rem;  /* 14px - M3 Title Small / Label Large / Body Medium */
+  --fs-xxxs:  0.75rem;   /* 12px - M3 Label Medium / Body Small */
   --fs-xxxxs: 0.6875rem; /* 11px - M3 Label Small */
+
+  /* Tokens tipográficos literales Material Design 3 */
+  --md-sys-typescale-headline-small-size: 1.5rem;      /* 24px */
+  --md-sys-typescale-headline-small-lh:   2rem;        /* 32px */
+  --md-sys-typescale-title-large-size:    1.375rem;    /* 22px */
+  --md-sys-typescale-title-large-lh:      1.75rem;     /* 28px */
+  --md-sys-typescale-title-medium-size:   1rem;        /* 16px */
+  --md-sys-typescale-title-medium-lh:     1.5rem;      /* 24px */
+  --md-sys-typescale-body-medium-size:    0.875rem;    /* 14px */
+  --md-sys-typescale-body-medium-lh:      1.25rem;     /* 20px */
+  --md-sys-typescale-body-small-size:     0.75rem;     /* 12px */
+  --md-sys-typescale-body-small-lh:       1rem;        /* 16px */
+  --md-sys-typescale-label-large-size:    0.875rem;    /* 14px */
+  --md-sys-typescale-label-large-lh:      1.25rem;     /* 20px */
+  --md-sys-typescale-label-small-size:    0.6875rem;   /* 11px */
+  --md-sys-typescale-label-small-lh:      1rem;        /* 16px */
+
+  /* Tokens de Forma (Shape) y Motion Material Design 3 */
+  --md-sys-shape-corner-extra-small: 0.25rem;  /* 4dp */
+  --md-sys-shape-corner-small:       0.5rem;   /* 8dp */
+  --md-sys-shape-corner-medium:      0.75rem;  /* 12dp */
+  --md-sys-shape-corner-large:       1rem;     /* 16dp */
+  --md-sys-shape-corner-extra-large: 1.75rem;  /* 28dp */
+  --md-sys-shape-corner-full:        9999px;
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
 
   /* Material Design 3 Escala de Espaciado (base 4dp) y Touch Targets */
   --md-space-1: 0.25rem;  /* 4dp */
@@ -77,9 +102,9 @@
   --md-space-4: 1rem;     /* 16dp */
   --md-space-6: 1.5rem;   /* 24dp */
   --md-touch-target: 48px;
-  --md-control-sm: 36px;
-  --md-control-md: 40px;
-  --md-control-lg: 48px;
+  --md-control-sm: 40px;
+  --md-control-md: 48px;
+  --md-control-lg: 56px;
 
   /* grosores de la fuente */
   --fw-regular: 400; 

@@ -120,7 +120,7 @@ export default function InventoryListPage() {
     <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-xl font-bold text-[var(--color-white)]">Listado de Inventario</h1>
+          <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">Listado de Inventario</h1>
         </div>
         <div className="flex flex-wrap gap-2.5">
           <Button variant="primary" onClick={() => setIsReportOpen(true)}>
