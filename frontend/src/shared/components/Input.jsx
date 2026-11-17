@@ -1,76 +1,98 @@
+import { useState } from "react";
+import M3Icon from "./M3Icon";
+
 export default function Input({
-    label,
-    error,
-    htmlFor,
-    type= "text",
-    variant= "primary",
-    size= "lg",
-    className = "",
-    ...props
-}){
+  label,
+  error,
+  supportingText,
+  htmlFor,
+  leadingIcon,
+  type = "text",
+  variant = "primary",
+  size = "lg",
+  className = "",
+  onFocus,
+  onBlur,
+  ...props
+}) {
+  const [focused, setFocused] = useState(false);
 
-    const variants = {
-        primary: "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] bg-[var(--color-secondary-900)]",
-        secondary: "border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] bg-[var(--color-secondary-950)]",
-        tertiary: "border-[var(--color-secondary-600)] focus:border-[var(--color-primary-400)] bg-[var(--color-secondary-900)]",
-    }
-    const sizes = {
-        sm: "h-10",
-        md: "h-12",
-        lg: "h-14",
-    }
+  const sizes = {
+    sm: "h-10 text-sm",
+    md: "h-12 text-base",
+    lg: "h-14 text-base",
+  };
 
-    
-    return(
-        <div className="w-full">
+  const bgSurface =
+    variant === "secondary"
+      ? "bg-[var(--md-sys-color-surface)]"
+      : "bg-transparent";
 
-            {/* Label */}
-            <label 
-            // htmlFor con kebab-case
-                htmlFor={htmlFor}
-                className={`
-                    block
-                    text-xs
-                    mb-1.5
-                    text-[var(--color-gray-200)] font-medium
-                    ${error ? "text-[var(--color-error)]" : ""}
-                `} 
-                
-                >
-                {label}
-            </label>
+  return (
+    <div className="w-full">
+      {label && (
+        <label
+          htmlFor={htmlFor || props.id || props.name}
+          className={`block text-xs leading-4 mb-1.5 font-medium ${
+            error
+              ? "text-[var(--md-sys-color-error)]"
+              : focused
+              ? "text-[var(--md-sys-color-primary)]"
+              : "text-[var(--md-sys-color-on-surface-variant)]"
+          }`}
+        >
+          {label}
+        </label>
+      )}
 
-            {/* Contenedor de input */}
-            <div className="relative w-full flex items-center">
-                {/* Input visual */}
-                <input
-                    id={htmlFor || props.id || props.name}
-                    type={type}
-                    className={`
-                    w-full
-                    ${sizes[size] || sizes.lg}
-                    rounded-lg
-                    border
-                    text-base
-                    px-4
-                    text-[var(--color-white)]
-                    placeholder:text-[var(--color-gray-400)]
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-[var(--color-primary-400)]/30
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    transition-colors
-                    ${variants[variant] || variants.primary}
-                    ${error ? "border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-[var(--color-error)]/30" : ""}
-                    ${className}
-                    `}
-                    {...props}
-                />
-            </div>
-            {/* Feedback */}
-            {error && (
-                <p className="text-xs leading-4 text-[var(--color-error)] place-self-start mt-1">{error}</p>
-            )}
-        </div>
-    )
+      <div className="relative w-full flex items-center">
+        {leadingIcon && (
+          <span className="absolute left-3.5 flex items-center pointer-events-none text-[var(--md-sys-color-on-surface-variant)]">
+            <M3Icon name={leadingIcon} size={20} />
+          </span>
+        )}
+        <input
+          id={htmlFor || props.id || props.name}
+          type={type}
+          onFocus={(e) => {
+            setFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setFocused(false);
+            onBlur?.(e);
+          }}
+          className={`
+            m3-outlined-field w-full
+            ${sizes[size] || sizes.lg}
+            ${bgSurface}
+            ${leadingIcon ? "pl-11 pr-4" : "px-4"}
+            text-[var(--md-sys-color-on-surface)]
+            placeholder:text-[var(--md-sys-color-on-surface-variant)]/70
+            focus:outline-none
+            ${focused ? "is-focused" : ""}
+            ${error ? "is-error pr-10" : ""}
+            ${props.disabled ? "is-disabled opacity-50 cursor-not-allowed bg-[var(--md-sys-color-surface-container)]/50" : ""}
+            ${className}
+          `}
+          {...props}
+        />
+        {error && (
+          <span className="absolute right-3 flex items-center pointer-events-none text-[var(--md-sys-color-error)]">
+            <M3Icon name="error" filled size={20} />
+          </span>
+        )}
+      </div>
+
+      {error ? (
+        <p className="text-xs leading-4 text-[var(--md-sys-color-error)] mt-1 flex items-center gap-1">
+          {error}
+        </p>
+      ) : supportingText ? (
+        <p className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)] mt-1">
+          {supportingText}
+        </p>
+      ) : null}
+    </div>
+  );
 }

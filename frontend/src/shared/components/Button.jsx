@@ -1,40 +1,62 @@
-// Componente button
+import M3Icon from "./M3Icon";
 
 export default function Button({
-  variant = "primary",
+  variant = "filled",
   size = "md",
   type = "button",
+  leadingIcon,
+  trailingIcon,
   className = "",
   children,
   ...props
 }) {
+  const normalizedVariant =
+    variant === "primary"
+      ? "filled"
+      : variant === "secondary"
+      ? "outlined"
+      : variant;
+
   const variants = {
-    primary: "bg-[var(--color-primary-500)] text-[var(--color-on-primary)] hover:bg-[var(--color-primary-600)] font-medium border border-transparent cursor-pointer shadow-sm",
-    secondary: "border border-[var(--color-secondary-700)] bg-[var(--color-secondary-900)] text-[var(--color-gray-200)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-secondary-600)] font-medium cursor-pointer",
-    destructive: "bg-[var(--color-error)] text-[var(--color-on-error)] hover:opacity-90 font-medium border border-transparent cursor-pointer shadow-sm",
+    filled:
+      "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] border border-transparent m3-elevation-0 hover:m3-elevation-1",
+    tonal:
+      "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border border-transparent",
+    elevated:
+      "bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-primary)] border border-transparent m3-elevation-1 hover:m3-elevation-2",
+    outlined:
+      "bg-transparent border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-primary)]",
+    text:
+      "bg-transparent border border-transparent text-[var(--md-sys-color-primary)]",
+    destructive:
+      "bg-[var(--md-sys-color-error)] text-[var(--md-sys-color-on-error)] border border-transparent",
   };
 
   const sizes = {
-    sm: "min-h-[40px] px-4 text-sm font-medium gap-2",
-    md: "min-h-[40px] px-6 text-sm font-medium gap-2",
-    lg: "min-h-[48px] px-6 text-sm font-semibold gap-2",
+    sm: normalizedVariant === "text" ? "h-10 px-3 text-sm font-medium gap-2" : "h-10 px-4 text-sm font-medium gap-2",
+    md: normalizedVariant === "text" ? "h-10 px-4 text-sm font-medium gap-2" : "h-10 px-6 text-sm font-medium gap-2",
+    lg: "h-12 px-6 text-sm font-medium gap-2",
+    icon: "size-10 p-0",
   };
 
   return (
     <button
       type={type}
       className={`
-        inline-flex items-center justify-center
-        rounded-full
-        transition-colors
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50
-        ${variants[variant] || variants.primary}
+        m3-state inline-flex items-center justify-center shrink-0
+        rounded-full leading-5 tracking-[0.00625em]
+        cursor-pointer select-none whitespace-nowrap
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--md-sys-color-surface)]
+        disabled:opacity-38 disabled:pointer-events-none disabled:cursor-not-allowed
+        ${variants[normalizedVariant] || variants.filled}
         ${sizes[size] || sizes.md}
         ${className}
       `}
       {...props}
     >
+      {leadingIcon && <M3Icon name={leadingIcon} size={18} />}
       {children}
+      {trailingIcon && <M3Icon name={trailingIcon} size={18} />}
     </button>
   );
 }

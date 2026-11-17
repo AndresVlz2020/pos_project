@@ -114,13 +114,18 @@ export default function CreateProductPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5 sm:mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
+    <div className="flex-1 flex flex-col w-full p-5 sm:p-8 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
         <div>
-          <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">Crear Platillo / Menú</h1>
+          <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+            Crear Platillo / Menú
+          </h1>
+          <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+            Registra un nuevo producto en la carta gastronómica del punto de venta.
+          </p>
         </div>
         <Link to="/productList">
-          <Button variant="secondary" size="md">
+          <Button variant="outlined" size="md" leadingIcon="arrow_back">
             Volver al Menú
           </Button>
         </Link>
@@ -137,11 +142,11 @@ export default function CreateProductPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+      <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-6">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start">
           {/* Columna izquierda: carga de imagen */}
-          <div className="col-span-1 flex flex-col items-center">
-            <span className="text-center mb-3 text-[var(--color-gray-300)] text-sm font-medium">
+          <div className="md:col-span-4 xl:col-span-3 flex flex-col items-center p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
+            <span className="text-center mb-3 text-[var(--md-sys-color-on-surface-variant)] text-label-lg font-medium">
               Imagen del Platillo
             </span>
             <FileInput
@@ -153,12 +158,12 @@ export default function CreateProductPage() {
               altText={formProduct.productName || "Nuevo platillo"}
             />
             {errors.userImage && (
-              <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+              <span className="text-[var(--md-sys-color-error)] text-label-sm mt-2">{errors.userImage}</span>
             )}
           </div>
 
           {/* Campos del formulario */}
-          <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-8 xl:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="md:col-span-2">
               <Input
                 label="Nombre del Platillo *"
@@ -223,13 +228,13 @@ export default function CreateProductPage() {
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-[var(--color-secondary-800)]">
+        <div className="mt-auto flex justify-end gap-3 pt-5 border-t border-[var(--md-sys-color-outline-variant)]">
           <Link to="/productList">
-            <Button variant="secondary" type="button" disabled={loading}>
+            <Button variant="outlined" type="button" disabled={loading}>
               Cancelar
             </Button>
           </Link>
-          <Button variant="primary" type="submit" disabled={loading}>
+          <Button variant="filled" type="submit" leadingIcon="check_circle" disabled={loading}>
             {loading ? "Guardando en BD..." : "Guardar Platillo"}
           </Button>
         </div>

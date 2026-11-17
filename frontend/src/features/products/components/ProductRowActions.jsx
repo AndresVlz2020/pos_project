@@ -1,31 +1,33 @@
-import { Pencil, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { IconButton, M3Icon } from "@/shared";
 
 export default function ProductRowActions({ product, canEdit = true }) {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    return (
-        <div className="flex gap-2">
-            {canEdit && (
-                <button
-                    type="button"
-                    onClick={() => navigate("/editproduct", { state: { product } })}
-                    aria-label="Editar producto"
-                    className="size-10 inline-flex items-center justify-center rounded-full bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-500)] text-[var(--color-white)] hover:text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition cursor-pointer border border-[var(--color-secondary-700)]"
-                    title="Editar producto"
-                >
-                    <Pencil size={18} />
-                </button>
-            )}
-            <button
-                type="button"
-                onClick={() => navigate("/readproduct", { state: { product } })}
-                aria-label="Ver producto"
-                className="size-10 inline-flex items-center justify-center rounded-full bg-[var(--color-secondary-800)] hover:bg-[var(--color-primary-600)] text-[var(--color-gray-300)] hover:text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition cursor-pointer border border-[var(--color-secondary-700)]"
-                title="Ver producto"
-            >
-                <Eye size={18} />
-            </button>
-        </div>
-    );
+  return (
+    <div className="flex items-center gap-1.5">
+      {canEdit && (
+        <IconButton
+          variant="tonal"
+          hitSize={40}
+          iconSize={18}
+          ariaLabel="Editar producto"
+          title="Editar producto"
+          onClick={() => navigate("/editproduct", { state: { product } })}
+        >
+          <M3Icon name="edit" size={18} />
+        </IconButton>
+      )}
+      <IconButton
+        variant="standard"
+        hitSize={40}
+        iconSize={18}
+        ariaLabel="Ver producto"
+        title="Ver producto"
+        onClick={() => navigate("/readproduct", { state: { product } })}
+      >
+        <M3Icon name="visibility" size={18} />
+      </IconButton>
+    </div>
+  );
 }

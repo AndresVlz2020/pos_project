@@ -1,40 +1,32 @@
 export default function Checkbox({
-    id,                // id del input
-    name,              // name del input
-    label,             // texto que se muestra al lado del checkbox
-    checked = false,   // estado del checkbox (marcado o no)
-    onChange,          // función que se ejecuta cuando el estado del checkbox
-    disabled = false,  // deshabilita el checkbox
-    className = "",    // clases adicionales para el label
+  id,
+  name,
+  label,
+  checked = false,
+  onChange,
+  disabled = false,
+  className = "",
 }) {
-    return (
-        <label 
-            htmlFor={id}
-            className={`
-                min-h-[44px] py-1.5
-                flex items-center gap-3
-                text-sm
-                cursor-pointer
-                ${disabled ? "opacity-50 cursor-not-allowed" :""}
-                ${className}
-            `}
-        >
-
-        {/* {Checkbox} */}
-
-        <input 
-            type="checkbox"
-            id={id}
-            name={name}
-            checked={checked}
-            onChange={onChange}
-            disabled={disabled}
-            className="size-[18px] shrink-0 rounded-[2px] border border-[var(--color-secondary-600)] accent-[var(--color-primary-500)] bg-[var(--color-secondary-900)] cursor-pointer focus:ring-2 focus:ring-[var(--color-primary-400)]/40 transition-all"
-        />
-
-        {/* {Texto} */}
-        <span>{label}</span>
-                </label>
-
-    )
+  return (
+    <label
+      htmlFor={id}
+      className={`
+        min-h-[44px] py-1.5 inline-flex items-center gap-3 text-sm leading-5
+        text-[var(--md-sys-color-on-surface)] cursor-pointer select-none
+        ${disabled ? "opacity-38 cursor-not-allowed" : ""}
+        ${className}
+      `}
+    >
+      <input
+        type="checkbox"
+        id={id}
+        name={name}
+        checked={checked}
+        onChange={onChange}
+        disabled={disabled}
+        className="size-[18px] shrink-0 rounded-[2px] border-2 border-[var(--md-sys-color-on-surface-variant)] accent-[var(--md-sys-color-primary)] bg-transparent cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--md-sys-color-surface)]"
+      />
+      <span>{label}</span>
+    </label>
+  );
 }

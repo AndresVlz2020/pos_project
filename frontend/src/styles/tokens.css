@@ -1,92 +1,50 @@
 :root {
-  /* Primary color */
-  --color-primary-950: #5B3622;
-  --color-primary-900: #643B25;
-  --color-primary-800: #74442B;
-  --color-primary-700: #8C5132;
-  --color-primary-600: #A15C38;
-  --color-primary-500: #B3673E;
-  --color-primary-400: #C77C4C;
-  --color-primary-300: #D59463;
-  --color-primary-200: #E0AE87;
-  --color-primary-100: #EBCAB1;
-  --color-primary-50:  #F6E7DD;
+  /* Paleta Marca D'Piero (Terracota Cálida Material You Seed) */
+  --color-primary-950: #351000;
+  --color-primary-900: #561F00;
+  --color-primary-800: #7A3510;
+  --color-primary-700: #8C4018;
+  --color-primary-600: #9E4F24;
+  --color-primary-500: #9E4F24;
+  --color-primary-400: #B3673E;
+  --color-primary-300: #FFB691;
+  --color-primary-200: #FFDBCA;
+  --color-primary-100: #FFDBCA;
+  --color-primary-50:  #FFF3ED;
 
-  /* Secondary color */
-  --color-secondary-950: #0B132B;
-  --color-secondary-900: #0F152D;
-  --color-secondary-800: #131835;
-  --color-secondary-700: #1B2246;
-  --color-secondary-600: #232B58;
-  --color-secondary-500: #2E376B;
-  --color-secondary-400: #545F96;
-  --color-secondary-300: #7A88B4;
-  --color-secondary-200: #9FA8C9;
-  --color-secondary-100: #C2C8DC;
-  --color-secondary-50:  #E6E9F0;
+  /* Tipografía oficial Material Design 3 */
+  --main-font: 'Roboto Variable', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --secondary-font: 'Roboto Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  /* Tertiary-2 color */
-  --color-tertiary-950: #616161;
-  --color-tertiary-900: #696969;
-  --color-tertiary-800: #757575;
-  --color-tertiary-700: #9E9E9E;
-  --color-tertiary-600: #BDBDBD;
-  --color-tertiary-500: #CFCFCF;
-  --color-tertiary-400: #E0E0E0;
-  --color-tertiary-300: #EEEEEE;
-  --color-tertiary-200: #F5F5F5;
-  --color-tertiary-100: #FAFAFA;
-  --color-tertiary-50:  #FFFFFF;
+  /* Escala Tipográfica Literal M3 (sp -> rem) */
+  --fs-xxxxl: 3.5625rem; /* 57sp - M3 Display Large */
+  --fs-xxxl:  2.8125rem; /* 45sp - M3 Display Medium */
+  --fs-xxl:   2.25rem;   /* 36sp - M3 Display Small */
+  --fs-xl:    2rem;      /* 32sp - M3 Headline Large */
+  --fs-lg:    1.75rem;   /* 28sp - M3 Headline Medium */
+  --fs-md:    1.5rem;    /* 24sp - M3 Headline Small */
+  --fs-sm:    1.375rem;  /* 22sp - M3 Title Large */
+  --fs-xs:    1rem;      /* 16sp - M3 Title Medium / Body Large */
+  --fs-xxs:   0.875rem;  /* 14sp - M3 Title Small / Label Large / Body Medium */
+  --fs-xxxs:  0.75rem;   /* 12sp - M3 Label Medium / Body Small */
+  --fs-xxxxs: 0.6875rem; /* 11sp - M3 Label Small */
 
-  /* Basic color */
-  --color-white: #fff;
-  --color-black: #000;
-  --color-gray-950: #181818;
-  --color-gray-900: #242424;
-  --color-gray-800: #3D3D3D;
-  --color-gray-700: #565656;
-  --color-gray-600: #6E6E6E;
-  --color-gray-500: #878787;
-  --color-gray-400: #9F9F9F;
-  --color-gray-300: #B8B8B8;
-  --color-gray-200: #D1D1D1;
-  --color-gray-100: #E9E9E9;
-  --color-gray-50:  #F6F6F6;
+  --md-sys-typescale-headline-small-size: 1.5rem;
+  --md-sys-typescale-headline-small-lh:   2rem;
+  --md-sys-typescale-title-large-size:    1.375rem;
+  --md-sys-typescale-title-large-lh:      1.75rem;
+  --md-sys-typescale-title-medium-size:   1rem;
+  --md-sys-typescale-title-medium-lh:     1.5rem;
+  --md-sys-typescale-body-medium-size:    0.875rem;
+  --md-sys-typescale-body-medium-lh:      1.25rem;
+  --md-sys-typescale-body-small-size:     0.75rem;
+  --md-sys-typescale-body-small-lh:       1rem;
+  --md-sys-typescale-label-large-size:    0.875rem;
+  --md-sys-typescale-label-large-lh:      1.25rem;
+  --md-sys-typescale-label-small-size:    0.6875rem;
+  --md-sys-typescale-label-small-lh:      1rem;
 
-  /* Font-family */
-  --main-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --secondary-font: 'Plus Jakarta Sans', Calibri, Helvetica, Arial, sans-serif;
-
-  /* Font-size (escala literal Material Design 3 Type Scale) */
-  --fs-xxxxl: 3.5625rem; /* 57px - M3 Display Large */
-  --fs-xxxl:  2.8125rem; /* 45px - M3 Display Medium */
-  --fs-xxl:   2.25rem;   /* 36px - M3 Display Small */
-  --fs-xl:    2rem;      /* 32px - M3 Headline Large */
-  --fs-lg:    1.75rem;   /* 28px - M3 Headline Medium */
-  --fs-md:    1.5rem;    /* 24px - M3 Headline Small */
-  --fs-sm:    1.375rem;  /* 22px - M3 Title Large */
-  --fs-xs:    1rem;      /* 16px - M3 Title Medium / Body Large */
-  --fs-xxs:   0.875rem;  /* 14px - M3 Title Small / Label Large / Body Medium */
-  --fs-xxxs:  0.75rem;   /* 12px - M3 Label Medium / Body Small */
-  --fs-xxxxs: 0.6875rem; /* 11px - M3 Label Small */
-
-  /* Tokens tipográficos literales Material Design 3 */
-  --md-sys-typescale-headline-small-size: 1.5rem;      /* 24px */
-  --md-sys-typescale-headline-small-lh:   2rem;        /* 32px */
-  --md-sys-typescale-title-large-size:    1.375rem;    /* 22px */
-  --md-sys-typescale-title-large-lh:      1.75rem;     /* 28px */
-  --md-sys-typescale-title-medium-size:   1rem;        /* 16px */
-  --md-sys-typescale-title-medium-lh:     1.5rem;      /* 24px */
-  --md-sys-typescale-body-medium-size:    0.875rem;    /* 14px */
-  --md-sys-typescale-body-medium-lh:      1.25rem;     /* 20px */
-  --md-sys-typescale-body-small-size:     0.75rem;     /* 12px */
-  --md-sys-typescale-body-small-lh:       1rem;        /* 16px */
-  --md-sys-typescale-label-large-size:    0.875rem;    /* 14px */
-  --md-sys-typescale-label-large-lh:      1.25rem;     /* 20px */
-  --md-sys-typescale-label-small-size:    0.6875rem;   /* 11px */
-  --md-sys-typescale-label-small-lh:      1rem;        /* 16px */
-
-  /* Tokens de Forma (Shape) y Motion Material Design 3 */
+  /* Forma (Shape) y Motion M3 */
   --md-sys-shape-corner-extra-small: 0.25rem;  /* 4dp */
   --md-sys-shape-corner-small:       0.5rem;   /* 8dp */
   --md-sys-shape-corner-medium:      0.75rem;  /* 12dp */
@@ -94,50 +52,30 @@
   --md-sys-shape-corner-extra-large: 1.75rem;  /* 28dp */
   --md-sys-shape-corner-full:        9999px;
   --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
 
-  /* Material Design 3 Escala de Espaciado (base 4dp) y Touch Targets */
-  --md-space-1: 0.25rem;  /* 4dp */
-  --md-space-2: 0.5rem;   /* 8dp */
-  --md-space-3: 0.75rem;  /* 12dp */
-  --md-space-4: 1rem;     /* 16dp */
-  --md-space-6: 1.5rem;   /* 24dp */
+  /* Elevaciones M3 */
+  --md-sys-elevation-0: none;
+  --md-sys-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.12), 0 1px 3px 1px rgba(0, 0, 0, 0.08);
+  --md-sys-elevation-2: 0 1px 2px rgba(0, 0, 0, 0.14), 0 2px 6px 2px rgba(0, 0, 0, 0.10);
+  --md-sys-elevation-3: 0 4px 8px 3px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.20);
+
+  /* Espaciado (base 4dp) y Touch Targets M3 */
+  --md-space-1: 0.25rem;
+  --md-space-2: 0.5rem;
+  --md-space-3: 0.75rem;
+  --md-space-4: 1rem;
+  --md-space-6: 1.5rem;
   --md-touch-target: 48px;
   --md-control-sm: 40px;
   --md-control-md: 48px;
   --md-control-lg: 56px;
 
-  /* grosores de la fuente */
-  --fw-regular: 400; 
-  --fw-medium:  500; 
-  --fw-bold:    700; 
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-bold:    700;
   --fw-black:   900;
 
-  /* Material Design 3 (Material You) Tokens */
-  --md-sys-color-background: #111318;
-  --md-sys-color-surface: #111318;
-  --md-sys-color-surface-container: #1d2024;
-  --md-sys-color-surface-container-high: #272a2f;
-  --md-sys-color-surface-variant: #44474e;
-  --md-sys-color-on-surface: #e2e2e9;
-  --md-sys-color-on-surface-variant: #c4c6d0;
-  --md-sys-color-outline: #8e9099;
-  --md-sys-color-outline-variant: #44474e;
-
-  /* Primer plano fijo sobre superficies sólidas de marca/estado (inmutable entre temas) */
-  --color-on-primary: #ffffff;
-  --color-on-error: #ffffff;
+  /* Inmutables sobre imagen oscura / marca */
   --color-on-dark: #ffffff;
-
-  /* Estados semánticos consistentes con variables CSS */
-  --color-success: #10B981;
-  --color-success-bg: rgba(16, 185, 129, 0.12);
-  --color-success-border: rgba(16, 185, 129, 0.35);
-
-  --color-error: #EF4444;
-  --color-error-bg: rgba(239, 68, 68, 0.12);
-  --color-error-border: rgba(239, 68, 68, 0.35);
-
-  --color-warning: #F59E0B;
-  --color-warning-bg: rgba(245, 158, 11, 0.12);
-  --color-warning-border: rgba(245, 158, 11, 0.35);
 }

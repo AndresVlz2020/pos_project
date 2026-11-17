@@ -1,59 +1,62 @@
 import { Link } from "react-router-dom";
+import { M3Icon } from "@/shared";
 
-/**
- * Componente modular de tarjeta interactiva para módulos del POS (Clientes, Personal, etc.)
- * Estructurado con tokens de diseño y variables CSS de la aplicación.
- */
 export default function PosInfoCard({
   tagLeft,
   tagRight,
   title,
   subtitle,
+  bottomIconName,
   bottomIcon: BottomIcon,
   bottomText,
+  actionIconName,
   actionIcon: ActionIcon,
   actionLabel,
   actionLink,
   onActionClick,
-  actionAriaLabel
+  actionAriaLabel,
 }) {
   return (
-    <div className="rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-4 flex flex-col justify-between space-y-3 font-[family-name:var(--main-font)] hover:border-[var(--color-secondary-700)] transition-colors">
+    <div className="rounded-xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] m3-elevation-1 p-4 flex flex-col justify-between space-y-3">
       <div>
-        {/* Fila Superior: Badges compactos limpios (solo si existen) */}
         {(tagLeft || tagRight) && (
           <div className="flex items-center justify-between gap-2 mb-2">
             {tagLeft && (
-              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-[var(--color-secondary-800)] text-[var(--color-primary-300)] font-semibold">
+              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-medium">
                 {tagLeft}
               </span>
             )}
             {tagRight && (
-              <span className="text-xs font-semibold text-[var(--color-primary-300)] bg-[var(--color-secondary-800)] px-2.5 py-0.5 rounded-full border border-[var(--color-secondary-700)]">
+              <span className="text-xs font-medium text-[var(--md-sys-color-on-secondary-container)] bg-[var(--md-sys-color-secondary-container)] px-2.5 py-0.5 rounded-full">
                 {tagRight}
               </span>
             )}
           </div>
         )}
 
-        {/* Título Principal */}
-        <h4 className="text-base leading-6 font-bold text-[var(--color-white)] line-clamp-1">
+        <h4 className="text-base leading-6 font-medium text-[var(--md-sys-color-on-surface)] line-clamp-1">
           {title}
         </h4>
 
-        {/* Subtítulo / Descripción Secundaria */}
         {subtitle && (
-          <p className="text-xs leading-4 text-[var(--color-gray-400)] font-mono mt-0.5 line-clamp-1">
+          <p className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)] font-mono mt-0.5 line-clamp-1">
             {subtitle}
           </p>
         )}
       </div>
 
-      {/* Fila Inferior: Información + Botón de Acción plano */}
-      <div className={`pt-2.5 border-t border-[var(--color-secondary-800)] flex items-center ${bottomText || BottomIcon ? "justify-between" : "justify-end"} text-xs`}>
-        {(bottomText || BottomIcon) && (
-          <div className="flex items-center gap-1.5 text-[var(--color-primary-300)] font-semibold text-xs">
-            {BottomIcon && <BottomIcon className="size-3.5 shrink-0" />}
+      <div
+        className={`pt-2.5 border-t border-[var(--md-sys-color-outline-variant)] flex items-center ${
+          bottomText || BottomIcon || bottomIconName ? "justify-between" : "justify-end"
+        } text-xs`}
+      >
+        {(bottomText || BottomIcon || bottomIconName) && (
+          <div className="flex items-center gap-1.5 text-[var(--md-sys-color-primary)] font-medium text-xs">
+            {bottomIconName ? (
+              <M3Icon name={bottomIconName} size={16} />
+            ) : BottomIcon ? (
+              <BottomIcon className="size-3.5 shrink-0" />
+            ) : null}
             {bottomText && <span>{bottomText}</span>}
           </div>
         )}
@@ -62,9 +65,13 @@ export default function PosInfoCard({
           <Link
             to={actionLink}
             aria-label={actionAriaLabel || actionLabel}
-            className="min-h-[40px] inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-sm font-medium text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
+            className="m3-state h-10 inline-flex items-center gap-2 px-5 rounded-full bg-[var(--md-sys-color-primary)] text-sm font-medium text-[var(--md-sys-color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer"
           >
-            {ActionIcon && <ActionIcon className="size-4" />}
+            {actionIconName ? (
+              <M3Icon name={actionIconName} size={18} />
+            ) : ActionIcon ? (
+              <ActionIcon className="size-4" />
+            ) : null}
             <span>{actionLabel}</span>
           </Link>
         ) : onActionClick ? (
@@ -72,9 +79,13 @@ export default function PosInfoCard({
             type="button"
             onClick={onActionClick}
             aria-label={actionAriaLabel || actionLabel}
-            className="min-h-[40px] inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-sm font-medium text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
+            className="m3-state h-10 inline-flex items-center gap-2 px-5 rounded-full bg-[var(--md-sys-color-primary)] text-sm font-medium text-[var(--md-sys-color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer"
           >
-            {ActionIcon && <ActionIcon className="size-4" />}
+            {actionIconName ? (
+              <M3Icon name={actionIconName} size={18} />
+            ) : ActionIcon ? (
+              <ActionIcon className="size-4" />
+            ) : null}
             <span>{actionLabel}</span>
           </button>
         ) : null}

@@ -1,24 +1,29 @@
-import { Flame, UtensilsCrossed, Wine, CakeSlice, Layers, LayoutGrid } from "lucide-react";
+import { M3Icon } from "@/shared";
 
 export const POS_CATEGORIES = [
-  { id: "all", label: "Todos", icon: LayoutGrid },
-  { id: "platos fuertes", label: "Parrilla / Platos Fuertes", icon: Flame },
-  { id: "entradas", label: "Entradas & Para Compartir", icon: UtensilsCrossed },
-  { id: "bebidas", label: "Bebidas & Coctelería", icon: Wine },
-  { id: "postres", label: "Postres", icon: CakeSlice },
-  { id: "guarniciones", label: "Guarniciones", icon: Layers },
+  { id: "all", label: "Todos", icon: "grid_view" },
+  { id: "platos fuertes", label: "Parrilla / Platos Fuertes", icon: "local_fire_department" },
+  { id: "entradas", label: "Entradas & Para Compartir", icon: "dining" },
+  { id: "bebidas", label: "Bebidas & Coctelería", icon: "local_bar" },
+  { id: "postres", label: "Postres", icon: "cake" },
+  { id: "guarniciones", label: "Guarniciones", icon: "layers" },
 ];
 
-export default function PosCategoryFilter({ selectedCategory, onSelectCategory, products = [] }) {
+export default function PosCategoryFilter({
+  selectedCategory,
+  onSelectCategory,
+  products = [],
+}) {
   const getCount = (categoryId) => {
     if (categoryId === "all") return products.length;
-    return products.filter(p => p.category?.toLowerCase() === categoryId.toLowerCase()).length;
+    return products.filter(
+      (p) => p.category?.toLowerCase() === categoryId.toLowerCase()
+    ).length;
   };
 
   return (
-    <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1 w-full min-w-0 snap-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <div className="flex flex-wrap items-center gap-2 w-full min-w-0">
       {POS_CATEGORIES.map((cat) => {
-        const Icon = cat.icon;
         const count = getCount(cat.id);
         const isActive = selectedCategory === cat.id;
 
@@ -28,18 +33,32 @@ export default function PosCategoryFilter({ selectedCategory, onSelectCategory, 
             type="button"
             onClick={() => onSelectCategory(cat.id)}
             className={`
-              shrink-0 snap-start inline-flex items-center gap-2 min-h-[40px] px-4 py-2 rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer whitespace-nowrap
-              ${isActive
-                ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)] border border-[var(--color-primary-600)] shadow-none"
-                : "bg-[var(--color-secondary-900)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-800)]"
+              m3-state inline-flex items-center gap-2 min-h-[40px] px-3.5 py-1.5 rounded-lg text-sm font-medium cursor-pointer whitespace-nowrap
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]
+              ${
+                isActive
+                  ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border border-transparent"
+                  : "bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)] hover:text-[var(--md-sys-color-on-surface)]"
               }
             `}
           >
-            <Icon className={`size-4 ${isActive ? "text-[var(--color-on-primary)]" : "text-[var(--color-primary-400)]"}`} />
+            <M3Icon
+              name={isActive ? "check" : cat.icon}
+              size={18}
+              className={
+                isActive
+                  ? "text-[var(--md-sys-color-on-secondary-container)]"
+                  : "text-[var(--md-sys-color-primary)]"
+              }
+            />
             <span>{cat.label}</span>
-            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-              isActive ? "bg-black/30 text-[var(--color-on-primary)]" : "bg-[var(--color-secondary-800)] text-[var(--color-gray-300)]"
-            }`}>
+            <span
+              className={`px-2 py-0.5 rounded-full text-xs font-medium tabular-nums ${
+                isActive
+                  ? "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]"
+                  : "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]"
+              }`}
+            >
               {count}
             </span>
           </button>

@@ -5,28 +5,27 @@
     <link rel="icon" type="image/png" href="/src/assets/images/logo-d,piero.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>D'Piero • Restaurante, Parrilla & POS</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script>
-      (function() {
+      (function () {
         try {
-          var saved = localStorage.getItem('app_theme');
+          var saved = localStorage.getItem("app_theme");
           var root = document.documentElement;
-          if (saved === 'dark') {
-            root.classList.add('theme-dark', 'dark');
-            root.classList.remove('theme-light');
+          if (saved === "dark") {
+            root.classList.add("theme-dark", "dark");
+            root.classList.remove("theme-light");
           } else {
-            root.classList.add('theme-light');
-            root.classList.remove('theme-dark', 'dark');
+            root.classList.add("theme-light");
+            root.classList.remove("theme-dark", "dark");
           }
         } catch (e) {}
       })();
     </script>
   </head>
-  <body class="bg-[var(--color-secondary-950)] text-[var(--color-white)] antialiased min-h-screen selection:bg-[var(--color-primary-500)] selection:text-[var(--color-on-primary)] font-['Plus_Jakarta_Sans',sans-serif]">
+  <body class="bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] antialiased min-h-screen selection:bg-[var(--md-sys-color-primary-container)] selection:text-[var(--md-sys-color-on-primary-container)] font-[family-name:var(--main-font)]">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-

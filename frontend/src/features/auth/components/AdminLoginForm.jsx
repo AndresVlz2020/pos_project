@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Lock, Fingerprint, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
 import { loginSchema } from "@/features/users/schemas/userSchema";
-import { Button } from "@/shared";
+import { Button, M3Icon } from "@/shared";
 import {
   checkAdminEmailApi,
   getBiometricCapabilities,
@@ -155,37 +154,43 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
     return (
       <form onSubmit={handleValidateEmail} className="space-y-4">
         <div className="text-center mb-5">
-          <h2 className="text-base font-bold text-[var(--color-white)]">Acceso Administrativo</h2>
-          <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
+          <h2 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)]">
+            Acceso Administrativo
+          </h2>
+          <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
             Paso 1: Ingresa tu correo para verificar tu cuenta y método de acceso.
           </p>
         </div>
 
-        <div>
-          <label className="block text-xs font-semibold text-[var(--color-gray-300)] mb-1.5">
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="admin-email-step1"
+            className="text-label-md font-medium text-[var(--md-sys-color-on-surface-variant)]"
+          >
             Correo Electrónico
           </label>
-          <div className="relative">
-            <Mail className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-gray-400)]" />
+          <div className={`m3-outlined-field relative flex items-center rounded-[4px] bg-transparent ${errors.userEmail ? "is-invalid" : ""}`}>
+            <M3Icon name="mail" size={20} className="ml-3.5 text-[var(--md-sys-color-on-surface-variant)] shrink-0" />
             <input
+              id="admin-email-step1"
               type="email"
               name="userEmail"
               value={form.userEmail}
               onChange={handleChange}
               placeholder="admin@dpiero.com"
               autoFocus
-              className="w-full h-14 pl-10 pr-4 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-white)] text-base border border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 outline-none placeholder:text-[var(--color-gray-400)] transition-colors"
+              className="w-full h-14 px-3 bg-transparent text-[var(--md-sys-color-on-surface)] text-body-lg outline-none placeholder:text-[var(--md-sys-color-on-surface-variant)]"
             />
           </div>
           {errors.userEmail && (
-            <p className="text-xs leading-4 text-[var(--color-error)] mt-1">{errors.userEmail}</p>
+            <p className="text-label-sm text-[var(--md-sys-color-error)] mt-0.5">{errors.userEmail}</p>
           )}
         </div>
 
-        <div className="flex items-center justify-center text-sm pt-1">
+        <div className="flex items-center justify-center pt-1">
           <Link
             to="/Auth/forgot-password"
-            className="inline-flex items-center min-h-[40px] px-4 rounded-full text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+            className="m3-state inline-flex items-center min-h-[40px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
           >
             ¿Olvidó su contraseña?
           </Link>
@@ -194,12 +199,15 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
         <div className="pt-1">
           <Button
             type="submit"
-            variant="primary"
+            variant="filled"
             size="md"
+            leadingIcon={checkingEmail ? undefined : "arrow_forward"}
             disabled={checkingEmail}
             className="w-full"
           >
-            {checkingEmail && <Loader2 className="size-4 animate-spin" />}
+            {checkingEmail && (
+              <M3Icon name="progress_activity" size={18} className="animate-spin" />
+            )}
             <span>{checkingEmail ? "Validando correo..." : "Validar correo y continuar"}</span>
           </Button>
         </div>
@@ -210,21 +218,23 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
   return (
     <form onSubmit={handleSubmitCredentials} className="space-y-4">
       <div className="text-center mb-3">
-        <h2 className="text-base font-bold text-[var(--color-white)]">Acceso Administrativo</h2>
-        <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
+        <h2 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)]">
+          Acceso Administrativo
+        </h2>
+        <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
           Paso 2: Confirma tu identidad para ingresar.
         </p>
       </div>
 
       {/* Resumen de correo validado */}
-      <div className="flex items-center justify-between gap-2 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] px-3.5 py-2.5">
-        <div className="flex items-center gap-2 min-w-0">
-          <CheckCircle2 className="size-4 text-[var(--color-primary-500)] shrink-0" />
+      <div className="flex items-center justify-between gap-2 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] px-4 py-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <M3Icon name="check_circle" filled size={20} className="text-[var(--md-sys-color-primary)] shrink-0" />
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-[var(--color-white)] truncate">
+            <p className="text-title-sm font-semibold text-[var(--md-sys-color-on-surface)] truncate">
               {validatedAccount?.name || "Administrador"}
             </p>
-            <p className="text-xs text-[var(--color-gray-400)] truncate">
+            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] truncate">
               {validatedAccount?.email || form.userEmail}
             </p>
           </div>
@@ -232,9 +242,9 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
         <button
           type="button"
           onClick={handleChangeEmail}
-          className="inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0"
+          className="m3-state inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer shrink-0"
         >
-          <ArrowLeft className="size-3.5" />
+          <M3Icon name="arrow_back" size={16} />
           <span>Cambiar</span>
         </button>
       </div>
@@ -246,12 +256,12 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
             type="button"
             onClick={() => triggerBiometricAttempt(validatedAccount.email, false)}
             disabled={biometricBusy}
-            className="w-full min-h-[48px] flex items-center justify-center gap-2.5 py-2.5 px-6 rounded-full bg-[var(--color-primary-500)]/15 hover:bg-[var(--color-primary-500)]/25 border border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] font-medium text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer disabled:opacity-60"
+            className="m3-state w-full min-h-[44px] flex items-center justify-center gap-2.5 py-2.5 px-6 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-medium text-label-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer disabled:opacity-38"
           >
             {biometricBusy ? (
-              <Loader2 className="size-4 animate-spin" />
+              <M3Icon name="progress_activity" size={18} className="animate-spin" />
             ) : (
-              <Fingerprint className="size-4" />
+              <M3Icon name="fingerprint" size={20} />
             )}
             <span>
               {biometricBusy
@@ -261,55 +271,59 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
           </button>
 
           {biometricHint && (
-            <p className="text-xs text-center text-[var(--color-gray-400)]">
+            <p className="text-body-sm text-center text-[var(--md-sys-color-on-surface-variant)]">
               {biometricHint}
             </p>
           )}
           {errors.biometric && (
-            <p className="text-xs text-center text-[var(--color-error)]">
+            <p className="text-label-sm text-center text-[var(--md-sys-color-error)]">
               {errors.biometric}
             </p>
           )}
 
-          <div className="flex items-center gap-2 text-xs text-[var(--color-gray-500)]">
-            <div className="h-px flex-1 bg-[var(--color-secondary-800)]" />
+          <div className="flex items-center gap-2 text-label-md text-[var(--md-sys-color-on-surface-variant)]">
+            <div className="h-px flex-1 bg-[var(--md-sys-color-outline-variant)]" />
             <span>o ingresa con contraseña</span>
-            <div className="h-px flex-1 bg-[var(--color-secondary-800)]" />
+            <div className="h-px flex-1 bg-[var(--md-sys-color-outline-variant)]" />
           </div>
         </div>
       )}
 
       {validatedAccount?.hasBiometrics && !biometricsReadyHere && (
-        <p className="text-xs text-center text-[var(--color-gray-400)] bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-xl px-3.5 py-2">
+        <p className="text-body-sm text-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-xl px-3.5 py-2">
           Este equipo PC no cuenta con lector de huella físico; ingresa con tu contraseña.
         </p>
       )}
 
-      <div>
-        <label className="block text-xs font-semibold text-[var(--color-gray-300)] mb-1.5">
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor="admin-password-step2"
+          className="text-label-md font-medium text-[var(--md-sys-color-on-surface-variant)]"
+        >
           Contraseña
         </label>
-        <div className="relative">
-          <Lock className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-gray-400)]" />
+        <div className={`m3-outlined-field relative flex items-center rounded-[4px] bg-transparent ${errors.userPassword ? "is-invalid" : ""}`}>
+          <M3Icon name="lock" size={20} className="ml-3.5 text-[var(--md-sys-color-on-surface-variant)] shrink-0" />
           <input
+            id="admin-password-step2"
             type="password"
             name="userPassword"
             value={form.userPassword}
             onChange={handleChange}
             placeholder="••••••••"
             autoFocus={!biometricsReadyHere}
-            className="w-full h-14 pl-10 pr-4 rounded-lg bg-[var(--color-secondary-950)] text-[var(--color-white)] text-base border border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 outline-none placeholder:text-[var(--color-gray-400)] transition-colors"
+            className="w-full h-14 px-3 bg-transparent text-[var(--md-sys-color-on-surface)] text-body-lg outline-none placeholder:text-[var(--md-sys-color-on-surface-variant)]"
           />
         </div>
         {errors.userPassword && (
-          <p className="text-xs leading-4 text-[var(--color-error)] mt-1">{errors.userPassword}</p>
+          <p className="text-label-sm text-[var(--md-sys-color-error)] mt-0.5">{errors.userPassword}</p>
         )}
       </div>
 
-      <div className="flex items-center justify-center text-sm pt-1">
+      <div className="flex items-center justify-center pt-1">
         <Link
           to="/Auth/forgot-password"
-          className="inline-flex items-center min-h-[40px] px-4 rounded-full text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+          className="m3-state inline-flex items-center min-h-[40px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
         >
           ¿Olvidó su contraseña?
         </Link>
@@ -318,8 +332,9 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
       <div className="pt-1">
         <Button
           type="submit"
-          variant="primary"
+          variant="filled"
           size="md"
+          leadingIcon="check_circle"
           disabled={biometricBusy}
           className="w-full"
         >

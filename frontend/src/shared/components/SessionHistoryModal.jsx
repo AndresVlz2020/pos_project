@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Clock, X, RefreshCw, Users, Calendar } from "lucide-react";
+import { M3Icon, IconButton } from "@/shared";
 import { getSessionHistory, formatDuration } from "@/services/sessionService";
 import { getUsers } from "@/services/userService";
 import {
@@ -61,7 +61,6 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
     };
   }, [isOpen, loadHistory]);
 
-  // Refrescar segundos en vivo para sesiones activas dentro del modal
   useEffect(() => {
     if (!isOpen) return;
     const id = setInterval(() => setNowMs(Date.now()), 1000);
@@ -126,17 +125,22 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4">
-      <div className="dpiero-modal-in bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] rounded-[28px] shadow-2xl w-full max-w-3xl max-h-[88vh] flex flex-col overflow-hidden text-[var(--color-white)]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-secondary-800)]">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <Clock className="size-5 text-[var(--color-primary-400)] shrink-0" />
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--md-sys-color-scrim)] backdrop-blur-xs p-3 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="dpiero-modal-in bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] m3-elevation-3 w-full max-w-4xl max-h-[88dvh] flex flex-col overflow-hidden text-[var(--md-sys-color-on-surface)]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--md-sys-color-outline-variant)]">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="size-10 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shrink-0">
+              <M3Icon name="schedule" size={20} />
+            </div>
             <div className="min-w-0">
-              <h2 className="text-title-lg font-bold truncate">
+              <h2 className="text-2xl leading-8 font-medium truncate">
                 {isAdmin ? "Historial de Turnos del Personal" : "Mi Historial de Turnos"}
               </h2>
-              <p className="text-xs text-[var(--color-gray-400)] truncate">
+              <p className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)] truncate">
                 {isAdmin
                   ? selectedWorker
                     ? `Turnos y horas acumuladas de ${selectedWorker.userName}.`
@@ -146,38 +150,44 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={loadHistory}
-              aria-label="Actualizar historial"
-              className="size-10 inline-flex items-center justify-center rounded-full bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer transition"
+          <div className="flex items-center gap-1 shrink-0">
+            <IconButton
+              ariaLabel="Actualizar historial"
               title="Actualizar"
+              variant="tonal"
+              onClick={loadHistory}
             >
-              <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Cerrar historial"
-              className="size-10 inline-flex items-center justify-center rounded-full bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer transition"
+              <M3Icon
+                name="refresh"
+                size={20}
+                className={loading ? "animate-spin" : ""}
+              />
+            </IconButton>
+            <IconButton
+              ariaLabel="Cerrar historial"
               title="Cerrar"
+              variant="standard"
+              onClick={onClose}
             >
-              <X className="size-5" />
-            </button>
+              <M3Icon name="close" size={20} />
+            </IconButton>
           </div>
         </div>
 
         {/* Selección por trabajador (Admin) + filtro de fecha */}
-        <div className="px-4 sm:px-5 py-2.5 border-b border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]/50 flex flex-col sm:flex-row sm:items-center gap-2">
+        <div className="px-6 py-3 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] flex flex-col sm:flex-row sm:items-center gap-2.5">
           {isAdmin && (
-            <div className="relative flex-1 min-w-0">
-              <Users className="size-3.5 text-[var(--color-gray-400)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <div className="relative flex-1 min-w-0 flex items-center">
+              <M3Icon
+                name="group"
+                size={18}
+                className="text-[var(--md-sys-color-on-surface-variant)] absolute left-3 pointer-events-none"
+              />
               <select
                 value={selectedWorkerId}
                 onChange={(e) => setSelectedWorkerId(e.target.value)}
                 aria-label="Filtrar por trabajador"
-                className="w-full h-10 pl-8 pr-3 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 cursor-pointer truncate"
+                className="m3-outlined-field w-full h-10 pl-9 pr-3 text-sm bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] outline-none cursor-pointer truncate"
               >
                 <option value="">Todos los trabajadores ({workers.length})</option>
                 {workers.map((worker) => (
@@ -190,7 +200,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
           )}
 
           <div
-            className={`flex items-center gap-1.5 shrink-0 ${
+            className={`flex items-center gap-2 shrink-0 ${
               !isAdmin ? "sm:ml-auto" : ""
             }`}
           >
@@ -203,7 +213,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 setDatePreset(next);
               }}
               aria-label="Rango de fechas"
-              className="h-10 px-2.5 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 cursor-pointer"
+              className="m3-outlined-field h-10 px-3 text-sm bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] outline-none cursor-pointer"
             >
               {DATE_PRESETS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -214,7 +224,11 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
             </select>
 
             <div className="relative flex items-center">
-              <Calendar className="size-3.5 text-[var(--color-gray-400)] absolute left-2.5 pointer-events-none sm:hidden" />
+              <M3Icon
+                name="calendar_today"
+                size={16}
+                className="text-[var(--md-sys-color-on-surface-variant)] absolute left-2.5 pointer-events-none sm:hidden"
+              />
               <input
                 type="date"
                 value={specificDate}
@@ -225,42 +239,41 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 }}
                 aria-label="Filtrar por día específico"
                 title="Filtrar por día específico"
-                className="h-10 pl-7 sm:pl-2.5 pr-2 text-xs rounded-lg bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] text-[var(--color-white)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 dark:[color-scheme:dark] cursor-pointer"
+                className="m3-outlined-field h-10 pl-8 sm:pl-3 pr-2.5 text-sm bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] outline-none dark:[color-scheme:dark] cursor-pointer"
               />
             </div>
 
             {hasAnyFilter && (
-              <button
-                type="button"
-                onClick={handleClearAllFilters}
-                className="size-10 inline-flex items-center justify-center rounded-full border border-[var(--color-secondary-700)] bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-gray-300)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer transition shrink-0"
+              <IconButton
+                ariaLabel="Limpiar filtros"
                 title="Limpiar filtros"
-                aria-label="Limpiar filtros"
+                variant="tonal"
+                onClick={handleClearAllFilters}
               >
-                <X className="size-4" />
-              </button>
+                <M3Icon name="close" size={18} />
+              </IconButton>
             )}
           </div>
         </div>
 
-        {/* Franja compacta de sumatoria total + selector Turnos / Por día */}
-        <div className="px-4 sm:px-6 py-3 border-b border-[var(--color-secondary-800)] flex flex-wrap items-center justify-between gap-2 bg-[var(--color-secondary-900)]">
+        {/* Sumatoria + Segmented Button M3 Turnos / Por día */}
+        <div className="px-6 py-3 border-b border-[var(--md-sys-color-outline-variant)] flex flex-wrap items-center justify-between gap-3 bg-[var(--md-sys-color-surface-container-low)]">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-[var(--color-gray-400)]">Total horas:</span>
-              <span className="font-mono text-sm font-bold text-[var(--color-primary-300)]">
+              <span className="text-[var(--md-sys-color-on-surface-variant)]">Total horas:</span>
+              <span className="font-mono text-sm font-medium text-[var(--md-sys-color-primary)]">
                 {formatTotalHours(totalSeconds)}
               </span>
-              <span className="font-mono text-xs text-[var(--color-gray-400)]">
+              <span className="font-mono text-xs text-[var(--md-sys-color-on-surface-variant)]">
                 ({formatDuration(totalSeconds)} · {filtered.length}{" "}
                 {filtered.length === 1 ? "turno" : "turnos"})
               </span>
             </div>
 
             {(!specificDate || specificDate === todayKey) && (
-              <div className="flex items-baseline gap-1 text-[var(--color-gray-400)]">
+              <div className="flex items-baseline gap-1 text-[var(--md-sys-color-on-surface-variant)]">
                 <span>Hoy:</span>
-                <span className="font-mono font-semibold text-[var(--color-white)]">
+                <span className="font-mono font-medium text-[var(--md-sys-color-on-surface)]">
                   {formatTotalHours(todaySeconds)}
                 </span>
               </div>
@@ -270,19 +283,20 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
           <div
             role="tablist"
             aria-label="Modo de visualización de turnos"
-            className="inline-flex rounded-full p-1 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-700)] shrink-0"
+            className="inline-flex rounded-full border border-[var(--md-sys-color-outline)] overflow-hidden divide-x divide-[var(--md-sys-color-outline)] shrink-0"
           >
             <button
               type="button"
               role="tab"
               aria-selected={viewMode === "sessions"}
               onClick={() => setViewMode("sessions")}
-              className={`min-h-[40px] px-4 py-1.5 rounded-full text-sm font-medium cursor-pointer transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
+              className={`m3-state h-10 px-4 text-sm font-medium inline-flex items-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] ${
                 viewMode === "sessions"
-                  ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)]"
-                  : "text-[var(--color-gray-300)] hover:text-[var(--color-white)]"
+                  ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+                  : "bg-transparent text-[var(--md-sys-color-on-surface)]"
               }`}
             >
+              {viewMode === "sessions" && <M3Icon name="check" size={16} />}
               Por turnos
             </button>
             <button
@@ -290,12 +304,13 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
               role="tab"
               aria-selected={viewMode === "daily"}
               onClick={() => setViewMode("daily")}
-              className={`min-h-[40px] px-4 py-1.5 rounded-full text-sm font-medium cursor-pointer transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
+              className={`m3-state h-10 px-4 text-sm font-medium inline-flex items-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] ${
                 viewMode === "daily"
-                  ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)]"
-                  : "text-[var(--color-gray-300)] hover:text-[var(--color-white)]"
+                  ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+                  : "bg-transparent text-[var(--md-sys-color-on-surface)]"
               }`}
             >
+              {viewMode === "daily" && <M3Icon name="check" size={16} />}
               Horas al día ({dailySummary.length})
             </button>
           </div>
@@ -304,11 +319,11 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
         {/* Contenido */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6">
           {loading && rows.length === 0 ? (
-            <div className="py-10 text-center text-sm text-[var(--color-gray-400)]">
+            <div className="py-10 text-center text-sm text-[var(--md-sys-color-on-surface-variant)]">
               Cargando historial de turnos...
             </div>
           ) : filtered.length === 0 ? (
-            <div className="py-10 text-center text-sm text-[var(--color-gray-400)] space-y-2">
+            <div className="py-10 text-center text-sm text-[var(--md-sys-color-on-surface-variant)] space-y-2">
               <p>
                 {selectedWorker
                   ? `No hay turnos registrados para ${selectedWorker.userName} con el filtro seleccionado.`
@@ -318,7 +333,7 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 <button
                   type="button"
                   onClick={handleClearAllFilters}
-                  className="inline-flex items-center min-h-[40px] px-4 rounded-full text-sm font-medium text-[var(--color-primary-400)] hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                  className="inline-flex items-center min-h-[40px] px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-primary)] hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
                 >
                   Limpiar filtros
                 </button>
@@ -334,48 +349,47 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 return (
                   <div
                     key={day.dateKey}
-                    className="rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]/60 p-3.5 space-y-2"
+                    className="rounded-xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] p-4 space-y-2.5"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0 flex items-center gap-2 flex-wrap">
                         <button
                           type="button"
                           onClick={() => handleSelectDayFromSummary(day.dateKey)}
-                          className="inline-flex items-center min-h-[40px] px-2 -mx-2 rounded-lg text-sm font-semibold text-[var(--color-white)] hover:text-[var(--color-primary-300)] capitalize cursor-pointer transition text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                          className="inline-flex items-center min-h-[40px] px-2 -mx-2 rounded-lg text-sm font-medium text-[var(--md-sys-color-on-surface)] hover:text-[var(--md-sys-color-primary)] capitalize cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
                           title="Ver turnos de este día"
                         >
                           {day.label}
                         </button>
-                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-[var(--color-secondary-800)] text-[var(--color-gray-300)]">
+                        <span className="text-xs px-2.5 py-0.5 rounded-lg bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)]">
                           {day.sessionCount} {day.sessionCount === 1 ? "turno" : "turnos"}
                         </span>
                         {day.activeCount > 0 && (
-                          <span className="text-xs px-2.5 py-0.5 rounded-full bg-[var(--color-primary-500)]/15 text-[var(--color-primary-300)] border border-[var(--color-primary-500)]/30">
+                          <span className="text-xs px-2.5 py-0.5 rounded-lg bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-medium">
                             {day.activeCount} en curso
                           </span>
                         )}
                       </div>
 
                       <div className="text-right shrink-0">
-                        <div className="font-mono text-sm font-bold text-[var(--color-primary-300)]">
+                        <div className="font-mono text-sm font-medium text-[var(--md-sys-color-primary)]">
                           {formatTotalHours(day.totalSeconds)}
                         </div>
-                        <div className="font-mono text-xs text-[var(--color-gray-400)]">
+                        <div className="font-mono text-xs text-[var(--md-sys-color-on-surface-variant)]">
                           {formatDuration(day.totalSeconds)}
                         </div>
                       </div>
                     </div>
 
-                    {/* Barra sutil de carga horaria */}
-                    <div className="h-1.5 w-full rounded-full bg-[var(--color-secondary-800)] overflow-hidden">
+                    <div className="h-1.5 w-full rounded-full bg-[var(--md-sys-color-surface-container-highest)] overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-[var(--color-primary-500)] transition-all duration-300"
+                        className="h-full rounded-full bg-[var(--md-sys-color-primary)]"
                         style={{ width: `${ratio}%` }}
                       />
                     </div>
 
                     {isAdmin && day.users.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 pt-0.5">
+                      <div className="flex flex-wrap gap-2 pt-0.5">
                         {day.users.map((u) => (
                           <button
                             key={u.userKey}
@@ -390,17 +404,15 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                                 ? "Mostrar todos los trabajadores"
                                 : `Ver solo horas de ${u.userName}`
                             }
-                            className={`inline-flex items-center gap-1 min-h-[40px] text-xs px-3 py-1 rounded-full border cursor-pointer transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
+                            className={`m3-state inline-flex items-center gap-1.5 min-h-[40px] text-xs px-3 py-1 rounded-lg border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
                               selectedWorkerId === u.userKey
-                                ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/50 text-[var(--color-white)]"
-                                : "bg-[var(--color-secondary-900)] border-[var(--color-secondary-800)] text-[var(--color-gray-300)] hover:border-[var(--color-primary-500)]/40"
+                                ? "bg-[var(--md-sys-color-secondary-container)] border-transparent text-[var(--md-sys-color-on-secondary-container)]"
+                                : "bg-[var(--md-sys-color-surface)] border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)]"
                             }`}
                           >
-                            <span className="font-medium text-[var(--color-white)]">
-                              {u.userName}
-                            </span>
-                            <span className="text-[var(--color-gray-500)]">·</span>
-                            <span className="font-mono text-[var(--color-primary-300)]">
+                            <span className="font-medium">{u.userName}</span>
+                            <span className="opacity-60">·</span>
+                            <span className="font-mono text-[var(--md-sys-color-primary)]">
                               {formatTotalHours(u.totalSeconds)}
                             </span>
                           </button>
@@ -413,49 +425,48 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
             </div>
           ) : (
             <>
-              {/* Tarjetas en teléfono */}
               <div className="sm:hidden space-y-2.5">
                 {filtered.map((row) => {
                   const elapsed = getSessionElapsedSeconds(row, nowMs, loadedAtMs);
                   return (
                     <div
                       key={row.id}
-                      className="rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]/70 p-3.5 space-y-1.5 text-xs"
+                      className="rounded-xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] p-3.5 space-y-1.5 text-xs"
                     >
                       <div className="flex items-center justify-between gap-2">
                         {isAdmin ? (
-                          <span className="font-semibold text-[var(--color-white)] truncate">
+                          <span className="font-medium text-[var(--md-sys-color-on-surface)] truncate">
                             {row.userName} ({row.userType || "Personal"})
                           </span>
                         ) : (
-                          <span className="font-mono font-semibold text-[var(--color-white)]">
+                          <span className="font-mono font-medium text-[var(--md-sys-color-on-surface)]">
                             {formatDuration(elapsed)}
                           </span>
                         )}
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border shrink-0 ${
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium shrink-0 ${
                             row.isActive
-                              ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40"
-                              : "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
+                              ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+                              : "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)]"
                           }`}
                         >
                           {row.isActive ? "En turno" : "Finalizada"}
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs text-[var(--color-gray-300)]">
+                      <div className="grid grid-cols-2 gap-2 text-xs text-[var(--md-sys-color-on-surface-variant)]">
                         <div>
-                          <span className="text-[var(--color-gray-500)] block">Inicio:</span>
+                          <span className="opacity-70 block">Inicio:</span>
                           <span className="font-mono">{formatDateTime(row.startedAt)}</span>
                         </div>
                         <div>
-                          <span className="text-[var(--color-gray-500)] block">Fin:</span>
+                          <span className="opacity-70 block">Fin:</span>
                           <span className="font-mono">{formatDateTime(row.endedAt)}</span>
                         </div>
                       </div>
                       {isAdmin && (
-                        <div className="text-xs text-[var(--color-gray-400)]">
+                        <div className="text-xs text-[var(--md-sys-color-on-surface-variant)]">
                           Duración:{" "}
-                          <span className="font-mono font-semibold text-[var(--color-white)]">
+                          <span className="font-mono font-medium text-[var(--md-sys-color-on-surface)]">
                             {formatDuration(elapsed)}
                           </span>
                         </div>
@@ -465,23 +476,22 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 })}
               </div>
 
-              {/* Tabla en tablet y escritorio */}
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full text-left border-collapse text-sm">
                   <thead>
-                    <tr className="border-b border-[var(--color-secondary-800)] text-xs text-[var(--color-gray-400)] uppercase">
-                      {isAdmin && <th className="py-2.5 pr-3">Colaborador</th>}
-                      <th className="py-2.5 pr-3">Inicio</th>
-                      <th className="py-2.5 pr-3">Fin</th>
-                      <th className="py-2.5 pr-3">Duración</th>
-                      <th className="py-2.5">Estado</th>
+                    <tr className="border-b border-[var(--md-sys-color-outline-variant)] text-xs text-[var(--md-sys-color-on-surface-variant)] uppercase">
+                      {isAdmin && <th className="py-3 pr-3 font-medium">Colaborador</th>}
+                      <th className="py-3 pr-3 font-medium">Inicio</th>
+                      <th className="py-3 pr-3 font-medium">Fin</th>
+                      <th className="py-3 pr-3 font-medium">Duración</th>
+                      <th className="py-3 font-medium">Estado</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[var(--color-secondary-800)]">
+                  <tbody className="divide-y divide-[var(--md-sys-color-outline-variant)]/60">
                     {filtered.map((row) => {
                       const elapsed = getSessionElapsedSeconds(row, nowMs, loadedAtMs);
                       return (
-                        <tr key={row.id} className="hover:bg-[var(--color-secondary-800)]/40">
+                        <tr key={row.id} className="hover:bg-[var(--md-sys-color-surface-container)]">
                           {isAdmin && (
                             <td className="py-2.5 pr-3">
                               <button
@@ -497,32 +507,32 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                                     ? "Mostrar todos los trabajadores"
                                     : `Filtrar por ${row.userName}`
                                 }
-                                className="min-h-[40px] px-2 -mx-2 text-left cursor-pointer group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                                className="min-h-[40px] px-2 -mx-2 text-left cursor-pointer group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
                               >
-                                <div className="font-semibold text-[var(--color-white)] group-hover:text-[var(--color-primary-400)] transition">
+                                <div className="font-medium text-[var(--md-sys-color-on-surface)] group-hover:text-[var(--md-sys-color-primary)]">
                                   {row.userName}
                                 </div>
-                                <div className="text-xs text-[var(--color-gray-400)]">
+                                <div className="text-xs text-[var(--md-sys-color-on-surface-variant)]">
                                   {row.userType || "Personal"}
                                 </div>
                               </button>
                             </td>
                           )}
-                          <td className="py-2.5 pr-3 font-mono text-xs text-[var(--color-gray-200)]">
+                          <td className="py-2.5 pr-3 font-mono text-xs text-[var(--md-sys-color-on-surface)]">
                             {formatDateTime(row.startedAt)}
                           </td>
-                          <td className="py-2.5 pr-3 font-mono text-xs text-[var(--color-gray-300)]">
+                          <td className="py-2.5 pr-3 font-mono text-xs text-[var(--md-sys-color-on-surface-variant)]">
                             {formatDateTime(row.endedAt)}
                           </td>
-                          <td className="py-2.5 pr-3 font-mono text-xs font-semibold text-[var(--color-white)]">
+                          <td className="py-2.5 pr-3 font-mono text-xs font-medium text-[var(--md-sys-color-on-surface)]">
                             {formatDuration(elapsed)}
                           </td>
                           <td className="py-2.5">
                             <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 row.isActive
-                                  ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40"
-                                  : "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
+                                  ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+                                  : "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)]"
                               }`}
                             >
                               {row.isActive ? "En turno" : "Finalizada"}

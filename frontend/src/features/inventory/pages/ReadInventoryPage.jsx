@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Package, Warehouse, Tag, DollarSign, Calendar, FileText, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
+import { M3Icon } from "@/shared";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/shared";
 
@@ -25,18 +25,22 @@ export default function ReadInventoryPage() {
 
   if (!item) {
     return (
-      <div className="max-w-3xl mx-auto my-12 px-3 sm:px-4 text-center font-[family-name:var(--main-font)]">
-        <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-5 sm:p-8 shadow-xl text-[var(--color-white)] space-y-4">
-          <Package className="size-10 mx-auto text-[var(--color-primary-400)]" />
-          <h1 className="text-title-lg font-bold">No se encontró información del insumo</h1>
-          <p className="text-sm text-[var(--color-gray-400)]">
+      <div className="flex-1 flex items-center justify-center p-4 font-[family-name:var(--main-font)]">
+        <div className="max-w-lg w-full bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-6 sm:p-8 m3-elevation-1 text-center text-[var(--md-sys-color-on-surface)] space-y-4">
+          <div className="size-14 rounded-2xl bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center mx-auto">
+            <M3Icon name="inventory_2" size={28} />
+          </div>
+          <h1 className="text-headline-sm font-semibold">No se encontró información del insumo</h1>
+          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)]">
             Selecciona un insumo desde el listado de inventario para consultar su ficha técnica.
           </p>
-          <Link to="/inventoryList">
-            <Button variant="secondary" size="md">
-              Volver al Listado
-            </Button>
-          </Link>
+          <div className="pt-2">
+            <Link to="/inventoryList">
+              <Button variant="filled" size="md" leadingIcon="arrow_back">
+                Volver al Listado
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -77,76 +81,86 @@ export default function ReadInventoryPage() {
   const statusLabel = item.status || (isActive ? "Activo" : "Inactivo");
 
   return (
-    <div className="max-w-4xl mx-auto my-6 px-3 sm:px-4 font-[family-name:var(--main-font)]">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <div>
-          <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">Ficha del Insumo</h1>
-          <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
-            Consulta organizada en modo lectura de existencias, proveedor y trazabilidad.
-          </p>
+    <div className="flex-1 flex flex-col w-full font-[family-name:var(--main-font)]">
+      <div className="flex-1 flex flex-col w-full bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl p-5 sm:p-8 m3-elevation-1 text-[var(--md-sys-color-on-surface)] space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
+          <div>
+            <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+              Ficha del Insumo
+            </h1>
+            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+              Consulta organizada en modo lectura de existencias, proveedor y trazabilidad.
+            </p>
+          </div>
+          <Link to="/inventoryList">
+            <Button variant="outlined" size="md" leadingIcon="arrow_back">
+              Volver al Listado
+            </Button>
+          </Link>
         </div>
-        <Link to="/inventoryList">
-          <Button variant="secondary" size="md">
-            Volver al Listado
-          </Button>
-        </Link>
-      </div>
 
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-xl text-[var(--color-white)] space-y-6">
         {/* Cabecera del insumo */}
-        <div className="flex flex-col sm:flex-row items-center gap-5 pb-6 border-b border-[var(--color-secondary-800)]">
-          <div className="size-20 rounded-xl border-2 border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)] flex items-center justify-center shrink-0 text-[var(--color-primary-400)] shadow-md">
-            <Package className="size-9" />
+        <div className="flex flex-col sm:flex-row items-center gap-5 pb-6 border-b border-[var(--md-sys-color-outline-variant)]">
+          <div className="size-20 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shrink-0">
+            <M3Icon name="inventory_2" size={36} />
           </div>
 
           <div className="flex-1 text-center sm:text-left">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-              <h2 className="text-title-lg font-bold text-[var(--color-white)]">{name}</h2>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mb-1.5">
+              <h2 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+                {name}
+              </h2>
               <span
-                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-label-md font-medium border ${
                   isActive
-                    ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40"
-                    : "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
+                    ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-[var(--md-sys-color-primary)]/40"
+                    : "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)]"
                 }`}
               >
-                {isActive ? <CheckCircle2 className="size-3" /> : <XCircle className="size-3" />}
+                <M3Icon name={isActive ? "check_circle" : "cancel"} size={14} />
                 {statusLabel}
               </span>
             </div>
-            <p className="text-xs text-[var(--color-gray-400)] font-mono">Código: {code}</p>
+            <p className="text-label-md text-[var(--md-sys-color-on-surface-variant)] font-mono">
+              Código: {code}
+            </p>
           </div>
         </div>
 
         {/* Sección 1: Información General */}
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-primary-400)] flex items-center gap-2 mb-3">
-            <Tag className="size-4" />
+          <h3 className="text-label-lg font-semibold uppercase tracking-wider text-[var(--md-sys-color-primary)] flex items-center gap-2 mb-3">
+            <M3Icon name="sell" size={18} />
             1. Información General
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 sm:p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] text-body-sm">
             <div>
-              <span className="text-[var(--color-gray-400)] block">Nombre del Insumo:</span>
-              <span className="font-semibold text-[var(--color-white)] text-sm">{name}</span>
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Nombre del Insumo:</span>
+              <span className="font-semibold text-[var(--md-sys-color-on-surface)] text-body-md">{name}</span>
             </div>
             <div>
-              <span className="text-[var(--color-gray-400)] block">Marca:</span>
-              <span className="font-semibold text-[var(--color-gray-200)]">{brand}</span>
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Marca:</span>
+              <span className="font-semibold text-[var(--md-sys-color-on-surface)]">{brand}</span>
             </div>
             <div>
-              <span className="text-[var(--color-gray-400)] block">Categoría:</span>
-              <span className="font-semibold text-[var(--color-gray-200)]">{category}</span>
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Categoría:</span>
+              <span className="font-semibold text-[var(--md-sys-color-on-surface)]">{category}</span>
             </div>
             <div>
-              <span className="text-[var(--color-gray-400)] block">Proveedor Asociado:</span>
-              <span className="font-semibold text-[var(--color-white)]">{supplier}</span>
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Proveedor Asociado:</span>
+              <span className="font-semibold text-[var(--md-sys-color-on-surface)]">{supplier}</span>
             </div>
             <div>
-              <span className="text-[var(--color-gray-400)] block">Código Contable:</span>
-              <span className="font-semibold text-[var(--color-white)] font-mono">{code}</span>
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Código Contable:</span>
+              <span className="font-semibold text-[var(--md-sys-color-on-surface)] font-mono">{code}</span>
             </div>
             <div>
-              <span className="text-[var(--color-gray-400)] block">Estado Operativo:</span>
-              <span className={`font-semibold ${isActive ? "text-[var(--color-primary-400)]" : "text-[var(--color-gray-300)]"}`}>
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Estado Operativo:</span>
+              <span
+                className={`font-semibold ${
+                  isActive ? "text-[var(--md-sys-color-primary)]" : "text-[var(--md-sys-color-on-surface-variant)]"
+                }`}
+              >
                 {statusLabel}
               </span>
             </div>
@@ -155,35 +169,35 @@ export default function ReadInventoryPage() {
 
         {/* Sección 2: Control de Stock y Costos */}
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-primary-400)] flex items-center gap-2 mb-3">
-            <DollarSign className="size-4" />
+          <h3 className="text-label-lg font-semibold uppercase tracking-wider text-[var(--md-sys-color-primary)] flex items-center gap-2 mb-3">
+            <M3Icon name="attach_money" size={18} />
             2. Control de Stock y Costos
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 sm:p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] text-body-sm">
             <div>
-              <span className="text-[var(--color-gray-400)] block">Stock Actual:</span>
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Stock Actual:</span>
               <span
-                className={`font-bold text-sm inline-flex items-center gap-1.5 mt-0.5 ${
-                  isLowStock ? "text-[var(--color-warning)]" : "text-[var(--color-white)]"
+                className={`font-bold text-body-md inline-flex items-center gap-2 mt-0.5 tabular-nums ${
+                  isLowStock ? "text-[var(--md-sys-color-error)]" : "text-[var(--md-sys-color-on-surface)]"
                 }`}
               >
                 {currentStock} {unit}
                 {isLowStock && (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-[var(--color-warning-bg)] text-[var(--color-warning)] border border-[var(--color-warning-border)]">
-                    <AlertTriangle className="size-3.5" /> Stock bajo
+                  <span className="inline-flex items-center gap-1 text-label-sm font-medium px-2.5 py-0.5 rounded-full bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border border-[var(--md-sys-color-error)]/40">
+                    <M3Icon name="warning" size={14} /> Stock bajo
                   </span>
                 )}
               </span>
             </div>
             <div>
-              <span className="text-[var(--color-gray-400)] block">Stock Mínimo Requerido:</span>
-              <span className="font-semibold text-[var(--color-gray-200)] text-sm">
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Stock Mínimo Requerido:</span>
+              <span className="font-semibold text-[var(--md-sys-color-on-surface)] text-body-md tabular-nums">
                 {minStock} {unit}
               </span>
             </div>
             <div>
-              <span className="text-[var(--color-gray-400)] block">Precio / Costo de Compra:</span>
-              <span className="font-semibold text-[var(--color-white)] font-mono text-sm">
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Precio / Costo de Compra:</span>
+              <span className="font-semibold text-[var(--md-sys-color-on-surface)] font-mono text-body-md tabular-nums">
                 {formattedPrice}
               </span>
             </div>
@@ -192,40 +206,40 @@ export default function ReadInventoryPage() {
 
         {/* Sección 3: Ubicación y Trazabilidad */}
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-primary-400)] flex items-center gap-2 mb-3">
-            <Warehouse className="size-4" />
+          <h3 className="text-label-lg font-semibold uppercase tracking-wider text-[var(--md-sys-color-primary)] flex items-center gap-2 mb-3">
+            <M3Icon name="warehouse" size={18} />
             3. Ubicación y Trazabilidad
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 sm:p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] text-body-sm">
             <div>
-              <span className="text-[var(--color-gray-400)] block">Número de Lote:</span>
-              <span className="font-semibold text-[var(--color-white)] font-mono">{batchNumber}</span>
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Número de Lote:</span>
+              <span className="font-semibold text-[var(--md-sys-color-on-surface)] font-mono">{batchNumber}</span>
             </div>
             <div>
-              <span className="text-[var(--color-gray-400)] block">Ubicación en Bodega:</span>
-              <span className="font-medium text-[var(--color-gray-200)]">{locationArea}</span>
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Ubicación en Bodega:</span>
+              <span className="font-medium text-[var(--md-sys-color-on-surface)]">{locationArea}</span>
             </div>
             <div>
-              <span className="text-[var(--color-gray-400)] block">Fecha Vencimiento / Act.:</span>
-              <span className="font-medium text-[var(--color-gray-200)] inline-flex items-center gap-1.5 mt-0.5">
-                <Calendar className="size-3.5 text-[var(--color-primary-400)]" />
+              <span className="text-[var(--md-sys-color-on-surface-variant)] block">Fecha Vencimiento / Act.:</span>
+              <span className="font-medium text-[var(--md-sys-color-on-surface)] inline-flex items-center gap-1.5 mt-0.5">
+                <M3Icon name="calendar_today" size={14} className="text-[var(--md-sys-color-primary)]" />
                 {formattedDate}
               </span>
             </div>
-            <div className="sm:col-span-3 pt-2 border-t border-[var(--color-secondary-800)]">
-              <span className="text-[var(--color-gray-400)] flex items-center gap-1.5 mb-1">
-                <FileText className="size-3.5 text-[var(--color-primary-400)]" />
+            <div className="sm:col-span-3 pt-3 border-t border-[var(--md-sys-color-outline-variant)]">
+              <span className="text-[var(--md-sys-color-on-surface-variant)] flex items-center gap-1.5 mb-1">
+                <M3Icon name="description" size={15} className="text-[var(--md-sys-color-primary)]" />
                 Descripción y Observaciones:
               </span>
-              <p className="text-[var(--color-gray-300)] leading-relaxed">{description}</p>
+              <p className="text-[var(--md-sys-color-on-surface)] leading-relaxed">{description}</p>
             </div>
           </div>
         </div>
 
         {/* Pie */}
-        <div className="flex justify-end pt-2 border-t border-[var(--color-secondary-800)]">
+        <div className="flex justify-end mt-auto pt-4 border-t border-[var(--md-sys-color-outline-variant)]">
           <Link to="/inventoryList">
-            <Button variant="secondary" size="md">
+            <Button variant="outlined" size="md" leadingIcon="arrow_back">
               Volver al Listado
             </Button>
           </Link>

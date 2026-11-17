@@ -223,12 +223,24 @@ export default function CreateInventory() {
         : "Crear Insumo";
 
     return (
-        <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-            <h1 className="text-2xl leading-8 font-bold text-center mb-6 text-[var(--color-white)]">
-                {pageTitle}
-            </h1>
+        <div className="flex-1 flex flex-col w-full p-5 sm:p-8 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
+                <div>
+                    <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+                        {pageTitle}
+                    </h1>
+                    <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+                        Registra lotes, proveedor responsable y existencias mínimas del almacén.
+                    </p>
+                </div>
+                <Link to="/inventoryList">
+                    <Button variant="outlined" size="md" leadingIcon="arrow_back">
+                        Volver al Inventario
+                    </Button>
+                </Link>
+            </div>
             {feedback && (
-                <div className="mb-6 max-w-xl mx-auto">
+                <div className="mb-6 max-w-2xl">
                     <Alert
                         type={feedback.type}
                         title={feedback.title}
@@ -238,10 +250,10 @@ export default function CreateInventory() {
                     />
                 </div>
             )}
-            <form onSubmit={handleSubmit}>
-                <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 justify-center items-start">
-                    <div className="w-full lg:w-48 flex flex-col items-center">
-                        <p className="text-center text-[var(--color-gray-300)] text-sm mb-3 font-medium">
+            <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+                    <div className="lg:col-span-3 flex flex-col items-center p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
+                        <p className="text-center text-[var(--md-sys-color-on-surface-variant)] text-label-lg mb-3 font-medium">
                             Código de barras / Imagen
                         </p>
                         <FileInput
@@ -254,11 +266,11 @@ export default function CreateInventory() {
                             altText={formInventory.inventoryProductName || "Insumo"}
                         />
                         {errors.userImage && (
-                            <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+                            <span className="text-[var(--md-sys-color-error)] text-label-sm mt-2">{errors.userImage}</span>
                         )}
                     </div>
 
-                    <div className="flex-1 flex flex-col gap-3 w-full">
+                    <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
                         <Select
                             label="Proveedor"
                             name="inventorySupplierSelect"
@@ -313,9 +325,6 @@ export default function CreateInventory() {
                             disabled={isReadOnly}
                             error={errors.inventoryProductLocation}
                         />
-                    </div>
-            
-                    <div className="flex-1 flex flex-col gap-3 w-full">
                         <Select
                             label="Marca del producto"
                             name="productBrandSelect"
@@ -339,7 +348,7 @@ export default function CreateInventory() {
                                 error={errors.numberBatch}
                             />
                             {isEditing && (
-                                <span className="text-xs text-[var(--color-warning)] block mt-1">
+                                <span className="text-label-sm text-[var(--md-sys-color-primary)] block mt-1">
                                     * El lote queda bloqueado por trazabilidad según norma RFADMIN11.
                                 </span>
                             )}
@@ -377,9 +386,6 @@ export default function CreateInventory() {
                             disabled={isReadOnly}
                             error={errors.priceBuy}
                         />
-                    </div>
-
-                    <div className="flex-1 flex flex-col gap-3 w-full">
                         <Input
                             label="Fecha de vencimiento"
                             name="expirationDate"
@@ -394,10 +400,10 @@ export default function CreateInventory() {
                     </div>
                 </div>
 
-                <div className="w-full flex justify-center mt-12 gap-4">
+                <div className="w-full flex justify-end mt-auto pt-6 border-t border-[var(--md-sys-color-outline-variant)] gap-3">
                     <Link to="/inventoryList">
                         <Button
-                            variant="secondary"
+                            variant="outlined"
                             size="md"
                             type="button"
                             disabled={submitting}
@@ -407,9 +413,10 @@ export default function CreateInventory() {
                     </Link>
                     {!isReadOnly && (
                         <Button
-                            variant="primary"
+                            variant="filled"
                             size="md"
                             type="submit"
+                            leadingIcon="check_circle"
                             disabled={submitting}
                         >
                             {submitting ? "Guardando..." : isEditing ? "Guardar Cambios" : "Confirmar Información"}

@@ -1,75 +1,73 @@
-// src/shared/components/Alert.jsx
 import { useEffect } from "react";
-import { CheckCircle2, AlertTriangle, XCircle, Info, X } from "lucide-react";
 import clsx from "clsx";
+import M3Icon from "./M3Icon";
 
-const icons = {
-  success: CheckCircle2,
-  warning: AlertTriangle,
-  error: XCircle,
-  info: Info,
+const iconNames = {
+  success: "check_circle",
+  error: "error",
+  warning: "warning",
+  info: "info",
 };
 
 const styles = {
-  success: "bg-[var(--color-secondary-900)] border-[var(--color-primary-500)] text-[var(--color-white)]",
-  warning: "bg-[var(--color-warning-bg)] border-[var(--color-warning-border)] text-[var(--color-white)]",
-  error: "bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-white)]",
-  info: "bg-[var(--color-secondary-900)] border-[var(--color-primary-400)] text-[var(--color-white)]",
+  success:
+    "bg-[var(--color-success-bg)] border-[var(--color-success-border)] text-[var(--color-success)]",
+  error:
+    "bg-[var(--md-sys-color-error-container)] border-[var(--color-error-border)] text-[var(--md-sys-color-on-error-container)]",
+  warning:
+    "bg-[var(--color-warning-bg)] border-[var(--color-warning-border)] text-[var(--color-warning)]",
+  info:
+    "bg-[var(--md-sys-color-primary-container)] border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-primary-container)]",
 };
 
-const iconColors = {
-  success: "text-[var(--color-primary-400)]",
-  warning: "text-[var(--color-warning)]",
-  error: "text-[var(--color-error)]",
-  info: "text-[var(--color-primary-300)]",
-};
-
-export function Alert({
+export default function Alert({
   type = "info",
   title,
   message,
   onClose,
-  autoClose = true,
-  duration = 4000,
+  autoClose = false,
+  duration = 5000,
   className = "",
 }) {
-  const Icon = icons[type] || Info;
-
   useEffect(() => {
-    if (autoClose && onClose) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, duration);
-      return () => clearTimeout(timer);
-    }
+    if (!autoClose || !onClose) return;
+    const timer = setTimeout(() => onClose(), duration);
+    return () => clearTimeout(timer);
   }, [autoClose, duration, onClose]);
 
   return (
     <div
       role="alert"
       className={clsx(
-        "flex items-start gap-3 p-3.5 rounded-xl border shadow-md transition-all",
-        styles[type],
+        "flex items-start gap-3 px-4 py-3.5 rounded-xl border m3-elevation-1",
+        styles[type] || styles.info,
         className
       )}
     >
-      <Icon className={clsx("size-5 shrink-0 mt-0.5", iconColors[type])} />
-      <div className="flex-1">
-        {title && <h4 className="font-bold text-sm leading-5 mb-0.5">{title}</h4>}
-        {message && <p className="text-xs text-[var(--color-gray-300)] leading-4">{message}</p>}
+      <M3Icon
+        name={iconNames[type] || "info"}
+        filled
+        size={20}
+        className="mt-0.5"
+      />
+      <div className="flex-1 min-w-0">
+        {title && (
+          <h4 className="font-medium text-sm leading-5 mb-0.5">{title}</h4>
+        )}
+        {message && (
+          <p className="text-xs leading-4 opacity-90">{message}</p>
+        )}
       </div>
       {onClose && (
         <button
           type="button"
           onClick={onClose}
           aria-label="Cerrar notificación"
-          className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] transition-colors size-10 flex items-center justify-center rounded-full hover:bg-[var(--color-secondary-800)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0"
+          className="m3-state size-10 flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer shrink-0 -my-1 -mr-1"
         >
-          <X className="size-4" />
+          <M3Icon name="close" size={18} />
         </button>
       )}
     </div>
   );
 }
-
-export default Alert;

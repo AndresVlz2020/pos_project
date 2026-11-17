@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { M3Icon } from "@/shared";
 import { extractTableNumber } from "../utils/orderFormHelpers";
 
 export function TableIllustration({
@@ -13,34 +13,34 @@ export function TableIllustration({
   const hasTopBottom = cap >= 3;
 
   const tableFill = isSelected
-    ? "fill-[var(--color-primary-500)]"
+    ? "fill-[var(--md-sys-color-primary)]"
     : isAvailable
-    ? "fill-[var(--color-primary-500)]/15"
-    : "fill-[var(--color-error-bg)]";
+    ? "fill-[var(--md-sys-color-primary-container)]/55"
+    : "fill-[var(--md-sys-color-error-container)]";
 
   const tableStroke = isSelected
-    ? "stroke-[var(--color-primary-400)]"
+    ? "stroke-[var(--md-sys-color-primary)]"
     : isAvailable
-    ? "stroke-[var(--color-primary-500)]/55"
-    : "stroke-[var(--color-error-border)]";
+    ? "stroke-[var(--md-sys-color-primary)]/60"
+    : "stroke-[var(--md-sys-color-error)]/60";
 
   const innerRimStroke = isSelected
-    ? "stroke-[var(--color-on-primary)]/35"
+    ? "stroke-[var(--md-sys-color-on-primary)]/40"
     : isAvailable
-    ? "stroke-[var(--color-primary-400)]/30"
-    : "stroke-[var(--color-error)]/20";
+    ? "stroke-[var(--md-sys-color-primary)]/30"
+    : "stroke-[var(--md-sys-color-error)]/25";
 
   const chairFill = isSelected
-    ? "fill-[var(--color-primary-500)]/35 stroke-[var(--color-primary-400)]"
+    ? "fill-[var(--md-sys-color-primary-container)] stroke-[var(--md-sys-color-primary)]"
     : isAvailable
-    ? "fill-[var(--color-secondary-800)]/80 stroke-[var(--color-primary-500)]/40"
-    : "fill-[var(--color-secondary-900)]/60 stroke-[var(--color-error-border)]";
+    ? "fill-[var(--md-sys-color-surface-container-high)] stroke-[var(--md-sys-color-primary)]/45"
+    : "fill-[var(--md-sys-color-surface-container-highest)] stroke-[var(--md-sys-color-error)]/40";
 
   const numberFill = isSelected
-    ? "fill-[var(--color-on-primary)]"
+    ? "fill-[var(--md-sys-color-on-primary)]"
     : isAvailable
-    ? "fill-[var(--color-white)]"
-    : "fill-[var(--color-error)]";
+    ? "fill-[var(--md-sys-color-on-surface)]"
+    : "fill-[var(--md-sys-color-on-error-container)]";
 
   return (
     <svg
@@ -128,20 +128,20 @@ export default function TableSelectorGrid({
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-medium leading-4 text-[var(--color-gray-300)]">
+        <span className="text-label-md font-medium text-[var(--md-sys-color-on-surface-variant)]">
           Mesa *{" "}
           {selectedTableNumber && (
-            <span className="ml-1 font-semibold text-[var(--color-primary-400)]">
+            <span className="ml-1 font-semibold text-[var(--md-sys-color-primary)]">
               · {selectedTableNumber}
             </span>
           )}
         </span>
-        <span className="text-xs font-medium leading-4 text-[var(--color-primary-400)]">
+        <span className="text-label-md font-medium text-[var(--md-sys-color-primary)] tabular-nums">
           {freeCount} {freeCount === 1 ? "libre" : "libres"}
         </span>
       </div>
 
-      <div className="p-1.5 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]/45 max-h-[252px] overflow-y-auto overscroll-contain pr-1">
+      <div className="p-2 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] max-h-[264px] overflow-y-auto overscroll-contain pr-1">
         <div
           role="radiogroup"
           aria-label="Seleccionar mesa"
@@ -162,25 +162,25 @@ export default function TableSelectorGrid({
                 title={`${t.tableNumber} · ${t.isAvailable ? "Libre" : "Ocupada"} (${t.capacity || 4} pers.)${
                   !t.isAvailable && t.activeOrderNumber ? ` · Orden ${t.activeOrderNumber}` : ""
                 }`}
-                className={`group relative flex flex-col items-center justify-between gap-1 px-1 pt-2 pb-1.5 rounded-lg border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all duration-150 cursor-pointer ${
+                className={`group relative flex flex-col items-center justify-between gap-1 px-1 pt-2 pb-1.5 rounded-xl border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]/50 transition-colors duration-150 cursor-pointer m3-state ${
                   isSelected
-                    ? "bg-[var(--color-primary-500)]/15 border-2 border-[var(--color-primary-500)] shadow-sm ring-1 ring-[var(--color-primary-500)]/25"
+                    ? "bg-[var(--md-sys-color-primary-container)]/35 border-2 border-[var(--md-sys-color-primary)] m3-elevation-1"
                     : t.isAvailable
-                    ? "bg-[var(--color-secondary-900)]/80 border-[var(--color-secondary-800)] hover:border-[var(--color-primary-500)]/55 hover:bg-[var(--color-secondary-900)]"
-                    : "bg-[var(--color-secondary-950)]/60 border-[var(--color-secondary-800)]/80 opacity-75"
+                    ? "bg-[var(--md-sys-color-surface)] border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-primary)]/60 hover:bg-[var(--md-sys-color-surface-container)]"
+                    : "bg-[var(--md-sys-color-surface-container-highest)]/50 border-[var(--md-sys-color-outline-variant)] opacity-75"
                 }`}
               >
                 {/* Indicador de selección superior derecho */}
                 {t.isAvailable && (
                   <span
                     aria-hidden="true"
-                    className={`absolute top-1 right-1 w-3 h-3 rounded-full flex items-center justify-center transition-colors ${
+                    className={`absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center transition-colors ${
                       isSelected
-                        ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)]"
-                        : "border border-[var(--color-secondary-600)] group-hover:border-[var(--color-primary-400)]"
+                        ? "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]"
+                        : "border border-[var(--md-sys-color-outline)] group-hover:border-[var(--md-sys-color-primary)]"
                     }`}
                   >
-                    {isSelected && <Check className="w-2 h-2" strokeWidth={3} />}
+                    {isSelected && <M3Icon name="check" size={11} />}
                   </span>
                 )}
 
@@ -194,15 +194,15 @@ export default function TableSelectorGrid({
 
                 <div className="flex flex-col items-center gap-0.5 w-full">
                   <span
-                    className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-label-sm font-medium leading-4 border ${
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-medium leading-4 border ${
                       t.isAvailable
-                        ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/35 text-[var(--color-primary-400)]"
-                        : "bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)]"
+                        ? "bg-[var(--md-sys-color-primary-container)]/50 border-[var(--md-sys-color-primary)]/40 text-[var(--md-sys-color-on-primary-container)]"
+                        : "bg-[var(--md-sys-color-error-container)]/60 border-[var(--md-sys-color-error)]/40 text-[var(--md-sys-color-on-error-container)]"
                     }`}
                   >
                     {t.isAvailable ? "Libre" : "Ocupada"}
                   </span>
-                  <span className="text-label-sm leading-4 text-[var(--color-gray-400)]">
+                  <span className="text-label-sm leading-4 text-[var(--md-sys-color-on-surface-variant)]">
                     {t.capacity || 4} pers.
                   </span>
                 </div>
@@ -213,13 +213,13 @@ export default function TableSelectorGrid({
       </div>
 
       {tables.length > 9 && (
-        <p className="text-xs leading-4 text-[var(--color-gray-400)]">
+        <p className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)]">
           Desliza dentro del recuadro para ver las {tables.length} mesas.
         </p>
       )}
 
       {error && (
-        <p className="text-xs font-medium text-[var(--color-error)]">{error}</p>
+        <p className="text-xs font-medium text-[var(--md-sys-color-error)]">{error}</p>
       )}
     </div>
   );

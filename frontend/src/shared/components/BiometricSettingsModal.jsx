@@ -1,19 +1,6 @@
-// frontend/src/shared/components/BiometricSettingsModal.jsx
-// Modal opcional para que cualquier usuario (Admin, Cajero, Mesero o Cocina)
-// registre, consulte y revoque sus credenciales biométricas WebAuthn por dispositivo.
-
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  Fingerprint,
-  Smartphone,
-  Trash2,
-  X,
-  CheckCircle2,
-  AlertTriangle,
-  Loader2,
-  ShieldCheck,
-} from "lucide-react";
+import { M3Icon, Button, IconButton, Input } from "@/shared";
 import {
   getBiometricCapabilities,
   listMyBiometricsApi,
@@ -160,46 +147,46 @@ export default function BiometricSettingsModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-4 bg-black/65 backdrop-blur-xs"
+      className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[var(--md-sys-color-scrim)] backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
       aria-labelledby="biometric-settings-title"
     >
-      <div className="dpiero-modal-in w-full max-w-lg max-h-[90dvh] flex flex-col overflow-hidden rounded-[28px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] p-6 shadow-2xl text-[var(--color-white)]">
-        {/* Cabecera */}
-        <div className="flex items-start justify-between gap-3 pb-3 mb-4 border-b border-[var(--color-secondary-800)] shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="size-10 rounded-full bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 flex items-center justify-center shrink-0">
-              <Fingerprint className="size-5 text-[var(--color-primary-400)]" />
+      <div className="dpiero-modal-in w-full max-w-lg max-h-[90dvh] flex flex-col overflow-hidden rounded-[28px] bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] p-6 m3-elevation-3 text-[var(--md-sys-color-on-surface)]">
+        <div className="flex items-start justify-between gap-3 pb-4 mb-4 border-b border-[var(--md-sys-color-outline-variant)] shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="size-10 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shrink-0">
+              <M3Icon name="fingerprint" size={22} />
             </div>
-            <div>
-              <h3 id="biometric-settings-title" className="text-title-lg font-bold">
+            <div className="min-w-0">
+              <h3
+                id="biometric-settings-title"
+                className="text-2xl leading-8 font-medium text-[var(--md-sys-color-on-surface)]"
+              >
                 Datos Biométricos (Opcional)
               </h3>
-              <p className="text-xs text-[var(--color-gray-400)]">
+              <p className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)]">
                 {userName ? `Cuenta: ${userName}` : "Configuración personal de acceso"}
               </p>
             </div>
           </div>
 
-          <button
-            type="button"
+          <IconButton
+            ariaLabel="Cerrar configuración biométrica"
+            variant="standard"
             onClick={handleCloseModal}
-            aria-label="Cerrar configuración biométrica"
-            className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] size-10 flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer shrink-0"
           >
-            <X className="size-5" />
-          </button>
+            <M3Icon name="close" size={20} />
+          </IconButton>
         </div>
 
         <div className="overflow-y-auto overflow-x-hidden flex-1 min-h-0 space-y-4 pr-1">
-          {/* Explicación contextual según rol */}
-          <div className="rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] p-3.5 text-xs text-[var(--color-gray-300)] space-y-1">
-            <div className="flex items-center gap-1.5 font-semibold text-[var(--color-primary-400)]">
-              <ShieldCheck className="size-4 shrink-0" />
+          <div className="rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] p-4 text-xs text-[var(--md-sys-color-on-surface-variant)] space-y-1">
+            <div className="flex items-center gap-1.5 font-medium text-[var(--md-sys-color-primary)]">
+              <M3Icon name="verified_user" size={18} />
               <span>Uso de biometría en tu perfil</span>
             </div>
-            <p className="leading-relaxed">
+            <p className="leading-4">
               {isAdmin
                 ? "Por seguridad, en PC/Windows confirmarás siempre con tu contraseña (Windows Hello está deshabilitado). Desde celular o tablet compatible puedes vincular Huella o Face ID (sin claves guardadas en la nube)."
                 : "Opcional: puedes seguir usando tu PIN siempre, o vincular Huella o Face ID desde un celular o tablet compatible (Windows Hello en PC está deshabilitado por seguridad)."}
@@ -208,12 +195,12 @@ export default function BiometricSettingsModal({
 
           {feedback && (
             <div
-              className={`rounded-xl px-3.5 py-2.5 text-xs font-medium border ${
+              className={`rounded-xl px-4 py-3 text-xs font-medium border ${
                 feedback.type === "success"
-                  ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)]"
+                  ? "bg-[var(--md-sys-color-primary-container)] border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-primary-container)]"
                   : feedback.type === "info"
                   ? "bg-[var(--color-warning-bg)] border-[var(--color-warning-border)] text-[var(--color-warning)]"
-                  : "bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)]"
+                  : "bg-[var(--md-sys-color-error-container)] border-[var(--color-error-border)] text-[var(--md-sys-color-on-error-container)]"
               }`}
             >
               {feedback.message}
@@ -221,47 +208,46 @@ export default function BiometricSettingsModal({
           )}
 
           {loading ? (
-            <div className="flex items-center justify-center gap-2 py-8 text-xs text-[var(--color-gray-400)]">
-              <Loader2 className="size-4 animate-spin text-[var(--color-primary-400)]" />
+            <div className="flex items-center justify-center gap-2 py-8 text-xs text-[var(--md-sys-color-on-surface-variant)]">
+              <M3Icon name="progress_activity" size={18} className="animate-spin text-[var(--md-sys-color-primary)]" />
               <span>Comprobando sensor y credenciales registradas...</span>
             </div>
           ) : (
             <>
-              {/* Bloque de compatibilidad del dispositivo actual */}
               {capabilities.isDesktop ? (
-                <div className="rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] p-3.5 flex items-start gap-2.5 text-xs text-[var(--color-gray-300)]">
-                  <AlertTriangle className="size-4 shrink-0 mt-0.5 text-[var(--color-warning)]" />
+                <div className="rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] p-4 flex items-start gap-2.5 text-xs text-[var(--md-sys-color-on-surface-variant)]">
+                  <M3Icon name="warning" filled size={18} className="mt-0.5 text-[var(--color-warning)]" />
                   <div>
-                    <p className="font-semibold text-[var(--color-white)]">
+                    <p className="font-medium text-[var(--md-sys-color-on-surface)]">
                       Este equipo PC no cuenta con lector de huella físico
                     </p>
-                    <p className="text-[var(--color-gray-400)] mt-0.5 leading-relaxed">
+                    <p className="mt-0.5 leading-4">
                       Por seguridad no se utiliza Windows Hello ni llaves guardadas en el navegador. En PC se requiere un lector USB biométrico físico dedicado; mientras tanto usa tu contraseña o PIN.
                     </p>
                   </div>
                 </div>
               ) : !capabilities.secureContext ? (
-                <div className="rounded-xl bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] p-3.5 flex items-start gap-2.5 text-xs text-[var(--color-white)]">
-                  <AlertTriangle className="size-4 shrink-0 mt-0.5 text-[var(--color-warning)]" />
+                <div className="rounded-xl bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] p-4 flex items-start gap-2.5 text-xs text-[var(--md-sys-color-on-surface)]">
+                  <M3Icon name="warning" filled size={18} className="mt-0.5 text-[var(--color-warning)]" />
                   <div>
-                    <p className="font-semibold text-[var(--color-warning)]">
+                    <p className="font-medium text-[var(--color-warning)]">
                       Conexión no segura detectada
                     </p>
-                    <p className="text-[var(--color-gray-300)] mt-0.5">
+                    <p className="text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
                       Los navegadores solo permiten registrar o leer huellas en{" "}
                       <strong>HTTPS</strong> o <strong>localhost</strong>.
                     </p>
                   </div>
                 </div>
               ) : currentDeviceCred ? (
-                <div className="rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-primary-500)]/40 p-4 space-y-1.5 text-xs">
-                  <div className="flex items-center gap-2 font-semibold text-[var(--color-primary-400)]">
-                    <CheckCircle2 className="size-4 shrink-0" />
+                <div className="rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-primary)]/40 p-4 space-y-1.5 text-xs">
+                  <div className="flex items-center gap-2 font-medium text-[var(--md-sys-color-primary)]">
+                    <M3Icon name="check_circle" filled size={18} />
                     <span>Este dispositivo ya está vinculado</span>
                   </div>
-                  <p className="text-[var(--color-gray-300)] leading-relaxed">
+                  <p className="text-[var(--md-sys-color-on-surface-variant)] leading-4">
                     Tu huella o Face ID de{" "}
-                    <strong className="text-[var(--color-white)]">
+                    <strong className="text-[var(--md-sys-color-on-surface)]">
                       {currentDeviceCred.deviceLabel}
                     </strong>{" "}
                     ya está registrado en tu cuenta. Si deseas volver a registrarlo, primero desvincula el registro actual abajo.
@@ -270,54 +256,46 @@ export default function BiometricSettingsModal({
               ) : canEnroll ? (
                 <form
                   onSubmit={handleEnroll}
-                  className="rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] p-4 space-y-3"
+                  className="rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] p-4 space-y-3"
                 >
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[var(--color-primary-400)]">
-                    <CheckCircle2 className="size-4 shrink-0" />
+                  <div className="flex items-center gap-2 text-xs font-medium text-[var(--md-sys-color-primary)]">
+                    <M3Icon name="check_circle" filled size={18} />
                     <span>Este dispositivo admite Huella o Face ID</span>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-medium text-[var(--color-gray-300)] mb-1">
-                      Nombre de este dispositivo (opcional)
-                    </label>
-                    <input
-                      type="text"
-                      maxLength={80}
-                      value={deviceLabel}
-                      onChange={(e) => setDeviceLabel(e.target.value)}
-                      placeholder="Ej: Celular Caja, Tablet Cocina, Mi iPhone..."
-                      className="w-full h-12 rounded-lg bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] px-4 py-2.5 text-base text-[var(--color-white)] placeholder:text-[var(--color-gray-500)] focus:outline-none focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30"
-                    />
-                  </div>
+                  <Input
+                    label="Nombre de este dispositivo (opcional)"
+                    type="text"
+                    size="md"
+                    maxLength={80}
+                    value={deviceLabel}
+                    onChange={(e) => setDeviceLabel(e.target.value)}
+                    placeholder="Ej: Celular Caja, Tablet Cocina, Mi iPhone..."
+                  />
 
-                  <button
+                  <Button
                     type="submit"
+                    variant="filled"
+                    size="lg"
                     disabled={enrolling}
-                    className="w-full min-h-[44px] flex items-center justify-center gap-2 py-2.5 px-6 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer disabled:opacity-60"
+                    leadingIcon={enrolling ? "progress_activity" : "fingerprint"}
+                    className="w-full"
                   >
-                    {enrolling ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      <Fingerprint className="size-4" />
-                    )}
-                    <span>
-                      {enrolling
-                        ? "Confirma con tu huella o Face ID..."
-                        : "Registrar huella o Face ID de este dispositivo"}
-                    </span>
-                  </button>
+                    {enrolling
+                      ? "Confirma con tu huella o Face ID..."
+                      : "Registrar huella o Face ID de este dispositivo"}
+                  </Button>
                 </form>
               ) : (
-                <div className="rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] p-3.5 flex items-start gap-2.5 text-xs text-[var(--color-gray-300)]">
-                  <AlertTriangle className="size-4 shrink-0 mt-0.5 text-[var(--color-warning)]" />
+                <div className="rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] p-4 flex items-start gap-2.5 text-xs text-[var(--md-sys-color-on-surface-variant)]">
+                  <M3Icon name="warning" filled size={18} className="mt-0.5 text-[var(--color-warning)]" />
                   <div>
-                    <p className="font-semibold text-[var(--color-white)]">
+                    <p className="font-medium text-[var(--md-sys-color-on-surface)]">
                       {capabilities.isDesktop
                         ? "Este equipo PC no cuenta con lector de huella físico"
                         : "Este dispositivo no tiene sensor biométrico disponible"}
                     </p>
-                    <p className="text-[var(--color-gray-400)] mt-0.5 leading-relaxed">
+                    <p className="mt-0.5 leading-4">
                       {capabilities.isDesktop
                         ? "Por seguridad no se utiliza Windows Hello ni llaves guardadas en el navegador. En PC se requiere un lector USB biométrico físico dedicado; mientras tanto usa tu contraseña o PIN."
                         : "Puedes continuar usando tu contraseña o PIN en este equipo, y administrar abajo cualquier dispositivo registrado."}
@@ -326,16 +304,15 @@ export default function BiometricSettingsModal({
                 </div>
               )}
 
-              {/* Dispositivos vinculados */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-gray-400)]">
+                  <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)]">
                     Dispositivos registrados ({credentials.length})
                   </h4>
                 </div>
 
                 {credentials.length === 0 ? (
-                  <p className="text-xs text-[var(--color-gray-400)] py-4 text-center rounded-xl border border-dashed border-[var(--color-secondary-800)]">
+                  <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] py-5 text-center rounded-xl border border-dashed border-[var(--md-sys-color-outline-variant)]">
                     Aún no tienes dispositivos biométricos vinculados.
                   </p>
                 ) : (
@@ -343,42 +320,42 @@ export default function BiometricSettingsModal({
                     {credentials.map((cred) => (
                       <li
                         key={cred.id}
-                        className="flex items-center justify-between gap-3 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] px-3.5 py-2.5"
+                        className="flex items-center justify-between gap-3 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] px-4 py-3"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <Smartphone className="size-4 text-[var(--color-primary-400)] shrink-0" />
+                          <M3Icon name="devices" size={18} className="text-[var(--md-sys-color-primary)]" />
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5 min-w-0">
-                              <p className="text-sm font-semibold text-[var(--color-white)] truncate">
+                              <p className="text-sm font-medium text-[var(--md-sys-color-on-surface)] truncate">
                                 {cred.deviceLabel}
                               </p>
                               {cred.isCurrentDevice && (
-                                <span className="text-label-sm font-semibold px-2 py-0.5 rounded-full bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border border-[var(--color-primary-500)]/30 shrink-0">
+                                <span className="text-label-sm font-medium px-2 py-0.5 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] shrink-0">
                                   Este dispositivo
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-[var(--color-gray-400)] truncate">
+                            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] truncate">
                               Registrado: {formatDateTime(cred.createdAt)} · Último uso:{" "}
                               {formatDateTime(cred.lastUsedAt)}
                             </p>
                           </div>
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(cred)}
-                          disabled={deletingId === cred.id}
-                          aria-label={`Desvincular ${cred.deviceLabel}`}
+                        <IconButton
+                          variant="standard"
+                          ariaLabel={`Desvincular ${cred.deviceLabel}`}
                           title="Desvincular este dispositivo"
-                          className="size-10 flex items-center justify-center rounded-full text-[var(--color-gray-400)] hover:text-[var(--color-error)] hover:bg-[var(--color-error-bg)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0 disabled:opacity-50"
+                          disabled={deletingId === cred.id}
+                          onClick={() => handleDelete(cred)}
+                          className="hover:text-[var(--md-sys-color-error)]"
                         >
-                          {deletingId === cred.id ? (
-                            <Loader2 className="size-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="size-4" />
-                          )}
-                        </button>
+                          <M3Icon
+                            name={deletingId === cred.id ? "progress_activity" : "delete"}
+                            size={18}
+                            className={deletingId === cred.id ? "animate-spin" : ""}
+                          />
+                        </IconButton>
                       </li>
                     ))}
                   </ul>

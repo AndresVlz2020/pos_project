@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input, Button, Alert, BrandLogo } from "@/shared";
+import { Input, Button, Alert, BrandLogo, M3Icon } from "@/shared";
 import { Link } from "react-router-dom";
 import { forgotPasswordApi } from "@/services/authService";
 
@@ -38,13 +38,15 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="w-full flex flex-col justify-center items-center px-4 py-8">
-      {/* Container */}
-      <div className="w-full max-w-md bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-2xl p-5 sm:p-8 shadow-2xl text-[var(--color-white)] relative z-10">
+    <div className="w-full flex flex-col justify-center items-center px-4 py-8 font-[family-name:var(--main-font)]">
+      {/* Container M3 */}
+      <div className="w-full max-w-md bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-6 sm:p-8 m3-elevation-2 text-[var(--md-sys-color-on-surface)] relative z-10">
         <div className="flex flex-col items-center text-center mb-6">
           <BrandLogo className="h-10 w-auto object-contain mb-3" alt="D,PIERO" />
-          <h2 className="text-title-lg font-bold text-[var(--color-white)]">Recuperar Contraseña</h2>
-          <p className="text-xs text-[var(--color-gray-400)] mt-1">
+          <h2 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+            Recuperar Contraseña
+          </h2>
+          <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-1">
             Ingresa tu correo registrado para recibir un código de seguridad de 6 dígitos.
           </p>
         </div>
@@ -59,16 +61,17 @@ export default function ForgotPassword() {
             />
 
             <Link to={`/Auth/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}`}>
-              <Button variant="primary" size="md" className="w-full">
-                Ingresar Código de 6 Dígitos →
+              <Button variant="filled" size="md" trailingIcon="arrow_forward" className="w-full">
+                Ingresar Código de 6 Dígitos
               </Button>
             </Link>
 
             <div className="text-center pt-2">
               <Link
                 to="/Auth"
-                className="inline-flex items-center justify-center min-h-[40px] px-4 rounded-full text-sm text-[var(--color-gray-400)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors"
+                className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[40px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors"
               >
+                <M3Icon name="arrow_back" size={18} />
                 Volver al Inicio de Sesión
               </Link>
             </div>
@@ -79,6 +82,7 @@ export default function ForgotPassword() {
               label="Correo Electrónico"
               name="email"
               type="email"
+              leadingIcon="mail"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -90,9 +94,10 @@ export default function ForgotPassword() {
             />
 
             <Button
-              variant="primary"
+              variant="filled"
               size="md"
               type="submit"
+              leadingIcon="mail"
               disabled={isLoading}
               className="w-full mt-2"
             >
@@ -102,9 +107,10 @@ export default function ForgotPassword() {
             <div className="text-center mt-4">
               <Link
                 to="/Auth"
-                className="inline-flex items-center min-h-[40px] px-4 rounded-full text-sm text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                className="m3-state inline-flex items-center gap-1.5 min-h-[40px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
               >
-                ← Volver a Iniciar Sesión
+                <M3Icon name="arrow_back" size={18} />
+                Volver a Iniciar Sesión
               </Link>
             </div>
           </form>

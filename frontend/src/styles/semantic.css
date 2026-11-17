@@ -1,76 +1,42 @@
-:root{
-/* ====================Brand===================*/
+:root {
+  /* Mapeo semántico derivado estrictamente de Roles Material Design 3 */
+  --semantic-brand: var(--md-sys-color-primary);
+  --semantic-brand-hover: var(--md-sys-color-primary);
+  --semantic-brand-soft: var(--md-sys-color-secondary-container);
+  --semantic-brand-soft-hover: var(--md-sys-color-secondary-container);
+  --semantic-on-brand: var(--md-sys-color-on-primary);
+  --semantic-on-error: var(--md-sys-color-on-error);
 
---semantic-brand: var(--color-secondary-800);
-/* Tono mas fuerte que el brand */
---semantic-brand-hover: var(--color-secondary-950);
+  --semantic-background: var(--md-sys-color-surface);
+  --semantic-background-inverse: var(--md-sys-color-inverse-surface);
+  --semantic-surface: var(--md-sys-color-surface-container-lowest);
+  --semantic-surface-muted: var(--md-sys-color-surface-container);
 
---semantic-brand-soft: var(--color-secondary-200);
---semantic-brand-soft-hover: var(--color-secondary-300);
---semantic-on-brand: var(--color-on-primary);
---semantic-on-error: var(--color-on-error);
+  --semantic-text-primary: var(--md-sys-color-on-surface);
+  --semantic-text-secondary: var(--md-sys-color-on-surface-variant);
+  --semantic-text-muted: var(--md-sys-color-on-surface-variant);
+  --semantic-text-inverse: var(--md-sys-color-inverse-on-surface);
 
-/* ====================Background============== */
+  --semantic-border: var(--md-sys-color-outline-variant);
+  --semantic-border-strong: var(--md-sys-color-outline);
 
---semantic-background: var(--color-secondary-950);
---semantic-background-inverse: var(--color-white);
---semantic-surface: var(--color-secondary-900);
---semantic-surface-muted: var(--color-secondary-800);
+  --semantic-focus-ring: var(--md-sys-color-primary);
+  --semantic-focus-border: var(--md-sys-color-primary);
 
-/* ============TEXT============================= */
-/* Color principal en lectura, titulo, texto base del documento */
---semantic-text-primary: var(--color-white);
-/* Textos menos dominantes */
---semantic-text-secondary: var(--color-gray-300);
-/* Texto deshabilitado */
---semantic-text-muted: var(--color-gray-400);
-/* Texto invertido */
---semantic-text-inverse: var(--color-secondary-950);
+  --semantic-success: var(--color-success);
+  --semantic-warning: var(--color-warning);
+  --semantic-error: var(--md-sys-color-error);
 
-/* =====================Border=================== */
+  --semantic-font-size-display: var(--fs-xxl);
+  --semantic-font-size-h1: var(--fs-xl);
+  --semantic-font-size-h2: var(--fs-md);
+  --semantic-font-size-h3: var(--fs-sm);
+  --semantic-font-size-body: var(--fs-xs);
+  --semantic-font-size-medium: var(--fs-xxs);
+  --semantic-font-size-small: var(--fs-xxxs);
+  --semantic-font-size-caption: var(--fs-xxxxs);
 
-/* Borde principal de los componentes */
---semantic-border: var(--color-secondary-800);
-/* Bordes mas fuertes */
---semantic-border-strong: var(--color-secondary-700);
-
-/* ====================Focus====================== */
-
---semantic-focus-ring: var(--color-secondary-700);
---semantic-focus-border: var(--color-secondary-600);
-
-/* ======================State===================== */
-
---semantic-success: #10B981;
---semantic-warning: #F59E0B;
---semantic-error: #EF4444;
-
-/* =====================Typography====================== */
-
---semantic-font-size-display: var(--fs-xxl);
---semantic-font-size-h1: var(--fs-lg);
---semantic-font-size-h2: var(--fs-md);
---semantic-font-size-h3: var(--fs-sm);
---semantic-font-size-body: var(--fs-xs);
---semantic-font-size-medium: var(--fs-xxs);
---semantic-font-size-small: var(--fs-xxxs);
---semantic-font-size-caption: var(--fs-xxxxs);
-
-/* =================Font Weight========================== */
-
---semantic-font-weight-heading: var(--fw-bold);
---semantic-font-weight-body: var(--fw-regular);
---semantic-font-weight-label: var(--fw-medium);
-
-
-
-/* =====================dark theme =========================== */
-
-
-/* ================================================================
-
-  Ya no dependemos de nombre de color, dependemos es de intencion
-              
-  ==============================================================
-*/
+  --semantic-font-weight-heading: var(--fw-bold);
+  --semantic-font-weight-body: var(--fw-regular);
+  --semantic-font-weight-label: var(--fw-medium);
 }

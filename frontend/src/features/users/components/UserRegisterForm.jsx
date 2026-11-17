@@ -6,6 +6,7 @@ import {
     Checkbox,
     Button,
     IconButton,
+    M3Icon,
     FileInput,
     showSuccessAlert,
     showErrorAlert,
@@ -14,7 +15,6 @@ import {
  import { createUser } from "../../../services/userService";
  import { useNavigate } from "react-router-dom";
  import { userSchema } from "../schemas/userSchema";
- import { ArrowLeft } from "lucide-react";
  import resizeImageFile from "@/utils/imageFile";
 
 export default function UserRegisterForm() {
@@ -140,16 +140,31 @@ export default function UserRegisterForm() {
  },[])
 
 
-    return(
-        <div className="flex flex-col items-center justify-center px-3 sm:px-4 my-6">
-           <div className="w-full max-w-md p-5 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-             <h1 className="text-center mb-8 text-2xl font-bold text-[var(--color-white)]">Registro de Usuarios</h1>            
+    return (
+        <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 my-4">
+           <div className="w-full max-w-xl p-6 sm:p-8 bg-[var(--md-sys-color-surface-container-low)] rounded-[28px] border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
+               <IconButton
+                 type="button"
+                 variant="tonal"
+                 hitSize={40}
+                 iconSize={20}
+                 ariaLabel="Volver"
+                 onClick={() => navigate(-1)}
+               >
+                 <M3Icon name="arrow_back" size={20} />
+               </IconButton>
+               <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+                 Registro de Usuarios
+               </h1>
+               <div className="w-10" aria-hidden="true" />
+             </div>
              <form
               action=""
               onSubmit={handleSubmit}
-              className="flex flex-col items-center w-full"
+              className="flex flex-col items-stretch gap-3 w-full"
               >
-            <Input 
+            <Input
             label="Nombre"
             name="userName"
             type="text"
@@ -158,32 +173,31 @@ export default function UserRegisterForm() {
             htmlFor="user-name"
             onChange={handleChange}
             error={errors.userName}
-         
           />
-          <Input 
+          <Input
             label="Correo"
             name="userEmail"
             type="email"
+            leadingIcon="mail"
             value={formData.userEmail}
             placeholder="Escribe tu correo"
             htmlFor="user-email"
             onChange={handleChange}
             error={errors.userEmail}
           />
-          <Input 
-            label="Telefono"
+          <Input
+            label="Teléfono"
             name="userPhone"
             type="tel"
+            leadingIcon="call"
             value={formData.userPhone}
-            placeholder="Escribe tu telefono"
+            placeholder="Escribe tu teléfono"
             htmlFor="user-phone"
             onChange={handleChange}
             error={errors.userPhone}
           />
-        
 
-
-            <Select 
+            <Select
             label="Tipos de documentos"
             name="userDocumentTypes"
             htmlFor="userDocumentTypes"
@@ -192,20 +206,21 @@ export default function UserRegisterForm() {
             onChange={handleChange}
             error={errors.userDocumentTypes}
             />
-            <Input 
+            <Input
             label="Documento"
             name="userDocumentNumber"
             type="text"
             value={formData.userDocumentNumber}
-            placeholder="Escribe tu numero de documento"
+            placeholder="Escribe tu número de documento"
             htmlFor="user-document-number"
             onChange={handleChange}
             error={errors.userDocumentNumber}
           />
-            <Input 
-            label="contraseña"
+            <Input
+            label="Contraseña"
             name="userPassword"
             type="password"
+            leadingIcon="lock"
             value={formData.userPassword}
             placeholder="Escribe tu contraseña"
             htmlFor="user-password"
@@ -213,33 +228,31 @@ export default function UserRegisterForm() {
             error={errors.userPassword}
           />
 
-          <FileInput
-            value={formData.userImage}
-            onChange={(files) =>
-              setFormData((prev) => ({ ...prev, userImage: files }))
-            }
-            multiple={false}
-            maxFiles={1}
-            accept="image/*"
-            shape="circle"
-            altText={formData.userName || "Usuario"}
-          />
-          {errors.userImage && (
-            <span className="text-[var(--color-error)] text-sm">{errors.userImage}</span>
-          )}
+          <div className="flex flex-col items-center py-2">
+            <FileInput
+              value={formData.userImage}
+              onChange={(files) =>
+                setFormData((prev) => ({ ...prev, userImage: files }))
+              }
+              multiple={false}
+              maxFiles={1}
+              accept="image/*"
+              shape="circle"
+              altText={formData.userName || "Usuario"}
+            />
+            {errors.userImage && (
+              <span className="text-[var(--md-sys-color-error)] text-label-sm mt-1">{errors.userImage}</span>
+            )}
+          </div>
 
-          {/* Checkbox */}
-
-          <div className="grid gap-4 my-2 w-full justify-items-center">
-
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-1 p-3.5 rounded-xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
           <Checkbox
           id="isSuperUser"
           name="isSuperUser"
-          label="Es super usuario"
+          label="Es superusuario"
           checked={formData.isSuperUser}
           onChange={handleChange}
           />
-
           <Checkbox
           id="isStaff"
           name="isStaff"
@@ -247,46 +260,38 @@ export default function UserRegisterForm() {
           checked={formData.isStaff}
           onChange={handleChange}
           />
-
           <Checkbox
           id="isActive"
           name="isActive"
-          label="Esta activo"
+          label="Está activo"
           checked={formData.isActive}
           onChange={handleChange}
           />
-
           </div>
 
-
-          {/* Actions */}
-            <div className="flex gap-4 items-center justify-center w-full">
+          <div className="flex gap-3 items-center justify-end w-full pt-4 border-t border-[var(--md-sys-color-outline-variant)]">
            <Button
-            variant="secondary"
+            variant="outlined"
             size="md"
             type="button"
-            onClick= {() => navigate(-1)}
-            >Cancelar
+            onClick={() => navigate(-1)}
+            >
+              Cancelar
             </Button>
-            
+
             <Button
-            variant="primary"
+            variant="filled"
             size="md"
             type="submit"
+            leadingIcon="check_circle"
             disabled={isSubmitting}
-            > {isSubmitting ? "Guardando..." : "Guardar"}
+            >
+              {isSubmitting ? "Guardando..." : "Guardar"}
             </Button>
-            <IconButton
-            ariaLabel="Volver"
-            variant="ghost"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft />
-          </IconButton>
-            </div>
+          </div>
             </form>
            </div>
           </div>
-    ) 
+    ); 
 
 }

@@ -1,11 +1,8 @@
-import { Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SearchField, M3Icon } from "@/shared";
 
-/**
- * Componente modular para el encabezado de paneles en POS (Clientes, Personal, etc.)
- * Estructurado con tokens tipográficos y variables de diseño.
- */
 export default function PosSectionHeader({
+  iconName,
   icon: Icon,
   title,
   subtitle,
@@ -13,19 +10,24 @@ export default function PosSectionHeader({
   onSearchChange,
   searchPlaceholder = "Buscar...",
   actionLabel,
+  actionIconName,
   actionIcon: ActionIcon,
   actionLink,
-  onActionClick
+  onActionClick,
 }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div>
-        <h2 className="text-title-lg font-bold text-[var(--color-white)] flex items-center gap-2 font-[family-name:var(--main-font)]">
-          {Icon && <Icon className="size-5 text-[var(--color-primary-400)] shrink-0" />}
-          <span>{title}</span>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+      <div className="min-w-0">
+        <h2 className="text-title-lg font-medium text-[var(--md-sys-color-on-surface)] flex items-center gap-2">
+          {iconName ? (
+            <M3Icon name={iconName} size={22} className="text-[var(--md-sys-color-primary)]" />
+          ) : Icon ? (
+            <Icon className="size-5 text-[var(--md-sys-color-primary)] shrink-0" />
+          ) : null}
+          <span className="truncate">{title}</span>
         </h2>
         {subtitle && (
-          <p className="text-xs leading-4 text-[var(--color-gray-400)] mt-0.5 font-[family-name:var(--main-font)]">
+          <p className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
             {subtitle}
           </p>
         )}
@@ -33,14 +35,14 @@ export default function PosSectionHeader({
 
       <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
         {onSearchChange && (
-          <div className="relative flex-1 sm:flex-initial min-w-[160px]">
-            <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-gray-400)]" />
-            <input
-              type="text"
+          <div className="flex-1 sm:flex-initial min-w-[200px] sm:w-72">
+            <SearchField
+              asForm={false}
               value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
+              onChange={onSearchChange}
               placeholder={searchPlaceholder}
-              className="h-10 pl-10 pr-4 py-2 rounded-full bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-sm text-[var(--color-white)] placeholder:text-[var(--color-gray-400)] outline-none focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30 w-full sm:w-60 font-[family-name:var(--main-font)] transition-colors"
+              size="sm"
+              fullWidth
             />
           </div>
         )}
@@ -48,9 +50,13 @@ export default function PosSectionHeader({
         {actionLabel && actionLink && (
           <Link
             to={actionLink}
-            className="min-h-[40px] inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-sm font-medium text-[var(--color-white)] border border-[var(--color-secondary-700)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors font-[family-name:var(--main-font)] whitespace-nowrap shrink-0"
+            className="m3-state h-10 inline-flex items-center gap-2 px-5 rounded-full bg-[var(--md-sys-color-secondary-container)] text-sm font-medium text-[var(--md-sys-color-on-secondary-container)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] whitespace-nowrap shrink-0"
           >
-            {ActionIcon && <ActionIcon className="size-4" />}
+            {actionIconName ? (
+              <M3Icon name={actionIconName} size={18} />
+            ) : ActionIcon ? (
+              <ActionIcon className="size-4" />
+            ) : null}
             <span>{actionLabel}</span>
           </Link>
         )}
@@ -59,9 +65,13 @@ export default function PosSectionHeader({
           <button
             type="button"
             onClick={onActionClick}
-            className="min-h-[40px] inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-sm font-medium text-[var(--color-white)] border border-[var(--color-secondary-700)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors font-[family-name:var(--main-font)] cursor-pointer"
+            className="m3-state h-10 inline-flex items-center gap-2 px-5 rounded-full bg-[var(--md-sys-color-secondary-container)] text-sm font-medium text-[var(--md-sys-color-on-secondary-container)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer whitespace-nowrap shrink-0"
           >
-            {ActionIcon && <ActionIcon className="size-4" />}
+            {actionIconName ? (
+              <M3Icon name={actionIconName} size={18} />
+            ) : ActionIcon ? (
+              <ActionIcon className="size-4" />
+            ) : null}
             <span>{actionLabel}</span>
           </button>
         )}

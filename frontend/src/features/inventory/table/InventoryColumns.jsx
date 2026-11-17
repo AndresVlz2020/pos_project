@@ -18,7 +18,7 @@ export const getInventoryColumns = ({ onRequestStatusChange, canToggleStatus = f
     accessorKey: "brand",
     header: "Marca",
     cell: ({ row }) => (
-      <span className="font-medium text-[var(--color-gray-200)]">
+      <span className="font-medium text-[var(--md-sys-color-on-surface)]">
         {row.original.brand || "Genérica"}
       </span>
     ),
@@ -67,7 +67,13 @@ export const getInventoryColumns = ({ onRequestStatusChange, canToggleStatus = f
       const isLow = current <= min;
       const unit = item.unit || "un.";
       return (
-        <span className={isLow ? "text-[var(--color-primary-400)] font-semibold" : ""}>
+        <span
+          className={
+            isLow
+              ? "text-[var(--md-sys-color-error)] font-semibold tabular-nums"
+              : "text-[var(--md-sys-color-on-surface)] tabular-nums"
+          }
+        >
           {current} {unit}
           {isLow && " (bajo)"}
         </span>

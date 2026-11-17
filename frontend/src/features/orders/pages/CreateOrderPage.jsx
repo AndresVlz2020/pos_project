@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Button,
+  IconButton,
+  M3Icon,
   SearchField,
   DataTable,
   ConfirmDialog,
@@ -8,7 +10,6 @@ import {
   showErrorAlert,
   Input,
 } from "@/shared";
-import { ArrowLeft, ClipboardList, PlusCircle } from "lucide-react";
 import { getProducts } from "@/features/products/services/productServices";
 import { getOrders, createOrder, cancelOrder, getTablesAvailability } from "../services/orderServices";
 import { getOrderColumns } from "../table/OrderColumns";
@@ -382,17 +383,18 @@ export default function CreateOrder() {
   );
 
   return (
-    <div className="w-full pb-24 font-[family-name:var(--main-font)]">
-      {/* Cabecera unificada del módulo de órdenes */}
-      <div className="bg-[var(--color-secondary-900)] text-[var(--color-white)] border border-[var(--color-secondary-800)] rounded-xl p-3.5 sm:p-5 shadow-md mb-4 sm:mb-6">
+    <div className="w-full flex-1 flex flex-col font-[family-name:var(--main-font)]">
+      {/* Cabecera M3 del módulo de órdenes */}
+      <div className="bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-on-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl p-4 sm:p-5 m3-elevation-1 mb-4 sm:mb-5">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3.5 sm:gap-4">
           <div className="grid grid-cols-[auto_1fr_auto] md:flex items-center gap-3 sm:gap-4 min-w-0">
-            <Button
+            <IconButton
               type="button"
-              variant="secondary"
-              size="md"
-              aria-label="Volver"
-              className="shrink-0 w-10 h-10 px-0 flex items-center justify-center"
+              variant="tonal"
+              hitSize={40}
+              iconSize={20}
+              ariaLabel="Volver"
+              title="Volver"
               onClick={() => {
                 if (activeTab === "list") {
                   setActiveTab("create");
@@ -402,14 +404,14 @@ export default function CreateOrder() {
                 }
               }}
             >
-              <ArrowLeft className="size-4" />
-            </Button>
+              <M3Icon name="arrow_back" size={20} />
+            </IconButton>
 
             <div className="min-w-0 text-center md:text-left">
-              <h1 className="text-title-lg sm:text-2xl sm:leading-8 font-bold text-[var(--color-white)]">
+              <h1 className="text-title-lg sm:text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
                 {activeTab === "create" ? "Crear Nueva Orden" : "Listado de Órdenes"}
               </h1>
-              <p className="text-xs leading-4 text-[var(--color-gray-400)] mt-0.5">
+              <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
                 Gestión en tiempo real de mesas y órdenes del restaurante
               </p>
             </div>
@@ -417,10 +419,11 @@ export default function CreateOrder() {
             <div className="w-10 md:hidden" aria-hidden="true" />
           </div>
 
+          {/* M3 Segmented Button para alternar creación / listado */}
           <div
             role="tablist"
             aria-label="Cambiar vista del módulo de órdenes"
-            className="grid grid-cols-2 gap-1.5 p-1 rounded-full bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] w-full md:w-auto md:min-w-[384px] shrink-0"
+            className="grid grid-cols-2 rounded-full border border-[var(--md-sys-color-outline)] bg-[var(--md-sys-color-surface)] overflow-hidden divide-x divide-[var(--md-sys-color-outline)] w-full md:w-auto md:min-w-[384px] shrink-0"
           >
             <button
               type="button"
@@ -430,13 +433,13 @@ export default function CreateOrder() {
                 setActiveTab("create");
                 fetchInitialData();
               }}
-              className={`flex items-center justify-center gap-2 min-h-[48px] px-4 py-2 rounded-full text-sm font-medium border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer whitespace-nowrap ${
+              className={`m3-state flex items-center justify-center gap-2 min-h-[44px] px-4 py-2 text-label-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer whitespace-nowrap ${
                 activeTab === "create"
-                  ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] shadow-xs"
-                  : "bg-[var(--color-secondary-900)]/70 border-transparent text-[var(--color-white)] hover:border-[var(--color-primary-500)]/45 hover:text-[var(--color-primary-400)]"
+                  ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+                  : "bg-transparent text-[var(--md-sys-color-on-surface)]"
               }`}
             >
-              <PlusCircle className="size-4 shrink-0" />
+              <M3Icon name={activeTab === "create" ? "check" : "add_circle"} size={18} />
               <span>Nueva Orden</span>
             </button>
 
@@ -445,15 +448,15 @@ export default function CreateOrder() {
               role="tab"
               aria-selected={activeTab === "list"}
               onClick={() => setActiveTab("list")}
-              className={`flex items-center justify-center gap-2 min-h-[48px] px-4 py-2 rounded-full text-sm font-medium border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer whitespace-nowrap ${
+              className={`m3-state flex items-center justify-center gap-2 min-h-[44px] px-4 py-2 text-label-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer whitespace-nowrap ${
                 activeTab === "list"
-                  ? "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/50 text-[var(--color-primary-400)] shadow-xs"
-                  : "bg-[var(--color-secondary-900)]/70 border-transparent text-[var(--color-white)] hover:border-[var(--color-primary-500)]/45 hover:text-[var(--color-primary-400)]"
+                  ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+                  : "bg-transparent text-[var(--md-sys-color-on-surface)]"
               }`}
             >
-              <ClipboardList className="size-4 shrink-0 text-[var(--color-primary-400)]" />
+              <M3Icon name="receipt_long" size={18} />
               <span>Ver Órdenes</span>
-              <span className="inline-flex items-center justify-center min-w-6 h-5 px-2 rounded-full text-xs font-semibold bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)]">
+              <span className="inline-flex items-center justify-center min-w-6 h-5 px-2 rounded-full text-label-sm font-semibold bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] tabular-nums">
                 {orders.length}
               </span>
             </button>
@@ -461,12 +464,13 @@ export default function CreateOrder() {
         </div>
       </div>
 
-      <div>
+      <div className="flex-1 flex flex-col">
         {activeTab === "create" ? (
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4 sm:gap-5">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
             {/* Formulario datos de la orden */}
-            <div className="lg:col-span-1 lg:self-start space-y-3.5 sm:space-y-4 bg-[var(--color-secondary-900)] p-4 sm:p-5 rounded-xl border border-[var(--color-secondary-800)] shadow-md">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary-400)] border-b border-[var(--color-secondary-800)] pb-2">
+            <div className="lg:col-span-4 lg:sticky lg:top-20 space-y-4 bg-[var(--md-sys-color-surface-container-low)] p-4 sm:p-5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1">
+              <h2 className="text-label-lg font-semibold uppercase tracking-wider text-[var(--md-sys-color-primary)] border-b border-[var(--md-sys-color-outline-variant)] pb-2">
                 Datos de la Orden
               </h2>
 
@@ -488,8 +492,8 @@ export default function CreateOrder() {
             </div>
 
             {/* Selector de platillos gastronómicos en contenedor desplazable independiente */}
-            <div className="lg:col-span-2 lg:self-start bg-[var(--color-secondary-900)] p-3.5 sm:p-5 rounded-xl border border-[var(--color-secondary-800)] shadow-md">
-              <div className="pb-3 border-b border-[var(--color-secondary-800)]">
+            <div className="lg:col-span-8 flex flex-col bg-[var(--md-sys-color-surface-container-low)] p-4 sm:p-5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1">
+              <div className="pb-3 border-b border-[var(--md-sys-color-outline-variant)]">
                 <SearchField
                   asForm={false}
                   fullWidth={true}
@@ -507,11 +511,11 @@ export default function CreateOrder() {
               <div
                 ref={dishesScrollRef}
                 onScroll={handleDishesScroll}
-                className="mt-3 max-h-[400px] sm:max-h-[464px] overflow-y-auto overscroll-contain pr-1"
+                className="mt-3 max-h-[420px] lg:max-h-[560px] overflow-y-auto overscroll-contain pr-1"
               >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
                   {visibleDishes.length === 0 ? (
-                    <div className="sm:col-span-2 py-10 text-center text-xs text-[var(--color-gray-400)] rounded-xl bg-[var(--color-secondary-950)]/50 border border-dashed border-[var(--color-secondary-800)]">
+                    <div className="md:col-span-2 2xl:col-span-3 py-12 text-center text-body-md text-[var(--md-sys-color-on-surface-variant)] rounded-2xl bg-[var(--md-sys-color-surface)] border border-dashed border-[var(--md-sys-color-outline-variant)]">
                       No se encontraron platillos que coincidan con &ldquo;{dishSearch.trim()}&rdquo;.
                     </div>
                   ) : visibleDishes.map((dish) => {
@@ -521,16 +525,16 @@ export default function CreateOrder() {
                     return (
                       <div
                         key={dish.id}
-                        className={`p-2.5 sm:p-3 rounded-xl border transition flex items-center justify-between gap-2.5 sm:gap-3 ${
+                        className={`p-3 rounded-2xl border transition-colors flex items-center justify-between gap-3 ${
                           isInactive
-                            ? "bg-[var(--color-secondary-950)]/50 border-[var(--color-secondary-800)]/40 opacity-50 cursor-not-allowed"
+                            ? "bg-[var(--md-sys-color-surface-container-highest)]/40 border-[var(--md-sys-color-outline-variant)] opacity-50 cursor-not-allowed"
                             : count > 0
-                            ? "bg-[var(--color-primary-500)]/10 border-[var(--color-primary-500)]/65 shadow-xs"
-                            : "bg-[var(--color-secondary-950)]/70 border-[var(--color-secondary-800)] hover:border-[var(--color-secondary-700)] shadow-xs"
+                            ? "bg-[var(--md-sys-color-primary-container)]/30 border-[var(--md-sys-color-primary)] m3-elevation-1"
+                            : "bg-[var(--md-sys-color-surface)] border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-primary)]/60"
                         }`}
                       >
                         {/* Imagen pequeña del platillo */}
-                        <div className="size-12 sm:size-14 rounded-lg overflow-hidden border border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)] shrink-0 shadow-xs">
+                        <div className="size-12 sm:size-14 rounded-xl overflow-hidden border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] shrink-0">
                           <img
                             src={getProductImage(dish)}
                             alt={dish.name}
@@ -546,25 +550,29 @@ export default function CreateOrder() {
 
                         <div className="flex-1 min-w-0">
                           <span
-                            className={`text-label-sm leading-4 font-mono block ${
-                              isInactive ? "text-[var(--color-gray-500)]" : "text-[var(--color-gray-400)]"
+                            className={`text-label-sm font-mono block ${
+                              isInactive
+                                ? "text-[var(--md-sys-color-outline)]"
+                                : "text-[var(--md-sys-color-on-surface-variant)]"
                             }`}
                           >
                             {dish.code}
                           </span>
                           <h4
-                            className={`text-sm leading-5 font-semibold truncate ${
-                              isInactive ? "text-[var(--color-gray-400)]" : "text-[var(--color-white)]"
+                            className={`text-title-sm font-medium truncate ${
+                              isInactive
+                                ? "text-[var(--md-sys-color-on-surface-variant)]"
+                                : "text-[var(--md-sys-color-on-surface)]"
                             }`}
                           >
                             {dish.name}
                           </h4>
                           <div className="flex items-center gap-2 mt-1">
                             <span
-                              className={`text-xs leading-4 font-medium ${
+                              className={`text-body-sm font-semibold tabular-nums ${
                                 isInactive
-                                  ? "text-[var(--color-gray-500)]"
-                                  : "text-[var(--color-white)]"
+                                  ? "text-[var(--md-sys-color-outline)]"
+                                  : "text-[var(--md-sys-color-primary)]"
                               }`}
                             >
                               ${dish.price.toLocaleString("es-CO")}
@@ -572,29 +580,33 @@ export default function CreateOrder() {
                           </div>
                         </div>
 
-                        {/* Contador de unidades (touch target M3 de 40dp circular) */}
-                        <div className="flex items-center gap-1 bg-[var(--color-secondary-900)] p-1 rounded-full border border-[var(--color-secondary-800)] shrink-0">
-                          <button
+                        {/* Contador de unidades M3 de 40dp */}
+                        <div className="flex items-center gap-1 bg-[var(--md-sys-color-surface-container-high)] p-1 rounded-full border border-[var(--md-sys-color-outline-variant)] shrink-0">
+                          <IconButton
                             type="button"
+                            variant="standard"
+                            hitSize={40}
+                            iconSize={18}
                             disabled={count === 0}
                             onClick={() => handleDecrement(dish)}
-                            aria-label={`Disminuir ${dish.name}`}
-                            className="size-10 rounded-full flex items-center justify-center text-base font-bold text-[var(--color-gray-300)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
+                            ariaLabel={`Disminuir ${dish.name}`}
                           >
-                            -
-                          </button>
-                          <span className="text-sm font-semibold w-6 text-center text-[var(--color-white)]">
+                            <M3Icon name="remove" size={18} />
+                          </IconButton>
+                          <span className="text-label-lg font-semibold w-7 text-center text-[var(--md-sys-color-on-surface)] tabular-nums">
                             {count}
                           </span>
-                          <button
+                          <IconButton
                             type="button"
+                            variant="tonal"
+                            hitSize={40}
+                            iconSize={18}
                             disabled={isInactive}
                             onClick={() => handleIncrement(dish)}
-                            aria-label={`Aumentar ${dish.name}`}
-                            className="size-10 rounded-full flex items-center justify-center text-base font-bold text-[var(--color-primary-400)] hover:bg-[var(--color-secondary-800)] hover:text-[var(--color-primary-300)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
+                            ariaLabel={`Aumentar ${dish.name}`}
                           >
-                            +
-                          </button>
+                            <M3Icon name="add" size={18} />
+                          </IconButton>
                         </div>
                       </div>
                     );
@@ -602,28 +614,31 @@ export default function CreateOrder() {
                 </div>
 
                 {totalFilteredDishes > 0 && (
-                  <div className="mt-3 pt-2.5 border-t border-[var(--color-secondary-800)]/70 flex items-center justify-between gap-2 text-xs leading-4 text-[var(--color-gray-400)]">
+                  <div className="mt-4 pt-3 border-t border-[var(--md-sys-color-outline-variant)] flex items-center justify-between gap-2 text-body-sm text-[var(--md-sys-color-on-surface-variant)]">
                     <span>
                       Mostrando {visibleDishesCount} de {totalFilteredDishes} platillos
                     </span>
                     {hasMoreDishes && (
-                      <button
+                      <Button
                         type="button"
+                        variant="text"
+                        size="sm"
                         onClick={loadMoreDishes}
-                        className="min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:bg-[var(--color-secondary-800)]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
                       >
                         Cargar más platillos
-                      </button>
+                      </Button>
                     )}
                   </div>
                 )}
               </div>
             </div>
-            {/* Barra inferior fija para enviar orden sin perder visibilidad del total */}
-            <div className="fixed bottom-0 inset-x-0 z-40 bg-[var(--color-secondary-950)]/95 backdrop-blur border-t border-[var(--color-secondary-800)] shadow-2xl">
-              <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-4">
+            </div>
+
+            {/* Barra inferior fija dentro del área de trabajo para enviar orden sin cubrir el Navigation Rail */}
+            <div className="sticky bottom-0 z-30 mt-auto bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl m3-elevation-2">
+              <div className="w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 text-xs leading-4 text-[var(--color-gray-400)]">
+                  <div className="flex items-center gap-2 text-label-md text-[var(--md-sys-color-on-surface-variant)]">
                     <span>
                       {totalItems} {totalItems === 1 ? "ítem" : "ítems"} • {form.tableNumber || "Sin mesa"}
                     </span>
@@ -635,21 +650,22 @@ export default function CreateOrder() {
                           setPinnedDishIds(new Set());
                           clearOrderDraft();
                         }}
-                        className="min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:bg-[var(--color-secondary-800)]/60 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
+                        className="m3-state min-h-[36px] px-3 rounded-full text-label-md font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer"
                       >
                         Vaciar
                       </button>
                     )}
                   </div>
-                  <p className="text-base leading-6 font-bold text-[var(--color-white)] truncate">
+                  <p className="text-title-lg font-bold text-[var(--md-sys-color-on-surface)] tabular-nums truncate">
                     ${totalAmount.toLocaleString("es-CO")} COP
                   </p>
                 </div>
                 <Button
                   type="submit"
-                  variant="primary"
+                  variant="filled"
                   size="md"
-                  className="shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  leadingIcon="check_circle"
+                  className="shrink-0"
                   disabled={submitting || totalItems === 0}
                 >
                   {submitting ? "Registrando..." : "Registrar Orden"}
@@ -659,8 +675,8 @@ export default function CreateOrder() {
           </form>
         ) : (
           /* Pestaña de listado */
-          <div className="bg-[var(--color-secondary-900)] p-3 sm:p-6 rounded-xl border border-[var(--color-secondary-800)] shadow-md">
-            <DataTable data={orders} columns={orderColumns} />
+          <div className="flex-1 flex flex-col bg-[var(--md-sys-color-surface-container-low)] p-4 sm:p-6 rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1">
+            <DataTable className="flex-1" data={orders} columns={orderColumns} />
           </div>
         )}
       </div>

@@ -48,7 +48,7 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true }
         .slice(0, 2)
         .join(", ");
       return (
-        <span className="text-[var(--color-gray-200)]">
+        <span className="text-[var(--md-sys-color-on-surface-variant)]">
           {totalQty} {totalQty === 1 ? "ítem" : "ítems"}
           {summary ? ` (${summary})` : ""}
         </span>
@@ -60,7 +60,11 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true }
     header: "Total",
     cell: ({ row }) => {
       const total = Number(row.original.total || 0);
-      return `$${total.toLocaleString("es-CO")}`;
+      return (
+        <span className="font-semibold text-[var(--md-sys-color-on-surface)] tabular-nums">
+          ${total.toLocaleString("es-CO")}
+        </span>
+      );
     },
   },
   {
@@ -85,10 +89,10 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true }
       }
 
       const style = isCanceled
-        ? "bg-[var(--color-error-bg)] text-[var(--color-error)] border-[var(--color-error-border)]"
-        : "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40";
+        ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border-[var(--md-sys-color-error)]/40"
+        : "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-[var(--md-sys-color-primary)]/40";
       return (
-        <span className={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full border ${style}`}>
+        <span className={`inline-block px-2.5 py-0.5 text-label-sm font-medium rounded-full border ${style}`}>
           {isCanceled ? "Anulada" : normalizedStatus}
         </span>
       );

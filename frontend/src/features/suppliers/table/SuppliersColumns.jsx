@@ -23,12 +23,12 @@ export const getSuppliersColumns = ({ onRequestStatusChange, canToggleStatus = f
           <img
             src={logoSrc}
             alt={name}
-            className="size-8 rounded-lg object-cover border border-[var(--color-secondary-700)] shrink-0"
+            className="size-8 rounded-lg object-cover border border-[var(--md-sys-color-outline-variant)] shrink-0"
             onError={(e) => {
               e.currentTarget.style.display = "none";
             }}
           />
-          <span className="font-medium text-[var(--color-white)] text-sm">{name}</span>
+          <span className="font-medium text-[var(--md-sys-color-on-surface)] text-body-md">{name}</span>
         </div>
       );
     },
@@ -38,7 +38,7 @@ export const getSuppliersColumns = ({ onRequestStatusChange, canToggleStatus = f
     header: "Email",
     cell: ({ row }) => {
       const s = row.original;
-      return <span className="text-xs text-[var(--color-gray-300)]">{s.supplierEmail || s.email || "—"}</span>;
+      return <span className="text-body-sm text-[var(--md-sys-color-on-surface-variant)]">{s.supplierEmail || s.email || "—"}</span>;
     },
   },
   {
@@ -46,7 +46,7 @@ export const getSuppliersColumns = ({ onRequestStatusChange, canToggleStatus = f
     header: "Teléfono",
     cell: ({ row }) => {
       const s = row.original;
-      return <span className="text-xs font-mono text-[var(--color-gray-300)]">{s.supplierPhone || s.phone || "—"}</span>;
+      return <span className="text-label-md font-mono text-[var(--md-sys-color-on-surface-variant)]">{s.supplierPhone || s.phone || "—"}</span>;
     },
   },
   // Columna Estado (activo / inactivo)

@@ -1,11 +1,13 @@
 import { useState, useMemo } from "react";
-import { SearchX, Filter, Check } from "lucide-react";
 import {
   SearchField,
   Dropdown,
   DropdownTrigger,
   DropdownContent,
   DropdownItem,
+  IconButton,
+  Button,
+  M3Icon,
 } from "@/shared";
 import PosCategoryFilter from "./PosCategoryFilter";
 import PosProductCard from "./PosProductCard";
@@ -16,7 +18,6 @@ const SORT_OPTIONS = [
   { value: "price-desc", label: "Mayor Precio" },
 ];
 
-// Normaliza texto eliminando acentos y mayúsculas
 const normalizeText = (text = "") =>
   text
     .normalize("NFD")
@@ -37,24 +38,26 @@ export default function PosProductsSection({
   const filteredProducts = useMemo(() => {
     const query = normalizeText(searchQuery);
 
-    return products.filter((product) => {
-      const matchesCategory =
-        selectedCategory === "all" ||
-        normalizeText(product.category) === normalizeText(selectedCategory);
+    return products
+      .filter((product) => {
+        const matchesCategory =
+          selectedCategory === "all" ||
+          normalizeText(product.category) === normalizeText(selectedCategory);
 
-      if (!matchesCategory) return false;
-      if (!query) return true;
+        if (!matchesCategory) return false;
+        if (!query) return true;
 
-      const titleMatch = normalizeText(product.title).includes(query);
-      const descMatch = normalizeText(product.description).includes(query);
-      const catMatch = normalizeText(product.category).includes(query);
+        const titleMatch = normalizeText(product.title).includes(query);
+        const descMatch = normalizeText(product.description).includes(query);
+        const catMatch = normalizeText(product.category).includes(query);
 
-      return titleMatch || descMatch || catMatch;
-    }).sort((a, b) => {
-      if (sortBy === "price-asc") return a.price - b.price;
-      if (sortBy === "price-desc") return b.price - a.price;
-      return 0;
-    });
+        return titleMatch || descMatch || catMatch;
+      })
+      .sort((a, b) => {
+        if (sortBy === "price-asc") return a.price - b.price;
+        if (sortBy === "price-desc") return b.price - a.price;
+        return 0;
+      });
   }, [products, searchQuery, selectedCategory, sortBy]);
 
   const handleResetFilters = () => {
@@ -63,100 +66,105 @@ export default function PosProductsSection({
   };
 
   return (
-    <div className="space-y-3">
-      {/* Barra de Búsqueda directa */}
-      <div className="w-full">
-        <SearchField
-          value={searchQuery}
-          onChange={onSearchChange}
-          onSubmit={onSearchChange}
-          onClear={onClearSearch}
-          placeholder="Buscar por platillo, corte de carne, bebida o postre..."
-          size="md"
-          variant="dark"
-          fullWidth={true}
-          className="w-full border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] shadow-none"
-        />
-      </div>
+    <div className="space-y-4 w-full">
+      <div className="flex flex-col md:flex-row md:items-center gap-3 w-full">
+        <div className="flex-1 min-w-0">
+          <SearchField
+            value={searchQuery}
+            onChange={onSearchChange}
+            onSubmit={onSearchChange}
+            onClear={onClearSearch}
+            placeholder="Buscar por platillo, corte de carne, bebida o postre..."
+            size="md"
+            variant="filled"
+            fullWidth={true}
+          />
+        </div>
 
-      {/* Fila única: componente Dropdown de ordenamiento + categorías en scroll horizontal */}
-      <div className="flex items-start gap-2 w-full min-w-0">
-        <Dropdown className="shrink-0">
+        <Dropdown className="shrink-0 self-start md:self-auto">
           <DropdownTrigger>
-            <button
-              type="button"
-              aria-label="Ordenar productos"
+            <IconButton
+              hitSize={40}
+              iconSize={20}
+              variant={sortBy !== "default" ? "filled" : "outlined"}
+              ariaLabel="Ordenar productos"
               title={
                 SORT_OPTIONS.find((opt) => opt.value === sortBy)?.label
                   ? `Orden: ${SORT_OPTIONS.find((opt) => opt.value === sortBy).label}`
                   : "Ordenar productos"
               }
-              className={`size-10 inline-flex items-center justify-center rounded-full border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer ${
-                sortBy !== "default"
-                  ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)] border-[var(--color-primary-600)]"
-                  : "bg-[var(--color-secondary-900)] text-[var(--color-primary-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border-[var(--color-secondary-800)]"
-              }`}
             >
-              <Filter className="size-4" />
-            </button>
+              <M3Icon name="filter_list" size={20} />
+            </IconButton>
           </DropdownTrigger>
 
-          <DropdownContent className="left-0 min-w-[192px]">
-            <p className="px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-[var(--color-gray-400)]">
+          <DropdownContent className="left-0 md:right-0 md:left-auto min-w-[200px]">
+            <p className="px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)]">
               Ordenar por
             </p>
-            <div className="space-y-0.5 mt-0.5">
-              {SORT_OPTIONS.map((option) => {
-                const isSelected = sortBy === option.value;
-                return (
-                  <DropdownItem
-                    key={option.value}
-                    onClick={() => setSortBy(option.value)}
-                    className={`flex items-center justify-between gap-2 text-xs sm:text-sm ${
-                      isSelected
-                        ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] font-semibold"
-                        : ""
-                    }`}
-                  >
-                    <span>{option.label}</span>
-                    {isSelected && <Check className="size-3.5 shrink-0" />}
-                  </DropdownItem>
-                );
-              })}
-            </div>
+            {SORT_OPTIONS.map((option) => {
+              const isSelected = sortBy === option.value;
+              return (
+                <DropdownItem
+                  key={option.value}
+                  icon={isSelected ? "check" : undefined}
+                  onClick={() => setSortBy(option.value)}
+                  className={
+                    isSelected
+                      ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-medium"
+                      : ""
+                  }
+                >
+                  {option.label}
+                </DropdownItem>
+              );
+            })}
           </DropdownContent>
         </Dropdown>
-
-        <div className="flex-1 min-w-0">
-          <PosCategoryFilter
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-            products={products}
-          />
-        </div>
       </div>
 
-      {/* Indicador de Filtro o Búsqueda Activa */}
+      {/* Chips de categorías sin recortes horizontales en PC */}
+      <PosCategoryFilter
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+        products={products}
+      />
+
       {(searchQuery || selectedCategory !== "all") && (
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-xs">
-          <span className="text-[var(--color-gray-300)]">
-            Mostrando <strong className="text-[var(--color-white)] font-bold">{filteredProducts.length}</strong> productos
-            {searchQuery && <> para <strong className="text-[var(--color-primary-300)] font-semibold">"{searchQuery}"</strong></>}
-            {selectedCategory !== "all" && <> en categoría <strong className="text-[var(--color-primary-300)] font-semibold">"{selectedCategory}"</strong></>}
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-xs">
+          <span className="text-[var(--md-sys-color-on-surface-variant)]">
+            Mostrando{" "}
+            <strong className="text-[var(--md-sys-color-on-surface)] font-medium">
+              {filteredProducts.length}
+            </strong>{" "}
+            productos
+            {searchQuery && (
+              <>
+                {" "}
+                para{" "}
+                <strong className="text-[var(--md-sys-color-primary)] font-medium">
+                  &ldquo;{searchQuery}&rdquo;
+                </strong>
+              </>
+            )}
+            {selectedCategory !== "all" && (
+              <>
+                {" "}
+                en categoría{" "}
+                <strong className="text-[var(--md-sys-color-primary)] font-medium">
+                  &ldquo;{selectedCategory}&rdquo;
+                </strong>
+              </>
+            )}
           </span>
-          <button
-            type="button"
-            onClick={handleResetFilters}
-            className="min-h-[40px] px-4 rounded-full text-sm text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer font-medium"
-          >
+          <Button variant="text" size="sm" onClick={handleResetFilters}>
             Restablecer filtros
-          </button>
+          </Button>
         </div>
       )}
 
-      {/* Cuadrícula de Productos */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4">
           {filteredProducts.map((product) => (
             <PosProductCard
               key={product.id}
@@ -166,24 +174,19 @@ export default function PosProductsSection({
           ))}
         </div>
       ) : (
-        /* Estado vacío si no hay coincidencias */
-        <div className="py-14 text-center max-w-md mx-auto">
-          <div className="size-16 mx-auto rounded-2xl bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] flex items-center justify-center text-[var(--color-primary-400)] mb-3">
-            <SearchX className="size-8" />
+        <div className="py-16 text-center max-w-md mx-auto">
+          <div className="size-16 mx-auto rounded-2xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] flex items-center justify-center text-[var(--md-sys-color-primary)] mb-3">
+            <M3Icon name="search_off" size={32} />
           </div>
-          <h3 className="text-base leading-6 font-bold text-[var(--color-white)] mb-1">
+          <h3 className="text-base leading-6 font-medium text-[var(--md-sys-color-on-surface)] mb-1">
             Sin productos coincidentes
           </h3>
-          <p className="text-xs leading-4 text-[var(--color-gray-400)] mb-4">
+          <p className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)] mb-4">
             No se encontraron productos con el filtro aplicado. Verifica el término de búsqueda o selecciona otra categoría.
           </p>
-          <button
-            type="button"
-            onClick={handleResetFilters}
-            className="min-h-[40px] inline-flex items-center gap-2 px-6 py-2 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-sm font-medium text-[var(--color-on-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-colors cursor-pointer"
-          >
+          <Button variant="filled" onClick={handleResetFilters}>
             Ver todos los productos
-          </button>
+          </Button>
         </div>
       )}
     </div>

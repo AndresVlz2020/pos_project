@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { SearchX, UserCheck } from "lucide-react";
-import { SearchField } from "@/shared";
+import { M3Icon, SearchField } from "@/shared";
 import { users as fallbackUsers } from "@/features/users/data/users";
 import { getUsers } from "@/services/userService";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
@@ -26,7 +25,7 @@ export function StaffAvatar({ staff, sizeClass = "size-9" }) {
     <img
       src={getUserAvatar(staff)}
       alt={staff?.userName || staff?.name || "Colaborador"}
-      className={`${sizeClass} rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0`}
+      className={`${sizeClass} rounded-full object-cover border border-[var(--md-sys-color-outline-variant)] shrink-0`}
       onError={(e) => {
         e.currentTarget.onerror = null;
         e.currentTarget.src = imgWorkerCarlos;
@@ -84,10 +83,10 @@ export default function QuickAccessSelector({ onSelectStaff }) {
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h2 className="text-base font-bold text-[var(--color-white)]">
+        <h2 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)]">
           Selecciona tu Perfil de Turno
         </h2>
-        <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
+        <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
           Elige tu usuario frecuente o búscate en la lista general.
         </p>
       </div>
@@ -100,22 +99,22 @@ export default function QuickAccessSelector({ onSelectStaff }) {
           onClear={() => setSearchQuery("")}
           placeholder="Buscar por nombre, cargo o documento..."
           size="sm"
-          variant="dark"
+          variant="filled"
           fullWidth={true}
-          className="w-full border-[var(--color-secondary-700)] hover:border-[var(--color-primary-400)] shadow-none"
+          className="w-full"
         />
       </div>
 
       {isSearching ? (
         <div className="space-y-2 pt-1">
-          <div className="flex items-center justify-between text-xs px-1">
-            <span className="text-[var(--color-gray-300)] font-medium">
+          <div className="flex items-center justify-between text-label-md px-1">
+            <span className="text-[var(--md-sys-color-on-surface-variant)] font-medium">
               Resultados encontrados ({filteredStaffList.length})
             </span>
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="min-h-[40px] px-3 rounded-full text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer text-sm font-medium"
+              className="m3-state min-h-[40px] px-3 rounded-full text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer text-label-lg font-medium"
             >
               Limpiar filtro
             </button>
@@ -128,38 +127,38 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                   key={staff.id}
                   type="button"
                   onClick={() => onSelectStaff(staff)}
-                  className="w-full p-3 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer flex items-center justify-between gap-3 active:scale-[0.99] group"
+                  className="m3-state w-full p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] hover:border-[var(--md-sys-color-primary)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer flex items-center justify-between gap-3 group"
                 >
                   <StaffAvatar staff={staff} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
+                    <p className="text-title-sm font-semibold text-[var(--md-sys-color-on-surface)] truncate">
                       {staff.userName || staff.name}
                     </p>
-                    <p className="text-xs text-[var(--color-gray-400)] truncate mt-0.5">
-                      <span className="text-[var(--color-primary-300)] font-medium">
+                    <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">
+                      <span className="text-[var(--md-sys-color-primary)] font-medium">
                         {formatRole(staff.role || staff.userType)}
                       </span>{" "}
                       • Doc: {staff.userDocumentTypes || staff.document_type}{" "}
                       {staff.userDocumentNumber || staff.document_number}
                     </p>
                   </div>
-                  <UserCheck className="size-4 text-[var(--color-gray-500)] group-hover:text-[var(--color-primary-400)] shrink-0 transition-colors" />
+                  <M3Icon name="person_check" size={18} className="text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-primary)] shrink-0 transition-colors" />
                 </button>
               ))}
             </div>
           ) : (
-            <div className="py-8 text-center bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-xl p-4">
-              <SearchX className="size-8 mx-auto text-[var(--color-primary-400)] mb-2" />
-              <p className="text-sm font-bold text-[var(--color-white)]">
+            <div className="py-8 text-center bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl p-4">
+              <M3Icon name="search_off" size={32} className="mx-auto text-[var(--md-sys-color-primary)] mb-2" />
+              <p className="text-title-sm font-semibold text-[var(--md-sys-color-on-surface)]">
                 Sin coincidencias en la plantilla
               </p>
-              <p className="text-xs text-[var(--color-gray-400)] mt-0.5 mb-3">
-                No se encontró ningún colaborador activo con "{searchQuery}".
+              <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5 mb-3">
+                No se encontró ningún colaborador activo con &ldquo;{searchQuery}&rdquo;.
               </p>
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="min-h-[40px] px-4 rounded-full text-sm text-[var(--color-primary-400)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 font-medium cursor-pointer"
+                className="m3-state min-h-[40px] px-4 rounded-full text-label-lg text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] font-medium cursor-pointer"
               >
                 Restablecer búsqueda
               </button>
@@ -168,8 +167,8 @@ export default function QuickAccessSelector({ onSelectStaff }) {
         </div>
       ) : (
         <div className="space-y-2.5 pt-1">
-          <div className="flex items-center justify-center text-xs px-0.5">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-gray-300)]">
+          <div className="flex items-center justify-center px-0.5">
+            <span className="inline-flex items-center gap-1.5 text-label-md font-semibold text-[var(--md-sys-color-on-surface-variant)]">
               Acceso Rápido
             </span>
           </div>
@@ -180,14 +179,14 @@ export default function QuickAccessSelector({ onSelectStaff }) {
                 key={staff.id}
                 type="button"
                 onClick={() => onSelectStaff(staff)}
-                className="p-3 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] hover:bg-[var(--color-secondary-800)] hover:border-[var(--color-primary-400)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all cursor-pointer active:scale-[0.98] group flex items-center gap-2.5"
+                className="m3-state p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] hover:border-[var(--md-sys-color-primary)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer group flex items-center gap-2.5"
               >
                 <StaffAvatar staff={staff} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-[var(--color-white)] group-hover:text-[var(--color-primary-300)] transition-colors truncate">
+                  <p className="text-title-sm font-semibold text-[var(--md-sys-color-on-surface)] truncate">
                     {staff.userName || staff.name}
                   </p>
-                  <p className="text-xs text-[var(--color-primary-400)] font-medium truncate mt-0.5">
+                  <p className="text-label-md text-[var(--md-sys-color-primary)] font-medium truncate mt-0.5">
                     {formatRole(staff.role || staff.userType)}
                   </p>
                 </div>
@@ -195,7 +194,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
             ))}
           </div>
 
-          <p className="text-xs text-center text-[var(--color-gray-500)] pt-1">
+          <p className="text-body-sm text-center text-[var(--md-sys-color-on-surface-variant)] pt-1">
             ¿No apareces en esta lista? Escribe tu nombre o documento en el buscador superior.
           </p>
         </div>

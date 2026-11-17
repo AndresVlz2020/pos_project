@@ -76,10 +76,24 @@ export default function CreateSuppliers() {
 
 
     return (
-        <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-            <h1 className="text-2xl leading-8 font-bold text-center mb-6 text-[var(--color-white)]">Crear Proveedor</h1>
+        <div className="flex-1 flex flex-col w-full p-5 sm:p-8 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
+                <div>
+                    <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+                        Crear Proveedor
+                    </h1>
+                    <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+                        Registra la ficha comercial y de contacto de un nuevo distribuidor.
+                    </p>
+                </div>
+                <Link to="/supplierList">
+                    <Button variant="outlined" size="md" leadingIcon="arrow_back">
+                        Volver al Listado
+                    </Button>
+                </Link>
+            </div>
             {feedback && (
-                <div className="mb-6 max-w-xl mx-auto">
+                <div className="mb-6 max-w-2xl">
                     <Alert
                         type={feedback.type}
                         title={feedback.title}
@@ -89,18 +103,10 @@ export default function CreateSuppliers() {
                     />
                 </div>
             )}
-            <form onSubmit={handleSubmit}>
-
-                <div className=" 
-                        flex 
-                        flex-col md:flex-row
-                        gap-8 md:gap-12
-                        justify-center
-                        items-start
-                    "
-                >
-                    <div className="w-48 mx-auto md:mx-0 flex flex-col items-center">
-                        <p className="text-center text-[var(--color-gray-300)] text-sm mb-3 font-medium">
+            <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+                    <div className="lg:col-span-3 flex flex-col items-center p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
+                        <p className="text-center text-[var(--md-sys-color-on-surface-variant)] text-label-lg mb-3 font-medium">
                             Suba el Logo
                         </p>
                         <FileInput
@@ -114,11 +120,11 @@ export default function CreateSuppliers() {
                             altText={formSupliers.supplierName || "Logo proveedor"}
                         />
                         {errors.userImage && (
-                            <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+                            <span className="text-[var(--md-sys-color-error)] text-label-sm mt-2">{errors.userImage}</span>
                         )}
                     </div>
 
-                    <div className="flex-1 flex flex-col gap-4 max-w-md w-full">
+                    <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-5">
                         <Input
                             label="NIT"
                             name="supplierNit"
@@ -141,6 +147,7 @@ export default function CreateSuppliers() {
                             label="Correo Electrónico"
                             name="supplierEmail"
                             type="email"
+                            leadingIcon="mail"
                             value={formSupliers.supplierEmail}
                             htmlFor="supplier-email"
                             onChange={handleChange}
@@ -150,22 +157,21 @@ export default function CreateSuppliers() {
                             label="Número de Contacto"
                             name="supplierPhone"
                             type="tel"
+                            leadingIcon="call"
                             value={formSupliers.supplierPhone}
                             htmlFor="supplier-phone"
                             onChange={handleChange}
                             error={errors.supplierPhone}
                         />
-                    </div>
-
-                    <div className="flex-1 flex flex-col gap-4 max-w-md w-full">
                         <Input
                             label="Dirección"
                             name="supplierDirection"
                             type="text"
+                            leadingIcon="location_on"
                             value={formSupliers.supplierDirection}
                             htmlFor="supplier-direction"
                             onChange={handleChange}
-                            error={errors.supplierDirection} 
+                            error={errors.supplierDirection}
                         />
                         <Input
                             label="Observaciones"
@@ -174,11 +180,11 @@ export default function CreateSuppliers() {
                             value={formSupliers.supplierObservation}
                             htmlFor="supplier-observation"
                             onChange={handleChange}
-                            error={errors.supplierObservation} 
+                            error={errors.supplierObservation}
                         />
-                        <div className="flex items-center gap-6 mt-4 min-h-[44px] bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-white)] w-full sm:w-fit px-3.5 py-2 rounded-lg">
+                        <div className="md:col-span-2 flex items-center gap-6 min-h-[48px] bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] w-full sm:w-fit px-4 py-2 rounded-xl">
                             <Checkbox
-                                className="cursor-pointer text-[var(--color-white)]"
+                                className="cursor-pointer"
                                 id="isSuperUser"
                                 name="isSuperUser"
                                 label="Activo"
@@ -191,15 +197,15 @@ export default function CreateSuppliers() {
                                 label="Inactivo"
                                 checked={formSupliers.isStaff}
                                 onChange={handleChange}
-                            />                    
+                            />
                         </div>
                     </div>
                 </div>
 
-                <div className="w-full flex justify-center mt-12 gap-4">
+                <div className="w-full flex justify-end mt-auto pt-6 border-t border-[var(--md-sys-color-outline-variant)] gap-3">
                     <Link to="/supplierList">
                         <Button
-                            variant="secondary"
+                            variant="outlined"
                             size="md"
                             type="button"
                         >
@@ -207,9 +213,10 @@ export default function CreateSuppliers() {
                         </Button>
                     </Link>
                     <Button
-                        variant="primary"
+                        variant="filled"
                         size="md"
                         type="submit"
+                        leadingIcon="check_circle"
                     >
                         Confirmar Información
                     </Button>

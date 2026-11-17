@@ -4,7 +4,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthLayout, DashboardLayout, ProtectedRoute } from "@/shared";
 
 const RouteLoader = (
-  <div className="flex min-h-[40vh] items-center justify-center p-6 text-sm text-[var(--color-muted)]">
+  <div className="flex min-h-[40vh] items-center justify-center p-6 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
     Cargando...
   </div>
 );

@@ -1,7 +1,6 @@
 // frontend/src/features/access/components/PermissionModule.jsx
 
-import { Checkbox, Button, IconButton } from "@/shared";
-import { Pencil } from "lucide-react";
+import { Checkbox, Button, IconButton, M3Icon } from "@/shared";
 
 const DEFAULT_PERMISSIONS = [
   { permission_id: 1, permission_name: "Listar usuarios", permission_codename: "list_user", display_name: "Usuarios" },
@@ -81,45 +80,48 @@ export default function PermissionModule({
   const activeTypeLabel = selectedUser ? "Usuario" : "Grupo";
 
   return (
-    <section className="rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] p-4 sm:p-6 text-[var(--color-white)] shadow-sm">
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
+    <section className="flex-1 flex flex-col rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] p-5 sm:p-6 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
         <div>
-          <p className="text-xs uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
+          <p className="text-label-sm uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)] font-medium">
             {activeTypeLabel}
           </p>
 
-          <h2 className="text-base leading-6 font-semibold text-[var(--color-white)] mt-0.5">
+          <h2 className="text-title-lg font-semibold text-[var(--md-sys-color-on-surface)] mt-0.5">
             {activeName || "Seleccione un grupo o usuario"}
           </h2>
         </div>
 
         {!isEditing && (selectedGroup || selectedUser || activeName) && (
           <IconButton
+            variant="tonal"
+            hitSize={40}
+            iconSize={18}
             ariaLabel="Editar permisos"
+            title="Editar permisos"
             onClick={onEdit}
-            className="text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)]"
           >
-            <Pencil size={18} />
+            <M3Icon name="edit" size={18} />
           </IconButton>
         )}
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6 flex-1">
         {Object.entries(permissionsByModule).map(
           ([moduleName, permissions]) => (
             <div
               key={moduleName}
-              className="border-b border-[var(--color-secondary-800)] pb-6 last:border-b-0 last:pb-0"
+              className="border-b border-[var(--md-sys-color-outline-variant)] pb-6 last:border-b-0 last:pb-0"
             >
-              <h3 className="font-semibold text-[var(--color-primary-400)] mb-4 text-sm tracking-wide">
+              <h3 className="font-semibold text-[var(--md-sys-color-primary)] mb-4 text-title-sm tracking-wide">
                 Módulo {moduleName}
               </h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                 {permissions.map((permission) => (
                   <div
                     key={permission.permission_id}
-                    className="p-3 min-h-[44px] flex items-center rounded-lg border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] hover:border-[var(--color-secondary-700)] focus-within:border-[var(--color-primary-400)] transition"
+                    className="p-3 min-h-[48px] flex items-center rounded-xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] hover:border-[var(--md-sys-color-primary)]/60 focus-within:border-[var(--md-sys-color-primary)] transition-colors"
                   >
                     <Checkbox
                       id={permission.permission_codename}
@@ -141,12 +143,12 @@ export default function PermissionModule({
       </div>
 
       {isEditing && (
-        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[var(--color-secondary-800)]">
-          <Button type="button" variant="secondary" onClick={onCancel}>
+        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[var(--md-sys-color-outline-variant)]">
+          <Button type="button" variant="outlined" onClick={onCancel}>
             Cancelar
           </Button>
 
-          <Button type="button" variant="primary" onClick={onSave}>
+          <Button type="button" variant="filled" leadingIcon="check_circle" onClick={onSave}>
             Guardar
           </Button>
         </div>

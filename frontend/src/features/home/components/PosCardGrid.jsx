@@ -1,15 +1,15 @@
-/**
- * Componente modular de cuadrícula responsive para tarjetas en el POS
- */
-export default function PosCardGrid({ children, emptyMessage = "No se encontraron registros." }) {
+export default function PosCardGrid({
+  children,
+  emptyMessage = "No se encontraron registros.",
+}) {
   const hasChildren = Array.isArray(children)
     ? children.length > 0
     : Boolean(children);
 
   if (!hasChildren) {
     return (
-      <div className="py-12 text-center rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)]/40 p-6">
-        <p className="text-xs text-[var(--color-gray-400)] font-[family-name:var(--main-font)]">
+      <div className="py-12 text-center rounded-xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] p-6">
+        <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
           {emptyMessage}
         </p>
       </div>
@@ -17,7 +17,7 @@ export default function PosCardGrid({ children, emptyMessage = "No se encontraro
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
       {children}
     </div>
   );

@@ -1,5 +1,5 @@
-import React from "react";
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
+import M3Icon from "./M3Icon";
 
 const Card = ({
   product,
@@ -7,46 +7,58 @@ const Card = ({
   onIncrement,
   onDecrement,
   children,
-  className = ""
+  className = "",
 }) => {
   if (!product && !children) return null;
 
-  const { title, name, productName, price, productPrice, image, description, productCategory, category, status, rating, isPopular } = product || {};
+  const {
+    title,
+    name,
+    productName,
+    price,
+    productPrice,
+    description,
+    productCategory,
+    category,
+    status,
+    rating,
+    isPopular,
+  } = product || {};
+
   const displayTitle = name || title || productName;
   const displayPrice = price || productPrice;
   const displayDesc = description || productCategory;
   const displayCategory = category || productCategory;
   const imageSrc = getProductImage(product);
 
-  const parsePrice = (val) => parseFloat(String(val || 0).replace(/\$/g, "").replace(/\./g, "").trim()) || 0;
+  const parsePrice = (val) =>
+    parseFloat(String(val || 0).replace(/\$/g, "").replace(/\./g, "").trim()) || 0;
   const numericPrice = parsePrice(displayPrice);
-  const formattedPrice = numericPrice > 0 ? `$${numericPrice.toLocaleString()}` : (displayPrice ? `$${displayPrice}` : "");
+  const formattedPrice =
+    numericPrice > 0
+      ? `$${numericPrice.toLocaleString()}`
+      : displayPrice
+      ? `$${displayPrice}`
+      : "";
   const dishSubtotal = numericPrice * (qty || 0);
+
+  const isDisabled =
+    status === "Inactivo" ||
+    status === "inhabilitado" ||
+    status === "No disponible";
 
   return (
     <div
       className={`
-        w-full
-        group
-        rounded-xl
-        border
-        border-[var(--color-secondary-800)]
-        bg-[var(--color-secondary-900)]
-        text-[var(--color-white)]
-        shadow-md
-        hover:shadow-lg
-        hover:border-[var(--color-primary-500)]
-        transition-all
-        duration-200
-        overflow-hidden
-        flex
-        flex-col
-        justify-between
+        w-full group rounded-xl border border-[var(--md-sys-color-outline-variant)]
+        bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-on-surface)]
+        m3-elevation-1 hover:m3-elevation-2 hover:border-[var(--md-sys-color-primary)]
+        overflow-hidden flex flex-col justify-between
         ${className}
       `}
     >
       <div>
-        <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-[var(--color-secondary-950)]">
+        <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-[var(--md-sys-color-surface-container)]">
           <img
             src={imageSrc}
             alt={displayTitle}
@@ -57,68 +69,67 @@ const Card = ({
               e.currentTarget.src = imgPunta;
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-secondary-950)]/80 via-transparent to-transparent pointer-events-none" />
-            
-            {/* Badges superiores tipo Material Chips */}
-            <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1 pointer-events-none">
-              {displayCategory && (
-                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-xs uppercase tracking-wide font-semibold px-2.5 py-0.5 rounded-lg border border-[var(--color-secondary-700)] shadow-sm">
-                  {displayCategory}
-                </span>
-              )}
-              {isPopular && (
-                <span className="bg-[var(--color-primary-500)] text-[var(--color-on-primary)] text-xs font-bold px-2.5 py-0.5 rounded-lg shadow-sm">
-                  ★ Popular
-                </span>
-              )}
-              {!isPopular && rating && (
-                <span className="bg-[var(--color-secondary-950)] text-[var(--color-primary-300)] text-xs font-semibold px-2.5 py-0.5 rounded-lg border border-[var(--color-secondary-700)] flex items-center gap-1 shadow-sm">
-                  ★ {rating}
-                </span>
-              )}
-            </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
 
-            {status && (
-              <span
-                className={`absolute bottom-2 left-2.5 text-xs font-semibold px-2.5 py-0.5 rounded-lg border ${
-                  status === "Inactivo" || status === "inhabilitado" || status === "No disponible"
-                    ? "bg-[var(--color-secondary-800)] text-[var(--color-gray-400)] border-[var(--color-secondary-700)]"
-                    : "bg-[var(--color-secondary-950)] text-[var(--color-white)] border-[var(--color-secondary-700)]"
-                }`}
-              >
-                {status}
+          <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1 pointer-events-none">
+            {displayCategory && (
+              <span className="bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)] text-xs font-medium px-2.5 py-0.5 rounded-lg border border-[var(--md-sys-color-outline-variant)] m3-elevation-1">
+                {displayCategory}
+              </span>
+            )}
+            {isPopular && (
+              <span className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] text-xs font-medium px-2.5 py-0.5 rounded-lg m3-elevation-1">
+                Popular
+              </span>
+            )}
+            {!isPopular && rating && (
+              <span className="bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-primary)] text-xs font-medium px-2.5 py-0.5 rounded-lg border border-[var(--md-sys-color-outline-variant)]">
+                {rating}
               </span>
             )}
           </div>
 
+          {status && (
+            <span
+              className={`absolute bottom-2 left-2.5 text-xs font-medium px-2.5 py-0.5 rounded-lg border ${
+                isDisabled
+                  ? "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)]"
+                  : "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-[var(--md-sys-color-outline-variant)]"
+              }`}
+            >
+              {status}
+            </span>
+          )}
+        </div>
+
         <div className="p-4 space-y-2">
           {displayTitle && (
-            <h3 className="text-base leading-6 font-bold text-[var(--color-white)] line-clamp-1">
+            <h3 className="text-base leading-6 font-medium text-[var(--md-sys-color-on-surface)] line-clamp-1">
               {displayTitle}
             </h3>
           )}
 
           {displayDesc && (
-            <p className="text-sm leading-5 text-[var(--color-gray-300)] line-clamp-2">
+            <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] line-clamp-2">
               {displayDesc}
             </p>
           )}
 
           {displayPrice && (
             <div className="flex items-center justify-between pt-1">
-              <span className="text-sm text-[var(--color-gray-300)]">
+              <span className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
                 Precio unitario:
               </span>
-              <span className="text-base font-bold text-[var(--color-primary-300)]">
+              <span className="text-base font-medium text-[var(--md-sys-color-primary)]">
                 {formattedPrice}
               </span>
             </div>
           )}
 
           {typeof qty === "number" && qty > 0 && (
-            <div className="flex items-center justify-between text-xs text-[var(--color-primary-200)] pt-1 border-t border-[var(--color-white)]/10">
+            <div className="flex items-center justify-between text-xs text-[var(--md-sys-color-primary)] pt-1 border-t border-[var(--md-sys-color-outline-variant)]">
               <span>Subtotal:</span>
-              <span className="font-bold">${dishSubtotal.toLocaleString()}</span>
+              <span className="font-medium">${dishSubtotal.toLocaleString()}</span>
             </div>
           )}
 
@@ -128,22 +139,22 @@ const Card = ({
 
       {typeof qty === "number" && (onIncrement || onDecrement) && (
         <div className="p-4 pt-0">
-          {status === "Inactivo" || status === "inhabilitado" || status === "No disponible" ? (
-            <div className="min-h-[40px] flex items-center justify-center bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-gray-400)] text-xs py-2 px-3 rounded-lg text-center font-semibold">
+          {isDisabled ? (
+            <div className="min-h-[40px] flex items-center justify-center bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)] text-xs py-2 px-3 rounded-lg text-center font-medium">
               Inhabilitado • Excluido de órdenes
             </div>
           ) : (
-            <div className="flex items-center justify-between bg-[var(--color-secondary-950)] rounded-full p-1 border border-[var(--color-secondary-800)]">
+            <div className="flex items-center justify-between bg-[var(--md-sys-color-surface-container)] rounded-full p-1 border border-[var(--md-sys-color-outline-variant)]">
               <button
                 type="button"
                 onClick={onDecrement}
                 aria-label="Disminuir cantidad"
-                className="size-10 flex items-center justify-center rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-bold text-base cursor-pointer transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                className="m3-state size-10 flex items-center justify-center rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
               >
-                -
+                <M3Icon name="remove" size={18} />
               </button>
 
-              <span className="font-bold text-base text-[var(--color-white)] px-2 tabular-nums">
+              <span className="font-medium text-base text-[var(--md-sys-color-on-surface)] px-2 tabular-nums">
                 {qty}
               </span>
 
@@ -151,9 +162,9 @@ const Card = ({
                 type="button"
                 onClick={onIncrement}
                 aria-label="Aumentar cantidad"
-                className="size-10 flex items-center justify-center rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-[var(--color-on-primary)] font-bold text-base cursor-pointer transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+                className="m3-state size-10 flex items-center justify-center rounded-full bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
               >
-                +
+                <M3Icon name="add" size={18} />
               </button>
             </div>
           )}

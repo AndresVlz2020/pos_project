@@ -39,30 +39,30 @@ export default function ReadProductPage() {
   const imageSrc = getProductImage(product);
 
   return (
-    <div className="my-auto px-3 sm:px-4 py-4 sm:py-6 font-[family-name:var(--main-font)]">
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] max-w-3xl mx-auto rounded-xl p-4 sm:p-8 shadow-xl text-[var(--color-white)]">
-        <div className="border-b border-[var(--color-secondary-800)] pb-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div className="flex-1 flex flex-col w-full font-[family-name:var(--main-font)]">
+      <div className="flex-1 flex flex-col w-full bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl p-5 sm:p-8 m3-elevation-1 text-[var(--md-sys-color-on-surface)]">
+        <div className="border-b border-[var(--md-sys-color-outline-variant)] pb-4 mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-primary-400)]">
+            <span className="text-label-md font-semibold uppercase tracking-wider text-[var(--md-sys-color-primary)]">
               Código: {code}
             </span>
-            <h2 className="text-2xl leading-8 font-bold text-[var(--color-white)] mt-1">
+            <h2 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)] mt-1">
               Detalle del Platillo / Menú
             </h2>
           </div>
           <Link to="/productList">
-            <Button variant="secondary" size="md">
+            <Button variant="outlined" size="md" leadingIcon="arrow_back">
               Volver al Menú
             </Button>
           </Link>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
-          <div>
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start">
+          <div className="md:col-span-4 xl:col-span-3 flex justify-center">
             <img
               src={imageSrc}
               alt={title}
-              className="rounded-xl border border-[var(--color-secondary-700)] w-full max-w-[224px] sm:size-56 object-cover shadow-md"
+              className="rounded-2xl border border-[var(--md-sys-color-outline-variant)] w-full max-w-[260px] aspect-square object-cover m3-elevation-1"
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = imgPunta;
@@ -70,42 +70,42 @@ export default function ReadProductPage() {
             />
           </div>
 
-          <div className="flex flex-col p-4 sm:p-6 gap-y-3 bg-[var(--color-secondary-800)]/70 border border-[var(--color-secondary-700)] rounded-xl flex-1 w-full">
-            <h3 className="text-title-lg font-bold text-[var(--color-white)]">{title}</h3>
-            <div className="text-sm flex flex-col gap-2.5 text-[var(--color-gray-300)]">
+          <div className="md:col-span-8 xl:col-span-9 flex flex-col p-5 sm:p-6 gap-y-4 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl w-full">
+            <h3 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">{title}</h3>
+            <div className="text-body-md flex flex-col gap-3 text-[var(--md-sys-color-on-surface-variant)]">
               <p>
                 Categoría:{" "}
-                <span className="font-semibold text-[var(--color-white)] capitalize">
+                <span className="font-semibold text-[var(--md-sys-color-on-surface)] capitalize">
                   {category}
                 </span>
               </p>
               <p>
                 Descripción:{" "}
-                <span className="font-normal text-[var(--color-gray-200)]">
+                <span className="font-normal text-[var(--md-sys-color-on-surface)]">
                   {description}
                 </span>
               </p>
               <p>
                 Stock disponible:{" "}
-                <span className="font-semibold text-[var(--color-white)]">
+                <span className="font-semibold text-[var(--md-sys-color-on-surface)] tabular-nums">
                   {Math.trunc(Number(stock ?? 0))} un.
                 </span>
               </p>
               <p>
                 Estado:{" "}
                 <span
-                  className={`font-semibold ${
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-medium border ${
                     isAvailable
-                      ? "text-[var(--color-primary-300)]"
-                      : "text-[var(--color-error)]"
+                      ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-[var(--md-sys-color-primary)]/40"
+                      : "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border-[var(--md-sys-color-error)]/40"
                   }`}
                 >
                   {status}
                 </span>
               </p>
-              <p className="flex items-center gap-2 pt-2 border-t border-[var(--color-secondary-700)]">
+              <p className="flex items-center gap-2 pt-3 border-t border-[var(--md-sys-color-outline-variant)]">
                 Precio al público:{" "}
-                <span className="font-bold text-[var(--color-white)] text-title-lg">
+                <span className="font-bold text-[var(--md-sys-color-primary)] text-headline-sm tabular-nums">
                   ${price} COP
                 </span>
               </p>
@@ -113,15 +113,15 @@ export default function ReadProductPage() {
           </div>
         </div>
 
-        <div className="w-full flex justify-center mt-8 gap-4 pt-4 border-t border-[var(--color-secondary-800)]">
+        <div className="w-full flex justify-end mt-auto gap-3 pt-6 border-t border-[var(--md-sys-color-outline-variant)]">
           <Link to="/productList">
-            <Button variant="secondary" size="md">
+            <Button variant="outlined" size="md" leadingIcon="arrow_back">
               Volver al Listado
             </Button>
           </Link>
           {canEdit && (
             <Link to="/editproduct" state={{ product }}>
-              <Button variant="primary" size="md">
+              <Button variant="filled" size="md" leadingIcon="edit">
                 Editar Platillo
               </Button>
             </Link>

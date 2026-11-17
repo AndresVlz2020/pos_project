@@ -1,71 +1,29 @@
-// Hooks para manejo de estado y portal
 import { useState } from "react";
 import { createPortal } from "react-dom";
-
-// Configuración de campos disponibles para el reporte
 import { userReportFields } from "../config/userReportFields";
-
-// Caso de uso que orquesta la generación del reporte
 import { generateUserReport } from "../services/generateUserReport";
+import { Button, Input, Select, Checkbox, Alert, M3Icon, IconButton } from "@/shared";
 
-
-// Componentes UI reutilizables (design system)
-import { Button, Input, Select, Checkbox, Alert } from "@/shared";
-
-// Componente modal para configuración de reportes
-export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
-
-  // Estado del formato de salida
+export default function ReportConfigModal({ isOpen, onClose, data = [] }) {
   const [format, setFormat] = useState("pdf");
-
-  // Estado del alcance del reporte: "all", "enabled", "disabled", "document"
   const [scope, setScope] = useState("all");
-
-  // Estado para filtro por documento
   const [documentNumber, setDocumentNumber] = useState("");
-
-  // Mensaje de alerta en modal
   const [alertMessage, setAlertMessage] = useState("");
-
-  // Estado de campos seleccionados (inicialización lazy)
   const [selectedFields, setSelectedFields] = useState(() =>
     userReportFields.filter((f) => f.default)
   );
 
-  // Control de render: si el modal no está abierto, no se monta en el DOM
   if (!isOpen) return null;
 
-
-
-  // Handler para activar/desactivar campos del reporte
   const handleFieldToggle = (field) => {
-
-    // Verifica si el campo ya está seleccionado
-    const exists = selectedFields.find(
-      (f) => f.key === field.key
-    );
-
+    const exists = selectedFields.find((f) => f.key === field.key);
     if (exists) {
-
-      // Elimina el campo si ya existe
-      setSelectedFields(
-        selectedFields.filter(
-          (f) => f.key !== field.key
-        )
-      );
-
+      setSelectedFields(selectedFields.filter((f) => f.key !== field.key));
     } else {
-
-      // Agrega el campo si no existe
-      setSelectedFields([
-        ...selectedFields,
-        field
-      ]);
+      setSelectedFields([...selectedFields, field]);
     }
   };
 
-
-  // Handler principal para generar el reporte
   const handleGenerateReport = async () => {
     setAlertMessage("");
 
@@ -79,13 +37,12 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
       return;
     }
 
-    // Invoca el caso de uso con la configuración actual
     const result = await generateUserReport({
       format,
       selectedFields,
       scope,
       documentNumber,
-      data
+      data,
     });
 
     if (result && !result.success) {
@@ -93,21 +50,24 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
       return;
     }
 
-    // Cierra el modal después de generar el reporte
     onClose();
   };
 
-
   return createPortal(
-
-    // Overlay del modal
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-      {/* Contenedor del modal */}
-      <div className="dpiero-modal-in w-full max-w-md rounded-[28px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] p-6 shadow-2xl">
-        {/* Título */}
-        <h2 className="mb-4 text-title-lg font-bold text-[var(--color-white)]">
-          Generar reporte de usuarios
-        </h2>
+    <div
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-[var(--md-sys-color-scrim)] backdrop-blur-xs p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="dpiero-modal-in w-full max-w-md rounded-[28px] bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] p-6 m3-elevation-3">
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <h2 className="text-2xl leading-8 font-medium text-[var(--md-sys-color-on-surface)]">
+            Generar reporte de usuarios
+          </h2>
+          <IconButton ariaLabel="Cerrar" variant="standard" onClick={onClose}>
+            <M3Icon name="close" size={20} />
+          </IconButton>
+        </div>
 
         {alertMessage && (
           <div className="mb-4">
@@ -121,7 +81,6 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
           </div>
         )}
 
-        {/* Selección de formato */}
         <div className="mb-4">
           <Select
             label="Formato del reporte"
@@ -129,32 +88,19 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
             onChange={(e) => setFormat(e.target.value)}
             options={[
               { label: "PDF", value: "pdf" },
-              { label: "Excel", value: "excel" }
+              { label: "Excel", value: "excel" },
             ]}
           />
         </div>
 
-        {/* Selección de campos */}
         <div className="mb-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-gray-300)]">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)]">
             Campos del reporte:
           </p>
-
-
-          {/* Grid de checkboxes */}
-          <div className="grid grid-cols-2 gap-3">
-
+          <div className="grid grid-cols-2 gap-1.5">
             {userReportFields.map((field) => {
-
-
-              // Determina si el campo está seleccionado
-              const checked = selectedFields.some(
-                (f) => f.key === field.key
-              );
-
-
+              const checked = selectedFields.some((f) => f.key === field.key);
               return (
-
                 <Checkbox
                   key={field.key}
                   id={field.key}
@@ -162,97 +108,45 @@ export default function ReportConfigModal({ isOpen, onClose, data =[] }) {
                   checked={checked}
                   onChange={() => handleFieldToggle(field)}
                 />
-
               );
-
             })}
-
           </div>
-
         </div>
 
-
-
-        {/* Selección de alcance */}
         <div className="mb-4">
-
           <Select
             label="Alcance del reporte"
             value={scope}
             onChange={(e) => setScope(e.target.value)}
             options={[
-              {
-                label: "Todos los usuarios",
-                value: "all"
-              },
-              {
-                label: "Usuarios habilitados",
-                value: "enabled"
-              },
-              {
-                label: "Usuarios deshabilitados",
-                value: "disabled"
-              },
-              {
-                label: "Individual (por documento)",
-                value: "document"
-              }
+              { label: "Todos los usuarios", value: "all" },
+              { label: "Usuarios habilitados", value: "enabled" },
+              { label: "Usuarios deshabilitados", value: "disabled" },
+              { label: "Individual (por documento)", value: "document" },
             ]}
           />
-
         </div>
 
-
-
-
-        {/* Campo condicional para filtro por documento */}
         {scope === "document" && (
-
           <div className="mb-4">
-
             <Input
               label="Número de documento"
               value={documentNumber}
-              onChange={(e) =>
-                setDocumentNumber(e.target.value)
-              }
+              onChange={(e) => setDocumentNumber(e.target.value)}
               placeholder="Ingrese número de documento"
             />
-
           </div>
-
         )}
 
-
-
-        {/* Acciones del modal */}
-        <div className="flex justify-end gap-3 mt-6">
-
-
-          {/* Botón cancelar */}
-          <Button
-            variant="secondary"
-            onClick={onClose}
-          >
+        <div className="flex justify-end gap-2 mt-6 pt-3 border-t border-[var(--md-sys-color-outline-variant)]">
+          <Button variant="text" onClick={onClose}>
             Cancelar
           </Button>
-
-
-
-          {/* Botón generar reporte */}
-          <Button
-            variant="primary"
-            onClick={handleGenerateReport}
-          >
+          <Button variant="filled" leadingIcon="download" onClick={handleGenerateReport}>
             Generar reporte
           </Button>
-
-
         </div>
-
-
       </div>
-
     </div>,
     document.body
   );

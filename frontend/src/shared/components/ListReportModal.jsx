@@ -4,6 +4,8 @@ import Button from "./Button";
 import Checkbox from "./Checkbox";
 import Select from "./Select";
 import Alert from "./Alert";
+import M3Icon from "./M3Icon";
+import { IconButton } from "./IconButton";
 import { generateExcelReport } from "../../features/users/reports/services/generateExcelReport";
 import { generatePdfReport } from "../../features/users/reports/services/generatePdfReport";
 
@@ -14,8 +16,8 @@ export default function ListReportModal({
   data = [],
   fields = [],
   filePrefix = "report",
-  statusOptions, // Opcional: [{ value: "all", label: "Todos" }, ...]
-  statusKey = "status", // Llave sobre la que filtra el estado
+  statusOptions,
+  statusKey = "status",
   onReportSuccess,
 }) {
   const [format, setFormat] = useState("pdf");
@@ -47,7 +49,6 @@ export default function ListReportModal({
       return;
     }
 
-    // Filtrado por estado si aplica
     let filteredData = [...data];
     if (statusOptions && selectedStatus !== "all") {
       filteredData = filteredData.filter((item) => {
@@ -90,9 +91,7 @@ export default function ListReportModal({
       });
     }
 
-    if (onReportSuccess) {
-      onReportSuccess("Reporte generado exitosamente");
-    }
+    onReportSuccess?.("Reporte generado exitosamente");
 
     setFeedback({
       type: "success",
@@ -106,11 +105,25 @@ export default function ListReportModal({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-      <div className="dpiero-modal-in w-full max-w-md rounded-[28px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] text-[var(--color-white)] p-6 shadow-2xl">
-        <h2 className="mb-4 text-title-lg font-bold text-[var(--color-white)]">
-          Generar reporte de {title}
-        </h2>
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[var(--md-sys-color-scrim)] p-4 backdrop-blur-xs">
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="dpiero-modal-in w-full max-w-md rounded-[28px] bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] p-6 m3-elevation-3"
+      >
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="size-10 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shrink-0">
+              <M3Icon name="download" size={20} />
+            </div>
+            <h2 className="text-2xl leading-8 font-medium text-[var(--md-sys-color-on-surface)]">
+              Generar reporte de {title}
+            </h2>
+          </div>
+          <IconButton ariaLabel="Cerrar" variant="standard" onClick={onClose}>
+            <M3Icon name="close" size={20} />
+          </IconButton>
+        </div>
 
         {feedback && (
           <div className="mb-4">
@@ -145,11 +158,11 @@ export default function ListReportModal({
           )}
         </div>
 
-        <p className="mb-2 text-xs font-semibold text-[var(--color-gray-300)] uppercase tracking-wider">
+        <p className="mb-2 text-xs font-medium text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">
           Campos a incluir en el reporte:
         </p>
 
-        <div className="grid grid-cols-2 gap-2.5 max-h-48 overflow-y-auto pr-1 mb-6">
+        <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto pr-1 mb-6">
           {fields.map((field) => (
             <Checkbox
               key={field.key}
@@ -161,13 +174,14 @@ export default function ListReportModal({
           ))}
         </div>
 
-        <div className="flex justify-end gap-3 pt-3 border-t border-[var(--color-secondary-800)]">
-          <Button variant="secondary" size="md" onClick={onClose}>
+        <div className="flex justify-end gap-2 pt-3 border-t border-[var(--md-sys-color-outline-variant)]">
+          <Button variant="text" size="md" onClick={onClose}>
             Cancelar
           </Button>
           <Button
-            variant="primary"
+            variant="filled"
             size="md"
+            leadingIcon="download"
             onClick={handleGenerate}
             disabled={!selectedKeys.length}
           >

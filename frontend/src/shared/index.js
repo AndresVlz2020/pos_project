@@ -5,13 +5,15 @@ export { fileSchema } from "./schemas/fileSchema";
 export { default as AuthLayout } from "./layouts/AuthLayout";
 export { default as DashboardLayout } from "./layouts/DashboardLayout";
 export { default as MainLayout } from "./layouts/MainLayout";
+export { default as AppShell } from "./layouts/AppShell";
 export { default as Footer } from "./layouts/Footer";
 export { default as Navbar } from "./layouts/Navbar";
 
 // Auth
 export { default as ProtectedRoute } from "./components/auth/ProtectedRoute";
 
-// Componentes
+// Iconos y Componentes Material Design 3
+export { default as M3Icon } from "./components/M3Icon";
 export { default as Input } from "./components/Input";
 export { default as TextArea } from "./components/TextArea";
 export { default as Button } from "./components/Button";

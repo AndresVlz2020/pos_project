@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import {
   Input,
   Button,
+  IconButton,
+  M3Icon,
   SearchField,
   ConfirmDialog,
   showSuccessAlert,
@@ -318,273 +320,316 @@ export default function EditOrder() {
   };
 
   return (
-    <div className="pb-24 px-3 sm:px-4">
-      <div className="max-w-4xl mx-auto my-4 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-xl text-[var(--color-white)]">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-[var(--color-secondary-800)]">
-          <div>
-            <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">
-              Editar Orden {formOrder.id}
-            </h1>
+    <div className="w-full flex-1 flex flex-col font-[family-name:var(--main-font)]">
+      <div className="flex-1 flex flex-col w-full p-5 sm:p-6 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 text-[var(--md-sys-color-on-surface)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
+          <div className="flex items-center gap-3">
+            <Link to="/orderList">
+              <IconButton
+                type="button"
+                variant="tonal"
+                hitSize={40}
+                iconSize={20}
+                ariaLabel="Volver al listado"
+                title="Volver al listado"
+              >
+                <M3Icon name="arrow_back" size={20} />
+              </IconButton>
+            </Link>
+            <div>
+              <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+                Editar Orden {formOrder.id}
+              </h1>
+              <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)]">
+                {formOrder.tableNumber} • Mesero: {formOrder.waiter}
+              </p>
+            </div>
           </div>
           <Link to="/orderList">
-            <Button variant="secondary" size="md">
+            <Button variant="outlined" size="md" leadingIcon="arrow_back">
               Volver al Listado
             </Button>
           </Link>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <OrderStatusSwitch
-              label="Estado de la Orden *"
-              value={formOrder.orderStatus}
-              onChange={(nextStatus) => handleFieldUpdate("orderStatus", nextStatus)}
-              disabled={isClosedOrPaid || isCanceled}
-            />
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-5">
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+            {/* Columna izquierda: Estado, observaciones, método de pago y resumen */}
+            <div className="lg:col-span-5 space-y-5">
+              <OrderStatusSwitch
+                label="Estado de la Orden *"
+                value={formOrder.orderStatus}
+                onChange={(nextStatus) => handleFieldUpdate("orderStatus", nextStatus)}
+                disabled={isClosedOrPaid || isCanceled}
+              />
 
-            <Input
-              label="Observaciones de Cocina"
-              name="observations"
-              value={formOrder.observations}
-              onChange={handleChange}
-              disabled={isClosedOrPaid || isCanceled}
-            />
-          </div>
+              <Input
+                label="Observaciones de Cocina"
+                name="observations"
+                value={formOrder.observations}
+                onChange={handleChange}
+                disabled={isClosedOrPaid || isCanceled}
+              />
 
-        <PaymentMethodCards
-          label="Método de Pago *"
-          value={formOrder.paymentMethod}
-          onChange={(method) => handleFieldUpdate("paymentMethod", method)}
-          disabled={isClosedOrPaid || isCanceled}
-          error={errors.paymentMethod}
-        />
+              <PaymentMethodCards
+                label="Método de Pago *"
+                value={formOrder.paymentMethod}
+                onChange={(method) => handleFieldUpdate("paymentMethod", method)}
+                disabled={isClosedOrPaid || isCanceled}
+                error={errors.paymentMethod}
+              />
 
-        {/* Platillos agregados / a modificar */}
-        <div className="space-y-3 pt-4 border-t border-[var(--color-secondary-800)]">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <h3 className="text-sm font-bold text-[var(--color-white)] shrink-0">
-              Ajustar Platillos y Cantidades
-            </h3>
-            <SearchField
-              asForm={false}
-              value={dishSearch}
-              onChange={setDishSearch}
-              onClear={() => setDishSearch("")}
-              placeholder="Buscar platillo por nombre o código..."
-              ariaLabel="Buscar platillo en la orden"
-              size="sm"
-              variant="outlined"
-              className="w-full sm:w-72"
-            />
-          </div>
-
-          <div
-            ref={dishesScrollRef}
-            onScroll={handleDishesScroll}
-            className="p-2.5 rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)]/40 max-h-72 overflow-y-auto overscroll-contain pr-1.5"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {visibleDishes.length === 0 ? (
-                <div className="sm:col-span-2 py-8 text-center text-xs text-[var(--color-gray-400)] rounded-lg border border-dashed border-[var(--color-secondary-800)]">
-                  No se encontraron platillos que coincidan con &ldquo;{dishSearch.trim()}&rdquo;.
+              {/* Resumen económico */}
+              <div className="p-4 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] space-y-2.5">
+                <span className="text-label-lg font-semibold uppercase tracking-wider text-[var(--md-sys-color-primary)] block">
+                  Resumen Económico
+                </span>
+                <div className="flex justify-between text-body-sm text-[var(--md-sys-color-on-surface-variant)]">
+                  <span>Platillos seleccionados:</span>
+                  <span className="font-semibold text-[var(--md-sys-color-on-surface)] tabular-nums">
+                    {totalItems} un.
+                  </span>
                 </div>
-              ) : visibleDishes.map((dish) => {
-                const count = qty[dish.id] || 0;
-                const isInactive = dish.status === "Inactivo";
-                return (
-                  <div
-                    key={dish.id}
-                    className={`p-3 rounded-lg border flex items-center justify-between gap-3 ${
-                      isInactive
-                        ? "bg-[var(--color-secondary-950)]/50 border-[var(--color-secondary-800)]/40 opacity-50 cursor-not-allowed"
-                        : "bg-[var(--color-secondary-950)] border-[var(--color-secondary-800)] hover:border-[var(--color-secondary-700)]"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                      <div className="size-11 rounded-lg overflow-hidden border border-[var(--color-secondary-700)] bg-[var(--color-secondary-950)] shrink-0">
-                        <img
-                          src={getProductImage(dish)}
-                          alt={dish.name}
-                          className={`w-full h-full object-cover ${isInactive ? "grayscale contrast-75" : ""}`}
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = imgPunta;
-                          }}
-                        />
-                      </div>
-                      <div className="min-w-0">
-                        <h5
-                          className={`text-sm leading-5 font-semibold truncate ${
-                            isInactive ? "text-[var(--color-gray-400)]" : "text-[var(--color-white)]"
-                          }`}
-                        >
-                          {dish.name}
-                        </h5>
-                        <span
-                          className={`text-xs leading-4 font-medium ${
-                            isInactive ? "text-[var(--color-gray-500)]" : "text-[var(--color-white)]"
-                          }`}
-                        >
-                          ${dish.price.toLocaleString("es-CO")}
-                        </span>
-                      </div>
-                    </div>
+                <div className="flex justify-between text-body-sm text-[var(--md-sys-color-on-surface-variant)]">
+                  <span>Estado de orden:</span>
+                  <span className="font-semibold text-[var(--md-sys-color-on-surface)]">
+                    {formOrder.orderStatus}
+                  </span>
+                </div>
+                <div className="flex justify-between text-body-sm text-[var(--md-sys-color-on-surface-variant)]">
+                  <span>Método de pago:</span>
+                  <span className="font-semibold text-[var(--md-sys-color-on-surface)]">
+                    {formOrder.paymentMethod}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-title-md font-bold text-[var(--md-sys-color-on-surface)] pt-2.5 border-t border-[var(--md-sys-color-outline-variant)]">
+                  <span>Total Orden:</span>
+                  <span className="text-title-lg text-[var(--md-sys-color-primary)] tabular-nums">
+                    ${totalAmount.toLocaleString("es-CO")} COP
+                  </span>
+                </div>
+              </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        type="button"
-                        disabled={count === 0 || isClosedOrPaid || isCanceled}
-                        onClick={() => handleDecrement(dish)}
-                        aria-label={`Disminuir ${dish.name}`}
-                        className="size-10 rounded-full bg-[var(--color-secondary-800)] text-[var(--color-white)] flex items-center justify-center text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
-                      >
-                        -
-                      </button>
-                      <span className="text-sm font-semibold w-6 text-center">{count}</span>
-                      <button
-                        type="button"
-                        disabled={isClosedOrPaid || isCanceled || isInactive}
-                        onClick={() => handleIncrement(dish)}
-                        aria-label={`Aumentar ${dish.name}`}
-                        className="size-10 rounded-full bg-[var(--color-primary-500)] text-[var(--color-on-primary)] flex items-center justify-center text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 disabled:opacity-30 cursor-pointer"
-                      >
-                        +
-                      </button>
-                    </div>
+              {(isClosedOrPaid || isCanceled) && (
+                <div className="p-4 rounded-2xl bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)]/40 text-[var(--md-sys-color-on-error-container)] text-body-sm flex items-start gap-2.5">
+                  <M3Icon name="lock" size={18} className="shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="block mb-0.5 font-semibold">
+                      {isClosedOrPaid ? "Esta orden está PAGADA." : "Esta orden está ANULADA."}
+                    </strong>
+                    Por reglas de negocio del sistema, las órdenes pagadas o anuladas quedan bloqueadas contra modificación y anulación.
                   </div>
-                );
-              })}
+                </div>
+              )}
             </div>
 
-            {totalFilteredDishes > 0 && (
-              <div className="mt-2.5 pt-2 border-t border-[var(--color-secondary-800)]/70 flex items-center justify-between gap-2 text-xs leading-4 text-[var(--color-gray-400)]">
-                <span>
-                  Mostrando {visibleDishesCount} de {totalFilteredDishes} platillos
-                </span>
-                {hasMoreDishes && (
-                  <button
-                    type="button"
-                    onClick={loadMoreDishes}
-                    className="min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:bg-[var(--color-secondary-800)]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer"
-                  >
-                    Cargar más platillos
-                  </button>
+            {/* Columna derecha: Selector de platillos y cantidades */}
+            <div className="lg:col-span-7 flex flex-col space-y-3 bg-[var(--md-sys-color-surface)] p-4 sm:p-5 rounded-2xl border border-[var(--md-sys-color-outline-variant)]">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+                <h3 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)] shrink-0">
+                  Ajustar Platillos y Cantidades
+                </h3>
+                <SearchField
+                  asForm={false}
+                  value={dishSearch}
+                  onChange={setDishSearch}
+                  onClear={() => setDishSearch("")}
+                  placeholder="Buscar platillo por nombre o código..."
+                  ariaLabel="Buscar platillo en la orden"
+                  size="sm"
+                  variant="outlined"
+                  className="w-full sm:w-72"
+                />
+              </div>
+
+              <div
+                ref={dishesScrollRef}
+                onScroll={handleDishesScroll}
+                className="p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-lowest)] max-h-[380px] lg:max-h-[560px] overflow-y-auto overscroll-contain pr-1.5"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {visibleDishes.length === 0 ? (
+                    <div className="sm:col-span-2 py-10 text-center text-body-sm text-[var(--md-sys-color-on-surface-variant)] rounded-xl border border-dashed border-[var(--md-sys-color-outline-variant)]">
+                      No se encontraron platillos que coincidan con &ldquo;{dishSearch.trim()}&rdquo;.
+                    </div>
+                  ) : visibleDishes.map((dish) => {
+                    const count = qty[dish.id] || 0;
+                    const isInactive = dish.status === "Inactivo";
+                    return (
+                      <div
+                        key={dish.id}
+                        className={`p-3 rounded-2xl border flex items-center justify-between gap-3 transition-colors ${
+                          isInactive
+                            ? "bg-[var(--md-sys-color-surface-container-highest)]/40 border-[var(--md-sys-color-outline-variant)] opacity-50 cursor-not-allowed"
+                            : count > 0
+                            ? "bg-[var(--md-sys-color-primary-container)]/30 border-[var(--md-sys-color-primary)] m3-elevation-1"
+                            : "bg-[var(--md-sys-color-surface)] border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-primary)]/60"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                          <div className="size-12 rounded-xl overflow-hidden border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] shrink-0">
+                            <img
+                              src={getProductImage(dish)}
+                              alt={dish.name}
+                              className={`w-full h-full object-cover ${isInactive ? "grayscale contrast-75" : ""}`}
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = imgPunta;
+                              }}
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <h5
+                              className={`text-title-sm font-medium truncate ${
+                                isInactive
+                                  ? "text-[var(--md-sys-color-on-surface-variant)]"
+                                  : "text-[var(--md-sys-color-on-surface)]"
+                              }`}
+                            >
+                              {dish.name}
+                            </h5>
+                            <span
+                              className={`text-body-sm font-semibold tabular-nums ${
+                                isInactive
+                                  ? "text-[var(--md-sys-color-outline)]"
+                                  : "text-[var(--md-sys-color-primary)]"
+                              }`}
+                            >
+                              ${dish.price.toLocaleString("es-CO")}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 bg-[var(--md-sys-color-surface-container-high)] p-1 rounded-full border border-[var(--md-sys-color-outline-variant)] shrink-0">
+                          <IconButton
+                            type="button"
+                            variant="standard"
+                            hitSize={40}
+                            iconSize={18}
+                            disabled={count === 0 || isClosedOrPaid || isCanceled}
+                            onClick={() => handleDecrement(dish)}
+                            ariaLabel={`Disminuir ${dish.name}`}
+                          >
+                            <M3Icon name="remove" size={18} />
+                          </IconButton>
+                          <span className="text-label-lg font-semibold w-7 text-center text-[var(--md-sys-color-on-surface)] tabular-nums">
+                            {count}
+                          </span>
+                          <IconButton
+                            type="button"
+                            variant="tonal"
+                            hitSize={40}
+                            iconSize={18}
+                            disabled={isClosedOrPaid || isCanceled || isInactive}
+                            onClick={() => handleIncrement(dish)}
+                            ariaLabel={`Aumentar ${dish.name}`}
+                          >
+                            <M3Icon name="add" size={18} />
+                          </IconButton>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {totalFilteredDishes > 0 && (
+                  <div className="mt-3 pt-2.5 border-t border-[var(--md-sys-color-outline-variant)] flex items-center justify-between gap-2 text-body-sm text-[var(--md-sys-color-on-surface-variant)]">
+                    <span>
+                      Mostrando {visibleDishesCount} de {totalFilteredDishes} platillos
+                    </span>
+                    {hasMoreDishes && (
+                      <Button
+                        type="button"
+                        variant="text"
+                        size="sm"
+                        onClick={loadMoreDishes}
+                      >
+                        Cargar más platillos
+                      </Button>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
 
-        {/* Resumen económico al final del formulario */}
-        <div className="p-4 rounded-xl bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] space-y-2.5">
-          <span className="text-xs font-semibold text-[var(--color-gray-400)] block">
-            Resumen Económico
-          </span>
-          <div className="flex justify-between text-xs text-[var(--color-gray-300)]">
-            <span>Platillos seleccionados:</span>
-            <span className="font-bold text-[var(--color-white)]">{totalItems} un.</span>
-          </div>
-          <div className="flex justify-between text-xs text-[var(--color-gray-300)]">
-            <span>Estado de orden:</span>
-            <span className="font-semibold text-[var(--color-white)]">{formOrder.orderStatus}</span>
-          </div>
-          <div className="flex justify-between text-xs text-[var(--color-gray-300)]">
-            <span>Método de pago:</span>
-            <span className="font-semibold text-[var(--color-white)]">{formOrder.paymentMethod}</span>
-          </div>
-          <div className="flex justify-between text-sm font-bold text-[var(--color-white)] pt-2 border-t border-[var(--color-secondary-800)]">
-            <span>Total Orden:</span>
-            <span className="text-[var(--color-white)] text-base">
-              ${totalAmount.toLocaleString("es-CO")} COP
-            </span>
-          </div>
-        </div>
+          <div className="sticky bottom-0 z-30 mt-auto bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl m3-elevation-2">
+            <div className="w-full px-4 sm:px-6 py-3 flex items-center gap-2 sm:gap-3">
+              {!isClosedOrPaid && !isCanceled && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  leadingIcon="cancel"
+                  onClick={() => setIsCancelConfirmOpen(true)}
+                  disabled={submitting || loading}
+                  className="flex-1 sm:flex-none sm:mr-auto"
+                >
+                  Anular<span className="hidden sm:inline">&nbsp;Orden</span>
+                </Button>
+              )}
 
-        {/* Panel informativo cuando la orden está bloqueada */}
-        {(isClosedOrPaid || isCanceled) && (
-          <div className="p-4 rounded-xl bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] text-[var(--color-warning)] text-xs">
-            <strong className="block mb-1">
-              {isClosedOrPaid ? "Esta orden está PAGADA." : "Esta orden está ANULADA."}
-            </strong>
-            Por reglas de negocio del sistema, las órdenes pagadas o anuladas quedan bloqueadas contra modificación y anulación.
-          </div>
-        )}
-
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-[var(--color-secondary-950)]/95 backdrop-blur border-t border-[var(--color-secondary-800)] shadow-2xl">
-          <div className="max-w-4xl mx-auto px-4 sm:px-8 py-3 flex items-center gap-2 sm:gap-3">
-            {!isClosedOrPaid && !isCanceled && (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => setIsCancelConfirmOpen(true)}
-                disabled={submitting || loading}
-                className="flex-1 sm:flex-none sm:mr-auto px-2.5 sm:px-4 text-xs sm:text-sm min-h-[40px] whitespace-nowrap"
+              <Link
+                to="/orderList"
+                className={`flex-1 sm:flex-none ${
+                  isClosedOrPaid || isCanceled ? "sm:ml-auto" : ""
+                }`}
               >
-                Anular<span className="hidden sm:inline">&nbsp;Orden</span>
-              </Button>
-            )}
+                <Button
+                  variant="outlined"
+                  type="button"
+                  disabled={submitting}
+                  className="w-full sm:w-auto"
+                >
+                  Cancelar
+                </Button>
+              </Link>
 
-            <Link
-              to="/orderList"
-              className={`flex-1 sm:flex-none ${
-                isClosedOrPaid || isCanceled ? "sm:ml-auto" : ""
-              }`}
-            >
-              <Button
-                variant="secondary"
-                type="button"
-                disabled={submitting}
-                className="w-full sm:w-auto px-2.5 sm:px-4 text-xs sm:text-sm min-h-[40px] whitespace-nowrap"
-              >
-                Cancelar
-              </Button>
-            </Link>
-
-            {!isClosedOrPaid && !isCanceled && (
-              <Button
-                variant="primary"
-                type="submit"
-                disabled={submitting || loading}
-                className="flex-1 sm:flex-none px-2.5 sm:px-4 text-xs sm:text-sm min-h-[40px] whitespace-nowrap"
-              >
-                {loading ? (
-                  "Cargando..."
-                ) : submitting ? (
-                  "Guardando..."
-                ) : formOrder.orderStatus === "Pagada" ? (
-                  <>
-                    Pagar<span className="hidden sm:inline">&nbsp;Orden</span>
-                  </>
-                ) : (
-                  <>
-                    Guardar<span className="hidden sm:inline">&nbsp;Cambios</span>
-                  </>
-                )}
-              </Button>
-            )}
+              {!isClosedOrPaid && !isCanceled && (
+                <Button
+                  variant="filled"
+                  type="submit"
+                  leadingIcon="check_circle"
+                  disabled={submitting || loading}
+                  className="flex-1 sm:flex-none"
+                >
+                  {loading ? (
+                    "Cargando..."
+                  ) : submitting ? (
+                    "Guardando..."
+                  ) : formOrder.orderStatus === "Pagada" ? (
+                    <>
+                      Pagar<span className="hidden sm:inline">&nbsp;Orden</span>
+                    </>
+                  ) : (
+                    <>
+                      Guardar<span className="hidden sm:inline">&nbsp;Cambios</span>
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
 
-      <ConfirmDialog
-        isOpen={isCancelConfirmOpen}
-        title="Anular Orden"
-        description={`¿Estás seguro de que deseas anular la orden ${formOrder.id}? Esta acción revertirá el stock de productos en PostgreSQL.`}
-        confirmText="Sí, anular orden"
-        cancelText="Conservar"
-        isDestructive={true}
-        onConfirm={handleConfirmCancel}
-        onCancel={() => setIsCancelConfirmOpen(false)}
-      />
+        <ConfirmDialog
+          isOpen={isCancelConfirmOpen}
+          title="Anular Orden"
+          description={`¿Estás seguro de que deseas anular la orden ${formOrder.id}? Esta acción revertirá el stock de productos en PostgreSQL.`}
+          confirmText="Sí, anular orden"
+          cancelText="Conservar"
+          isDestructive={true}
+          onConfirm={handleConfirmCancel}
+          onCancel={() => setIsCancelConfirmOpen(false)}
+        />
 
-      <OrderViewModal
-        order={paidOrderForPrint}
-        isOpen={Boolean(paidOrderForPrint)}
-        onClose={() => {
-          setPaidOrderForPrint(null);
-          navigate("/orderList");
-        }}
-      />
+        <OrderViewModal
+          order={paidOrderForPrint}
+          isOpen={Boolean(paidOrderForPrint)}
+          onClose={() => {
+            setPaidOrderForPrint(null);
+            navigate("/orderList");
+          }}
+        />
       </div>
     </div>
   );

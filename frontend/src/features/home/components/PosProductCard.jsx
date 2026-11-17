@@ -1,4 +1,4 @@
-import { Ban, Eye } from "lucide-react";
+import { M3Icon } from "@/shared";
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
 
 export default function PosProductCard({ product, onSelect }) {
@@ -7,7 +7,6 @@ export default function PosProductCard({ product, onSelect }) {
   const formattedPrice = Number(price || 0).toLocaleString("es-CO");
   const image = getProductImage(product);
 
-  // Regla de negocio: excluir platillo inhabilitado de órdenes manteniendo visibilidad (RFADMIN23)
   const isInhabilitado =
     status === "Inactivo" ||
     status === "inhabilitado" ||
@@ -32,15 +31,14 @@ export default function PosProductCard({ product, onSelect }) {
       aria-label={`Ver detalle de ${displayName}`}
       onClick={handleActivate}
       onKeyDown={handleKeyDown}
-      className={`group rounded-xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] text-[var(--color-white)] transition-all duration-200 overflow-hidden flex flex-col justify-between cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-500)] ${
+      className={`group rounded-xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-on-surface)] overflow-hidden flex flex-col justify-between cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
         isInhabilitado
-          ? "opacity-75 hover:border-[var(--color-secondary-700)]"
-          : "hover:border-[var(--color-primary-500)] hover:-translate-y-0.5 shadow-xs hover:shadow-md"
+          ? "opacity-65"
+          : "m3-elevation-1 hover:m3-elevation-2 hover:border-[var(--md-sys-color-primary)]"
       }`}
     >
       <div>
-        {/* Imagen del plato con badge si está inhabilitado */}
-        <div className="relative w-full h-28 sm:h-44 overflow-hidden bg-[var(--color-secondary-950)]">
+        <div className="relative w-full h-32 sm:h-44 overflow-hidden bg-[var(--md-sys-color-surface-container)]">
           <img
             src={image}
             alt={displayName}
@@ -54,47 +52,45 @@ export default function PosProductCard({ product, onSelect }) {
             }}
           />
           {!isInhabilitado && (
-            <div className="hidden sm:flex items-center gap-1 absolute bottom-2 right-2 px-2.5 py-1 rounded-full bg-black/65 text-[var(--color-on-primary)] text-xs font-semibold border border-[var(--color-on-primary)]/20 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-              <Eye className="size-3 text-[var(--color-primary-300)]" />
+            <div className="hidden sm:flex items-center gap-1.5 absolute bottom-2 right-2 px-3 py-1 rounded-full bg-black/75 text-white text-label-sm font-medium backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <M3Icon name="visibility" size={14} className="text-white" />
               <span>Ver detalle</span>
             </div>
           )}
           {isInhabilitado && (
-            <div className="absolute top-2.5 right-2.5 bg-[var(--color-secondary-800)] text-[var(--color-gray-300)] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[var(--color-secondary-700)] shadow-md flex items-center gap-1">
-              <Ban className="size-3" />
+            <div className="absolute top-2.5 right-2.5 bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <M3Icon name="block" size={14} />
               Inhabilitado
             </div>
           )}
         </div>
 
-        {/* Información del Producto */}
-        <div className="p-3 sm:p-4 space-y-1 sm:space-y-1.5">
-          <h3 className="text-base leading-6 font-bold text-[var(--color-white)] line-clamp-1 group-hover:text-[var(--color-primary-300)] transition-colors">
+        <div className="p-3 sm:p-4 space-y-1">
+          <h3 className="text-base leading-6 font-medium text-[var(--md-sys-color-on-surface)] line-clamp-1 group-hover:text-[var(--md-sys-color-primary)]">
             {displayName}
           </h3>
-          <p className="line-clamp-1 sm:line-clamp-2 text-xs leading-4 text-[var(--color-gray-400)]">
+          <p className="line-clamp-1 sm:line-clamp-2 text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)]">
             {description}
           </p>
         </div>
       </div>
 
-      {/* Footer de Tarjeta con Precio y Botón de Venta POS */}
       <div className="p-3 sm:p-4 pt-0">
-        <div className="pt-2.5 border-t border-[var(--color-secondary-800)] flex flex-wrap items-center justify-between gap-2">
+        <div className="pt-2.5 border-t border-[var(--md-sys-color-outline-variant)] flex flex-wrap items-center justify-between gap-2">
           <div>
-            <span className="text-label-sm text-[var(--color-gray-400)] uppercase font-medium block">
+            <span className="text-label-sm text-[var(--md-sys-color-on-surface-variant)] uppercase font-medium block">
               Precio
             </span>
-            <span className="text-base leading-6 font-bold text-[var(--color-white)]">
+            <span className="text-base leading-6 font-bold text-[var(--md-sys-color-on-surface)] tabular-nums">
               ${formattedPrice} COP
             </span>
           </div>
 
           <span
-            className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
+            className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
               isInhabilitado
-                ? "bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error-border)]"
-                : "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-300)] border border-[var(--color-primary-500)]/40"
+                ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]"
+                : "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
             }`}
           >
             {isInhabilitado ? "No disponible" : "Disponible"}

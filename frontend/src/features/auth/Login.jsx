@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Users, Shield } from "lucide-react";
-import { BrandLogo, showErrorAlert } from "@/shared";
+import { BrandLogo, M3Icon, showErrorAlert } from "@/shared";
 import QuickAccessSelector, { formatRole } from "./components/QuickAccessSelector";
 import PinKeypad from "./components/PinKeypad";
 import AdminLoginForm from "./components/AdminLoginForm";
@@ -176,49 +175,58 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center font-[family-name:var(--main-font)] text-[var(--color-white)]">
+    <div className="w-full flex flex-col items-center justify-center font-[family-name:var(--main-font)] text-[var(--md-sys-color-on-surface)]">
       <div className="text-center mb-6">
-        <Link to="/" className="inline-flex items-center justify-center gap-2 mb-2">
+        <Link to="/" className="inline-flex items-center justify-center gap-2 mb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] rounded-lg">
           <BrandLogo className="h-10 w-auto object-contain" alt="D'Piero Restaurante" />
         </Link>
-        <p className="text-xs text-[var(--color-gray-400)] font-medium tracking-wide">
+        <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] font-medium tracking-wide">
           Sistema Punto de Venta & Facturación
         </p>
       </div>
 
-      <div className="dpiero-fade-up w-full max-w-lg rounded-2xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-6 sm:p-7 text-[var(--color-white)] shadow-2xl transition-all">
-        <div className="flex rounded-full bg-[var(--color-secondary-950)] p-1 border border-[var(--color-secondary-800)] mb-5">
+      <div className="dpiero-fade-up w-full max-w-lg rounded-[28px] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] p-6 sm:p-8 text-[var(--md-sys-color-on-surface)] m3-elevation-2">
+        {/* M3 Segmented Button (40dp pill, outline border, vertical divider, secondary-container selected fill) */}
+        <div
+          role="tablist"
+          aria-label="Modo de acceso"
+          className="grid grid-cols-2 rounded-full border border-[var(--md-sys-color-outline)] bg-[var(--md-sys-color-surface)] overflow-hidden divide-x divide-[var(--md-sys-color-outline)] mb-6"
+        >
           <button
             type="button"
+            role="tab"
+            aria-selected={authMode === "pin"}
             onClick={() => {
               setAuthMode("pin");
               setPinError("");
               setPinLockSeconds(0);
             }}
-            className={`flex-1 min-h-[40px] flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer ${
+            className={`m3-state min-h-[42px] flex items-center justify-center gap-2 py-2 px-4 text-label-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer ${
               authMode === "pin"
-                ? "bg-[var(--color-secondary-800)] text-[var(--color-white)] border border-[var(--color-secondary-700)]"
-                : "text-[var(--color-gray-400)] hover:text-[var(--color-white)]"
+                ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+                : "bg-transparent text-[var(--md-sys-color-on-surface)]"
             }`}
           >
-            <Users className="size-4 text-[var(--color-primary-400)]" />
+            <M3Icon name={authMode === "pin" ? "check" : "group"} size={18} />
             <span>Acceso Rápido</span>
           </button>
 
           <button
             type="button"
+            role="tab"
+            aria-selected={authMode === "admin"}
             onClick={() => {
               setAuthMode("admin");
               setPinError("");
               setPinLockSeconds(0);
             }}
-            className={`flex-1 min-h-[40px] flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer ${
+            className={`m3-state min-h-[42px] flex items-center justify-center gap-2 py-2 px-4 text-label-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer ${
               authMode === "admin"
-                ? "bg-[var(--color-secondary-800)] text-[var(--color-white)] border border-[var(--color-secondary-700)]"
-                : "text-[var(--color-gray-400)] hover:text-[var(--color-white)]"
+                ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+                : "bg-transparent text-[var(--md-sys-color-on-surface)]"
             }`}
           >
-            <Shield className="size-4 text-[var(--color-primary-400)]" />
+            <M3Icon name={authMode === "admin" ? "check" : "admin_panel_settings"} size={18} />
             <span>Administración</span>
           </button>
         </div>

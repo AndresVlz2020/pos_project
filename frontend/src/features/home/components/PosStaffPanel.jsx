@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { Users, Clock, History } from "lucide-react";
+import { Button } from "@/shared";
 import PosSectionHeader from "./PosSectionHeader";
 import PosCardGrid from "./PosCardGrid";
 import PosInfoCard from "./PosInfoCard";
 import { getActiveStaffSessions, formatDuration } from "@/services/sessionService";
 import SessionHistoryModal from "@/shared/components/SessionHistoryModal";
 
-// Estación operativa derivada del rol real en la BD
 const STATIONS = {
   cajero: "Caja Principal",
   mesero: "Salón",
@@ -65,11 +64,11 @@ export default function PosStaffPanel() {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div className="flex-1">
           <PosSectionHeader
-            icon={Users}
+            iconName="group"
             title="Personal en Turno"
             subtitle="Colaboradores con sesión activa y duración de su turno."
             searchQuery={query}
@@ -79,14 +78,14 @@ export default function PosStaffPanel() {
             actionLink="/dashboard/userList"
           />
         </div>
-        <button
+        <Button
           type="button"
+          variant="outlined"
+          leadingIcon="history"
           onClick={() => setIsHistoryOpen(true)}
-          className="min-h-[40px] inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium bg-[var(--color-secondary-800)] hover:bg-[var(--color-secondary-700)] text-[var(--color-primary-300)] border border-[var(--color-secondary-700)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer transition shrink-0"
         >
-          <History className="size-4" />
           Historial de Sesiones
-        </button>
+        </Button>
       </div>
 
       <PosCardGrid
@@ -108,7 +107,7 @@ export default function PosStaffPanel() {
               key={member.sessionId || member.userId}
               title={member.userName}
               subtitle={`${role} • ${station}`}
-              bottomIcon={Clock}
+              bottomIconName="schedule"
               bottomText={`${formatDuration(elapsed)} en turno`}
             />
           );

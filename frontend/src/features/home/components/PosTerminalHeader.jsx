@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "@/features/config";
+import { M3Icon } from "@/shared";
 
-// KPIs operativos en tiempo real, conectados a PostgreSQL:
-// - Venta de Turno: suma de totales de las órdenes de hoy (excluye anuladas)
-// - Órdenes Cocina: órdenes de hoy sin cerrar/pagar (en preparación/abierta)
-// - Mesas Ocupadas: mesas ocupadas / total de mesas (restaurant_tables)
-// - Personal Turno: colaboradores activos no administradores
-export default function PosTerminalHeader({
-  operator = "Operador",
-  role = "Personal",
-}) {
+export default function PosTerminalHeader() {
   const [kpis, setKpis] = useState({
     ventasTurno: null,
     ordenesCocina: null,
@@ -21,7 +14,7 @@ export default function PosTerminalHeader({
 
   useEffect(() => {
     let active = true;
-    const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+    const today = new Date().toLocaleDateString("en-CA");
     const token =
       localStorage.getItem("auth_token") || sessionStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -85,55 +78,57 @@ export default function PosTerminalHeader({
   const kpiValue = (v, fallback = "…") =>
     v === null || v === undefined ? fallback : v;
 
+  const cards = [
+    {
+      label: "Venta de Turno",
+      value: kpiValue(kpis.ventasTurno === null ? null : fmtMoney(kpis.ventasTurno)),
+      icon: "payments",
+    },
+    {
+      label: "Órdenes Cocina",
+      value: kpiValue(
+        kpis.ordenesCocina === null ? null : `${kpis.ordenesCocina} activas`
+      ),
+      icon: "dining",
+    },
+    {
+      label: "Mesas Ocupadas",
+      value:
+        kpis.mesasOcupadas === null || kpis.totalMesas === null
+          ? "…"
+          : `${kpis.mesasOcupadas} / ${kpis.totalMesas} mesas`,
+      icon: "table_restaurant",
+    },
+    {
+      label: "Personal Turno",
+      value: kpiValue(
+        kpis.personalTurno === null ? null : `${kpis.personalTurno} en servicio`
+      ),
+      icon: "group",
+    },
+  ];
+
   return (
-    <header className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] py-2.5 sm:py-4">
-      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
-        {/* Métricas Operativas Conectadas a PostgreSQL */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl px-3.5 py-3 sm:px-4 sm:py-4">
-            <p className="text-xs uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Venta de Turno
-            </p>
-            <p className="text-title-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
-              {kpiValue(kpis.ventasTurno === null ? null : fmtMoney(kpis.ventasTurno))}
-            </p>
+    <header className="w-full">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {cards.map((card) => (
+          <div
+            key={card.label}
+            className="bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-xl px-4 py-3.5 m3-elevation-1 flex items-center justify-between gap-3"
+          >
+            <div className="min-w-0">
+              <p className="text-xs uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)] font-medium">
+                {card.label}
+              </p>
+              <p className="text-title-lg font-medium text-[var(--md-sys-color-on-surface)] mt-0.5 truncate">
+                {card.value}
+              </p>
+            </div>
+            <div className="size-10 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center shrink-0">
+              <M3Icon name={card.icon} filled size={20} />
+            </div>
           </div>
-
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl px-3.5 py-3 sm:px-4 sm:py-4">
-            <p className="text-xs uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Órdenes Cocina
-            </p>
-            <p className="text-title-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
-              {kpiValue(
-                kpis.ordenesCocina === null ? null : `${kpis.ordenesCocina} activas`
-              )}
-            </p>
-          </div>
-
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl px-3.5 py-3 sm:px-4 sm:py-4">
-            <p className="text-xs uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Mesas Ocupadas
-            </p>
-            <p className="text-title-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
-              {kpis.mesasOcupadas === null || kpis.totalMesas === null
-                ? "…"
-                : `${kpis.mesasOcupadas} / ${kpis.totalMesas} mesas`}
-            </p>
-          </div>
-
-          <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl px-3.5 py-3 sm:px-4 sm:py-4">
-            <p className="text-xs uppercase tracking-wider text-[var(--color-gray-400)] font-medium">
-              Personal Turno
-            </p>
-            <p className="text-title-lg font-bold text-[var(--color-white)] tracking-tight mt-0.5 truncate">
-              {kpiValue(
-                kpis.personalTurno === null
-                  ? null
-                  : `${kpis.personalTurno} en servicio`
-              )}
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </header>
   );

@@ -1,5 +1,4 @@
-import { Modal, Button } from "@/shared";
-import { Calendar, User, Utensils, Printer } from "lucide-react";
+import { Modal, Button, M3Icon } from "@/shared";
 import { getProductImage } from "@/utils/imageHelper";
 
 export default function OrderViewModal({ order, isOpen, onClose }) {
@@ -8,12 +7,12 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
   const getStatusBadge = (status) => {
     const s = String(status || "").toLowerCase();
     if (s.includes("no pagada")) {
-      return "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40";
+      return "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]";
     }
     if (s.includes("pagada")) {
-      return "bg-[var(--color-success-bg)] text-[var(--color-success)] border-[var(--color-success-border)]";
+      return "bg-[var(--color-success-bg)] text-[var(--color-success)] border border-[var(--color-success-border)]";
     }
-    return "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]";
+    return "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)]";
   };
 
   const handlePrintInvoice = () => {
@@ -43,15 +42,14 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
             body {
               font-family: 'Courier New', Courier, monospace;
               font-size: 12px;
-              line-height: 1.35;
-              color: #111;
-              padding: 12px;
-              max-width: 320px;
-              margin: 0 auto;
+              color: #000;
               background: #fff;
+              width: 72mm;
+              margin: 0 auto;
+              padding: 10px 4px;
+              line-height: 1.4;
             }
             .text-center { text-align: center; }
-            .text-right { text-align: right; }
             .font-bold { font-weight: bold; }
             .divider { border-top: 1px dashed #444; margin: 8px 0; }
             .double-divider { border-top: 2px dashed #000; margin: 10px 0; }
@@ -89,8 +87,8 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
             <thead>
               <tr style="border-bottom: 1px solid #222;">
                 <th style="text-align: left; padding-bottom: 4px;">Cant</th>
-                <th style="text-align: left; padding-bottom: 4px;">Platillo</th>
-                <th style="text-align: right; padding-bottom: 4px;">Unit</th>
+                <th style="text-align: left; padding-bottom: 4px;">Producto</th>
+                <th style="text-align: right; padding-bottom: 4px;">Unit.</th>
                 <th style="text-align: right; padding-bottom: 4px;">Total</th>
               </tr>
             </thead>
@@ -101,17 +99,14 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
 
           <div class="double-divider"></div>
 
-          <div>
-            <div class="row"><span>Subtotal Neto:</span><span>$${Number(order.total || 0).toLocaleString("es-CO")}</span></div>
-            <div class="row"><span>Impoconsumo / IVA (Inc.):</span><span>$0</span></div>
-            <div class="row" style="font-size: 14px; font-weight: bold; margin-top: 6px;">
-              <span>TOTAL A PAGAR:</span>
-              <span>$${Number(order.total || 0).toLocaleString("es-CO")} COP</span>
-            </div>
+          <div class="row" style="font-size: 15px; font-weight: bold;">
+            <span>TOTAL A PAGAR:</span>
+            <span>$${Number(order.total || 0).toLocaleString("es-CO")} COP</span>
           </div>
 
+          <div class="divider"></div>
+
           ${order.observations ? `
-            <div class="divider"></div>
             <div style="font-size: 10.5px;">
               <strong>Observaciones de Cocina:</strong>
               <p style="margin: 3px 0; font-style: italic;">"${order.observations}"</p>
@@ -140,20 +135,19 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-lg" title={`Orden ${order.idCode || order.id}`}>
-      <div className="space-y-4 text-[var(--color-white)] text-sm font-[family-name:var(--main-font)]">
-        {/* Cabecera de orden */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-xl">
+      <div className="space-y-4 text-[var(--md-sys-color-on-surface)] text-sm font-[family-name:var(--main-font)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] rounded-xl">
           <div>
-            <span className="text-xs text-[var(--color-gray-400)] block">Ubicación</span>
-            <span className="text-base font-bold text-[var(--color-primary-400)]">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">Ubicación</span>
+            <span className="text-base font-medium text-[var(--md-sys-color-primary)]">
               {order.tableNumber}
             </span>
           </div>
 
           <div>
-            <span className="text-xs text-[var(--color-gray-400)] block">Estado</span>
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">Estado</span>
             <span
-              className={`inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full border ${getStatusBadge(
+              className={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full ${getStatusBadge(
                 order.status
               )}`}
             >
@@ -162,69 +156,68 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
           </div>
 
           <div>
-            <span className="text-xs text-[var(--color-gray-400)] block">Atendido por</span>
-            <span className="font-medium text-[var(--color-gray-200)] flex items-center gap-1">
-              <User size={14} className="text-[var(--color-primary-400)]" />
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">Atendido por</span>
+            <span className="font-medium text-[var(--md-sys-color-on-surface)] flex items-center gap-1">
+              <M3Icon name="badge" size={16} className="text-[var(--md-sys-color-primary)]" />
               {order.waiter}
             </span>
           </div>
 
           <div>
-            <span className="text-xs text-[var(--color-gray-400)] block">Fecha / Hora</span>
-            <span className="text-xs text-[var(--color-gray-300)] flex items-center gap-1">
-              <Calendar size={13} />
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">Fecha / Hora</span>
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] flex items-center gap-1">
+              <M3Icon name="calendar_today" size={14} />
               {order.createdAt || "Hoy"}
             </span>
           </div>
 
           <div>
-            <span className="text-xs text-[var(--color-gray-400)] block">Método de pago</span>
-            <span className="font-medium text-[var(--color-white)] flex items-center gap-1">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">Método de pago</span>
+            <span className="font-medium text-[var(--md-sys-color-on-surface)] flex items-center gap-1">
               {order.paymentMethod || order.payment_method || "Sin especificar"}
             </span>
           </div>
         </div>
 
-        {/* Detalle de Platillos */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-gray-400)] mb-2 flex items-center gap-1.5">
-            <Utensils size={14} className="text-[var(--color-primary-400)]" />
+          <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)] mb-2 flex items-center gap-1.5">
+            <M3Icon name="restaurant" size={16} className="text-[var(--md-sys-color-primary)]" />
             Resumen de Platillos Ordenados ({(order.items || []).length})
           </h4>
-          <div className="border border-[var(--color-secondary-800)] rounded-xl max-h-[36dvh] overflow-y-auto overflow-x-hidden bg-[var(--color-secondary-950)]">
+          <div className="border border-[var(--md-sys-color-outline-variant)] rounded-xl max-h-[36dvh] overflow-y-auto overflow-x-hidden bg-[var(--md-sys-color-surface)]">
             <table className="w-full text-left text-xs leading-4">
-              <thead className="sticky top-0 z-10 bg-[var(--color-secondary-900)] text-[var(--color-gray-400)] border-b border-[var(--color-secondary-800)]">
+              <thead className="sticky top-0 z-10 bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border-b border-[var(--md-sys-color-outline-variant)]">
                 <tr>
-                  <th className="py-2 px-2 sm:px-3 font-semibold w-9 sm:w-auto">Cant.</th>
-                  <th className="py-2 px-1.5 sm:px-3 font-semibold">Platillo</th>
-                  <th className="py-2 px-1.5 sm:px-3 font-semibold text-right whitespace-nowrap">
+                  <th className="py-2.5 px-2.5 sm:px-3 font-medium w-9 sm:w-auto">Cant.</th>
+                  <th className="py-2.5 px-2 sm:px-3 font-medium">Platillo</th>
+                  <th className="py-2.5 px-2 sm:px-3 font-medium text-right whitespace-nowrap">
                     <span className="sm:hidden">Unit.</span>
                     <span className="hidden sm:inline">Precio Unit.</span>
                   </th>
-                  <th className="py-2 px-2 sm:px-3 font-semibold text-right whitespace-nowrap">Subtotal</th>
+                  <th className="py-2.5 px-2.5 sm:px-3 font-medium text-right whitespace-nowrap">Subtotal</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--color-secondary-800)]">
+              <tbody className="divide-y divide-[var(--md-sys-color-outline-variant)]/60">
                 {(order.items || []).map((item, idx) => (
-                  <tr key={idx} className="hover:bg-[var(--color-secondary-900)]/50">
-                    <td className="py-2 px-2 sm:px-3 font-bold text-[var(--color-primary-400)] whitespace-nowrap">
+                  <tr key={idx} className="hover:bg-[var(--md-sys-color-surface-container-low)]">
+                    <td className="py-2 px-2.5 sm:px-3 font-medium text-[var(--md-sys-color-primary)] whitespace-nowrap">
                       {item.qty}x
                     </td>
-                    <td className="py-2 px-1.5 sm:px-3 font-medium text-[var(--color-white)] min-w-0">
-                      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <td className="py-2 px-2 sm:px-3 font-medium text-[var(--md-sys-color-on-surface)] min-w-0">
+                      <div className="flex items-center gap-2 min-w-0">
                         <img
                           src={getProductImage({ name: item.name })}
                           alt={item.name}
-                          className="size-7 rounded-lg object-cover border border-[var(--color-secondary-700)] shrink-0"
-                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          className="size-7 rounded-lg object-cover border border-[var(--md-sys-color-outline-variant)] shrink-0"
+                          onError={(e) => { e.currentTarget.style.display = "none"; }}
                         />
-                        <span className="min-w-0 break-words leading-snug">{item.name}</span>
+                        <span className="min-w-0 break-words leading-4">{item.name}</span>
                       </div>
                     </td>
-                    <td className="py-2 px-1.5 sm:px-3 text-right text-[var(--color-gray-300)] whitespace-nowrap">
+                    <td className="py-2 px-2 sm:px-3 text-right text-[var(--md-sys-color-on-surface-variant)] whitespace-nowrap">
                       ${Number(item.price || 0).toLocaleString("es-CO")}
                     </td>
-                    <td className="py-2 px-2 sm:px-3 text-right font-semibold text-[var(--color-white)] whitespace-nowrap">
+                    <td className="py-2 px-2.5 sm:px-3 text-right font-medium text-[var(--md-sys-color-on-surface)] whitespace-nowrap">
                       ${(Number(item.price || 0) * (item.qty || 1)).toLocaleString("es-CO")}
                     </td>
                   </tr>
@@ -234,39 +227,35 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
           </div>
         </div>
 
-        {/* Observaciones de cocina */}
         {order.observations && (
-          <div className="p-3.5 bg-[var(--color-secondary-950)] border border-[var(--color-secondary-800)] rounded-xl text-xs">
-            <span className="font-semibold text-[var(--color-warning)] block mb-1">
+          <div className="p-3.5 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] rounded-xl text-xs">
+            <span className="font-medium text-[var(--color-warning)] block mb-1">
               Notas para Cocina / Observaciones:
             </span>
-            <p className="text-[var(--color-gray-300)] italic">"{order.observations}"</p>
+            <p className="text-[var(--md-sys-color-on-surface-variant)] italic">"{order.observations}"</p>
           </div>
         )}
 
-        {/* Total General */}
-        <div className="flex items-center justify-between gap-2 pt-3 border-t border-[var(--color-secondary-800)]">
-          <span className="text-sm font-semibold text-[var(--color-gray-300)]">
+        <div className="flex items-center justify-between gap-2 pt-3 border-t border-[var(--md-sys-color-outline-variant)]">
+          <span className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">
             Total Liquidado:
           </span>
-          <span className="text-title-lg font-bold text-[var(--color-white)] whitespace-nowrap">
+          <span className="text-title-lg font-medium text-[var(--md-sys-color-on-surface)] whitespace-nowrap">
             ${Number(order.total || 0).toLocaleString("es-CO")} COP
           </span>
         </div>
 
-        {/* Acciones del Modal: Imprimir Factura solo si está Pagada */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--color-secondary-800)]">
-          <Button variant="secondary" size="md" onClick={onClose}>
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--md-sys-color-outline-variant)]">
+          <Button variant="text" size="md" onClick={onClose}>
             Cerrar
           </Button>
           {String(order.status || "").toLowerCase() === "pagada" && (
             <Button
-              variant="primary"
+              variant="filled"
               size="md"
+              leadingIcon="print"
               onClick={handlePrintInvoice}
-              className="flex items-center gap-1.5 shadow-md font-semibold"
             >
-              <Printer size={15} />
               Imprimir Factura
             </Button>
           )}

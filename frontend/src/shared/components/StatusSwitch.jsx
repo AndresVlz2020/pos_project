@@ -1,50 +1,39 @@
-// Iconos usados dentro del switch
-import { Check, X } from "lucide-react";
+import M3Icon from "./M3Icon";
 
 /**
- * Componente controlado para representar un switch de estado (habilitado / inhabilitado).
- * No muta su estado internamente: la acción de cambio solo se consolida cuando el
- * componente padre valida la confirmación mediante el botón del diálogo.
+ * Switch literal Google Material Design 3 (52x32dp track, 24dp thumb checked, outline when unchecked)
  */
 export default function StatusSwitch({
-  checked = false,   // Valor controlado directamente desde el registro en PostgreSQL
-  onChange,          // Callback que notifica la solicitud de cambio (abre diálogo de confirmación)
-  disabled = false,  // Permite deshabilitar la interacción
-  size = "md",       // Tamaño del switch (sm, md, lg)
+  checked = false,
+  onChange,
+  disabled = false,
+  size = "md",
 }) {
   const isChecked = Boolean(checked);
 
-  // Función que maneja el click en el switch
-  // Solo solicita el cambio al componente padre sin mutar el switch prematuramente
   const handleToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (disabled) return;
-
-    if (onChange) {
-      onChange(!isChecked);
-    }
+    onChange?.(!isChecked);
   };
 
-  // Clases de tamaño del contenedor del switch (M3 Track estándar: 52x32dp)
-  const sizes = {
+  const trackSizes = {
     sm: "h-7 w-12",
     md: "h-8 w-[52px]",
     lg: "h-9 w-16",
   };
 
-  // Clases de tamaño del "knob" (M3 Thumb: 24x24dp en md)
   const knobSizes = {
-    sm: "size-5",
-    md: "size-6",
-    lg: "size-7",
+    sm: isChecked ? "size-5" : "size-4",
+    md: isChecked ? "size-6" : "size-5",
+    lg: isChecked ? "size-7" : "size-6",
   };
 
-  const knobTranslate = {
-    sm: "translate-x-5",
-    md: "translate-x-5",
-    lg: "translate-x-7",
+  const knobPositions = {
+    sm: isChecked ? "translate-x-[22px]" : "translate-x-1",
+    md: isChecked ? "translate-x-[22px]" : "translate-x-1",
+    lg: isChecked ? "translate-x-[30px]" : "translate-x-1",
   };
 
   return (
@@ -56,25 +45,30 @@ export default function StatusSwitch({
       onClick={handleToggle}
       disabled={disabled}
       className={`
-        relative inline-flex items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/40
-        ${sizes[size] || sizes.md}
-        ${isChecked ? "bg-[var(--color-primary-500)]" : "bg-[var(--color-secondary-700)]"}
-        ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+        relative inline-flex items-center rounded-full shrink-0
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--md-sys-color-surface)]
+        ${trackSizes[size] || trackSizes.md}
+        ${
+          isChecked
+            ? "bg-[var(--md-sys-color-primary)] border-2 border-[var(--md-sys-color-primary)]"
+            : "bg-[var(--md-sys-color-surface-container-highest)] border-2 border-[var(--md-sys-color-outline)]"
+        }
+        ${disabled ? "opacity-38 cursor-not-allowed" : "cursor-pointer"}
       `}
     >
-      {/* Knob del switch (el círculo que se desplaza de izquierda a derecha) */}
       <span
         className={`
-          absolute left-1 flex items-center justify-center rounded-full bg-[var(--color-on-primary)] shadow transition-transform duration-200
+          flex items-center justify-center rounded-full transition-transform duration-150
           ${knobSizes[size] || knobSizes.md}
-          ${isChecked ? (knobTranslate[size] || knobTranslate.md) : "translate-x-0"}
+          ${knobPositions[size] || knobPositions.md}
+          ${
+            isChecked
+              ? "bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-on-primary-container)]"
+              : "bg-[var(--md-sys-color-outline)] text-[var(--md-sys-color-surface-container-highest)]"
+          }
         `}
       >
-        {isChecked ? (
-          <Check size={12} className="text-[var(--color-primary-600)]" />
-        ) : (
-          <X size={12} className="text-[var(--color-gray-500)]" />
-        )}
+        <M3Icon name={isChecked ? "check" : "close"} size={14} />
       </span>
     </button>
   );

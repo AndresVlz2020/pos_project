@@ -1,8 +1,6 @@
-// src/features/auth/components/SessionTimeout.jsx
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle } from "lucide-react";
-import { Button, showWarningAlert } from "@/shared";
+import { Button, M3Icon, showWarningAlert } from "@/shared";
 
 export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
   const navigate = useNavigate();
@@ -24,7 +22,6 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
     setShowWarning(false);
     setRemainingSeconds(warningSeconds);
 
-    // Timer de advertencia
     warningTimerRef.current = setTimeout(() => {
       setShowWarning(true);
       countdownIntervalRef.current = setInterval(() => {
@@ -38,7 +35,6 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
       }, 1000);
     }, warningMs);
 
-    // Timer de cierre definitivo con aviso y confirmación SweetAlert
     timerRef.current = setTimeout(async () => {
       localStorage.removeItem("auth_token");
       localStorage.removeItem("auth_user");
@@ -78,20 +74,29 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
   if (!showWarning) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-      <div className="dpiero-modal-in w-full max-w-sm bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-[28px] p-6 shadow-2xl text-[var(--color-white)] text-center">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[var(--md-sys-color-scrim)] backdrop-blur-xs"
+      role="alertdialog"
+      aria-modal="true"
+    >
+      <div className="dpiero-modal-in w-full max-w-sm bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-6 m3-elevation-3 text-[var(--md-sys-color-on-surface)] text-center">
         <div className="mx-auto size-12 rounded-full bg-[var(--color-warning-bg)] text-[var(--color-warning)] border border-[var(--color-warning-border)] flex items-center justify-center mb-4">
-          <AlertTriangle className="size-6" />
+          <M3Icon name="warning" filled size={24} />
         </div>
-        <h3 className="text-title-lg font-bold mb-2">Sesión a punto de expirar</h3>
-        <p className="text-sm text-[var(--color-gray-300)] mb-6">
+        <h3 className="text-2xl leading-8 font-medium mb-2">
+          Sesión a punto de expirar
+        </h3>
+        <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] mb-6">
           Por inactividad, tu sesión se cerrará automáticamente en{" "}
-          <strong className="text-[var(--color-primary-400)] font-mono">{remainingSeconds}s</strong>.
+          <strong className="text-[var(--md-sys-color-primary)] font-mono">
+            {remainingSeconds}s
+          </strong>
+          .
         </p>
-        <div className="flex gap-3 justify-center">
+        <div className="flex gap-2 justify-end">
           <Button
             type="button"
-            variant="secondary"
+            variant="text"
             size="md"
             onClick={() => {
               localStorage.removeItem("auth_token");
@@ -102,11 +107,11 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
           </Button>
           <Button
             type="button"
-            variant="primary"
+            variant="filled"
             size="md"
             onClick={resetTimers}
           >
-            Mantener sesión activa
+            Mantener activa
           </Button>
         </div>
       </div>

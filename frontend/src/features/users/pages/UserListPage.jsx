@@ -1,12 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
-import { DataTable, Button, ConfirmDialog, Alert, showConfirmAlert, showSuccessAlert, showErrorAlert } from "@/shared";
+import {
+  DataTable,
+  Button,
+  ConfirmDialog,
+  Alert,
+  M3Icon,
+  showConfirmAlert,
+  showSuccessAlert,
+  showErrorAlert,
+} from "@/shared";
 import { getUserColumns } from "../table/UserColumns";
 import { users as initialMockUsers } from "../data/users";
 import { getUsers, updateUserStatus } from "../../../services/userService";
 import { hasPermission } from "@/features/access/services/accessService";
 import usePermission from "@/features/access/services/usePermission";
 import { Link } from "react-router-dom";
-import { ShieldAlert, Shield } from "lucide-react";
 import ReportConfigModal from "../reports/components/ReportConfigModal";
 
 export default function UserListPage() {
@@ -113,44 +121,54 @@ export default function UserListPage() {
 
   if (!canViewUsers && !loading) {
     return (
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-5 sm:p-8 shadow-md text-center max-w-lg mx-auto my-12 text-[var(--color-white)]">
-        <div className="size-14 rounded-full bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] flex items-center justify-center mx-auto mb-4 text-[var(--color-warning)]">
-          <ShieldAlert className="size-7" />
-        </div>
-        <h2 className="text-title-lg font-bold text-[var(--color-white)] mb-2">
-          Acceso Restringido
-        </h2>
-        <p className="text-sm text-[var(--color-gray-400)] leading-relaxed mb-6">
-          Su cuenta actual no dispone del permiso para consultar el listado de
-          usuarios del sistema.
-        </p>
-        <div className="flex justify-center gap-3">
-          <Link to="/">
-            <Button>Ir al Punto de Venta</Button>
-          </Link>
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-6 sm:p-8 m3-elevation-1 text-center max-w-lg w-full text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+          <div className="size-14 rounded-full bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)]/40 flex items-center justify-center mx-auto mb-4 text-[var(--md-sys-color-on-error-container)]">
+            <M3Icon name="warning" size={28} />
+          </div>
+          <h2 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)] mb-2">
+            Acceso Restringido
+          </h2>
+          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] leading-relaxed mb-6">
+            Su cuenta actual no dispone del permiso para consultar el listado de
+            usuarios del sistema.
+          </p>
+          <div className="flex justify-center gap-3">
+            <Link to="/">
+              <Button variant="filled" leadingIcon="home">
+                Ir al Punto de Venta
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+    <div className="flex-1 flex flex-col w-full rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] p-5 sm:p-6 m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5">
         <div>
-          <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">
+          <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
             Listado de Usuarios
           </h1>
-          <p className="text-xs text-[var(--color-gray-400)] mt-1">
+          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
             Administración de personal operativo y credenciales de acceso POS
           </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
-          <Button variant="primary" onClick={() => setIsReportOpen(true)}>
+          <Button
+            variant="tonal"
+            leadingIcon="download"
+            onClick={() => setIsReportOpen(true)}
+          >
             Generar reporte
           </Button>
           {canCreateUsers && (
             <Link to="/CreateUser">
-              <Button variant="primary">Crear usuario</Button>
+              <Button variant="filled" leadingIcon="add">
+                Crear usuario
+              </Button>
             </Link>
           )}
         </div>
@@ -167,7 +185,7 @@ export default function UserListPage() {
         </div>
       )}
 
-      <DataTable data={userList} columns={columns} />
+      <DataTable className="flex-1" data={userList} columns={columns} />
 
       <ReportConfigModal
         isOpen={isReportOpen}

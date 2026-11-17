@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X } from "lucide-react";
+import M3Icon from "./M3Icon";
+import { IconButton } from "./IconButton";
 
 export function Modal({
   isOpen = false,
@@ -29,24 +30,35 @@ export function Modal({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[var(--md-sys-color-scrim)] backdrop-blur-xs">
       <div
-        className={`dpiero-modal-in w-full ${maxWidth} max-h-[90dvh] flex flex-col overflow-hidden rounded-[28px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] p-6 shadow-2xl text-[var(--color-white)] transition-all ${className}`}
+        role="dialog"
+        aria-modal="true"
+        className={`dpiero-modal-in w-full ${maxWidth} max-h-[90dvh] flex flex-col overflow-hidden rounded-[28px] bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] p-6 m3-elevation-3 text-[var(--md-sys-color-on-surface)] ${className}`}
       >
-        <div className="flex items-center justify-between pb-3 mb-4 border-b border-[var(--color-secondary-800)] shrink-0">
-          {title && <h3 className="text-title-lg font-bold text-[var(--color-white)]">{title}</h3>}
-          {onClose && (
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Cerrar modal"
-              className="text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] size-10 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer shrink-0"
-            >
-              <X className="size-5" />
-            </button>
-          )}
+        {(title || onClose) && (
+          <div className="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-[var(--md-sys-color-outline-variant)] shrink-0">
+            {title ? (
+              <h3 className="text-2xl leading-8 font-medium text-[var(--md-sys-color-on-surface)] truncate">
+                {title}
+              </h3>
+            ) : (
+              <span />
+            )}
+            {onClose && (
+              <IconButton
+                ariaLabel="Cerrar modal"
+                variant="standard"
+                onClick={onClose}
+              >
+                <M3Icon name="close" size={20} />
+              </IconButton>
+            )}
+          </div>
+        )}
+        <div className="overflow-y-auto overflow-x-hidden flex-1 min-h-0 pr-1">
+          {children}
         </div>
-        <div className="overflow-y-auto overflow-x-hidden flex-1 min-h-0 pr-1">{children}</div>
       </div>
     </div>,
     document.body

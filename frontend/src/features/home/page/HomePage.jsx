@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Navbar, useInactivityTimeout } from "@/shared";
+import { AppShell, M3Icon, useInactivityTimeout } from "@/shared";
 import { products as fallbackProducts } from "@/features/products/data/products";
 import { getProducts } from "@/features/products/services/productServices";
 import usePermission from "@/features/access/services/usePermission";
@@ -8,26 +8,20 @@ import {
   clearOrderDraft,
 } from "@/features/orders/utils/orderDraftStorage";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { 
-  UtensilsCrossed, 
-  Users, 
-  Truck, 
-  UserCheck
-} from "lucide-react";
 import {
   PosTerminalHeader,
   PosProductsSection,
   PosProductDetailModal,
   PosStaffPanel,
   PosSuppliersPanel,
-  PosCustomersPanel
+  PosCustomersPanel,
 } from "../components";
 
 const PRIMARY_TABS = [
-  { id: "menu", label: "Catálogo & Órdenes", icon: UtensilsCrossed },
-  { id: "staff", label: "Personal en Turno", icon: Users },
-  { id: "suppliers", label: "Proveedores", icon: Truck },
-  { id: "customers", label: "Facturación", icon: UserCheck },
+  { id: "menu", label: "Catálogo & Órdenes", icon: "restaurant" },
+  { id: "staff", label: "Personal en Turno", icon: "group" },
+  { id: "suppliers", label: "Proveedores", icon: "local_shipping" },
+  { id: "customers", label: "Facturación", icon: "receipt_long" },
 ];
 
 export default function HomePage() {
@@ -42,7 +36,6 @@ export default function HomePage() {
   const { granted: canCreateOrder, loading: loadingOrderPerm } =
     usePermission("create_order");
 
-  // Obtener usuario autenticado actual y sus permisos
   const currentUser = (() => {
     try {
       return JSON.parse(localStorage.getItem("auth_user") || "null");
@@ -55,7 +48,6 @@ export default function HomePage() {
   const isAdmin = role === "Admin" || role === "Administrador";
   const isCajero = role === "Cajero";
 
-  // Cargar productos en tiempo real desde PostgreSQL
   const fetchPosProducts = useCallback(async () => {
     try {
       const data = await getProducts({ activeOnly: true });
@@ -81,10 +73,6 @@ export default function HomePage() {
     };
   }, [fetchPosProducts]);
 
-  // Definir pestañas permitidas según rol:
-  // - Admin: Todas las pestañas
-  // - Cajero: Catálogo & Órdenes, Clientes & Facturación (no personal ni proveedores)
-  // - Mesero / Cocinero: Catálogo & Órdenes exclusivamente
   const availableTabs = PRIMARY_TABS.filter((tab) => {
     if (tab.id === "menu") return true;
     if (tab.id === "customers") return isAdmin || isCajero;
@@ -137,63 +125,64 @@ export default function HomePage() {
   const productsToDisplay = dbProducts.length > 0 ? dbProducts : fallbackProducts;
 
   return (
-    <div className="min-h-screen bg-[var(--color-secondary-950)] text-[var(--color-white)] flex flex-col font-[family-name:var(--main-font)]">
-      {/* Barra de navegación superior */}
-      <Navbar />
+    <AppShell>
+      <div className="w-full flex-1 flex flex-col gap-4">
+        {/* Cabecera operativa M3 con KPIs en tiempo real a ancho completo */}
+        <PosTerminalHeader
+          operator={currentUser?.name || "Operador en Turno"}
+          role={currentUser?.role || "Personal"}
+        />
 
-      {/* Cabecera operativa del POS con datos del usuario autenticado y KPIs en tiempo real */}
-      <PosTerminalHeader
-        operator={currentUser?.name || "Operador en Turno"}
-        role={currentUser?.role || "Personal"}
-      />
-
-      {/* Tab Bar Tradicional con las pestañas autorizadas para el rol del usuario */}
-      <div className="border-b border-[var(--color-secondary-800)] bg-[var(--color-secondary-950)] sticky top-16 z-40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 flex items-center justify-between gap-4">
-          <nav className="flex items-center gap-6 overflow-x-auto scrollbar-none" aria-label="Pestañas autorizadas del POS">
+        {/* M3 Primary Tabs */}
+        <div className="border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)]">
+          <nav
+            className="flex items-center gap-2 overflow-x-auto scrollbar-none"
+            aria-label="Pestañas autorizadas del POS"
+          >
             {availableTabs.map((tab) => {
-              const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   type="button"
                   onClick={() => handleTabChange(tab.id)}
-                  className={`
-                    min-h-[48px] inline-flex items-center gap-2 py-3 px-4 border-b-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 cursor-pointer whitespace-nowrap
-                    ${isActive
-                      ? "border-[var(--color-primary-500)] text-[var(--color-primary-300)]"
-                      : "border-transparent text-[var(--color-gray-400)] hover:text-[var(--color-white)] hover:border-[var(--color-secondary-700)]"
-                    }
-                  `}
+                  className={`m3-state relative min-h-[48px] inline-flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap cursor-pointer rounded-t-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
+                    isActive
+                      ? "text-[var(--md-sys-color-primary)]"
+                      : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
+                  }`}
                 >
-                  <Icon className={`size-4 ${isActive ? "text-[var(--color-primary-400)]" : "text-[var(--color-gray-400)]"}`} />
+                  <M3Icon name={tab.icon} filled={isActive} size={18} />
                   <span>{tab.label}</span>
+                  {isActive && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute bottom-0 inset-x-3 h-[3px] rounded-t-full bg-[var(--md-sys-color-primary)]"
+                    />
+                  )}
                 </button>
               );
             })}
           </nav>
         </div>
+
+        {/* Contenido dinámico que aprovecha el 100% del ancho y alto en PC */}
+        <div className="flex-1 w-full flex flex-col">
+          {activeTab === "menu" && (
+            <PosProductsSection
+              products={productsToDisplay}
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+              onClearSearch={handleClearSearch}
+              onSelectProduct={handleSelectProduct}
+            />
+          )}
+
+          {activeTab === "staff" && <PosStaffPanel />}
+          {activeTab === "suppliers" && <PosSuppliersPanel />}
+          {activeTab === "customers" && <PosCustomersPanel />}
+        </div>
       </div>
-
-      {/* Contenido Dinámico del Módulo Seleccionado */}
-      <main className="flex-1 mx-auto max-w-7xl w-full px-3 sm:px-6 py-3 sm:py-5 overflow-x-hidden">
-        {activeTab === "menu" && (
-          <PosProductsSection
-            products={productsToDisplay}
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-            onClearSearch={handleClearSearch}
-            onSelectProduct={handleSelectProduct}
-          />
-        )}
-
-        {activeTab === "staff" && <PosStaffPanel />}
-
-        {activeTab === "suppliers" && <PosSuppliersPanel />}
-
-        {activeTab === "customers" && <PosCustomersPanel />}
-      </main>
 
       {selectedProduct && (
         <PosProductDetailModal
@@ -206,6 +195,6 @@ export default function HomePage() {
           loadingPermission={loadingOrderPerm}
         />
       )}
-    </div>
+    </AppShell>
   );
 }

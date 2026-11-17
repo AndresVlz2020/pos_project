@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Input, Select, Button, FileInput, showSuccessAlert, showErrorAlert } from "@/shared";
+import { Input, Select, Button, FileInput, M3Icon, showSuccessAlert, showErrorAlert } from "@/shared";
 import { getDocumentTypes } from "../../../services/selectServices";
 import { updateUser } from "../../../services/userService";
 import { createUserSchema } from "../schemas/userSchema";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { ShieldAlert } from "lucide-react";
 import resizeImageFile from "@/utils/imageFile";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
 
@@ -170,18 +169,22 @@ export default function EditUser1() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center px-4">
-        <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-5 sm:p-8 shadow-md text-center max-w-lg w-full">
-          <div className="size-14 rounded-full bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] flex items-center justify-center mx-auto mb-4 text-[var(--color-warning)]">
-            <ShieldAlert className="size-7" />
+      <div className="flex-1 flex items-center justify-center p-4 font-[family-name:var(--main-font)]">
+        <div className="bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-6 sm:p-8 m3-elevation-1 text-center max-w-lg w-full text-[var(--md-sys-color-on-surface)]">
+          <div className="size-14 rounded-full bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)]/40 flex items-center justify-center mx-auto mb-4 text-[var(--md-sys-color-on-error-container)]">
+            <M3Icon name="warning" size={28} />
           </div>
-          <h2 className="text-title-lg font-bold text-[var(--color-white)] mb-2">Acceso Exclusivo de Administrador</h2>
-          <p className="text-sm text-[var(--color-gray-400)] leading-relaxed mb-6">
-            La edición de usuarios solo está habilitada para el administrador central (<span className="text-[var(--color-primary-400)] font-medium">admin@dpiero.com</span>).
+          <h2 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)] mb-2">
+            Acceso Exclusivo de Administrador
+          </h2>
+          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] leading-relaxed mb-6">
+            La edición de usuarios solo está habilitada para el administrador central (<span className="text-[var(--md-sys-color-primary)] font-medium">admin@dpiero.com</span>).
           </p>
           <div className="flex justify-center gap-3">
             <Link to="/">
-              <Button>Ir al Punto de Venta</Button>
+              <Button variant="filled" leadingIcon="home">
+                Ir al Punto de Venta
+              </Button>
             </Link>
           </div>
         </div>
@@ -190,15 +193,29 @@ export default function EditUser1() {
   }
 
   return (
-    <div className="w-full">
+    <div className="flex-1 flex flex-col w-full font-[family-name:var(--main-font)]">
       {/* Body */}
-      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)]">
-        <h1 className="text-2xl leading-8 font-bold text-center mb-5 sm:mb-8 text-[var(--color-white)]">Editar Usuario</h1>
+      <form onSubmit={handleSubmit} className="flex-1 flex flex-col w-full p-5 sm:p-8 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 text-[var(--md-sys-color-on-surface)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
+          <div>
+            <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+              Editar Usuario
+            </h1>
+            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+              Actualiza datos personales, rol, credenciales de acceso y vigencia laboral.
+            </p>
+          </div>
+          <Link to="/dashboard/userList">
+            <Button variant="outlined" size="md" leadingIcon="arrow_back">
+              Volver al Listado
+            </Button>
+          </Link>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8 items-start">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start">
           {/* Left: foto actual con '+' superpuesto para cambiarla */}
-          <div className="col-span-1 flex flex-col items-center">
-            <span className="text-center mb-3 text-[var(--color-gray-300)] text-sm font-medium">
+          <div className="md:col-span-4 xl:col-span-3 flex flex-col items-center p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
+            <span className="text-center mb-3 text-[var(--md-sys-color-on-surface-variant)] text-label-lg font-medium">
               Foto de Perfil
             </span>
             <FileInput
@@ -222,13 +239,12 @@ export default function EditUser1() {
               altText={form.userName || "Usuario"}
             />
             {errors.userImage && (
-              <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+              <span className="text-[var(--md-sys-color-error)] text-label-sm mt-2">{errors.userImage}</span>
             )}
-            {/* Sin switch: solo texto descriptivo si se requiere en el futuro */}
           </div>
 
           {/* Right: form fields */}
-          <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-8 xl:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-5">
             <Input
               label="Nombre Completo"
               name="userName"
@@ -239,7 +255,7 @@ export default function EditUser1() {
               error={errors.userName}
             />
             <Input
-              label="Numero de Documento"
+              label="Número de Documento"
               name="userDocumentNumber"
               type="text"
               value={form.userDocumentNumber}
@@ -258,9 +274,10 @@ export default function EditUser1() {
               error={errors.userType}
             />
             <Input
-              label="Numero Telefónico"
+              label="Número Telefónico"
               name="userPhone"
               type="tel"
+              leadingIcon="call"
               value={form.userPhone}
               onChange={handleChange}
               htmlFor="user-phone"
@@ -281,6 +298,7 @@ export default function EditUser1() {
               label={isRoleAdmin ? "Correo de Acceso (Administrador)" : "Correo Electrónico"}
               name="userEmail"
               type="email"
+              leadingIcon="mail"
               value={form.userEmail}
               onChange={handleChange}
               placeholder={isRoleAdmin ? "ej. gerente@dpiero.com" : "ej. colaborador@gmail.com"}
@@ -295,13 +313,14 @@ export default function EditUser1() {
                   label="Nueva Contraseña (dejar en blanco para conservar actual)"
                   name="userPassword"
                   type="password"
+                  leadingIcon="lock"
                   value={form.userPassword}
                   onChange={handleChange}
                   placeholder="••••••••••••"
                   htmlFor="user-password"
                   error={errors.userPassword}
                 />
-                <p className="text-xs leading-4 text-[var(--color-gray-400)] mt-1.5">
+                <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-1.5">
                   Ingrese una nueva contraseña únicamente si desea modificar las credenciales del administrador.
                 </p>
               </div>
@@ -311,6 +330,7 @@ export default function EditUser1() {
                   label="PIN de Terminal POS (4 dígitos)"
                   name="pin"
                   type="password"
+                  leadingIcon="key"
                   inputMode="numeric"
                   maxLength={4}
                   placeholder="••••"
@@ -344,17 +364,17 @@ export default function EditUser1() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto flex md:justify-end justify-center mt-8 gap-4">
-            <Link to="/dashboard/userList">
-              <Button
-                variant="secondary"
-                size="md"
-                type="button"
-              >
-                Cancelar
-              </Button>
-            </Link>
-          <Button variant="primary" size="md" type="submit" disabled={submitting}>
+        <div className="w-full flex justify-end mt-auto pt-6 border-t border-[var(--md-sys-color-outline-variant)] gap-3">
+          <Link to="/dashboard/userList">
+            <Button
+              variant="outlined"
+              size="md"
+              type="button"
+            >
+              Cancelar
+            </Button>
+          </Link>
+          <Button variant="filled" size="md" type="submit" leadingIcon="check_circle" disabled={submitting}>
             {submitting ? "Guardando..." : "Guardar"}
           </Button>
         </div>

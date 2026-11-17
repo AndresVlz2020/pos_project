@@ -59,34 +59,36 @@ export default function Register() {
   };
 
   return (
-    <div className="w-full">
+    <div className="min-h-screen w-full flex flex-col bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
       {/* Header */}
-      <div className="w-full bg-[var(--color-secondary-950)] text-[var(--color-white)] border-b border-[var(--color-secondary-800)]">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-3">
-          <Link to="/" className="flex items-center gap-2">
-            <BrandLogo className="h-9 w-auto object-contain drop-shadow" alt="D,PIERO" />
+      <header className="w-full h-16 bg-[var(--md-sys-color-surface-container)] border-b border-[var(--md-sys-color-outline-variant)]">
+        <div className="w-full h-full px-4 sm:px-6 flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] rounded-lg">
+            <BrandLogo className="h-9 w-auto object-contain" alt="D,PIERO" />
           </Link>
         </div>
-      </div>
+      </header>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-6 py-10">
+      <div className="flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center px-4 sm:px-8 py-6 sm:py-10">
         {/* Left image */}
-        <div className="hidden md:block relative h-[60vh] md:h-[80vh] rounded-2xl overflow-hidden border border-[var(--color-secondary-800)] shadow-xl">
+        <div className="hidden lg:block lg:col-span-6 xl:col-span-7 relative h-[76vh] rounded-[28px] overflow-hidden border border-[var(--md-sys-color-outline-variant)] m3-elevation-2">
           <img src={bgRegister} alt="D'Piero Registro" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-secondary-950)] via-[var(--color-secondary-950)]/40 to-transparent flex flex-col justify-end p-8">
-            <h2 className="text-2xl font-bold text-[var(--color-white)] mb-2">Únete al Equipo D'Piero</h2>
-            <p className="text-sm text-[var(--color-gray-300)] leading-relaxed">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent flex flex-col justify-end p-8">
+            <h2 className="text-headline-md font-bold text-white mb-2">Únete al Equipo D&apos;Piero</h2>
+            <p className="text-body-lg text-white/90 leading-relaxed max-w-xl">
               Crea tu cuenta de acceso operativo para gestionar órdenes, registrar pedidos y supervisar tu estación.
             </p>
           </div>
         </div>
 
         {/* Right form */}
-        <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto">
-          <div className="rounded-2xl border border-[var(--color-secondary-800)] bg-[var(--color-secondary-900)] p-5 sm:p-8 shadow-2xl text-[var(--color-white)]">
-            <h2 className="text-title-lg font-bold text-center mb-6 text-[var(--color-white)]">Registro de Cuenta</h2>
-            <div className="grid gap-3">
+        <form onSubmit={handleSubmit} className="lg:col-span-6 xl:col-span-5 w-full max-w-lg mx-auto">
+          <div className="rounded-[28px] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] p-6 sm:p-8 m3-elevation-2 text-[var(--md-sys-color-on-surface)]">
+            <h2 className="text-headline-sm font-semibold text-center mb-6 text-[var(--md-sys-color-on-surface)]">
+              Registro de Cuenta
+            </h2>
+            <div className="grid gap-3.5">
               <Input
                 label="Nombre"
                 name="userName"
@@ -127,6 +129,7 @@ export default function Register() {
                 label="Correo Electrónico"
                 name="userEmail"
                 type="email"
+                leadingIcon="mail"
                 value={form.userEmail}
                 onChange={handleChange}
                 htmlFor="register-email"
@@ -136,6 +139,7 @@ export default function Register() {
                 label="Teléfono"
                 name="userPhone"
                 type="tel"
+                leadingIcon="call"
                 value={form.userPhone}
                 onChange={handleChange}
                 htmlFor="register-phone"
@@ -145,6 +149,7 @@ export default function Register() {
                 label="Contraseña"
                 name="password"
                 type="password"
+                leadingIcon="lock"
                 value={form.password}
                 onChange={handleChange}
                 htmlFor="register-password"
@@ -154,6 +159,7 @@ export default function Register() {
                 label="Confirmar Contraseña"
                 name="confirmPassword"
                 type="password"
+                leadingIcon="lock"
                 value={form.confirmPassword}
                 onChange={handleChange}
                 htmlFor="register-confirm-password"
@@ -169,12 +175,19 @@ export default function Register() {
             </div>
 
             <div className="mt-6">
-              <Button variant="primary" type="submit" className="w-full">Registrarse</Button>
+              <Button variant="filled" type="submit" className="w-full">
+                Registrarse
+              </Button>
             </div>
 
-            <div className="mt-6 text-sm text-center text-[var(--color-gray-300)]">
+            <div className="mt-5 text-body-md text-center text-[var(--md-sys-color-on-surface-variant)]">
               ¿Ya tienes cuenta?{" "}
-              <Link to="/Auth" className="inline-flex items-center min-h-[40px] px-3 rounded-full font-semibold text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50">Inicia Sesión</Link>
+              <Link
+                to="/Auth"
+                className="inline-flex items-center min-h-[40px] px-3 rounded-full font-semibold text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
+              >
+                Inicia Sesión
+              </Link>
             </div>
           </div>
         </form>

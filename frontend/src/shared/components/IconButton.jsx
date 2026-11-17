@@ -1,91 +1,68 @@
-//src/shared/components/IconButton.jsx
-
 import React from "react";
 import clsx from "clsx";
 
 /**
- * IconButton
- * - Área táctil (hit area): tamaño del botón
- * - Área visible: tamaño del ícono (controlado por wrapper interno)
+ * IconButton literal Material Design 3
+ * Variantes: standard | filled | tonal | outlined (+ alias default, ghost, primary, secondary)
  */
-
-// React.forwardRef"puente para que el padre controle el DOM interno".
-
 export const IconButton = React.forwardRef(function IconButton(
   {
     children,
     onClick,
     disabled = false,
     className = "",
-    variant = "default",
-
-    // Tamaños
-    hitSize = 48,    // px (área táctil)
-    iconSize = 24,   // px (ícono visible)
-
-    // Accesibilidad
+    variant = "standard",
+    type = "button",
+    hitSize = 40,
+    iconSize = 20,
     ariaLabel,
-
-    // Estados
     isActive = false,
-
     ...props
   },
   ref
 ) {
-  const baseStyles = `
-    inline-flex items-center justify-center
-    rounded-full
-    transition-colors duration-200
-    focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
-    disabled:opacity-50 disabled:pointer-events-none
-  `;
+  const normalizedVariant =
+    variant === "default" || variant === "ghost"
+      ? "standard"
+      : variant === "primary"
+      ? "filled"
+      : variant === "secondary"
+      ? "tonal"
+      : variant;
 
   const variants = {
-    default: `
-      text-[var(--color-white)]
-      hover:bg-[var(--color-secondary-800)]
-      focus-visible:ring-[var(--color-secondary-600)]
-      cursor-pointer
-    `,
-    ghost: `
-      text-[var(--color-gray-300)]
-      hover:text-[var(--color-white)]
-      hover:bg-[var(--color-secondary-800)]
-      focus-visible:ring-[var(--color-secondary-600)]
-      cursor-pointer
-    `,
-    primary: `
-      text-[var(--color-on-primary)]
-      bg-[var(--color-primary-500)]
-      hover:bg-[var(--color-primary-600)]
-      border border-[var(--color-primary-600)]
-      focus-visible:ring-[var(--color-primary-400)]
-      cursor-pointer
-    `,
-    secondary: `
-      text-[var(--color-white)]
-      bg-[var(--color-secondary-800)]
-      hover:bg-[var(--color-secondary-700)]
-      border border-[var(--color-secondary-700)]
-      focus-visible:ring-[var(--color-secondary-600)]
-      cursor-pointer
-    `,
+    standard:
+      "bg-transparent text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]",
+    filled:
+      "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]",
+    tonal:
+      "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]",
+    outlined:
+      "bg-transparent border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]",
   };
 
   return (
     <button
       ref={ref}
-      type="button"
+      type={type}
       aria-label={ariaLabel}
       disabled={disabled}
       onClick={onClick}
-      className={clsx(baseStyles, variants[variant], className, {
-        "bg-[var(--color-secondary-800)]": isActive,
-      })}
+      className={clsx(
+        "m3-state inline-flex items-center justify-center shrink-0 p-0 rounded-full cursor-pointer select-none",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--md-sys-color-surface)]",
+        "disabled:opacity-38 disabled:pointer-events-none",
+        variants[normalizedVariant] || variants.standard,
+        isActive &&
+          normalizedVariant === "standard" &&
+          "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]",
+        className
+      )}
       style={{
-        width: `${hitSize}px`,
-        height: `${hitSize}px`,
+        width: `${Math.max(40, hitSize)}px`,
+        height: `${Math.max(40, hitSize)}px`,
+        minWidth: `${Math.max(40, hitSize)}px`,
+        minHeight: `${Math.max(40, hitSize)}px`,
       }}
       {...props}
     >
@@ -94,7 +71,7 @@ export const IconButton = React.forwardRef(function IconButton(
           width: `${iconSize}px`,
           height: `${iconSize}px`,
         }}
-        className="flex items-center justify-center"
+        className="flex items-center justify-center shrink-0 pointer-events-none"
       >
         {children}
       </span>

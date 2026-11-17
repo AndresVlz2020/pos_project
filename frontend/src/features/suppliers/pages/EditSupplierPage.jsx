@@ -1,10 +1,9 @@
 ﻿import { useState, useEffect } from "react";
 import { supplierSchema } from "../schemas/supplierSchema";
-import { Input, Checkbox, Button, FileInput, showSuccessAlert, showErrorAlert } from "@/shared";
+import { Input, Checkbox, Button, FileInput, M3Icon, showSuccessAlert, showErrorAlert } from "@/shared";
 import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { updateSupplier } from "../services/suppliersServices";
 import { getSupplierImage } from "@/utils/imageHelper";
-import { Building2 } from "lucide-react";
 import { API_URL } from "@/features/config";
 
 export default function EditSupplierPage() {
@@ -174,31 +173,31 @@ export default function EditSupplierPage() {
     });
 
     return (
-        <div className="max-w-7xl mx-auto my-2 sm:my-8 p-4 sm:p-8 bg-[var(--color-secondary-900)] rounded-xl border border-[var(--color-secondary-800)] shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 sm:pb-6 mb-5 sm:mb-6 border-b border-[var(--color-secondary-800)]">
+        <div className="flex-1 flex flex-col w-full p-5 sm:p-8 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 sm:pb-5 mb-6 border-b border-[var(--md-sys-color-outline-variant)]">
                 <div>
-                    <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)] flex items-center gap-2">
-                        <Building2 className="size-6 text-[var(--color-primary-400)]" />
+                    <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)] flex items-center gap-2.5">
+                        <M3Icon name="storefront" size={26} className="text-[var(--md-sys-color-primary)]" />
                         Editar Proveedor
                     </h1>
                 </div>
                 <Link to="/supplierList">
-                    <Button variant="secondary" size="md">
+                    <Button variant="outlined" size="md" leadingIcon="arrow_back">
                         Volver al Listado
                     </Button>
                 </Link>
             </div>
 
             {loadingData ? (
-                <div className="p-12 text-center text-[var(--color-gray-300)]">
+                <div className="flex-1 flex items-center justify-center p-12 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
                     Cargando datos del proveedor desde PostgreSQL...
                 </div>
             ) : (
-                <form onSubmit={handleSubmit}>
-                    <div className="flex flex-col md:flex-row gap-8 md:gap-12 justify-center items-start">
-                        {/* Previsualización del Logo Corporativo con '+' superpuesto */}
-                        <div className="w-48 mx-auto md:mx-0 flex flex-col items-center">
-                            <p className="text-center text-[var(--color-gray-300)] text-xs mb-3 font-medium">
+                <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
+                    <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+                        {/* Previsualización del Logo Corporativo */}
+                        <div className="lg:col-span-3 flex flex-col items-center p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
+                            <p className="text-center text-[var(--md-sys-color-on-surface-variant)] text-label-lg mb-3 font-medium">
                                 Logo de Suministros
                             </p>
                             <FileInput
@@ -213,12 +212,11 @@ export default function EditSupplierPage() {
                                 altText={formSupliers.supplierName || "Logo de suministros"}
                             />
                             {errors.userImage && (
-                                <span className="text-[var(--color-error)] text-xs mt-1">{errors.userImage}</span>
+                                <span className="text-[var(--md-sys-color-error)] text-label-sm mt-2">{errors.userImage}</span>
                             )}
                         </div>
 
-                        {/* Columna 1 de Inputs */}
-                        <div className="flex-1 flex flex-col gap-4 max-w-md w-full">
+                        <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-5">
                             <Input
                                 label="NIT *"
                                 name="supplierNit"
@@ -243,6 +241,7 @@ export default function EditSupplierPage() {
                                 label="Correo Electrónico *"
                                 name="supplierEmail"
                                 type="email"
+                                leadingIcon="mail"
                                 value={formSupliers.supplierEmail}
                                 htmlFor="supplier-email"
                                 onChange={handleChange}
@@ -253,24 +252,22 @@ export default function EditSupplierPage() {
                                 label="Número de Contacto *"
                                 name="supplierPhone"
                                 type="tel"
+                                leadingIcon="call"
                                 value={formSupliers.supplierPhone}
                                 htmlFor="supplier-phone"
                                 onChange={handleChange}
                                 error={errors.supplierPhone}
                                 placeholder="3001234567"
                             />
-                        </div>
-
-                        {/* Columna 2 de Inputs */}
-                        <div className="flex-1 flex flex-col gap-4 max-w-md w-full">
                             <Input
                                 label="Dirección de Despacho *"
                                 name="supplierDirection"
                                 type="text"
+                                leadingIcon="location_on"
                                 value={formSupliers.supplierDirection}
                                 htmlFor="supplier-direction"
                                 onChange={handleChange}
-                                error={errors.supplierDirection} 
+                                error={errors.supplierDirection}
                                 placeholder="Calle, Carrera o Zona Industrial"
                             />
                             <Input
@@ -280,12 +277,12 @@ export default function EditSupplierPage() {
                                 value={formSupliers.supplierObservation}
                                 htmlFor="supplier-observation"
                                 onChange={handleChange}
-                                error={errors.supplierObservation} 
+                                error={errors.supplierObservation}
                                 placeholder="Línea de insumos, crédito o notas de entrega"
                             />
-                            <div className="flex items-center gap-6 mt-4 min-h-[44px] bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)] text-[var(--color-white)] w-full sm:w-fit px-3.5 py-2 rounded-lg">
+                            <div className="md:col-span-2 flex items-center gap-6 min-h-[48px] bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] w-full sm:w-fit px-4 py-2 rounded-xl">
                                 <Checkbox
-                                    className="cursor-pointer text-[var(--color-white)]"
+                                    className="cursor-pointer"
                                     id="isSuperUser"
                                     name="isSuperUser"
                                     label="Activo"
@@ -298,15 +295,15 @@ export default function EditSupplierPage() {
                                     label="Inactivo"
                                     checked={formSupliers.isStaff}
                                     onChange={handleChange}
-                                />                    
+                                />
                             </div>
                         </div>
                     </div>
 
-                    <div className="w-full flex justify-center mt-12 gap-4 pt-6 border-t border-[var(--color-secondary-800)]">
+                    <div className="w-full flex justify-end mt-auto gap-3 pt-6 border-t border-[var(--md-sys-color-outline-variant)]">
                         <Link to="/supplierList">
                             <Button
-                                variant="secondary"
+                                variant="outlined"
                                 size="md"
                                 type="button"
                                 disabled={submitting}
@@ -315,9 +312,10 @@ export default function EditSupplierPage() {
                             </Button>
                         </Link>
                         <Button
-                            variant="primary"
+                            variant="filled"
                             size="md"
                             type="submit"
+                            leadingIcon="check_circle"
                             disabled={submitting}
                         >
                             {submitting ? "Guardando..." : "Guardar Cambios"}

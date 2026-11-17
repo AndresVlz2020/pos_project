@@ -1,85 +1,65 @@
-// src/shared/components/TextArea.jsx
-import { forwardRef } from "react";
-import clsx from "clsx";
-
-export const TextArea = forwardRef(function TextArea(
-  {
-    label,
-    name,
-    value,
-    placeholder,
-    onChange,
-    onBlur,
-    error,
-    disabled = false,
-    rows = 4,
-    maxLength = 500,
-    showCounter = true,
-    className = "",
-    htmlFor,
-    ...props
-  },
-  ref
-) {
+export default function TextArea({
+  label,
+  error,
+  htmlFor,
+  rows = 4,
+  maxLength,
+  value = "",
+  className = "",
+  disabled = false,
+  ...props
+}) {
   const currentLength = typeof value === "string" ? value.length : 0;
 
   return (
-    <div className="flex flex-col gap-1 w-full">
+    <div className="w-full">
       {label && (
-        <div className="flex justify-between items-center text-xs font-semibold">
-          <label
-            htmlFor={htmlFor || name}
-            className={clsx(
-              "transition-colors",
-              error ? "text-[var(--color-error)]" : "text-[var(--color-gray-300)]"
-            )}
-          >
-            {label}
-          </label>
-          {showCounter && maxLength && (
-            <span
-              className={clsx(
-                "text-xs",
-                currentLength >= maxLength
-                  ? "text-[var(--color-error)] font-bold"
-                  : "text-[var(--color-gray-400)]"
-              )}
-            >
-              {currentLength}/{maxLength}
-            </span>
-          )}
-        </div>
+        <label
+          htmlFor={htmlFor || props.id || props.name}
+          className={`block text-xs leading-4 mb-1.5 font-medium ${
+            error
+              ? "text-[var(--md-sys-color-error)]"
+              : "text-[var(--md-sys-color-on-surface-variant)]"
+          }`}
+        >
+          {label}
+        </label>
       )}
 
-      <textarea
-        ref={ref}
-        id={htmlFor || name}
-        name={name}
-        value={value}
-        rows={rows}
-        maxLength={maxLength}
-        disabled={disabled}
-        placeholder={placeholder}
-        onChange={onChange}
-        onBlur={onBlur}
-        className={clsx(
-          "w-full rounded-lg px-4 py-3 text-base leading-6 transition-all outline-none resize-none",
-          "bg-[var(--color-secondary-950)] text-[var(--color-white)] placeholder:text-[var(--color-gray-400)]",
-          "border border-[var(--color-secondary-700)] focus:border-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-400)]/30",
-          error && "border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-2 focus:ring-[var(--color-error)]/30",
-          disabled && "opacity-50 cursor-not-allowed",
-          className
+      <div className="relative w-full">
+        <textarea
+          id={htmlFor || props.id || props.name}
+          rows={rows}
+          maxLength={maxLength}
+          value={value}
+          disabled={disabled}
+          className={`
+            m3-outlined-field w-full min-h-[104px] px-4 py-3 text-base leading-6
+            text-[var(--md-sys-color-on-surface)]
+            placeholder:text-[var(--md-sys-color-on-surface-variant)]/70
+            focus:outline-none focus:border-[var(--md-sys-color-primary)] focus:shadow-[inset_0_0_0_1px_var(--md-sys-color-primary)]
+            disabled:opacity-50 disabled:cursor-not-allowed
+            resize-y
+            ${error ? "is-error border-[var(--md-sys-color-error)]" : ""}
+            ${className}
+          `}
+          {...props}
+        />
+      </div>
+
+      <div className="flex items-center justify-between mt-1 min-h-[1rem]">
+        {error ? (
+          <p className="text-xs leading-4 text-[var(--md-sys-color-error)]">{error}</p>
+        ) : (
+          <span />
         )}
-        {...props}
-      />
 
-      {error && (
-        <span className="text-[var(--color-error)] text-xs mt-0.5 font-medium">
-          {error}
-        </span>
-      )}
+        {maxLength && (
+          <span className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)] tabular-nums">
+            {currentLength} / {maxLength}
+          </span>
+        )}
+      </div>
     </div>
   );
-});
-
-export default TextArea;
+}

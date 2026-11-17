@@ -103,18 +103,29 @@ export default function ProductListPage() {
   );
 
   return (
-    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-md text-[var(--color-white)] font-[family-name:var(--main-font)]">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+    <div className="flex-1 flex flex-col w-full rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] p-5 sm:p-6 m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5">
         <div>
-          <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">Listado de Productos</h1>
+          <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+            Listado de Productos
+          </h1>
+          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+            Gestiona platillos del menú, precios y disponibilidad en el terminal POS.
+          </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
-          <Button variant="primary" onClick={() => setIsReportOpen(true)}>
+          <Button
+            variant="tonal"
+            leadingIcon="download"
+            onClick={() => setIsReportOpen(true)}
+          >
             Generar reporte
           </Button>
           {canCreate && (
             <Link to="/CreateProduct">
-              <Button variant="primary">Crear producto</Button>
+              <Button variant="filled" leadingIcon="add">
+                Crear producto
+              </Button>
             </Link>
           )}
         </div>
@@ -132,11 +143,11 @@ export default function ProductListPage() {
       )}
 
       {loading && productList.length === 0 ? (
-        <div className="py-12 text-center text-[var(--color-gray-400)]">
+        <div className="flex-1 flex items-center justify-center py-12 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
           Cargando productos desde la base de datos...
         </div>
       ) : (
-        <DataTable data={productList} columns={columns} />
+        <DataTable className="flex-1" data={productList} columns={columns} />
       )}
 
       <ListReportModal

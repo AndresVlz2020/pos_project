@@ -1,153 +1,279 @@
 @import url(tokens.css);
 @import url(semantic.css);
-/* Estya linea tiene que ir de ultimo */
 @import "tailwindcss";
+
+@theme {
+  /* M3 Design Token Bindings en Tailwind v4 */
+  --color-brand: var(--semantic-brand);
+  --color-brand-hover: var(--semantic-brand-hover);
+  --color-brand-soft: var(--semantic-brand-soft);
+  --color-brand-soft-hover: var(--semantic-brand-soft-hover);
+
+  --color-background: var(--semantic-background);
+  --color-surface: var(--semantic-surface);
+  --color-surface-muted: var(--semantic-surface-muted);
+  --color-background-inverse: var(--semantic-background-inverse);
+
+  --color-text-primary: var(--semantic-text-primary);
+  --color-text-secondary: var(--semantic-text-secondary);
+  --color-text-muted: var(--semantic-text-muted);
+  --color-text-inverse: var(--semantic-text-inverse);
+
+  --color-border: var(--semantic-border);
+  --color-border-strong: var(--semantic-border-strong);
+  --color-focus-ring: var(--semantic-focus-ring);
+  --color-focus-border: var(--semantic-focus-border);
+
+  --color-success: var(--semantic-success);
+  --color-warning: var(--semantic-warning);
+  --color-error: var(--semantic-error);
+  --color-on-brand: var(--semantic-on-brand);
+
+  /* Material Design 3 Type Scale Roles */
+  --text-title-lg: 1.375rem;
+  --text-title-lg--line-height: 1.75rem;
+  --text-headline-sm: 1.5rem;
+  --text-headline-sm--line-height: 2rem;
+  --text-label-sm: 0.6875rem;
+  --text-label-sm--line-height: 1rem;
+  --text-label-sm--letter-spacing: 0.03125rem;
+}
+
+/* =========================================================================
+   MATERIAL DESIGN 3 COLOR SCHEMES (LIGHT DEFAULT & DARK)
+   Definidos después de @import "tailwindcss" para tener prioridad absoluta
+   y evitar cualquier colisión con variables predeterminadas de @layer theme.
+   ========================================================================= */
+
+html,
+html.theme-light {
+  color-scheme: light;
+
+  /* M3 Light Core Color Roles (Terracotta / Warm Espresso Tonal Palette) */
+  --md-sys-color-primary: #9E4F24;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #FFDBCA;
+  --md-sys-color-on-primary-container: #351000;
+
+  --md-sys-color-secondary: #765848;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #FFDBCA;
+  --md-sys-color-on-secondary-container: #2B160B;
+
+  --md-sys-color-tertiary: #656031;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #ECE5AA;
+  --md-sys-color-on-tertiary-container: #1F1C00;
+
+  --md-sys-color-error: #BA1A1A;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #FFDAD6;
+  --md-sys-color-on-error-container: #410002;
+
+  --md-sys-color-surface: #FFF8F5;
+  --md-sys-color-surface-dim: #E4D8D2;
+  --md-sys-color-surface-bright: #FFF8F5;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #FAF1EC;
+  --md-sys-color-surface-container: #F4ECE7;
+  --md-sys-color-surface-container-high: #EEE6E1;
+  --md-sys-color-surface-container-highest: #E8E0DB;
+  --md-sys-color-on-surface: #221A16;
+  --md-sys-color-on-surface-variant: #52443D;
+
+  --md-sys-color-outline: #85746B;
+  --md-sys-color-outline-variant: #D7C2B9;
+  --md-sys-color-inverse-surface: #382E29;
+  --md-sys-color-inverse-on-surface: #FFEDE5;
+  --md-sys-color-inverse-primary: #FFB691;
+  --md-sys-color-scrim: rgba(0, 0, 0, 0.32);
+
+  /* Semánticos de estado M3 Light */
+  --color-on-primary: #FFFFFF;
+  --color-on-error: #FFFFFF;
+  --color-success: #146C2E;
+  --color-success-bg: #E6F4EA;
+  --color-success-border: #A8DAB5;
+  --color-error: #BA1A1A;
+  --color-error-bg: #FFDAD6;
+  --color-error-border: #F2B8B5;
+  --color-warning: #8A5300;
+  --color-warning-bg: #FFF0DB;
+  --color-warning-border: #F5C27D;
+
+  /* Compatibilidad con utilidades heredadas -> Mapeo literal M3 Light */
+  --color-primary-600: #873E15;
+  --color-primary-500: #9E4F24;
+  --color-primary-400: #9E4F24;
+  --color-primary-300: #8C4018;
+  --color-primary-200: #FFDBCA;
+  --color-primary-100: #FFEDE5;
+
+  --color-secondary-950: #FFF8F5;
+  --color-secondary-900: #FFFFFF;
+  --color-secondary-800: #EEE6E1;
+  --color-secondary-700: #D7C2B9;
+  --color-secondary-600: #85746B;
+  --color-secondary-500: #765848;
+
+  --color-gray-950: #FAF1EC;
+  --color-gray-900: #F4ECE7;
+  --color-gray-800: #E8E0DB;
+  --color-gray-700: #D7C2B9;
+  --color-gray-600: #85746B;
+  --color-gray-500: #765848;
+  --color-gray-400: #52443D;
+  --color-gray-300: #52443D;
+  --color-gray-200: #382E29;
+  --color-gray-100: #221A16;
+  --color-gray-50:  #181210;
+}
+
+html.theme-dark,
+html.dark {
+  color-scheme: dark;
+
+  /* M3 Dark Core Color Roles (Terracotta / Warm Espresso Tonal Palette) */
+  --md-sys-color-primary: #FFB691;
+  --md-sys-color-on-primary: #571F00;
+  --md-sys-color-primary-container: #7D360E;
+  --md-sys-color-on-primary-container: #FFDBCA;
+
+  --md-sys-color-secondary: #E6BEAA;
+  --md-sys-color-on-secondary: #432A1D;
+  --md-sys-color-secondary-container: #5C4032;
+  --md-sys-color-on-secondary-container: #FFDBCA;
+
+  --md-sys-color-tertiary: #D0C890;
+  --md-sys-color-on-tertiary: #363107;
+  --md-sys-color-tertiary-container: #4D481C;
+  --md-sys-color-on-tertiary-container: #ECE5AA;
+
+  --md-sys-color-error: #FFB4AB;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000A;
+  --md-sys-color-on-error-container: #FFDAD6;
+
+  --md-sys-color-surface: #181210;
+  --md-sys-color-surface-dim: #181210;
+  --md-sys-color-surface-bright: #3F3834;
+  --md-sys-color-surface-container-lowest: #120D0B;
+  --md-sys-color-surface-container-low: #211A17;
+  --md-sys-color-surface-container: #251E1B;
+  --md-sys-color-surface-container-high: #302824;
+  --md-sys-color-surface-container-highest: #3B332F;
+  --md-sys-color-on-surface: #EDE0DA;
+  --md-sys-color-on-surface-variant: #D7C2B9;
+
+  --md-sys-color-outline: #A08D85;
+  --md-sys-color-outline-variant: #52443D;
+  --md-sys-color-inverse-surface: #EDE0DA;
+  --md-sys-color-inverse-on-surface: #382E29;
+  --md-sys-color-inverse-primary: #9E4F24;
+  --md-sys-color-scrim: rgba(0, 0, 0, 0.50);
+
+  /* Semánticos de estado M3 Dark */
+  --color-on-primary: #571F00;
+  --color-on-error: #690005;
+  --color-success: #7ADC8E;
+  --color-success-bg: rgba(122, 220, 142, 0.14);
+  --color-success-border: rgba(122, 220, 142, 0.36);
+  --color-error: #FFB4AB;
+  --color-error-bg: rgba(147, 0, 10, 0.45);
+  --color-error-border: rgba(255, 180, 171, 0.40);
+  --color-warning: #FFB963;
+  --color-warning-bg: rgba(255, 185, 99, 0.16);
+  --color-warning-border: rgba(255, 185, 99, 0.38);
+
+  /* Compatibilidad con utilidades heredadas -> Mapeo literal M3 Dark */
+  --color-primary-600: #FFCAAE;
+  --color-primary-500: #FFB691;
+  --color-primary-400: #FFB691;
+  --color-primary-300: #FFDBCA;
+  --color-primary-200: #7D360E;
+  --color-primary-100: #571F00;
+
+  --color-secondary-950: #181210;
+  --color-secondary-900: #251E1B;
+  --color-secondary-800: #302824;
+  --color-secondary-700: #52443D;
+  --color-secondary-600: #A08D85;
+  --color-secondary-500: #D7C2B9;
+
+  --color-gray-950: #120D0B;
+  --color-gray-900: #211A17;
+  --color-gray-800: #302824;
+  --color-gray-700: #52443D;
+  --color-gray-600: #A08D85;
+  --color-gray-500: #D7C2B9;
+  --color-gray-400: #D7C2B9;
+  --color-gray-300: #EDE0DA;
+  --color-gray-200: #EDE0DA;
+  --color-gray-100: #F4ECE7;
+  --color-gray-50:  #FFF8F5;
+}
+
+/* Cambio atómico de tema (evita artefactos visuales por transitions desfasadas) */
+html.m3-theme-switching *,
+html.m3-theme-switching *::before,
+html.m3-theme-switching *::after {
+  transition: none !important;
+}
 
 html,
 body {
-  background-color: var(--color-secondary-950);
-  color: var(--color-white);
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--main-font);
   margin: 0;
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
+/* Elevaciones M3 */
+.m3-elevation-1 { box-shadow: var(--md-sys-elevation-1); }
+.m3-elevation-2 { box-shadow: var(--md-sys-elevation-2); }
+.m3-elevation-3 { box-shadow: var(--md-sys-elevation-3); }
 
-@theme {
-
---color-brand: var(--semantic-brand);
---color-brand-hover: var(--semantic-brand-hover);
---color-brand-soft: var(--semantic-brand-soft);
---color-brand-soft-hover: var(--semantic-brand-soft-hover);
-
-
-/* =================Background==================== */
-
---color-background: var(--semantic-background);
---color-surface: var(--semantic-surface);
---color-surface-muted: var(--semantic-surface-muted);
---color-background-inverse: var(--semantic-background-inverse);
-
-/* ==================Text===================== */
-
---color-text-primary: var(--semantic-text-primary);
---color-text-secondary: var(--semantic-text-secondary);
---color-text-muted: var(--semantic-text-muted);
---color-text-inverse: var(--semantic-text-inverse);
-
-
-/* ====================Border==================== */
-
---color-border: var(--semantic-border);
---color-border-strong: var(--semantic-border-strong);
-
---color-focus-ring: var(--semantic-focus-ring);
---color-focus-border: var(--semantic-focus-border);
-
-
-/* STATUS */
-
---color-success: var(--semantic-success);
---color-warning: var(--semantic-warning);
---color-error: var(--semantic-error);
---color-on-brand: var(--semantic-on-brand);
-
-/* TYPOGRAPHY */
-
---font-size-display: var(--semantic-font-size-display);
---font-size-main: var(--semantic-font-size-h1);
---font-size-title: var(--semantic-font-size-h2);
---font-size-subtitle: var(--semantic-font-size-h3);
---font-size-body: var(--semantic-font-size-body);
---font-size-medium: var(--semantic-font-size-medium);
---font-size-small: var(--semantic-font-size-small);
---font-size-caption: var(--semantic-font-size-caption);
-
-/* Material Design 3 Tailwind v4 utilities exactas */
---text-title-lg: 1.375rem;
---text-title-lg--line-height: 1.75rem;
---text-headline-sm: 1.5rem;
---text-headline-sm--line-height: 2rem;
---text-label-sm: 0.6875rem;
---text-label-sm--line-height: 1rem;
---text-label-sm--letter-spacing: 0.03125rem;
-
-/* FONT WEIGHT */
-
---font-weight-heading: var(--semantic-font-weight-heading);
---font-weight-body: var(--semantic-font-weight-body);
---font-weight-label: var(--semantic-font-weight-label);
-
-
+/* M3 State Layer (8% hover, 10% focus/active) */
+.m3-state {
+  position: relative;
+  overflow: hidden;
 }
-
-.on-dark label {
-  color: var(--color-text-inverse);
+.m3-state::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: currentColor;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms cubic-bezier(0.2, 0, 0, 1);
 }
+.m3-state:hover:not(:disabled)::after { opacity: 0.08; }
+.m3-state:focus-visible:not(:disabled)::after { opacity: 0.10; }
+.m3-state:active:not(:disabled)::after { opacity: 0.10; }
 
-.on-dark .text-secondary {
-  color: var(--color-text-inverse);
+/* Fieldset Outlined M3 TextField Notch */
+.m3-outlined-field {
+  border-radius: 4px;
+  border: 1px solid var(--md-sys-color-outline);
+  background-color: transparent;
+  transition: border-color 150ms cubic-bezier(0.2, 0, 0, 1), box-shadow 150ms cubic-bezier(0.2, 0, 0, 1);
 }
-
-/* Asegura contraste correcto en inputs ubicados dentro de contenedores oscuros */
-.on-dark input {
-  color: var(--color-text-primary);
-  background: var(--color-background);
-  width: 100%;
+.m3-outlined-field:hover:not(.is-disabled):not(.is-focused):not(.is-error) {
+  border-color: var(--md-sys-color-on-surface);
 }
-
-.on-dark input::placeholder {
-  color: var(--color-text-secondary);
+.m3-outlined-field.is-focused:not(.is-error) {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-primary);
 }
-
-/* Ajustes específicos para la vista de Gestión de Usuarios */
-.users-mgmt select {
-  width: 100% !important; /* anula w-80 del componente para evitar desfase */
-  height: 2.5rem; /* h-10 para alinear con inputs */
-  padding-left: 1rem; /* px-4 */
-  padding-right: 1rem;
-  border-color: var(--color-border);
-  background: var(--color-background);
-  color: var(--color-text-primary);
+.m3-outlined-field.is-error {
+  border-color: var(--md-sys-color-error);
 }
-
-.users-mgmt label {
-  color: var(--color-text-primary);
-}
-
-/* Soporte de Tema Claro Dinámico */
-html.theme-light {
-  --color-secondary-950: #F4F6F9;
-  --color-secondary-900: #FFFFFF;
-  --color-secondary-800: #E2E8F0;
-  --color-secondary-700: #CBD5E1;
-  --color-secondary-600: #94A3B8;
-  --color-secondary-500: #64748B;
-  --color-white: #0F172A;
-  --color-gray-950: #F8FAFC;
-  --color-gray-900: #F1F5F9;
-  --color-gray-800: #E2E8F0;
-  --color-gray-700: #CBD5E1;
-  --color-gray-600: #94A3B8;
-  --color-gray-500: #64748B;
-  --color-gray-400: #475569;
-  --color-gray-300: #334155;
-  --color-gray-200: #1E293B;
-  --color-gray-100: #0F172A;
-  --color-gray-50:  #020617;
-
-  /* Material Design 3 Light Surface / Outline Tokens */
-  --md-sys-color-background: #F4F6F9;
-  --md-sys-color-surface: #FFFFFF;
-  --md-sys-color-surface-container: #F8FAFC;
-  --md-sys-color-surface-container-high: #F1F5F9;
-  --md-sys-color-surface-variant: #E2E8F0;
-  --md-sys-color-on-surface: #0F172A;
-  --md-sys-color-on-surface-variant: #334155;
-  --md-sys-color-outline: #64748B;
-  --md-sys-color-outline-variant: #CBD5E1;
+.m3-outlined-field.is-focused.is-error {
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-error);
 }
 
 .scrollbar-none {
@@ -158,199 +284,146 @@ html.theme-light {
   display: none;
 }
 
-html.theme-light body {
-  background-color: var(--color-secondary-950);
-  color: var(--color-white);
-}
-
 /* Intercambio automático de Logo según el tema activo */
-.logo-dark-theme {
-  display: block;
-}
-.logo-light-theme {
-  display: none !important;
-}
+.logo-dark-theme { display: block; }
+.logo-light-theme { display: none !important; }
+html.theme-light .logo-dark-theme { display: none !important; }
+html.theme-light .logo-light-theme { display: block !important; }
 
-html.theme-light .logo-dark-theme {
-  display: none !important;
-}
-html.theme-light .logo-light-theme {
-  display: block !important;
-}
-
-/* Wavy Animation sutil con colorimetría de marca (solo en AuthLayout) */
+/* Fondo sutil M3 con patrón decorativo en Auth */
 .dpiero-wave-bg {
   position: relative;
   overflow: hidden;
 }
-
 .dpiero-wave-bg .dpiero-wave {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   background: linear-gradient(
-    0deg,
-    var(--color-primary-600) 0%,
-    var(--color-primary-500) 55%,
-    var(--color-primary-300) 100%
+    135deg,
+    var(--md-sys-color-primary-container) 0%,
+    var(--md-sys-color-surface-container-high) 65%,
+    var(--md-sys-color-surface) 100%
   );
   pointer-events: none;
   z-index: 0;
 }
-
 .dpiero-wave-bg .dpiero-wave span {
   position: absolute;
-  width: max(260vh, 180vw);
-  height: max(260vh, 180vw);
+  width: max(220vh, 160vw);
+  height: max(220vh, 160vw);
   top: 0;
   left: 50%;
-  transform: translate(-50%, -75%);
+  transform: translate(-50%, -78%);
   pointer-events: none;
 }
-
 .dpiero-wave-bg .dpiero-wave span:nth-child(1) {
   border-radius: 45%;
-  background: var(--color-secondary-950);
-  animation: dpieroWaveSpin 14s linear infinite;
+  background: var(--md-sys-color-surface);
+  animation: dpieroWaveSpin 18s linear infinite;
 }
-
 .dpiero-wave-bg .dpiero-wave span:nth-child(2) {
   border-radius: 40%;
-  background: color-mix(in srgb, var(--color-secondary-950) 35%, transparent);
-  animation: dpieroWaveSpin 20s linear infinite;
+  background: color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent);
+  animation: dpieroWaveSpin 24s linear infinite;
 }
-
 .dpiero-wave-bg .dpiero-wave span:nth-child(3) {
   border-radius: 42.5%;
-  background: color-mix(in srgb, var(--color-secondary-950) 25%, transparent);
-  animation: dpieroWaveSpin 26s linear infinite;
+  background: color-mix(in srgb, var(--md-sys-color-secondary) 8%, transparent);
+  animation: dpieroWaveSpin 30s linear infinite;
 }
 
 @keyframes dpieroWaveSpin {
-  0% {
-    transform: translate(-50%, -75%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -75%) rotate(360deg);
-  }
+  0% { transform: translate(-50%, -78%) rotate(0deg); }
+  100% { transform: translate(-50%, -78%) rotate(360deg); }
 }
 
-/* Micro-animaciones Material Design 3 (Emphasized Decelerate) */
+/* Micro-animaciones M3 Emphasized Decelerate */
 .dpiero-fade-up {
   animation: dpieroFadeUp 220ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
 }
-
 .dpiero-modal-in {
   animation: dpieroModalIn 200ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
 }
-
 @keyframes dpieroFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes dpieroModalIn {
-  from {
-    opacity: 0;
-    transform: scale(0.97) translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  from { opacity: 0; transform: scale(0.97) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* Estilo unificado D'Piero POS para todas las alertas SweetAlert2
-   (alineado con las confirmaciones de habilitar/inhabilitar en tema claro y oscuro) */
+/* Alertas SweetAlert2 -> Diálogo Literal Material Design 3 */
 .dpiero-swal-container {
-  --swal2-backdrop: rgba(11, 19, 43, 0.72);
-  --swal2-background: var(--color-secondary-900);
-  --swal2-color: var(--color-white);
-  --swal2-border: 1px solid var(--color-secondary-700);
+  --swal2-backdrop: var(--md-sys-color-scrim);
+  --swal2-background: var(--md-sys-color-surface-container-high);
+  --swal2-color: var(--md-sys-color-on-surface);
+  --swal2-border: 1px solid var(--md-sys-color-outline-variant);
   --swal2-border-radius: 1.75rem;
   --swal2-width: min(27rem, calc(100vw - 2rem));
   --swal2-padding: 1.5rem;
   --swal2-title-padding: 0.25rem 0 0;
-  --swal2-html-container-padding: 0.5rem 0 0;
+  --swal2-html-container-padding: 0.75rem 0 0;
   --swal2-actions-margin: 1.5rem 0 0;
-  --swal2-timer-progress-bar-background: var(--color-primary-500);
-  backdrop-filter: blur(4px);
+  --swal2-timer-progress-bar-background: var(--md-sys-color-primary);
 }
-
 .dpiero-swal-container .dpiero-swal-popup {
-  background: var(--color-secondary-900);
-  color: var(--color-white);
-  border: 1px solid var(--color-secondary-700);
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: 1.75rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--md-sys-elevation-3);
   font-family: var(--main-font);
 }
-
 .dpiero-swal-container .dpiero-swal-title {
-  color: var(--color-white);
+  color: var(--md-sys-color-on-surface);
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 2rem;
 }
-
 .dpiero-swal-container .dpiero-swal-html {
-  color: var(--color-gray-300);
+  color: var(--md-sys-color-on-surface-variant);
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
-
 .dpiero-swal-container .swal2-icon {
   transform: scale(0.82);
   margin: 0 auto 0.35rem;
 }
-
 .dpiero-swal-container .swal2-icon.swal2-question {
-  border-color: var(--color-primary-400);
-  color: var(--color-primary-400);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-primary);
 }
-
 .dpiero-swal-container .swal2-icon.swal2-warning {
   border-color: var(--color-warning);
   color: var(--color-warning);
 }
-
 .dpiero-swal-container .swal2-icon.swal2-error {
-  border-color: var(--color-error);
-  color: var(--color-error);
+  border-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-error);
 }
-
 .dpiero-swal-container .swal2-icon.swal2-error [class^="swal2-x-mark-line"] {
-  background-color: var(--color-error);
+  background-color: var(--md-sys-color-error);
 }
-
 .dpiero-swal-container .swal2-icon.swal2-success {
   border-color: var(--color-success);
   color: var(--color-success);
 }
-
 .dpiero-swal-container .swal2-icon.swal2-success .swal2-success-ring {
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: var(--color-success-border);
 }
-
 .dpiero-swal-container .swal2-icon.swal2-success [class^="swal2-success-line"] {
   background-color: var(--color-success);
 }
-
 .dpiero-swal-container .dpiero-swal-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
+  justify-content: flex-end;
+  gap: 0.5rem;
   width: 100%;
 }
-
 .dpiero-swal-container .dpiero-swal-btn {
   display: inline-flex;
   align-items: center;
@@ -361,44 +434,26 @@ html.theme-light .logo-light-theme {
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, opacity 150ms ease;
   cursor: pointer;
 }
-
 .dpiero-swal-container .dpiero-swal-btn-primary {
-  background-color: var(--color-primary-500);
-  color: var(--color-on-primary);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
   border: 1px solid transparent;
 }
-
-.dpiero-swal-container .dpiero-swal-btn-primary:hover {
-  background-color: var(--color-primary-600);
-}
-
 .dpiero-swal-container .dpiero-swal-btn-danger {
-  background-color: var(--color-error);
-  color: var(--color-on-error);
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
   border: 1px solid transparent;
 }
-
-.dpiero-swal-container .dpiero-swal-btn-danger:hover {
-  background-color: color-mix(in srgb, var(--color-error) 85%, black);
-}
-
 .dpiero-swal-container .dpiero-swal-btn-cancel {
-  background-color: var(--color-secondary-900);
-  color: var(--color-gray-200);
-  border: 1px solid var(--color-secondary-700);
+  background-color: transparent;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-outline);
 }
-
 .dpiero-swal-container .dpiero-swal-btn-cancel:hover {
-  background-color: var(--color-secondary-800);
-  color: var(--color-white);
-  border-color: var(--color-secondary-600);
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
 }
-
 .dpiero-swal-container .dpiero-swal-progress {
-  background: var(--color-primary-500);
+  background: var(--md-sys-color-primary);
 }
-
-

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { Mail, Phone, Shield } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/shared";
+import { Button, M3Icon } from "@/shared";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
 
 export default function ReadUser1() {
@@ -38,56 +37,98 @@ export default function ReadUser1() {
   const statusText = isUserActive ? "Activo" : "Inactivo";
 
   return (
-    <div className="my-auto px-3 sm:px-4 py-4 sm:py-6 font-[family-name:var(--main-font)]">
-      <h1 className="text-2xl leading-8 font-bold text-center mt-4 sm:mt-8 text-[var(--color-white)]">
-        Ver Usuario
-      </h1>
-
-      <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] max-w-3xl mx-auto mt-6 rounded-xl p-4 sm:p-6 shadow-xl text-[var(--color-white)]">
-        <h2 className="text-base leading-6 font-bold text-center py-2 text-[var(--color-primary-300)]">
-          Información del Usuario
-        </h2>
-        <div className="flex flex-col sm:flex-row justify-center items-center mt-6 gap-6 sm:gap-8">
+    <div className="flex-1 flex flex-col w-full font-[family-name:var(--main-font)]">
+      <div className="flex-1 flex flex-col w-full bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl p-5 sm:p-8 m3-elevation-1 text-[var(--md-sys-color-on-surface)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-[var(--md-sys-color-outline-variant)]">
           <div>
-            <img 
-              src={userPhoto} 
-              alt={user?.userName} 
-              className="rounded-full border-2 border-[var(--color-secondary-700)] size-36 sm:size-44 object-cover shadow-md"
+            <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+              Ver Usuario
+            </h1>
+            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+              Información del perfil y credenciales del colaborador.
+            </p>
+          </div>
+          <Link to="/dashboard/userList">
+            <Button variant="outlined" size="md" leadingIcon="arrow_back">
+              Volver al Listado
+            </Button>
+          </Link>
+        </div>
+
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start">
+          <div className="md:col-span-4 xl:col-span-3 flex flex-col items-center p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
+            <img
+              src={userPhoto}
+              alt={user?.userName}
+              className="rounded-full border-2 border-[var(--md-sys-color-outline-variant)] size-36 sm:size-44 object-cover m3-elevation-1"
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = imgWorkerCarlos;
               }}
             />
+            <span className="mt-4 inline-flex items-center px-3 py-1 rounded-full text-label-md font-medium bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]">
+              {roleName}
+            </span>
           </div>
 
-          <div className="flex flex-col p-4 sm:px-8 sm:py-6 gap-y-2.5 bg-[var(--color-secondary-800)]/70 border border-[var(--color-secondary-700)] rounded-xl flex-1 w-full">
-            <h3 className="text-title-lg font-bold text-[var(--color-white)] mb-1">
-              {user?.userName}
-            </h3>
-            <div className="text-sm flex flex-col gap-2 text-[var(--color-gray-300)]">
-              <p>ID: <span className="font-bold text-[var(--color-white)] font-mono">#{user?.id}</span></p>
-              <p>Documento ({user?.userDocumentTypes || "CC"}): <span className="font-bold text-[var(--color-white)] font-mono">{user?.userDocumentNumber || "—"}</span></p>
-              <p className="flex items-center gap-2"><Shield className="size-4 text-[var(--color-primary-400)]" />Rol: <span className="font-semibold text-[var(--color-white)]">{roleName}</span></p>
-              <p className="flex items-center gap-2"><Phone className="size-4 text-[var(--color-primary-400)]" />Teléfono: <span className="font-mono text-[var(--color-gray-200)]">{user?.userPhone || "No registrado"}</span></p>
-              <p className="flex items-center gap-2"><Mail className="size-4 text-[var(--color-primary-400)]" />Correo: <span className="font-medium text-[var(--color-gray-200)]">{user?.userEmail}</span></p>
-              <p className="flex items-center gap-2">
-                Estado:{" "}
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
-                    isUserActive
-                      ? "bg-[var(--color-primary-500)]/15 text-[var(--color-primary-400)] border-[var(--color-primary-500)]/40"
-                      : "bg-[var(--color-secondary-800)] text-[var(--color-secondary-200)] border-[var(--color-secondary-600)]"
-                  }`}
-                >
-                  {statusText}
+          <div className="md:col-span-8 xl:col-span-9 flex flex-col p-5 sm:p-6 gap-y-4 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl w-full">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[var(--md-sys-color-outline-variant)]">
+              <h2 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+                {user?.userName}
+              </h2>
+              <span
+                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-label-sm font-medium border ${
+                  isUserActive
+                    ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-[var(--md-sys-color-primary)]/40"
+                    : "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)]"
+                }`}
+              >
+                <M3Icon name={isUserActive ? "check_circle" : "cancel"} size={14} />
+                {statusText}
+              </span>
+            </div>
+
+            <div className="text-body-md grid grid-cols-1 sm:grid-cols-2 gap-4 text-[var(--md-sys-color-on-surface-variant)]">
+              <div>
+                <span className="text-label-md block">ID de Sistema</span>
+                <span className="font-semibold text-[var(--md-sys-color-on-surface)] font-mono">
+                  #{user?.id}
                 </span>
-              </p>
+              </div>
+              <div>
+                <span className="text-label-md block">Documento ({user?.userDocumentTypes || "CC"})</span>
+                <span className="font-semibold text-[var(--md-sys-color-on-surface)] font-mono">
+                  {user?.userDocumentNumber || "—"}
+                </span>
+              </div>
+              <div>
+                <span className="text-label-md block">Rol Asignado</span>
+                <span className="inline-flex items-center gap-1.5 font-semibold text-[var(--md-sys-color-on-surface)] mt-0.5">
+                  <M3Icon name="shield" size={16} className="text-[var(--md-sys-color-primary)]" />
+                  {roleName}
+                </span>
+              </div>
+              <div>
+                <span className="text-label-md block">Teléfono</span>
+                <span className="inline-flex items-center gap-1.5 font-mono text-[var(--md-sys-color-on-surface)] mt-0.5">
+                  <M3Icon name="call" size={16} className="text-[var(--md-sys-color-primary)]" />
+                  {user?.userPhone || "No registrado"}
+                </span>
+              </div>
+              <div className="sm:col-span-2">
+                <span className="text-label-md block">Correo Electrónico</span>
+                <span className="inline-flex items-center gap-1.5 font-medium text-[var(--md-sys-color-on-surface)] mt-0.5">
+                  <M3Icon name="mail" size={16} className="text-[var(--md-sys-color-primary)]" />
+                  {user?.userEmail}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-        <div className="w-full flex justify-center mt-8 gap-4">
+
+        <div className="w-full flex justify-end mt-auto pt-6 border-t border-[var(--md-sys-color-outline-variant)]">
           <Link to="/dashboard/userList">
-            <Button variant="secondary" size="md">
+            <Button variant="outlined" size="md" leadingIcon="arrow_back">
               Volver al Listado
             </Button>
           </Link>

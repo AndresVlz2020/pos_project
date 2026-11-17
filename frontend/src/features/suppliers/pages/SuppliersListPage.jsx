@@ -100,16 +100,29 @@ export default function SuppliersListPage() {
   );
 
   return (
-    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-md text-[var(--color-white)]">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <h1 className="text-2xl leading-8 font-bold text-[var(--color-white)]">Listado de Proveedores</h1>
+    <div className="flex-1 flex flex-col w-full rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] p-5 sm:p-6 m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5">
+        <div>
+          <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+            Listado de Proveedores
+          </h1>
+          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+            Administra distribuidores, contactos comerciales y estado operativo.
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2.5">
-          <Button variant="primary" onClick={() => setIsReportOpen(true)}>
+          <Button
+            variant="tonal"
+            leadingIcon="download"
+            onClick={() => setIsReportOpen(true)}
+          >
             Generar reporte
           </Button>
           {canCreate && (
             <Link to="/CreateSupplier">
-              <Button variant="primary">Crear proveedor</Button>
+              <Button variant="filled" leadingIcon="add">
+                Crear proveedor
+              </Button>
             </Link>
           )}
         </div>
@@ -126,7 +139,7 @@ export default function SuppliersListPage() {
         </div>
       )}
 
-      <DataTable data={sortedSuppliers} columns={columns} />
+      <DataTable className="flex-1" data={sortedSuppliers} columns={columns} />
 
       <ListReportModal
         isOpen={isReportOpen}

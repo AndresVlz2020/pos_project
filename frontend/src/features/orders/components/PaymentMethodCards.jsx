@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { Banknote, Check, CreditCard, Landmark } from "lucide-react";
+import { M3Icon } from "@/shared";
 import { normalizePaymentMethod } from "../utils/orderFormHelpers";
 
 /**
@@ -104,36 +104,28 @@ const PAYMENT_METHODS = [
     label: "Efectivo",
     subtitle: "Pago en billetes y monedas",
     kind: "icon",
-    Icon: Banknote,
-    iconBoxClass:
-      "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)]",
+    iconName: "payments",
   },
   {
     value: "Tarjeta débito",
     label: "Tarjeta débito",
     subtitle: "Datáfono cuenta ahorros/cte",
     kind: "icon",
-    Icon: CreditCard,
-    iconBoxClass:
-      "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)]",
+    iconName: "credit_card",
   },
   {
     value: "Tarjeta crédito",
     label: "Tarjeta crédito",
     subtitle: "Datáfono crédito o cuotas",
     kind: "icon",
-    Icon: CreditCard,
-    iconBoxClass:
-      "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)]",
+    iconName: "credit_card",
   },
   {
     value: "Transferencia",
     label: "Transferencia",
     subtitle: "Consignación o cuenta bancaria",
     kind: "icon",
-    Icon: Landmark,
-    iconBoxClass:
-      "bg-[var(--color-primary-500)]/15 border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)]",
+    iconName: "account_balance",
   },
   {
     value: "Nequi",
@@ -161,7 +153,7 @@ export default function PaymentMethodCards({
   return (
     <div className="space-y-2.5">
       {label && (
-        <span className="block text-xs font-medium leading-4 text-[var(--color-gray-300)]">
+        <span className="block text-label-md font-medium text-[var(--md-sys-color-on-surface-variant)]">
           {label}
         </span>
       )}
@@ -183,27 +175,27 @@ export default function PaymentMethodCards({
               onClick={() => {
                 if (!disabled) onChange?.(method.value);
               }}
-              className={`group relative flex flex-col items-center justify-center gap-2 p-3.5 rounded-xl border text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 transition-all duration-150 min-h-[112px] ${
+              className={`m3-state group relative flex flex-col items-center justify-center gap-2.5 p-3.5 rounded-2xl text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors duration-150 min-h-[116px] ${
                 isSelected
-                  ? "bg-[var(--color-primary-500)]/12 border-2 border-[var(--color-primary-500)] shadow-sm ring-1 ring-[var(--color-primary-500)]/20"
-                  : "bg-[var(--color-secondary-950)] border-[var(--color-secondary-800)] hover:border-[var(--color-primary-500)]/55 hover:bg-[var(--color-secondary-900)]"
-              } ${disabled ? "opacity-55 cursor-not-allowed pointer-events-none" : "cursor-pointer"}`}
+                  ? "bg-[var(--md-sys-color-primary-container)]/35 border-2 border-[var(--md-sys-color-primary)] m3-elevation-1"
+                  : "bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-primary)]/60 hover:bg-[var(--md-sys-color-surface-container)]"
+              } ${disabled ? "opacity-38 cursor-not-allowed pointer-events-none" : "cursor-pointer"}`}
             >
               {/* Indicador de selección superior derecha */}
               <span
                 className={`absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center transition-colors ${
                   isSelected
-                    ? "bg-[var(--color-primary-500)] text-[var(--color-on-primary)]"
-                    : "border border-[var(--color-secondary-600)] bg-transparent group-hover:border-[var(--color-primary-400)]"
+                    ? "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]"
+                    : "border border-[var(--md-sys-color-outline)] bg-transparent group-hover:border-[var(--md-sys-color-primary)]"
                 }`}
                 aria-hidden="true"
               >
-                {isSelected && <Check className="w-2.5 h-2.5" strokeWidth={3} />}
+                {isSelected && <M3Icon name="check" size={12} />}
               </span>
 
-              {/* Contenedor visual del icono o logo oficial */}
+              {/* Contenedor visual del icono M3 o logo oficial */}
               {method.kind === "brand" ? (
-                <div className="h-11 min-w-[104px] px-3 py-1.5 rounded-lg bg-[var(--color-on-primary)] border border-[var(--color-secondary-700)] shadow-2xs flex items-center justify-center">
+                <div className="h-11 min-w-[104px] px-3 py-1.5 rounded-xl bg-white border border-[var(--md-sys-color-outline-variant)] flex items-center justify-center">
                   <method.Logo
                     className={
                       method.value === "Daviplata" ? "h-8 w-auto" : "h-5 w-auto"
@@ -212,23 +204,21 @@ export default function PaymentMethodCards({
                 </div>
               ) : (
                 <div
-                  className={`w-11 h-11 rounded-lg border flex items-center justify-center ${method.iconBoxClass}`}
+                  className={`w-11 h-11 rounded-xl flex items-center justify-center ${
+                    isSelected
+                      ? "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]"
+                      : "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+                  }`}
                 >
-                  <method.Icon className="w-6 h-6" strokeWidth={1.9} />
+                  <M3Icon name={method.iconName} filled={isSelected} size={22} />
                 </div>
               )}
 
               <div className="space-y-0.5">
-                <span
-                  className={`block text-sm font-semibold leading-5 ${
-                    isSelected
-                      ? "text-[var(--color-white)]"
-                      : "text-[var(--color-gray-200)]"
-                  }`}
-                >
+                <span className="block text-title-sm font-medium text-[var(--md-sys-color-on-surface)]">
                   {method.label}
                 </span>
-                <span className="block text-xs text-[var(--color-gray-400)] leading-4">
+                <span className="block text-label-sm text-[var(--md-sys-color-on-surface-variant)] leading-4">
                   {method.subtitle}
                 </span>
               </div>
@@ -238,7 +228,7 @@ export default function PaymentMethodCards({
       </div>
 
       {error && (
-        <span className="text-xs leading-4 text-[var(--color-error)] font-medium block">
+        <span className="text-label-sm text-[var(--md-sys-color-error)] font-medium block">
           {error}
         </span>
       )}
@@ -247,8 +237,7 @@ export default function PaymentMethodCards({
 }
 
 /**
- * Insignia compacta con el ícono/logo exacto del método de pago.
- * Se muestra en la tabla de "Ver Órdenes" cuando una orden ya fue pagada.
+ * Insignia compacta con el ícono M3 o logo oficial del método de pago.
  */
 export function PaymentMethodBadge({ method, showPaidTitle = true }) {
   const normalized = normalizePaymentMethod(method);
@@ -259,7 +248,7 @@ export function PaymentMethodBadge({ method, showPaidTitle = true }) {
   if (entry.kind === "brand" && entry.Logo) {
     return (
       <span
-        className="inline-flex h-8 px-2.5 rounded-lg bg-[var(--color-on-primary)] border border-[var(--color-secondary-700)] items-center justify-center shadow-2xs"
+        className="inline-flex h-8 px-2.5 rounded-lg bg-white border border-[var(--md-sys-color-outline-variant)] items-center justify-center"
         title={labelText}
         aria-label={labelText}
       >
@@ -270,14 +259,13 @@ export function PaymentMethodBadge({ method, showPaidTitle = true }) {
     );
   }
 
-  const Icon = entry.Icon || Banknote;
   return (
     <span
-      className={`inline-flex size-8 rounded-lg border items-center justify-center ${entry.iconBoxClass}`}
+      className="inline-flex size-8 rounded-lg bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border border-[var(--md-sys-color-outline-variant)] items-center justify-center"
       title={labelText}
       aria-label={labelText}
     >
-      <Icon className="w-4 h-4" strokeWidth={2} />
+      <M3Icon name={entry.iconName || "payments"} size={18} />
     </span>
   );
 }

@@ -68,12 +68,17 @@ export default function AccessPage() {
   };
 
   return (
-    <div className="bg-[var(--color-secondary-900)] border border-[var(--color-secondary-800)] rounded-xl p-4 sm:p-6 shadow-md text-[var(--color-white)]">
-      <h1 className="text-2xl leading-8 font-bold mb-4 sm:mb-6 text-[var(--color-white)]">
-        Gestión de permisos
-      </h1>
+    <div className="flex-1 flex flex-col w-full rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] p-5 sm:p-6 m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+      <div className="mb-5">
+        <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+          Gestión de permisos
+        </h1>
+        <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+          Configura capacidades de acceso por grupo de roles o por usuario específico.
+        </p>
+      </div>
 
-      <div className="flex flex-col md:flex-row gap-5 sm:gap-8 items-start">
+      <div className="flex-1 flex flex-col md:flex-row gap-5 sm:gap-6 items-stretch">
         <AccessSidebar
           selectedGroup={selectedGroup}
           setSelectedGroup={setSelectedGroup}
@@ -86,7 +91,7 @@ export default function AccessPage() {
           setIsEditing={setIsEditing}
         />
 
-        <div className="flex-1 w-full">
+        <div className="flex-1 w-full flex flex-col">
           <PermissionModule
             selectedGroup={selectedGroup}
             selectedGroupName={selectedGroupName}

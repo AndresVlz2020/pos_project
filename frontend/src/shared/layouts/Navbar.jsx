@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   IconButton,
   Dropdown,
@@ -7,461 +7,172 @@ import {
   DropdownItem,
   ThemeToggle,
   BrandLogo,
+  M3Icon,
 } from "@/shared";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, Clock } from "lucide-react";
-import { logout } from "@/services/authService";
-import { hasPermission } from "@/features/access/services/accessService";
+import { useNavigationState } from "@/shared/hooks/useNavigationState";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
-import {
-  getCurrentSession,
-  sendSessionHeartbeat,
-  formatDuration,
-} from "@/services/sessionService";
+import { formatDuration } from "@/services/sessionService";
+import { useState } from "react";
 import SessionHistoryModal from "../components/SessionHistoryModal";
 import BiometricSettingsModal from "../components/BiometricSettingsModal";
 
 export default function Navbar() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const {
+    currentUser,
+    isAdmin,
+    sessionAnchor,
+    elapsedSeconds,
+    destinations,
+    handleLogout,
+    navigate,
+  } = useNavigationState();
 
-  // Obtener usuario autenticado actual desde localStorage / sessionStorage
-  const currentUser = (() => {
-    try {
-      return JSON.parse(
-        localStorage.getItem("auth_user") ||
-          sessionStorage.getItem("user") ||
-          "null"
-      );
-    } catch {
-      return null;
-    }
-  })();
-
-  const role = currentUser?.role || "";
-  const initialIsAdmin =
-    Boolean(currentUser?.isAdmin || currentUser?.isSuperuser) ||
-    role === "Admin" ||
-    role === "Administrador";
-  const isCajero = role === "Cajero";
-
-  const [isAdmin, setIsAdmin] = useState(initialIsAdmin);
-  const [canViewUsers, setCanViewUsers] = useState(initialIsAdmin);
-  const [canViewInventory, setCanViewInventory] = useState(
-    initialIsAdmin || isCajero
-  );
-  const [sessionAnchor, setSessionAnchor] = useState(null);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isBiometricsOpen, setIsBiometricsOpen] = useState(false);
-  const [canViewSuppliers, setCanViewSuppliers] = useState(initialIsAdmin);
-  const [canCreateOrder, setCanCreateOrder] = useState(
-    initialIsAdmin || isCajero || role === "Mesero"
-  );
-
-  useEffect(() => {
-    const token =
-      localStorage.getItem("auth_token") || sessionStorage.getItem("token");
-
-    if (!token) {
-      Promise.resolve().then(() => {
-        setIsAdmin(false);
-        setCanViewUsers(false);
-        setCanViewInventory(false);
-        setCanViewSuppliers(false);
-        setCanCreateOrder(false);
-      });
-      return;
-    }
-
-    hasPermission("admin")
-      .then((res) => setIsAdmin(Boolean(res.granted)))
-      .catch(() => setIsAdmin(initialIsAdmin));
-
-    hasPermission("list_user")
-      .then((res) => setCanViewUsers(Boolean(res.granted)))
-      .catch(() => setCanViewUsers(initialIsAdmin));
-
-    hasPermission("list_inventory")
-      .then((res) => setCanViewInventory(Boolean(res.granted)))
-      .catch(() => setCanViewInventory(initialIsAdmin || isCajero));
-
-    hasPermission("list_supplier")
-      .then((res) => setCanViewSuppliers(Boolean(res.granted)))
-      .catch(() => setCanViewSuppliers(initialIsAdmin));
-
-    hasPermission("create_order")
-      .then((res) => setCanCreateOrder(Boolean(res.granted)))
-      .catch(() => setCanCreateOrder(initialIsAdmin || isCajero || role === "Mesero"));
-  }, [location.pathname, initialIsAdmin, isCajero, role]);
-
-  const pathname = location.pathname.toLowerCase();
-  const isHome = pathname === "/";
-  const isProducts = pathname.includes("product");
-  const isOrders = pathname.includes("order");
-  const isInventory = pathname.includes("inventory");
-  const isSuppliers = pathname.includes("supplier");
-  const isUsers = pathname.includes("user") && !pathname.includes("usersmanagement");
-  const isAccess =
-    pathname.includes("access") || pathname.includes("usersmanagement");
-
-  const getLinkClass = (isActive) =>
-    `transition-all min-h-[48px] py-1 px-3 rounded-t-lg flex items-center gap-1.5 text-sm font-medium cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50 ${
-      isActive
-        ? "text-[var(--color-primary-400)] font-semibold border-b-2 border-[var(--color-primary-400)]"
-        : "text-[var(--color-gray-300)] hover:text-[var(--color-white)]"
-    }`;
-
-  const handleLogout = () => {
-    logout();
-    navigate("/Auth");
-  };
-
-  const currentUserId = currentUser?.id || null;
-
-  // Seguimiento de sesión en tiempo real solo para personal no administrador
-  useEffect(() => {
-    if (!currentUserId || isAdmin) {
-      Promise.resolve().then(() => {
-        setSessionAnchor(null);
-        setElapsedSeconds(0);
-      });
-      return;
-    }
-
-    let active = true;
-
-    const applySession = (session) => {
-      if (!active || !session?.startedAt) return;
-      const baseSeconds = Math.max(
-        0,
-        Math.floor(Number(session.durationSeconds) || 0)
-      );
-      setSessionAnchor({
-        startedAt: session.startedAt,
-        baseSeconds,
-        syncedAtMs: Date.now(),
-      });
-      setElapsedSeconds(baseSeconds);
-    };
-
-    const syncCurrent = () => {
-      getCurrentSession()
-        .then((data) => applySession(data?.session))
-        .catch(() => {});
-    };
-
-    syncCurrent();
-
-    const hbId = setInterval(() => {
-      sendSessionHeartbeat()
-        .then((data) => applySession(data?.session))
-        .catch(() => {});
-    }, 45000);
-
-    const onVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        syncCurrent();
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
-
-    return () => {
-      active = false;
-      clearInterval(hbId);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, [isAdmin, currentUserId]);
-
-  useEffect(() => {
-    if (!sessionAnchor || isAdmin) return;
-    const tickId = setInterval(() => {
-      const delta = Math.max(
-        0,
-        Math.floor((Date.now() - sessionAnchor.syncedAtMs) / 1000)
-      );
-      setElapsedSeconds(sessionAnchor.baseSeconds + delta);
-    }, 1000);
-    return () => clearInterval(tickId);
-  }, [sessionAnchor, isAdmin]);
 
   return (
     <>
-    <nav className="w-full bg-[var(--color-secondary-950)] border-b border-[var(--color-secondary-800)] sticky top-0 z-50 shadow-sm">
-      <div className="mx-auto max-w-7xl px-2 sm:px-6">
-        <div className="flex h-16 items-center justify-between gap-1.5 sm:gap-4">
-          {/* Logo de marca */}
-          <div className="flex items-center shrink-0">
+      <nav className="w-full bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] sticky top-0 z-50">
+        <div className="w-full px-3 sm:px-6">
+          <div className="flex h-16 items-center justify-between gap-2 sm:gap-4">
             <Link
-              to={"/"}
-              className="flex items-center gap-2 group transition-transform hover:scale-105 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
+              to="/"
+              className="flex items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] shrink-0"
             >
               <BrandLogo
-                className="h-5 sm:h-11 w-auto object-contain drop-shadow"
+                className="h-6 sm:h-10 w-auto object-contain"
                 alt="D'Piero Logo"
               />
             </Link>
-          </div>
 
-          {/* Info de perfil y turno centrada en teléfonos (sin avatar para priorizar espacio) */}
-          {currentUser && (
-            <div className="sm:hidden flex-1 flex justify-center min-w-0 px-1">
-              <div className="inline-flex items-center justify-center gap-2 min-w-0 max-w-full min-h-[44px] overflow-hidden bg-[var(--color-secondary-900)] px-2.5 py-1 rounded-full border border-[var(--color-secondary-800)] text-[var(--color-gray-300)] leading-tight">
-                <div className="min-w-0 flex flex-col">
-                  <span className="block w-full text-xs font-semibold text-[var(--color-white)] truncate">
+            <ul className="hidden lg:flex items-center gap-2">
+              {destinations.map((dest) => (
+                <li key={dest.id}>
+                  <Link
+                    to={dest.to}
+                    className={`m3-state inline-flex items-center gap-2 h-10 px-4 rounded-full text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
+                      dest.active
+                        ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+                        : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
+                    }`}
+                  >
+                    <M3Icon name={dest.icon} filled={dest.active} size={18} />
+                    <span>{dest.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {currentUser && (
+                <div className="hidden sm:flex items-center gap-2 text-xs bg-[var(--md-sys-color-surface-container)] pl-1.5 pr-3 py-1 rounded-full border border-[var(--md-sys-color-outline-variant)]">
+                  <img
+                    src={getUserAvatar(currentUser)}
+                    alt={currentUser.name || "Usuario"}
+                    className="size-8 rounded-full object-cover border border-[var(--md-sys-color-outline-variant)] shrink-0"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = imgWorkerCarlos;
+                    }}
+                  />
+                  <span className="font-medium text-[var(--md-sys-color-on-surface)] truncate max-w-[140px]">
                     {currentUser.name}
                   </span>
-                  <span className="text-label-sm text-[var(--color-primary-400)] font-semibold truncate">
+                  <span className="text-label-sm px-2.5 py-0.5 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-medium">
                     {currentUser.role}
                   </span>
+                  {!isAdmin && sessionAnchor && (
+                    <button
+                      type="button"
+                      onClick={() => setIsHistoryOpen(true)}
+                      className="inline-flex items-center gap-1 min-h-[32px] px-2.5 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-mono text-xs font-medium cursor-pointer"
+                    >
+                      <M3Icon name="schedule" size={14} />
+                      {formatDuration(elapsedSeconds)}
+                    </button>
+                  )}
                 </div>
-                {!isAdmin && sessionAnchor && (
-                  <button
-                    type="button"
-                    onClick={() => setIsHistoryOpen(true)}
-                    title="Ver mi historial de sesiones"
-                    className="inline-flex items-center gap-1 min-h-[40px] px-2.5 rounded-full bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-xs font-semibold shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
-                  >
-                    <Clock className="size-3" />
-                    {formatDuration(elapsedSeconds)}
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+              )}
 
-          {/* Links de navegación principales según permisos del rol */}
-          <ul className="hidden lg:flex items-center gap-6">
-            <li>
-              <Link to={"/"} className={getLinkClass(isHome)}>
-                Inicio
-              </Link>
-            </li>
-            <li>
-              <Link to={"/productList"} className={getLinkClass(isProducts)}>
-                Productos
-              </Link>
-            </li>
-            <li>
-              <Link
-                to={canCreateOrder ? "/CreateOrder" : "/orderList"}
-                className={getLinkClass(isOrders)}
-              >
-                Pedidos
-              </Link>
-            </li>
-            {(isAdmin || canViewInventory) && (
-              <li>
-                <Link
-                  to={"/inventoryList"}
-                  className={getLinkClass(isInventory)}
-                >
-                  Inventario
-                </Link>
-              </li>
-            )}
-            {(isAdmin || canViewSuppliers) && (
-              <li>
-                <Link to={"/supplierList"} className={getLinkClass(isSuppliers)}>
-                  Proveedores
-                </Link>
-              </li>
-            )}
-            {(isAdmin || canViewUsers) && (
-              <li>
-                <Link
-                  to={"/dashboard/userList"}
-                  className={getLinkClass(isUsers)}
-                >
-                  Usuarios
-                </Link>
-              </li>
-            )}
-          </ul>
+              <ThemeToggle hitSize={40} iconSize={20} />
 
-          {/* Menú de Acciones / Hamburguesa */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Indicador sutil de rol activo con avatar */}
-            {currentUser && (
-              <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--color-gray-300)] bg-[var(--color-secondary-900)] px-3 py-0.5 rounded-full border border-[var(--color-secondary-800)]">
-                <img
-                  src={getUserAvatar(currentUser)}
-                  alt={currentUser.name || "Usuario"}
-                  className="size-7 rounded-full object-cover border border-[var(--color-secondary-700)] shrink-0"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = imgWorkerCarlos;
-                  }}
-                />
-                <span className="font-medium text-[var(--color-white)] truncate max-w-[120px]">
-                  {currentUser.name}
-                </span>
-                <span className="text-label-sm px-2 py-0.5 rounded-full bg-[var(--color-secondary-800)] text-[var(--color-primary-400)] font-semibold">
-                  {currentUser.role}
-                </span>
-                {!isAdmin && sessionAnchor && (
-                  <button
-                    type="button"
-                    onClick={() => setIsHistoryOpen(true)}
-                    title="Ver mi historial de sesiones"
-                    className="ml-1 inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/40 text-[var(--color-primary-400)] font-mono text-xs font-semibold hover:bg-[var(--color-primary-500)]/25 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]/50"
-                  >
-                    <Clock className="size-3.5" />
-                    {formatDuration(elapsedSeconds)}
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Botón de cambio de tema */}
-            <ThemeToggle hitSize={40} iconSize={18} className="sm:!w-11 sm:!h-11" />
-
-            <Dropdown>
-              <div>
+              <Dropdown>
                 <DropdownTrigger>
                   <IconButton
                     hitSize={40}
-                    iconSize={18}
+                    iconSize={20}
+                    variant="outlined"
                     ariaLabel="Menu"
-                    className="sm:!w-11 sm:!h-11 text-[var(--color-white)] hover:bg-[var(--color-secondary-800)] border border-[var(--color-secondary-700)]"
                   >
-                    <Menu className="size-4.5 sm:size-5" />
+                    <M3Icon name="menu" size={20} />
                   </IconButton>
                 </DropdownTrigger>
-              </div>
 
-              {/* Contenido: Opciones de navegación móvil, Admin y autenticación */}
-              <DropdownContent className="right-0 min-w-[224px] bg-[var(--color-secondary-900)] border border-[var(--color-secondary-700)] text-[var(--color-white)] shadow-lg">
-                <div className="lg:hidden pb-2 mb-2 border-b border-[var(--color-secondary-800)]">
-                  <DropdownItem
-                    onClick={() => navigate("/")}
-                    className={`cursor-pointer ${
-                      isHome ? "text-[var(--color-primary-400)] font-bold" : ""
-                    }`}
-                  >
-                    Inicio
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => navigate("/productList")}
-                    className={`cursor-pointer ${
-                      isProducts
-                        ? "text-[var(--color-primary-400)] font-bold"
-                        : ""
-                    }`}
-                  >
-                    Productos
-                  </DropdownItem>
-                  {canCreateOrder && (
+                <DropdownContent className="right-0 min-w-[240px]">
+                  <div className="lg:hidden pb-1.5 mb-1.5 border-b border-[var(--md-sys-color-outline-variant)]">
+                    {destinations.map((dest) => (
+                      <DropdownItem
+                        key={dest.id}
+                        icon={dest.icon}
+                        onClick={() => navigate(dest.to)}
+                        className={
+                          dest.active
+                            ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-medium"
+                            : ""
+                        }
+                      >
+                        {dest.label}
+                      </DropdownItem>
+                    ))}
+                  </div>
+
+                  {isAdmin && (
                     <DropdownItem
-                      onClick={() => navigate("/CreateOrder")}
-                      className={`cursor-pointer ${
-                        pathname === "/createorder"
-                          ? "text-[var(--color-primary-400)] font-bold"
-                          : ""
-                      }`}
+                      icon="admin_panel_settings"
+                      onClick={() => navigate("/dashboard/access")}
                     >
-                      Crear Pedido
+                      Admin (Gestión de permisos)
                     </DropdownItem>
                   )}
+
                   <DropdownItem
-                    onClick={() => navigate("/orderList")}
-                    className={`cursor-pointer ${
-                      pathname === "/orderlist"
-                        ? "text-[var(--color-primary-400)] font-bold"
-                        : ""
-                    }`}
+                    icon="fingerprint"
+                    onClick={() => setIsBiometricsOpen(true)}
                   >
-                    Listado de Órdenes
+                    Configurar Biometría / Huella
                   </DropdownItem>
-                  {(isAdmin || canViewInventory) && (
-                    <DropdownItem
-                      onClick={() => navigate("/inventoryList")}
-                      className={`cursor-pointer ${
-                        isInventory
-                          ? "text-[var(--color-primary-400)] font-bold"
-                          : ""
-                      }`}
-                    >
-                      Inventario
-                    </DropdownItem>
-                  )}
-                  {(isAdmin || canViewSuppliers) && (
-                    <DropdownItem
-                      onClick={() => navigate("/supplierList")}
-                      className={`cursor-pointer ${
-                        isSuppliers
-                          ? "text-[var(--color-primary-400)] font-bold"
-                          : ""
-                      }`}
-                    >
-                      Proveedores
-                    </DropdownItem>
-                  )}
-                  {(isAdmin || canViewUsers) && (
-                    <DropdownItem
-                      onClick={() => navigate("/dashboard/userList")}
-                      className={`cursor-pointer ${
-                        isUsers
-                          ? "text-[var(--color-primary-400)] font-bold"
-                          : ""
-                      }`}
-                    >
-                      Usuarios
-                    </DropdownItem>
-                  )}
-                </div>
 
-                {/* Opciones de Administración exclusivas para Administradores */}
-                {isAdmin && (
                   <DropdownItem
-                    onClick={() => navigate("/dashboard/access")}
-                    className={`cursor-pointer hover:bg-[var(--color-secondary-800)] ${
-                      isAccess
-                        ? "text-[var(--color-primary-400)] font-bold"
-                        : ""
-                    }`}
+                    icon="history"
+                    onClick={() => setIsHistoryOpen(true)}
                   >
-                    Admin (Gestión de permisos)
+                    {isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}
                   </DropdownItem>
-                )}
 
-                <DropdownItem
-                  onClick={() => setIsBiometricsOpen(true)}
-                  className="cursor-pointer hover:bg-[var(--color-secondary-800)]"
-                >
-                  Configurar Biometría / Huella
-                </DropdownItem>
-
-                <DropdownItem
-                  onClick={() => setIsHistoryOpen(true)}
-                  className="cursor-pointer hover:bg-[var(--color-secondary-800)]"
-                >
-                  {isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}
-                </DropdownItem>
-
-                <DropdownItem
-                  onClick={handleLogout}
-                  className="cursor-pointer text-[var(--color-error)] hover:opacity-90 hover:bg-[var(--color-secondary-800)]"
-                >
-                  Cerrar sesión
-                </DropdownItem>
-              </DropdownContent>
-            </Dropdown>
+                  <DropdownItem
+                    icon="logout"
+                    onClick={handleLogout}
+                    className="text-[var(--md-sys-color-error)]"
+                  >
+                    Cerrar sesión
+                  </DropdownItem>
+                </DropdownContent>
+              </Dropdown>
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
-    <SessionHistoryModal
-      isOpen={isHistoryOpen}
-      onClose={() => setIsHistoryOpen(false)}
-      isAdmin={isAdmin}
-    />
-    <BiometricSettingsModal
-      isOpen={isBiometricsOpen}
-      onClose={() => setIsBiometricsOpen(false)}
-      isAdmin={isAdmin}
-      userName={currentUser?.name || currentUser?.email || ""}
-    />
+      </nav>
+      <SessionHistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        isAdmin={isAdmin}
+      />
+      <BiometricSettingsModal
+        isOpen={isBiometricsOpen}
+        onClose={() => setIsBiometricsOpen(false)}
+        isAdmin={isAdmin}
+        userName={currentUser?.name || currentUser?.email || ""}
+      />
     </>
   );
 }

@@ -9,7 +9,7 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
     accessorKey: "code",
     header: "Código",
     cell: ({ row }) => (
-      <span className="font-mono text-xs text-[var(--color-primary-300)]">
+      <span className="font-mono text-label-md text-[var(--md-sys-color-primary)]">
         {row.original.code || `PRD-${row.original.id}`}
       </span>
     ),
@@ -26,13 +26,13 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
           <img
             src={imgSrc}
             alt={title}
-            className="size-9 rounded-lg object-cover border border-[var(--color-secondary-700)] shrink-0 shadow-sm"
+            className="size-9 rounded-lg object-cover border border-[var(--md-sys-color-outline-variant)] shrink-0 m3-elevation-1"
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = imgPunta;
             }}
           />
-          <span className="font-medium text-[var(--color-white)] text-sm">{title}</span>
+          <span className="font-medium text-[var(--md-sys-color-on-surface)] text-body-md">{title}</span>
         </div>
       );
     },
@@ -41,7 +41,7 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
     accessorKey: "category",
     header: "Categoría",
     cell: ({ row }) => (
-      <span className="text-xs text-[var(--color-gray-300)] capitalize">
+      <span className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] capitalize">
         {row.original.category || row.original.category_name || "General"}
       </span>
     ),
@@ -52,7 +52,7 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
     cell: ({ row }) => {
       const product = row.original;
       return (
-        <span className="font-semibold text-sm text-[var(--color-white)]">
+        <span className="font-semibold text-body-md text-[var(--md-sys-color-on-surface)] tabular-nums">
           ${Number(product.price || 0).toLocaleString("es-CO")}
         </span>
       );
@@ -62,7 +62,7 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
     accessorKey: "stock",
     header: "Stock",
     cell: ({ row }) => (
-      <span className="font-mono text-xs">
+      <span className="font-mono text-label-md text-[var(--md-sys-color-on-surface)] tabular-nums">
         {Math.trunc(Number(row.original.stock ?? 0))}
       </span>
     ),
@@ -93,7 +93,7 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
     accessorKey: "description",
     header: "Descripción",
     cell: ({ row }) => (
-      <span className="text-xs text-[var(--color-gray-400)] line-clamp-1 max-w-[200px]">
+      <span className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] line-clamp-1 max-w-[240px]">
         {row.original.description || "—"}
       </span>
     ),
