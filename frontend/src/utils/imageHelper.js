@@ -24,7 +24,6 @@ import imgWorkerMaria from "@/assets/images/worker-maria.jpg";
 import imgWorkerJuan from "@/assets/images/worker-juan.jpg";
 import imgWorkerAna from "@/assets/images/worker-ana.jpg";
 
-import logoWhite from "@/assets/images/logo-d,piero.png";
 import logoOrange from "@/assets/images/logo-d,piero-orange.png";
 
 // Carga automática vía Vite de todas las imágenes generadas en assets/images/products
@@ -139,13 +138,39 @@ export const PRODUCT_IMAGES = {
   ...ALL_PRODUCT_ASSETS,
 };
 
+const RAW_API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_ORIGIN = RAW_API_URL.replace(/\/+$/, "").startsWith("http")
+  ? RAW_API_URL.replace(/\/+$/, "").replace(/\/api$/i, "")
+  : "";
+
 /**
- * Resuelve la imagen correcta para un producto (usando importación Vite estática)
+ * Resuelve rutas de imágenes almacenadas en el backend (/api/uploads/...)
+ */
+export function resolveUploadedAssetUrl(rawUrl) {
+  const url = String(rawUrl || "").trim();
+  if (!url) return "";
+  if (url.startsWith("/api/uploads/")) {
+    return `${API_ORIGIN}${url}`;
+  }
+  if (url.startsWith("/uploads/")) {
+    return `${API_ORIGIN}/api${url}`;
+  }
+  return "";
+}
+
+/**
+ * Resuelve la imagen correcta para un producto (usando importación Vite estática o backend uploads)
  */
 export function getProductImage(product) {
   if (!product) return imgPunta;
 
   const url = String(product.image || product.image_url || "").trim();
+
+  // Imágenes almacenadas físicamente en backend/uploads
+  const uploadedUrl = resolveUploadedAssetUrl(url);
+  if (uploadedUrl) {
+    return uploadedUrl;
+  }
 
   // Imágenes personalizadas cargadas por usuario (Data URL / HTTP)
   if (url.startsWith("data:image/") || url.startsWith("http://") || url.startsWith("https://")) {
@@ -246,6 +271,12 @@ export function getUserAvatar(user) {
       ""
   ).trim();
 
+  // Imágenes almacenadas físicamente en backend/uploads
+  const uploadedAvatar = resolveUploadedAssetUrl(rawUrl);
+  if (uploadedAvatar) {
+    return uploadedAvatar;
+  }
+
   // Imágenes personalizadas cargadas por el usuario (Data URL / HTTP / HTTPS)
   if (
     rawUrl.startsWith("data:image/") ||
@@ -302,6 +333,5 @@ export {
   imgWorkerMaria,
   imgWorkerJuan,
   imgWorkerAna,
-  logoWhite,
   logoOrange,
 };

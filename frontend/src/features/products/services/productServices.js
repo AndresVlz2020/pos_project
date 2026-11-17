@@ -1,21 +1,36 @@
 import { API_URL } from "@/features/config";
 import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
+import {
+  getAuthHeaders,
+  getMultipartAuthHeaders,
+} from "@/shared/utils/authStorage";
 
 const PRODUCTS_URL = `${API_URL}/products`;
 
-function getStoredToken() {
-  return (
-    localStorage.getItem("auth_token") ||
-    sessionStorage.getItem("token") ||
-    ""
-  );
-}
+function buildProductPayload(productData) {
+  if (productData instanceof FormData) {
+    return {
+      body: productData,
+      headers: getMultipartAuthHeaders(),
+    };
+  }
 
-function getAuthHeaders() {
-  const token = getStoredToken();
+  if (productData?.imageFile instanceof File || productData?.imageFile instanceof Blob) {
+    const formData = new FormData();
+    Object.entries(productData).forEach(([key, value]) => {
+      if (key === "imageFile" || value === undefined || value === null) return;
+      formData.append(key, String(value));
+    });
+    formData.append("image", productData.imageFile);
+    return {
+      body: formData,
+      headers: getMultipartAuthHeaders(),
+    };
+  }
+
   return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    body: JSON.stringify(productData),
+    headers: getAuthHeaders(),
   };
 }
 
@@ -73,10 +88,11 @@ export async function getProductById(id) {
  */
 export async function createProduct(productData) {
   try {
+    const { body, headers } = buildProductPayload(productData);
     const response = await fetch(PRODUCTS_URL, {
       method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(productData),
+      headers,
+      body,
     });
 
     const data = await response.json().catch(() => ({}));
@@ -97,10 +113,11 @@ export async function createProduct(productData) {
  */
 export async function updateProduct(id, productData) {
   try {
+    const { body, headers } = buildProductPayload(productData);
     const response = await fetch(`${PRODUCTS_URL}/${id}`, {
       method: "PUT",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(productData),
+      headers,
+      body,
     });
 
     const data = await response.json().catch(() => ({}));

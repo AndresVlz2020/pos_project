@@ -1,6 +1,7 @@
 // Importamos Express, el framework base para construir el servidor HTTP
 import express from "express";
 import { isProduction } from "./config/env.js";
+import { UPLOADS_ROOT } from "./middlewares/upload.middleware.js";
 
 // Importamos el middleware CORS
 // Permite controlar qué orígenes pueden comunicarse con el backend
@@ -18,6 +19,7 @@ import productRoutes from "./features/products/product.routes.js";
 import inventoryRoutes from "./features/inventory/inventory.routes.js";
 import orderRoutes from "./features/orders/order.routes.js";
 import sessionRoutes from "./features/sessions/session.routes.js";
+import notificationRoutes from "./features/notifications/notification.routes.js";
 
 // Creamos la instancia principal de la aplicación Express
 const app = express();
@@ -85,8 +87,12 @@ app.use(
   })
 );
 
-// Middleware para parsear cuerpos de petición en formato JSON (soporta imágenes Data URL redimensionadas)
+// Middleware para parsear cuerpos de petición en formato JSON
 app.use(express.json({ limit: "2mb" }));
+
+// Servir archivos de imágenes almacenados físicamente en backend/uploads
+app.use("/api/uploads", express.static(UPLOADS_ROOT, { maxAge: "7d" }));
+app.use("/uploads", express.static(UPLOADS_ROOT, { maxAge: "7d" }));
 
 // Registro de routers por feature
 app.use("/api/users", userRoutes);
@@ -99,6 +105,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Middleware global de control de errores para blindar la API contra caídas
 app.use((err, req, res, next) => {

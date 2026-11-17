@@ -1,17 +1,10 @@
 import { API_URL } from "@/features/config";
+import { getAuthHeaders, getAuthToken } from "@/shared/utils/authStorage";
 
 const SESSIONS_URL = `${API_URL}/sessions`;
 
 function getToken() {
-  return localStorage.getItem("auth_token") || sessionStorage.getItem("token") || "";
-}
-
-function getAuthHeaders() {
-  const token = getToken();
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  return getAuthToken();
 }
 
 export function formatDuration(totalSeconds = 0) {
@@ -48,14 +41,19 @@ export async function sendSessionHeartbeat() {
 export async function endCurrentSession() {
   const token = getToken();
   if (!token) return;
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timer = controller ? setTimeout(() => controller.abort(), 1500) : null;
   try {
     await fetch(`${SESSIONS_URL}/end`, {
       method: "POST",
       headers: getAuthHeaders(),
       keepalive: true,
+      ...(controller ? { signal: controller.signal } : {}),
     });
   } catch {
     // Silenciar errores de red durante cierre de sesión
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 }
 

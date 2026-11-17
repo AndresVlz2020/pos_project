@@ -1,5 +1,7 @@
 // Función utilitaria para generar un reporte institucional en PDF
 // Cumple con RFADMIN13, RFADMIN19, RFADMIN25 y RFADMIN31
+import { getStoredAuthUser } from "@/shared/utils/authStorage";
+
 export async function generatePdfReport({
   headers,
   rows,
@@ -13,13 +15,7 @@ export async function generatePdfReport({
   ]);
   const doc = new jsPDF();
 
-  const user = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("auth_user") || "null");
-    } catch {
-      return null;
-    }
-  })();
+  const user = getStoredAuthUser();
   const userName = user?.name || user?.userName || user?.email || "Administrador General";
   const now = new Date();
   const dateStr = now.toLocaleDateString("es-CO", { year: "numeric", month: "2-digit", day: "2-digit" });

@@ -1,4 +1,8 @@
 import { productService } from "./product.service.js";
+import {
+  cleanupUploadedFile,
+  removeUploadedFileByUrl,
+} from "../../middlewares/upload.middleware.js";
 
 export const productController = {
   async getAll(req, res) {
@@ -25,12 +29,17 @@ export const productController = {
 
   async create(req, res) {
     try {
-      const created = await productService.createProduct(req.body);
+      const payload = {
+        ...req.body,
+        ...(req.uploadedFileUrl ? { imageUrl: req.uploadedFileUrl } : {}),
+      };
+      const created = await productService.createProduct(payload);
       res.status(201).json({
         message: "Producto creado correctamente",
         product: created,
       });
     } catch (error) {
+      cleanupUploadedFile(req.file);
       console.error("ERROR BACKEND (CREATE PRODUCT):", error);
       res.status(400).json({ error: error.message });
     }
@@ -38,12 +47,27 @@ export const productController = {
 
   async update(req, res) {
     try {
-      const updated = await productService.updateProduct(req.params.id, req.body);
+      const previousProduct = req.uploadedFileUrl
+        ? await productService.getProductById(req.params.id).catch(() => null)
+        : null;
+      const payload = {
+        ...req.body,
+        ...(req.uploadedFileUrl ? { imageUrl: req.uploadedFileUrl } : {}),
+      };
+      const updated = await productService.updateProduct(req.params.id, payload);
+      if (
+        req.uploadedFileUrl &&
+        previousProduct?.image_url &&
+        previousProduct.image_url !== req.uploadedFileUrl
+      ) {
+        await removeUploadedFileByUrl(previousProduct.image_url);
+      }
       res.status(200).json({
         message: "Producto actualizado correctamente",
         product: updated,
       });
     } catch (error) {
+      cleanupUploadedFile(req.file);
       console.error("ERROR BACKEND (UPDATE PRODUCT):", error);
       res.status(400).json({ error: error.message });
     }

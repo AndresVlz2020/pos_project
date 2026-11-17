@@ -123,9 +123,6 @@ export default function InventoryListPage() {
           <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
             Listado de Inventario
           </h1>
-          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-            Controla existencias, mínimos y disponibilidad de insumos.
-          </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
           <Button

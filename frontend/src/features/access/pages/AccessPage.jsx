@@ -1,6 +1,6 @@
 // frontend/src/features/access/pages/AccessPage.jsx
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AccessSidebar from "../components/AccessSidebar";
 import PermissionModule from "../components/PermissionModule";
 import { updateGroupPermissions } from "../services/groupService";
@@ -25,9 +25,10 @@ export default function AccessPage() {
     getAllPermissions().then(setAllPermissions).catch(console.error);
   }, []);
 
-  useEffect(() => {
-    setPermissionsDraft(groupPermissions);
-  }, [groupPermissions]);
+  const handleGroupPermissionsLoaded = useCallback((nextPerms) => {
+    setGroupPermissions(nextPerms);
+    setPermissionsDraft(nextPerms);
+  }, []);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -68,17 +69,14 @@ export default function AccessPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col w-full rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] p-5 sm:p-6 m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
-      <div className="mb-5">
-        <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+    <div className="flex-1 flex flex-col w-full rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] p-4 sm:p-5 m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+      <div className="mb-3.5">
+        <h1 className="text-title-lg sm:text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
           Gestión de permisos
         </h1>
-        <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-          Configura capacidades de acceso por grupo de roles o por usuario específico.
-        </p>
       </div>
 
-      <div className="flex-1 flex flex-col md:flex-row gap-5 sm:gap-6 items-stretch">
+      <div className="flex-1 flex flex-col lg:flex-row gap-4 items-stretch">
         <AccessSidebar
           selectedGroup={selectedGroup}
           setSelectedGroup={setSelectedGroup}
@@ -87,7 +85,7 @@ export default function AccessPage() {
           setSelectedUser={setSelectedUser}
           setSelectedUserName={setSelectedUserName}
           groupPermissions={groupPermissions}
-          setGroupPermissions={setGroupPermissions}
+          setGroupPermissions={handleGroupPermissionsLoaded}
           setIsEditing={setIsEditing}
         />
 

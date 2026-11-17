@@ -9,3 +9,12 @@ node_modules/
 # Logs
 logs/
 *.log
+
+# Runtime uploaded images (keep folder placeholders tracked)
+uploads/*
+!uploads/products/
+!uploads/users/
+uploads/products/*
+!uploads/products/.gitkeep
+uploads/users/*
+!uploads/users/.gitkeep

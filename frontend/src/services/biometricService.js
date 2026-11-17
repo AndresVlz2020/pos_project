@@ -7,6 +7,10 @@ import {
   startRegistration,
   startAuthentication,
 } from "@simplewebauthn/browser";
+import {
+  getAuthToken as readSessionAuthToken,
+  getStoredAuthUser as readSessionAuthUser,
+} from "@/shared/utils/authStorage";
 
 const API_BASE_URL = import.meta.env?.VITE_API_URL || "http://localhost:4000/api";
 
@@ -15,7 +19,7 @@ const BIOMETRIC_DEVICE_ID_KEY = "dpiero_biometric_device_id";
 export function getBiometricDeviceId() {
   if (typeof window === "undefined") return "";
   try {
-    let existing = window.localStorage.getItem(BIOMETRIC_DEVICE_ID_KEY);
+    let existing = window.sessionStorage.getItem(BIOMETRIC_DEVICE_ID_KEY);
     if (existing && existing.trim().length >= 8) {
       return existing.trim();
     }
@@ -23,7 +27,7 @@ export function getBiometricDeviceId() {
       typeof window.crypto?.randomUUID === "function"
         ? window.crypto.randomUUID()
         : `dev-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
-    window.localStorage.setItem(BIOMETRIC_DEVICE_ID_KEY, generated);
+    window.sessionStorage.setItem(BIOMETRIC_DEVICE_ID_KEY, generated);
     return generated;
   } catch {
     return "";
@@ -31,21 +35,11 @@ export function getBiometricDeviceId() {
 }
 
 export function getAuthToken() {
-  return (
-    localStorage.getItem("auth_token") ||
-    sessionStorage.getItem("token") ||
-    ""
-  );
+  return readSessionAuthToken();
 }
 
 export function getStoredAuthUser() {
-  try {
-    const raw =
-      localStorage.getItem("auth_user") || sessionStorage.getItem("user");
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
+  return readSessionAuthUser();
 }
 
 export function isCurrentUserAdmin(user = getStoredAuthUser()) {
@@ -219,7 +213,7 @@ function getConfiguredPhysicalScannerUrl() {
   if (fromEnv) return fromEnv.replace(/\/+$/, "");
 
   try {
-    const fromStorage = String(localStorage.getItem("pos_physical_scanner_url") || "").trim();
+    const fromStorage = String(sessionStorage.getItem("pos_physical_scanner_url") || "").trim();
     return fromStorage ? fromStorage.replace(/\/+$/, "") : "";
   } catch {
     return "";

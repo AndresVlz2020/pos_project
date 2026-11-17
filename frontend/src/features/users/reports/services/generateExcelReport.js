@@ -1,5 +1,7 @@
 // Función utilitaria para generar un archivo Excel con membrete y metadatos
 // Cumple con RFADMIN13, RFADMIN19, RFADMIN25 y RFADMIN31
+import { getStoredAuthUser } from "@/shared/utils/authStorage";
+
 export async function generateExcelReport({
   headers,
   rows,
@@ -8,13 +10,7 @@ export async function generateExcelReport({
 }) {
   // Carga dinámica bajo demanda para reducir el bundle inicial
   const XLSX = await import("xlsx");
-  const user = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("auth_user") || "null");
-    } catch {
-      return null;
-    }
-  })();
+  const user = getStoredAuthUser();
   const userName = user?.name || user?.userName || user?.email || "Administrador General";
   const now = new Date();
   const dateStr = now.toLocaleDateString("es-CO", { year: "numeric", month: "2-digit", day: "2-digit" });

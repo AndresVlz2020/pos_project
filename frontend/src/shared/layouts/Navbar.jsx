@@ -1,10 +1,7 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   IconButton,
-  Dropdown,
-  DropdownTrigger,
-  DropdownContent,
-  DropdownItem,
   ThemeToggle,
   BrandLogo,
   M3Icon,
@@ -12,9 +9,9 @@ import {
 import { useNavigationState } from "@/shared/hooks/useNavigationState";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
 import { formatDuration } from "@/services/sessionService";
-import { useState } from "react";
 import SessionHistoryModal from "../components/SessionHistoryModal";
 import BiometricSettingsModal from "../components/BiometricSettingsModal";
+import NotificationBell from "@/features/notifications/components/NotificationBell";
 
 export default function Navbar() {
   const {
@@ -24,7 +21,6 @@ export default function Navbar() {
     elapsedSeconds,
     destinations,
     handleLogout,
-    navigate,
   } = useNavigationState();
 
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -94,70 +90,43 @@ export default function Navbar() {
                 </div>
               )}
 
+              <NotificationBell />
+
               <ThemeToggle hitSize={40} iconSize={20} />
 
-              <Dropdown>
-                <DropdownTrigger>
-                  <IconButton
-                    hitSize={40}
-                    iconSize={20}
-                    variant="outlined"
-                    ariaLabel="Menu"
-                  >
-                    <M3Icon name="menu" size={20} />
-                  </IconButton>
-                </DropdownTrigger>
+              <IconButton
+                hitSize={40}
+                iconSize={20}
+                variant="standard"
+                ariaLabel="Configurar Biometría / Huella"
+                title="Configurar Biometría / Huella"
+                onClick={() => setIsBiometricsOpen(true)}
+              >
+                <M3Icon name="fingerprint" size={20} />
+              </IconButton>
 
-                <DropdownContent className="right-0 min-w-[240px]">
-                  <div className="lg:hidden pb-1.5 mb-1.5 border-b border-[var(--md-sys-color-outline-variant)]">
-                    {destinations.map((dest) => (
-                      <DropdownItem
-                        key={dest.id}
-                        icon={dest.icon}
-                        onClick={() => navigate(dest.to)}
-                        className={
-                          dest.active
-                            ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-medium"
-                            : ""
-                        }
-                      >
-                        {dest.label}
-                      </DropdownItem>
-                    ))}
-                  </div>
+              <IconButton
+                hitSize={40}
+                iconSize={20}
+                variant="standard"
+                ariaLabel={isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}
+                title={isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}
+                onClick={() => setIsHistoryOpen(true)}
+              >
+                <M3Icon name="history" size={20} />
+              </IconButton>
 
-                  {isAdmin && (
-                    <DropdownItem
-                      icon="admin_panel_settings"
-                      onClick={() => navigate("/dashboard/access")}
-                    >
-                      Admin (Gestión de permisos)
-                    </DropdownItem>
-                  )}
-
-                  <DropdownItem
-                    icon="fingerprint"
-                    onClick={() => setIsBiometricsOpen(true)}
-                  >
-                    Configurar Biometría / Huella
-                  </DropdownItem>
-
-                  <DropdownItem
-                    icon="history"
-                    onClick={() => setIsHistoryOpen(true)}
-                  >
-                    {isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}
-                  </DropdownItem>
-
-                  <DropdownItem
-                    icon="logout"
-                    onClick={handleLogout}
-                    className="text-[var(--md-sys-color-error)]"
-                  >
-                    Cerrar sesión
-                  </DropdownItem>
-                </DropdownContent>
-              </Dropdown>
+              <IconButton
+                hitSize={40}
+                iconSize={20}
+                variant="tonal"
+                ariaLabel="Cerrar sesión"
+                title="Cerrar sesión"
+                onClick={handleLogout}
+                className="!text-[var(--md-sys-color-error)]"
+              >
+                <M3Icon name="logout" size={20} />
+              </IconButton>
             </div>
           </div>
         </div>

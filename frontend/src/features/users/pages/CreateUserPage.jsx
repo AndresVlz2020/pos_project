@@ -4,18 +4,12 @@ import { getDocumentTypes } from "../../../services/selectServices";
 import { createUser, getUsers } from "../../../services/userService";
 import { createUserSchema } from "../schemas/userSchema";
 import { Link, useNavigate } from "react-router-dom";
-import resizeImageFile from "@/utils/imageFile";
+import { getStoredAuthUser } from "@/shared/utils/authStorage";
 
 export default function CreateUser() {
   const navigate = useNavigate();
   // Verificar si el usuario activo tiene rol de Administrador
-  const currentUser = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("auth_user") || "null");
-    } catch {
-      return null;
-    }
-  })();
+  const currentUser = getStoredAuthUser();
 
   const isAdmin = currentUser?.role === "Admin" || currentUser?.role === "Administrador";
 
@@ -107,16 +101,13 @@ export default function CreateUser() {
     setSubmitting(true);
 
     try {
-      let userAvatarUrl = null;
-      if (form.userImage?.length) {
-        userAvatarUrl = await resizeImageFile(form.userImage[0]);
-      }
+      const imageFile = form.userImage?.length ? form.userImage[0] : undefined;
 
-      // Enviar datos al backend para persistencia en PostgreSQL
+      // Enviar datos y archivo de imagen al backend para almacenamiento en backend/uploads y PostgreSQL
       const payload = {
         ...result.data,
         userImage: undefined,
-        userAvatarUrl,
+        ...(imageFile ? { imageFile } : {}),
         corporateEmail: result.data.userEmail,
         isSuperuser: isRoleAdmin,
         isStaff: true,
@@ -182,9 +173,6 @@ export default function CreateUser() {
             <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
               Crear Usuario
             </h1>
-            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-              Registra colaboradores operativos o administradores en el sistema POS.
-            </p>
           </div>
           <Link to="/dashboard/userList">
             <Button variant="outlined" size="md" leadingIcon="arrow_back">

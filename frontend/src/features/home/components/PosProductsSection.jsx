@@ -66,22 +66,23 @@ export default function PosProductsSection({
   };
 
   return (
-    <div className="space-y-4 w-full">
-      <div className="flex flex-col md:flex-row md:items-center gap-3 w-full">
-        <div className="flex-1 min-w-0">
-          <SearchField
-            value={searchQuery}
-            onChange={onSearchChange}
-            onSubmit={onSearchChange}
-            onClear={onClearSearch}
-            placeholder="Buscar por platillo, corte de carne, bebida o postre..."
-            size="md"
-            variant="filled"
-            fullWidth={true}
-          />
-        </div>
+    <div className="space-y-3 sm:space-y-4 w-full">
+      <div className="w-full min-w-0">
+        <SearchField
+          value={searchQuery}
+          onChange={onSearchChange}
+          onSubmit={onSearchChange}
+          onClear={onClearSearch}
+          placeholder="Buscar por platillo, corte de carne, bebida o postre..."
+          size="md"
+          variant="filled"
+          fullWidth={true}
+        />
+      </div>
 
-        <Dropdown className="shrink-0 self-start md:self-auto">
+      {/* Botón de filtrar al inicio de la línea + chips de categorías deslizables horizontalmente en móvil */}
+      <div className="flex items-center gap-2.5 w-full min-w-0">
+        <Dropdown className="shrink-0">
           <DropdownTrigger>
             <IconButton
               hitSize={40}
@@ -98,7 +99,7 @@ export default function PosProductsSection({
             </IconButton>
           </DropdownTrigger>
 
-          <DropdownContent className="left-0 md:right-0 md:left-auto min-w-[200px]">
+          <DropdownContent className="left-0 min-w-[200px]">
             <p className="px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)]">
               Ordenar por
             </p>
@@ -121,14 +122,15 @@ export default function PosProductsSection({
             })}
           </DropdownContent>
         </Dropdown>
-      </div>
 
-      {/* Chips de categorías sin recortes horizontales en PC */}
-      <PosCategoryFilter
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-        products={products}
-      />
+        <div className="flex-1 min-w-0">
+          <PosCategoryFilter
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            products={products}
+          />
+        </div>
+      </div>
 
       {(searchQuery || selectedCategory !== "all") && (
         <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-xs">

@@ -3,11 +3,9 @@ import { AppShell, M3Icon, useInactivityTimeout } from "@/shared";
 import { products as fallbackProducts } from "@/features/products/data/products";
 import { getProducts } from "@/features/products/services/productServices";
 import usePermission from "@/features/access/services/usePermission";
-import {
-  startOrderWithProduct,
-  clearOrderDraft,
-} from "@/features/orders/utils/orderDraftStorage";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { startOrderWithProduct } from "@/features/orders/utils/orderDraftStorage";
+import { getStoredAuthUser, getUserRoleFlags } from "@/shared/utils/authStorage";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import {
   PosTerminalHeader,
   PosProductsSection,
@@ -36,17 +34,8 @@ export default function HomePage() {
   const { granted: canCreateOrder, loading: loadingOrderPerm } =
     usePermission("create_order");
 
-  const currentUser = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("auth_user") || "null");
-    } catch {
-      return null;
-    }
-  })();
-
-  const role = currentUser?.role || "Cajero";
-  const isAdmin = role === "Admin" || role === "Administrador";
-  const isCajero = role === "Cajero";
+  const currentUser = getStoredAuthUser();
+  const { isAdmin, isCajero, isCocina } = getUserRoleFlags(currentUser);
 
   const fetchPosProducts = useCallback(async () => {
     try {
@@ -63,7 +52,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    clearOrderDraft();
+    if (isCocina) return undefined;
     let active = true;
     Promise.resolve().then(() => {
       if (active) fetchPosProducts();
@@ -71,7 +60,11 @@ export default function HomePage() {
     return () => {
       active = false;
     };
-  }, [fetchPosProducts]);
+  }, [fetchPosProducts, isCocina]);
+
+  if (isCocina) {
+    return <Navigate to="/orders" replace />;
+  }
 
   const availableTabs = PRIMARY_TABS.filter((tab) => {
     if (tab.id === "menu") return true;
@@ -116,10 +109,18 @@ export default function HomePage() {
 
   const handleOrderProduct = (product, quantity = 1) => {
     if (!product) return;
-    const addCount = Math.max(1, Math.trunc(Number(quantity) || 1));
+    const stockLimit =
+      product.stock !== undefined && product.stock !== null
+        ? Math.max(0, Math.floor(Number(product.stock)))
+        : null;
+    const requested = Math.max(1, Math.trunc(Number(quantity) || 1));
+    const addCount =
+      stockLimit !== null ? Math.min(requested, Math.max(1, stockLimit)) : requested;
     startOrderWithProduct(product, addCount);
     setSelectedProduct(null);
-    navigate("/CreateOrder");
+    navigate("/CreateOrder", {
+      state: { preselectedProduct: product, preselectedQty: addCount },
+    });
   };
 
   const productsToDisplay = dbProducts.length > 0 ? dbProducts : fallbackProducts;

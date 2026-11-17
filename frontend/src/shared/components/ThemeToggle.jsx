@@ -3,7 +3,7 @@ import { IconButton } from "@/shared";
 import M3Icon from "./M3Icon";
 
 export function ThemeToggle({ className = "", hitSize = 40, iconSize = 20 }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "light");
+  const [theme, setTheme] = useState(() => sessionStorage.getItem("app_theme") || "light");
   const isDark = theme === "dark";
 
   useEffect(() => {
@@ -12,7 +12,7 @@ export function ThemeToggle({ className = "", hitSize = 40, iconSize = 20 }) {
     root.classList.toggle("theme-dark", isDark);
     root.classList.toggle("dark", isDark);
     root.classList.toggle("theme-light", !isDark);
-    localStorage.setItem("app_theme", theme);
+    sessionStorage.setItem("app_theme", theme);
 
     let raf2 = 0;
     const raf1 = requestAnimationFrame(() => {

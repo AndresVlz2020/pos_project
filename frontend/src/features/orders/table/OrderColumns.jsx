@@ -3,10 +3,16 @@ import { PaymentMethodBadge } from "../components/PaymentMethodCards";
 import { TableIllustration } from "../components/TableSelectorGrid";
 import {
   extractTableNumber,
+  getOrderStatusBadgeMeta,
   normalizeOrderStatus,
 } from "../utils/orderFormHelpers";
 
-export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true } = {}) => [
+export const getOrderColumns = ({
+  onViewOrder,
+  onRequestCancel,
+  canEdit = true,
+  canPay = true,
+} = {}) => [
   {
     accessorKey: "id",
     header: "Id",
@@ -70,31 +76,25 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true }
   {
     id: "status",
     accessorFn: (row) => {
-      const status = row.status || "No Pagada";
+      const status = normalizeOrderStatus(row.status);
       const method = row.paymentMethod || row.payment_method || "";
       return status === "Pagada" && method ? `${status} ${method}` : status;
     },
     header: "Estado",
     cell: ({ row }) => {
-      const rawStatus = row.original.status || "No Pagada";
-      const isCanceled = String(rawStatus).trim().toLowerCase() === "anulada";
-      const normalizedStatus = normalizeOrderStatus(rawStatus);
+      const status = normalizeOrderStatus(row.original.status);
+      const meta = getOrderStatusBadgeMeta(status);
+      const method = row.original.paymentMethod || row.original.payment_method;
 
-      if (!isCanceled && normalizedStatus === "Pagada") {
-        return (
-          <PaymentMethodBadge
-            method={row.original.paymentMethod || row.original.payment_method}
-          />
-        );
-      }
-
-      const style = isCanceled
-        ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border-[var(--md-sys-color-error)]/40"
-        : "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-[var(--md-sys-color-primary)]/40";
       return (
-        <span className={`inline-block px-2.5 py-0.5 text-label-sm font-medium rounded-full border ${style}`}>
-          {isCanceled ? "Anulada" : normalizedStatus}
-        </span>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span
+            className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-label-sm font-medium rounded-full ${meta.className}`}
+          >
+            {meta.label}
+          </span>
+          {status === "Pagada" && method && <PaymentMethodBadge method={method} />}
+        </div>
       );
     },
   },
@@ -111,6 +111,7 @@ export const getOrderColumns = ({ onViewOrder, onRequestCancel, canEdit = true }
         onViewOrder={onViewOrder}
         onRequestCancel={onRequestCancel}
         canEdit={canEdit}
+        canPay={canPay}
       />
     ),
   },

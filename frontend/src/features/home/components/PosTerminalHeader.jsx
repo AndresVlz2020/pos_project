@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "@/features/config";
 import { M3Icon } from "@/shared";
+import { getAuthToken } from "@/shared/utils/authStorage";
+import { normalizeOrderStatus } from "@/features/orders/utils/orderFormHelpers";
 
 export default function PosTerminalHeader() {
   const [kpis, setKpis] = useState({
@@ -15,8 +17,7 @@ export default function PosTerminalHeader() {
   useEffect(() => {
     let active = true;
     const today = new Date().toLocaleDateString("en-CA");
-    const token =
-      localStorage.getItem("auth_token") || sessionStorage.getItem("token");
+    const token = getAuthToken();
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
     async function load() {
@@ -42,8 +43,7 @@ export default function PosTerminalHeader() {
           0
         );
         const activasCocina = todaysOrders.filter(
-          (o) =>
-            !["pagada", "cerrada"].includes((o.status || "").toLowerCase())
+          (o) => normalizeOrderStatus(o.status) === "Creada"
         ).length;
 
         const occupied = (Array.isArray(tables) ? tables : []).filter(

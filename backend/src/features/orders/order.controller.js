@@ -30,7 +30,7 @@ export const orderController = {
       });
     } catch (error) {
       console.error("ERROR BACKEND (CREATE ORDER):", error);
-      res.status(400).json({ error: error.message });
+      res.status(error.status || 400).json({ error: error.message });
     }
   },
 
@@ -43,7 +43,7 @@ export const orderController = {
       });
     } catch (error) {
       console.error("ERROR BACKEND (UPDATE ORDER):", error);
-      res.status(400).json({ error: error.message });
+      res.status(error.status || 400).json({ error: error.message });
     }
   },
 
@@ -58,7 +58,7 @@ export const orderController = {
       });
     } catch (error) {
       console.error("ERROR BACKEND (UPDATE ORDER STATUS):", error);
-      res.status(400).json({ error: error.message });
+      res.status(error.status || 400).json({ error: error.message });
     }
   },
 
@@ -73,7 +73,7 @@ export const orderController = {
       });
     } catch (error) {
       console.error("ERROR BACKEND (CANCEL ORDER):", error);
-      res.status(400).json({ error: error.message });
+      res.status(error.status || 400).json({ error: error.message });
     }
   },
 

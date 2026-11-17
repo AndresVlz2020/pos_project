@@ -12,19 +12,26 @@ import {
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getProducts } from "@/features/products/services/productServices";
 import { getOrderById, updateOrder, cancelOrder } from "../services/orderServices";
-import { getProductImage, imgPunta } from "@/utils/imageHelper";
 import OrderViewModal from "../components/OrderViewModal";
+import OrderDishCard from "../components/OrderDishCard";
 import PaymentMethodCards from "../components/PaymentMethodCards";
 import OrderStatusSwitch from "../components/OrderStatusSwitch";
+import PosCategoryFilter from "@/features/home/components/PosCategoryFilter";
 import { useScrollableBatch } from "../hooks/useScrollableBatch";
+import { getUserRoleFlags } from "@/shared/utils/authStorage";
 import {
   normalizeOrderStatus,
   normalizePaymentMethod,
+  mapProductToDish,
+  filterDishesByQueryAndCategory,
 } from "../utils/orderFormHelpers";
 
 export default function EditOrder() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAdmin, isCajero, isCocina, isMesero } = getUserRoleFlags();
+  const canMarkPaid = isAdmin || isCajero;
+  const canMarkCreated = isAdmin || isMesero || isCocina || isCajero;
 
   const editData = location.state?.form || location.state?.order || null;
   const initialOrderId = editData?.id || editData?.order_number || "ORD-001";
@@ -52,8 +59,10 @@ export default function EditOrder() {
   const [errors, setErrors] = useState({});
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
   const [qty, setQty] = useState({});
+  const [initialQtyMap, setInitialQtyMap] = useState({});
   const [initialOrderedIds, setInitialOrderedIds] = useState(() => new Set());
   const [dishSearch, setDishSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   useEffect(() => {
     async function loadData() {
@@ -81,16 +90,19 @@ export default function EditOrder() {
             ),
           });
 
-          // Inicializar cantidades de ítems existentes
           if (Array.isArray(orderDetail.items)) {
             const initialQuantities = {};
             const orderedIds = new Set();
             orderDetail.items.forEach((item) => {
               const pid = item.productId || item.product_id;
-              initialQuantities[pid] = item.qty || item.quantity;
-              if (pid !== undefined && pid !== null) orderedIds.add(pid);
+              const qVal = Math.max(0, Math.floor(Number(item.qty || item.quantity || 0)));
+              if (pid !== undefined && pid !== null && qVal > 0) {
+                initialQuantities[pid] = qVal;
+                orderedIds.add(String(pid));
+              }
             });
             setQty(initialQuantities);
+            setInitialQtyMap(initialQuantities);
             setInitialOrderedIds(orderedIds);
           }
         }
@@ -107,32 +119,20 @@ export default function EditOrder() {
   const isClosedOrPaid = savedStatus === "Pagada";
   const isCanceled = savedStatus === "Anulada";
 
-  const dishes = useMemo(() => {
-    return productsList.map((p) => ({
-      id: p.id,
-      code: p.code,
-      name: p.title || p.name,
-      price: Number(p.price) || 0,
-      status: p.is_active ? "Disponible" : "Inactivo",
-      image: p.image || p.image_url,
-    }));
-  }, [productsList]);
+  const dishes = useMemo(
+    () => productsList.map(mapProductToDish),
+    [productsList]
+  );
 
-  const filteredDishes = useMemo(() => {
-    const q = dishSearch.trim().toLowerCase();
-    const list = !q
-      ? dishes
-      : dishes.filter(
-          (d) =>
-            (d.name || "").toLowerCase().includes(q) ||
-            (d.code || "").toLowerCase().includes(q)
-        );
-    if (initialOrderedIds.size === 0) return list;
-    return [
-      ...list.filter((d) => initialOrderedIds.has(d.id)),
-      ...list.filter((d) => !initialOrderedIds.has(d.id)),
-    ];
-  }, [dishes, dishSearch, initialOrderedIds]);
+  const filteredDishes = useMemo(
+    () =>
+      filterDishesByQueryAndCategory(dishes, {
+        search: dishSearch,
+        category: selectedCategory,
+        pinnedIds: initialOrderedIds,
+      }),
+    [dishes, dishSearch, selectedCategory, initialOrderedIds]
+  );
 
   const {
     scrollContainerRef: dishesScrollRef,
@@ -142,7 +142,7 @@ export default function EditOrder() {
     hasMore: hasMoreDishes,
     loadMore: loadMoreDishes,
     handleScroll: handleDishesScroll,
-  } = useScrollableBatch(filteredDishes, dishSearch, 10);
+  } = useScrollableBatch(filteredDishes, `${selectedCategory}::${dishSearch}`, 12);
 
   const totalAmount = useMemo(() => {
     return dishes.reduce(
@@ -155,16 +155,31 @@ export default function EditOrder() {
     return Object.values(qty).reduce((a, b) => a + b, 0);
   }, [qty]);
 
+  const getMaxAllowedForDish = (dish) =>
+    Math.max(0, Math.floor(Number(dish.stock ?? 0))) +
+    Math.max(0, Math.floor(Number(initialQtyMap[dish.id] ?? 0)));
+
   const handleIncrement = (dish) => {
     if (isClosedOrPaid || isCanceled) return;
     if (dish.status === "Inactivo") {
       showErrorAlert({
         title: "Platillo inhabilitado",
-        text: `El platillo "${dish.name}" está inhabilitado en PostgreSQL y no puede agregarse.`,
+        text: `El platillo "${dish.name}" está inhabilitado y no puede agregarse.`,
       });
       return;
     }
-    setQty((q) => ({ ...q, [dish.id]: (q[dish.id] || 0) + 1 }));
+
+    const maxAllowed = getMaxAllowedForDish(dish);
+    const current = qty[dish.id] || 0;
+    if (current >= maxAllowed) {
+      showErrorAlert({
+        title: "Stock insuficiente",
+        text: `Solo hay ${maxAllowed} ${maxAllowed === 1 ? "unidad disponible" : "unidades disponibles"} para "${dish.name}".`,
+      });
+      return;
+    }
+
+    setQty((q) => ({ ...q, [dish.id]: current + 1 }));
   };
 
   const handleDecrement = (dish) => {
@@ -180,8 +195,33 @@ export default function EditOrder() {
     });
   };
 
+  const canMarkCompleted =
+    isAdmin || isCocina || savedStatus === "Completada";
+  const canMarkDelivered =
+    isAdmin ||
+    ((isMesero || isCajero) && savedStatus === "Completada") ||
+    savedStatus === "Entregada";
+
   const handleFieldUpdate = (name, value) => {
     if (isClosedOrPaid || isCanceled) return;
+    if (name === "orderStatus") {
+      if (value === "Pagada" && !canMarkPaid) return;
+      if (
+        value === "Completada" &&
+        savedStatus !== "Completada" &&
+        !isAdmin &&
+        !isCocina
+      ) {
+        return;
+      }
+      if (
+        value === "Entregada" &&
+        savedStatus !== "Entregada" &&
+        !canMarkDelivered
+      ) {
+        return;
+      }
+    }
     setFormOrder((prev) => ({ ...prev, [name]: value }));
 
     setErrors((prevErrors) => {
@@ -216,8 +256,16 @@ export default function EditOrder() {
       return;
     }
 
+    if (formOrder.orderStatus === "Pagada" && !canMarkPaid) {
+      await showErrorAlert({
+        title: "Acción restringida",
+        text: "El mesero no puede marcar órdenes como Pagada. Solo Cajero o Administrador.",
+      });
+      return;
+    }
+
     const fieldErrors = {};
-    if (!formOrder.paymentMethod) {
+    if (formOrder.orderStatus === "Pagada" && !formOrder.paymentMethod) {
       fieldErrors.paymentMethod = "Selecciona un método de pago";
     }
 
@@ -320,10 +368,10 @@ export default function EditOrder() {
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col font-[family-name:var(--main-font)]">
-      <div className="flex-1 flex flex-col w-full p-5 sm:p-6 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 text-[var(--md-sys-color-on-surface)]">
+    <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col font-[family-name:var(--main-font)]">
+      <div className="flex-1 flex flex-col w-full p-4 sm:p-6 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 text-[var(--md-sys-color-on-surface)]">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <Link to="/orderList">
               <IconButton
                 type="button"
@@ -336,16 +384,16 @@ export default function EditOrder() {
                 <M3Icon name="arrow_back" size={20} />
               </IconButton>
             </Link>
-            <div>
-              <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+            <div className="min-w-0">
+              <h1 className="text-title-lg sm:text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)] truncate">
                 Editar Orden {formOrder.id}
               </h1>
-              <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)]">
+              <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] truncate">
                 {formOrder.tableNumber} • Mesero: {formOrder.waiter}
               </p>
             </div>
           </div>
-          <Link to="/orderList">
+          <Link to="/orderList" className="shrink-0">
             <Button variant="outlined" size="md" leadingIcon="arrow_back">
               Volver al Listado
             </Button>
@@ -361,6 +409,10 @@ export default function EditOrder() {
                 value={formOrder.orderStatus}
                 onChange={(nextStatus) => handleFieldUpdate("orderStatus", nextStatus)}
                 disabled={isClosedOrPaid || isCanceled}
+                canMarkCreated={canMarkCreated}
+                canMarkCompleted={canMarkCompleted}
+                canMarkDelivered={canMarkDelivered}
+                canMarkPaid={canMarkPaid}
               />
 
               <Input
@@ -371,13 +423,15 @@ export default function EditOrder() {
                 disabled={isClosedOrPaid || isCanceled}
               />
 
-              <PaymentMethodCards
-                label="Método de Pago *"
-                value={formOrder.paymentMethod}
-                onChange={(method) => handleFieldUpdate("paymentMethod", method)}
-                disabled={isClosedOrPaid || isCanceled}
-                error={errors.paymentMethod}
-              />
+              {(canMarkPaid || isClosedOrPaid) && (
+                <PaymentMethodCards
+                  label="Método de Pago *"
+                  value={formOrder.paymentMethod}
+                  onChange={(method) => handleFieldUpdate("paymentMethod", method)}
+                  disabled={isClosedOrPaid || isCanceled}
+                  error={errors.paymentMethod}
+                />
+              )}
 
               {/* Resumen económico */}
               <div className="p-4 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] space-y-2.5">
@@ -396,12 +450,14 @@ export default function EditOrder() {
                     {formOrder.orderStatus}
                   </span>
                 </div>
-                <div className="flex justify-between text-body-sm text-[var(--md-sys-color-on-surface-variant)]">
-                  <span>Método de pago:</span>
-                  <span className="font-semibold text-[var(--md-sys-color-on-surface)]">
-                    {formOrder.paymentMethod}
-                  </span>
-                </div>
+                {(canMarkPaid || formOrder.orderStatus === "Pagada") && (
+                  <div className="flex justify-between text-body-sm text-[var(--md-sys-color-on-surface-variant)]">
+                    <span>Método de pago:</span>
+                    <span className="font-semibold text-[var(--md-sys-color-on-surface)]">
+                      {formOrder.paymentMethod}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center text-title-md font-bold text-[var(--md-sys-color-on-surface)] pt-2.5 border-t border-[var(--md-sys-color-outline-variant)]">
                   <span>Total Orden:</span>
                   <span className="text-title-lg text-[var(--md-sys-color-primary)] tabular-nums">
@@ -424,7 +480,7 @@ export default function EditOrder() {
             </div>
 
             {/* Columna derecha: Selector de platillos y cantidades */}
-            <div className="lg:col-span-7 flex flex-col space-y-3 bg-[var(--md-sys-color-surface)] p-4 sm:p-5 rounded-2xl border border-[var(--md-sys-color-outline-variant)]">
+            <div className="lg:col-span-7 flex flex-col space-y-3 bg-[var(--md-sys-color-surface)] p-4 sm:p-5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
                 <h3 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)] shrink-0">
                   Ajustar Platillos y Cantidades
@@ -442,6 +498,12 @@ export default function EditOrder() {
                 />
               </div>
 
+              <PosCategoryFilter
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+                products={dishes}
+              />
+
               <div
                 ref={dishesScrollRef}
                 onScroll={handleDishesScroll}
@@ -450,86 +512,21 @@ export default function EditOrder() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {visibleDishes.length === 0 ? (
                     <div className="sm:col-span-2 py-10 text-center text-body-sm text-[var(--md-sys-color-on-surface-variant)] rounded-xl border border-dashed border-[var(--md-sys-color-outline-variant)]">
-                      No se encontraron platillos que coincidan con &ldquo;{dishSearch.trim()}&rdquo;.
+                      No se encontraron platillos que coincidan con el filtro aplicado.
                     </div>
-                  ) : visibleDishes.map((dish) => {
-                    const count = qty[dish.id] || 0;
-                    const isInactive = dish.status === "Inactivo";
-                    return (
-                      <div
+                  ) : (
+                    visibleDishes.map((dish) => (
+                      <OrderDishCard
                         key={dish.id}
-                        className={`p-3 rounded-2xl border flex items-center justify-between gap-3 transition-colors ${
-                          isInactive
-                            ? "bg-[var(--md-sys-color-surface-container-highest)]/40 border-[var(--md-sys-color-outline-variant)] opacity-50 cursor-not-allowed"
-                            : count > 0
-                            ? "bg-[var(--md-sys-color-primary-container)]/30 border-[var(--md-sys-color-primary)] m3-elevation-1"
-                            : "bg-[var(--md-sys-color-surface)] border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-primary)]/60"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                          <div className="size-12 rounded-xl overflow-hidden border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] shrink-0">
-                            <img
-                              src={getProductImage(dish)}
-                              alt={dish.name}
-                              className={`w-full h-full object-cover ${isInactive ? "grayscale contrast-75" : ""}`}
-                              onError={(e) => {
-                                e.currentTarget.onerror = null;
-                                e.currentTarget.src = imgPunta;
-                              }}
-                            />
-                          </div>
-                          <div className="min-w-0">
-                            <h5
-                              className={`text-title-sm font-medium truncate ${
-                                isInactive
-                                  ? "text-[var(--md-sys-color-on-surface-variant)]"
-                                  : "text-[var(--md-sys-color-on-surface)]"
-                              }`}
-                            >
-                              {dish.name}
-                            </h5>
-                            <span
-                              className={`text-body-sm font-semibold tabular-nums ${
-                                isInactive
-                                  ? "text-[var(--md-sys-color-outline)]"
-                                  : "text-[var(--md-sys-color-primary)]"
-                              }`}
-                            >
-                              ${dish.price.toLocaleString("es-CO")}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-1 bg-[var(--md-sys-color-surface-container-high)] p-1 rounded-full border border-[var(--md-sys-color-outline-variant)] shrink-0">
-                          <IconButton
-                            type="button"
-                            variant="standard"
-                            hitSize={40}
-                            iconSize={18}
-                            disabled={count === 0 || isClosedOrPaid || isCanceled}
-                            onClick={() => handleDecrement(dish)}
-                            ariaLabel={`Disminuir ${dish.name}`}
-                          >
-                            <M3Icon name="remove" size={18} />
-                          </IconButton>
-                          <span className="text-label-lg font-semibold w-7 text-center text-[var(--md-sys-color-on-surface)] tabular-nums">
-                            {count}
-                          </span>
-                          <IconButton
-                            type="button"
-                            variant="tonal"
-                            hitSize={40}
-                            iconSize={18}
-                            disabled={isClosedOrPaid || isCanceled || isInactive}
-                            onClick={() => handleIncrement(dish)}
-                            ariaLabel={`Aumentar ${dish.name}`}
-                          >
-                            <M3Icon name="add" size={18} />
-                          </IconButton>
-                        </div>
-                      </div>
-                    );
-                  })}
+                        dish={dish}
+                        count={qty[dish.id] || 0}
+                        maxStock={getMaxAllowedForDish(dish)}
+                        disabled={isClosedOrPaid || isCanceled}
+                        onIncrement={handleIncrement}
+                        onDecrement={handleDecrement}
+                      />
+                    ))
+                  )}
                 </div>
 
                 {totalFilteredDishes > 0 && (

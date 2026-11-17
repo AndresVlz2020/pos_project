@@ -152,12 +152,12 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
 
   if (step === "email") {
     return (
-      <form onSubmit={handleValidateEmail} className="space-y-4">
-        <div className="text-center mb-5">
+      <form onSubmit={handleValidateEmail} className="space-y-3.5">
+        <div className="text-center mb-3">
           <h2 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)]">
             Acceso Administrativo
           </h2>
-          <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+          <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
             Paso 1: Ingresa tu correo para verificar tu cuenta y método de acceso.
           </p>
         </div>
@@ -165,7 +165,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="admin-email-step1"
-            className="text-label-md font-medium text-[var(--md-sys-color-on-surface-variant)]"
+            className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]"
           >
             Correo Electrónico
           </label>
@@ -183,20 +183,20 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
             />
           </div>
           {errors.userEmail && (
-            <p className="text-label-sm text-[var(--md-sys-color-error)] mt-0.5">{errors.userEmail}</p>
+            <p className="text-sm text-[var(--md-sys-color-error)] mt-0.5">{errors.userEmail}</p>
           )}
         </div>
 
-        <div className="flex items-center justify-center pt-1">
+        <div className="flex items-center justify-center pt-0.5">
           <Link
             to="/Auth/forgot-password"
-            className="m3-state inline-flex items-center min-h-[40px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
+            className="m3-state inline-flex items-center min-h-[40px] px-4 rounded-full text-base leading-6 font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
           >
             ¿Olvidó su contraseña?
           </Link>
         </div>
 
-        <div className="pt-1">
+        <div className="pt-0.5">
           <Button
             type="submit"
             variant="filled"
@@ -216,25 +216,25 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
   }
 
   return (
-    <form onSubmit={handleSubmitCredentials} className="space-y-4">
-      <div className="text-center mb-3">
+    <form onSubmit={handleSubmitCredentials} className="space-y-3.5">
+      <div className="text-center mb-2">
         <h2 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)]">
           Acceso Administrativo
         </h2>
-        <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+        <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
           Paso 2: Confirma tu identidad para ingresar.
         </p>
       </div>
 
       {/* Resumen de correo validado */}
-      <div className="flex items-center justify-between gap-2 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] px-4 py-3">
+      <div className="flex items-center justify-between gap-2 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] px-4 py-2.5">
         <div className="flex items-center gap-2.5 min-w-0">
           <M3Icon name="check_circle" filled size={20} className="text-[var(--md-sys-color-primary)] shrink-0" />
           <div className="min-w-0">
             <p className="text-title-sm font-semibold text-[var(--md-sys-color-on-surface)] truncate">
               {validatedAccount?.name || "Administrador"}
             </p>
-            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] truncate">
+            <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] truncate">
               {validatedAccount?.email || form.userEmail}
             </p>
           </div>
@@ -242,7 +242,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
         <button
           type="button"
           onClick={handleChangeEmail}
-          className="m3-state inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer shrink-0"
+          className="m3-state inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer shrink-0"
         >
           <M3Icon name="arrow_back" size={16} />
           <span>Cambiar</span>
@@ -271,17 +271,17 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
           </button>
 
           {biometricHint && (
-            <p className="text-body-sm text-center text-[var(--md-sys-color-on-surface-variant)]">
+            <p className="text-sm leading-5 text-center text-[var(--md-sys-color-on-surface-variant)]">
               {biometricHint}
             </p>
           )}
           {errors.biometric && (
-            <p className="text-label-sm text-center text-[var(--md-sys-color-error)]">
+            <p className="text-sm text-center text-[var(--md-sys-color-error)]">
               {errors.biometric}
             </p>
           )}
 
-          <div className="flex items-center gap-2 text-label-md text-[var(--md-sys-color-on-surface-variant)]">
+          <div className="flex items-center gap-2 text-sm text-[var(--md-sys-color-on-surface-variant)]">
             <div className="h-px flex-1 bg-[var(--md-sys-color-outline-variant)]" />
             <span>o ingresa con contraseña</span>
             <div className="h-px flex-1 bg-[var(--md-sys-color-outline-variant)]" />
@@ -290,7 +290,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
       )}
 
       {validatedAccount?.hasBiometrics && !biometricsReadyHere && (
-        <p className="text-body-sm text-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-xl px-3.5 py-2">
+        <p className="text-sm leading-5 text-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-xl px-3.5 py-2">
           Este equipo PC no cuenta con lector de huella físico; ingresa con tu contraseña.
         </p>
       )}
@@ -298,7 +298,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
       <div className="flex flex-col gap-1.5">
         <label
           htmlFor="admin-password-step2"
-          className="text-label-md font-medium text-[var(--md-sys-color-on-surface-variant)]"
+          className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]"
         >
           Contraseña
         </label>
@@ -316,20 +316,20 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
           />
         </div>
         {errors.userPassword && (
-          <p className="text-label-sm text-[var(--md-sys-color-error)] mt-0.5">{errors.userPassword}</p>
+          <p className="text-sm text-[var(--md-sys-color-error)] mt-0.5">{errors.userPassword}</p>
         )}
       </div>
 
-      <div className="flex items-center justify-center pt-1">
+      <div className="flex items-center justify-center pt-0.5">
         <Link
           to="/Auth/forgot-password"
-          className="m3-state inline-flex items-center min-h-[40px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
+          className="m3-state inline-flex items-center min-h-[40px] px-4 rounded-full text-base leading-6 font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
         >
           ¿Olvidó su contraseña?
         </Link>
       </div>
 
-      <div className="pt-1">
+      <div className="pt-0.5">
         <Button
           type="submit"
           variant="filled"

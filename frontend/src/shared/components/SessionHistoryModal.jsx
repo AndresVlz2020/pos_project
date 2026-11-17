@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { M3Icon, IconButton } from "@/shared";
+import { M3Icon, IconButton, Select } from "@/shared";
 import { getSessionHistory, formatDuration } from "@/services/sessionService";
 import { getUsers } from "@/services/userService";
 import {
@@ -131,13 +131,13 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
       aria-modal="true"
     >
       <div className="dpiero-modal-in bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] m3-elevation-3 w-full max-w-4xl max-h-[88dvh] flex flex-col overflow-hidden text-[var(--md-sys-color-on-surface)]">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--md-sys-color-outline-variant)]">
+        <div className="flex items-center justify-between gap-2 px-4 sm:px-6 py-4 border-b border-[var(--md-sys-color-outline-variant)]">
           <div className="flex items-center gap-3 min-w-0">
             <div className="size-10 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shrink-0">
               <M3Icon name="schedule" size={20} />
             </div>
             <div className="min-w-0">
-              <h2 className="text-2xl leading-8 font-medium truncate">
+              <h2 className="text-lg sm:text-2xl sm:leading-8 font-medium truncate">
                 {isAdmin ? "Historial de Turnos del Personal" : "Mi Historial de Turnos"}
               </h2>
               <p className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)] truncate">
@@ -175,60 +175,56 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
         </div>
 
         {/* Selección por trabajador (Admin) + filtro de fecha */}
-        <div className="px-6 py-3 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] flex flex-col sm:flex-row sm:items-center gap-2.5">
+        <div className="px-4 sm:px-6 py-3 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] flex flex-col sm:flex-row sm:items-center gap-2.5">
           {isAdmin && (
-            <div className="relative flex-1 min-w-0 flex items-center">
-              <M3Icon
-                name="group"
-                size={18}
-                className="text-[var(--md-sys-color-on-surface-variant)] absolute left-3 pointer-events-none"
-              />
-              <select
+            <div className="w-full sm:flex-1 min-w-0">
+              <Select
+                ariaLabel="Filtrar por trabajador"
+                leadingIcon="group"
+                size="sm"
+                includeEmptyOption={false}
                 value={selectedWorkerId}
                 onChange={(e) => setSelectedWorkerId(e.target.value)}
-                aria-label="Filtrar por trabajador"
-                className="m3-outlined-field w-full h-10 pl-9 pr-3 text-sm bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] outline-none cursor-pointer truncate"
-              >
-                <option value="">Todos los trabajadores ({workers.length})</option>
-                {workers.map((worker) => (
-                  <option key={worker.id} value={worker.id}>
-                    {worker.userName} ({worker.userType || "Personal"})
-                  </option>
-                ))}
-              </select>
+                options={[
+                  { value: "", label: `Todos los trabajadores (${workers.length})` },
+                  ...workers.map((worker) => ({
+                    value: worker.id,
+                    label: `${worker.userName} (${worker.userType || "Personal"})`,
+                  })),
+                ]}
+                className="!mb-0"
+                buttonClassName="bg-[var(--md-sys-color-surface)]"
+              />
             </div>
           )}
 
           <div
-            className={`flex items-center gap-2 shrink-0 ${
-              !isAdmin ? "sm:ml-auto" : ""
+            className={`flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0 ${
+              !isAdmin ? "sm:ml-auto w-full sm:w-auto" : "w-full sm:w-auto"
             }`}
           >
-            <select
-              value={specificDate ? "custom" : datePreset}
-              onChange={(e) => {
-                const next = e.target.value;
-                if (next === "custom") return;
-                setSpecificDate("");
-                setDatePreset(next);
-              }}
-              aria-label="Rango de fechas"
-              className="m3-outlined-field h-10 px-3 text-sm bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] outline-none cursor-pointer"
-            >
-              {DATE_PRESETS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-              {specificDate && <option value="custom">Día puntual</option>}
-            </select>
-
-            <div className="relative flex items-center">
-              <M3Icon
-                name="calendar_today"
-                size={16}
-                className="text-[var(--md-sys-color-on-surface-variant)] absolute left-2.5 pointer-events-none sm:hidden"
+            <div className="w-[calc(50%-0.25rem)] sm:w-44 shrink-0">
+              <Select
+                ariaLabel="Rango de fechas"
+                size="sm"
+                includeEmptyOption={false}
+                value={specificDate ? "custom" : datePreset}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  if (next === "custom") return;
+                  setSpecificDate("");
+                  setDatePreset(next);
+                }}
+                options={[
+                  ...DATE_PRESETS,
+                  ...(specificDate ? [{ value: "custom", label: "Día puntual" }] : []),
+                ]}
+                className="!mb-0"
+                buttonClassName="bg-[var(--md-sys-color-surface)]"
               />
+            </div>
+
+            <div className="flex-1 sm:flex-initial min-w-0 flex items-center gap-2">
               <input
                 type="date"
                 value={specificDate}
@@ -239,25 +235,25 @@ export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }
                 }}
                 aria-label="Filtrar por día específico"
                 title="Filtrar por día específico"
-                className="m3-outlined-field h-10 pl-8 sm:pl-3 pr-2.5 text-sm bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] outline-none dark:[color-scheme:dark] cursor-pointer"
+                className="m3-outlined-field h-10 w-full sm:w-40 px-3 text-sm leading-none bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] outline-none dark:[color-scheme:dark] cursor-pointer"
               />
-            </div>
 
-            {hasAnyFilter && (
-              <IconButton
-                ariaLabel="Limpiar filtros"
-                title="Limpiar filtros"
-                variant="tonal"
-                onClick={handleClearAllFilters}
-              >
-                <M3Icon name="close" size={18} />
-              </IconButton>
-            )}
+              {hasAnyFilter && (
+                <IconButton
+                  ariaLabel="Limpiar filtros"
+                  title="Limpiar filtros"
+                  variant="tonal"
+                  onClick={handleClearAllFilters}
+                >
+                  <M3Icon name="close" size={18} />
+                </IconButton>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Sumatoria + Segmented Button M3 Turnos / Por día */}
-        <div className="px-6 py-3 border-b border-[var(--md-sys-color-outline-variant)] flex flex-wrap items-center justify-between gap-3 bg-[var(--md-sys-color-surface-container-low)]">
+        <div className="px-4 sm:px-6 py-3 border-b border-[var(--md-sys-color-outline-variant)] flex flex-wrap items-center justify-between gap-3 bg-[var(--md-sys-color-surface-container-low)]">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
             <div className="flex items-baseline gap-1.5">
               <span className="text-[var(--md-sys-color-on-surface-variant)]">Total horas:</span>

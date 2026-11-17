@@ -109,14 +109,24 @@ export async function resetPasswordApi(params, maybePassword) {
 
 import { endCurrentSession } from "./sessionService";
 import { clearAllOrderDrafts } from "@/features/orders/utils/orderDraftStorage";
+import { clearAuthSession } from "@/shared/utils/authStorage";
 
-export function logout() {
-  endCurrentSession();
+export async function logout() {
+  await endCurrentSession();
   clearAllOrderDrafts();
-  localStorage.removeItem("auth_user");
-  localStorage.removeItem("auth_token");
-  sessionStorage.removeItem("user");
-  sessionStorage.removeItem("token");
+  clearAuthSession();
+  try {
+    sessionStorage.removeItem("last_edited_user");
+    sessionStorage.removeItem("last_viewed_user");
+    sessionStorage.removeItem("last_edited_product");
+    sessionStorage.removeItem("last_viewed_product");
+    sessionStorage.removeItem("last_edited_supplier");
+    sessionStorage.removeItem("last_viewed_supplier");
+    sessionStorage.removeItem("last_active_inventory_item");
+    sessionStorage.removeItem("last_viewed_inventory_item");
+  } catch {
+    // Ignorar errores de almacenamiento
+  }
 }
 
 export default {

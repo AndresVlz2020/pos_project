@@ -1,31 +1,23 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { logout } from "@/services/authService";
 import { hasPermission } from "@/features/access/services/accessService";
 import { getCurrentSession, sendSessionHeartbeat } from "@/services/sessionService";
+import { getAuthToken, getStoredAuthUser, getUserRoleFlags } from "@/shared/utils/authStorage";
+import { useLogoutConfirm } from "@/shared/components/auth/SessionGuardProvider";
 
 export function useNavigationState() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { requestLogoutConfirm } = useLogoutConfirm();
 
-  const currentUser = (() => {
-    try {
-      return JSON.parse(
-        localStorage.getItem("auth_user") ||
-          sessionStorage.getItem("user") ||
-          "null"
-      );
-    } catch {
-      return null;
-    }
-  })();
-
-  const role = currentUser?.role || "";
-  const initialIsAdmin =
-    Boolean(currentUser?.isAdmin || currentUser?.isSuperuser) ||
-    role === "Admin" ||
-    role === "Administrador";
-  const isCajero = role === "Cajero";
+  const currentUser = getStoredAuthUser();
+  const {
+    role,
+    isAdmin: initialIsAdmin,
+    isCajero,
+    isMesero,
+    isCocina,
+  } = getUserRoleFlags(currentUser);
 
   const [isAdmin, setIsAdmin] = useState(initialIsAdmin);
   const [canViewUsers, setCanViewUsers] = useState(initialIsAdmin);
@@ -40,8 +32,7 @@ export function useNavigationState() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   useEffect(() => {
-    const token =
-      localStorage.getItem("auth_token") || sessionStorage.getItem("token");
+    const token = getAuthToken();
 
     if (!token) {
       Promise.resolve().then(() => {
@@ -140,74 +131,97 @@ export function useNavigationState() {
   const isAccess =
     pathname.includes("access") || pathname.includes("usersmanagement");
 
-  const destinations = [
-    {
-      id: "home",
-      label: "Inicio",
-      to: "/",
-      icon: "home",
-      active: isHome,
-      visible: true,
-    },
-    {
-      id: "products",
-      label: "Productos",
-      to: "/productList",
-      icon: "restaurant",
-      active: isProducts,
-      visible: true,
-    },
-    {
-      id: "orders",
-      label: "Pedidos",
-      to: canCreateOrder ? "/CreateOrder" : "/orderList",
-      icon: "receipt_long",
-      active: isOrders,
-      visible: true,
-    },
-    {
-      id: "inventory",
-      label: "Inventario",
-      to: "/inventoryList",
-      icon: "inventory_2",
-      active: isInventory,
-      visible: isAdmin || canViewInventory,
-    },
-    {
-      id: "suppliers",
-      label: "Proveedores",
-      to: "/supplierList",
-      icon: "local_shipping",
-      active: isSuppliers,
-      visible: isAdmin || canViewSuppliers,
-    },
-    {
-      id: "users",
-      label: "Usuarios",
-      to: "/dashboard/userList",
-      icon: "group",
-      active: isUsers,
-      visible: isAdmin || canViewUsers,
-    },
-    {
-      id: "access",
-      label: "Permisos",
-      to: "/dashboard/access",
-      icon: "admin_panel_settings",
-      active: isAccess,
-      visible: isAdmin,
-    },
-  ].filter((d) => d.visible);
+  const baseDestinations = isCocina
+    ? [
+        {
+          id: "orders",
+          label: "Pedidos",
+          to: "/orders",
+          icon: "receipt_long",
+          active: isOrders,
+          visible: true,
+        },
+        {
+          id: "products",
+          label: "Productos",
+          to: "/productList",
+          icon: "restaurant",
+          active: isProducts,
+          visible: true,
+        },
+      ]
+    : [
+        {
+          id: "home",
+          label: "Inicio",
+          to: "/",
+          icon: "home",
+          active: isHome,
+          visible: true,
+        },
+        {
+          id: "products",
+          label: "Productos",
+          to: "/productList",
+          icon: "restaurant",
+          active: isProducts,
+          visible: true,
+        },
+        {
+          id: "orders",
+          label: "Pedidos",
+          to: "/orders",
+          icon: "receipt_long",
+          active: isOrders,
+          visible: true,
+        },
+        {
+          id: "inventory",
+          label: "Inventario",
+          to: "/inventoryList",
+          icon: "inventory_2",
+          active: isInventory,
+          visible: isAdmin || canViewInventory,
+        },
+        {
+          id: "suppliers",
+          label: "Proveedores",
+          to: "/supplierList",
+          icon: "local_shipping",
+          active: isSuppliers,
+          visible: isAdmin || canViewSuppliers,
+        },
+        {
+          id: "users",
+          label: "Usuarios",
+          to: "/dashboard/userList",
+          icon: "group",
+          active: isUsers,
+          visible: isAdmin || canViewUsers,
+        },
+        {
+          id: "access",
+          label: "Permisos",
+          to: "/dashboard/access",
+          icon: "admin_panel_settings",
+          active: isAccess,
+          visible: isAdmin,
+        },
+      ];
+
+  const destinations = baseDestinations.filter((d) => d.visible);
 
   const handleLogout = () => {
-    logout();
-    navigate("/Auth");
+    requestLogoutConfirm("button");
   };
 
   return {
     currentUser,
     isAdmin,
-    canCreateOrder,
+    isCajero,
+    isMesero,
+    isCocina,
+    canCreateOrder: isCocina ? false : canCreateOrder,
     sessionAnchor,
     elapsedSeconds,
     pathname,

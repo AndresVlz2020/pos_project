@@ -1,9 +1,12 @@
 // Pruebas de integración del CRUD de usuarios.
 // Incluye la regresión del bug de PUT parcial que producía un 500
 // (violación user_email NOT NULL) al enviar solo el teléfono.
+import fs from "fs";
+import path from "path";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { api, getToken, stepUpAuth, login } from "../helpers/api.js";
 import { pool, resetDb, one } from "../helpers/db.js";
+import { UPLOADS_ROOT } from "../../src/middlewares/upload.middleware.js";
 
 let adminHeaders;
 
@@ -198,5 +201,64 @@ describe("avatar real del usuario y exclusión del rol proveedor", () => {
     });
     expect(rejected.status).toBe(500);
     expect(rejected.body.error).toMatch(/proveedor/i);
+  });
+
+  it("guarda el avatar subido por multipart/form-data en backend/uploads/users y sirve la imagen", async () => {
+    const avatarBytes1 = Buffer.from("avatar-bytes-v1");
+    const avatarBytes2 = Buffer.from("avatar-bytes-v2");
+    const createdFiles = [];
+
+    try {
+      const created = await api
+        .post("/api/users")
+        .set(adminHeaders)
+        .field("userName", "TEST Upload Avatar")
+        .field("userEmail", "test.upload.avatar@dpiero.com")
+        .field("userDocumentNumber", "TEST-USR-UPL1")
+        .field("userDocumentTypes", "CC")
+        .field("userType", "mesero")
+        .field("pin", "7788")
+        .field("isSuperuser", "false")
+        .field("isStaff", "true")
+        .attach("image", avatarBytes1, {
+          filename: "mesero-foto.png",
+          contentType: "image/png",
+        });
+
+      expect(created.status).toBe(201);
+      expect(created.body.data.isSuperUser).toBe(false);
+      const firstUrl = created.body.data.userAvatarUrl;
+      expect(firstUrl).toMatch(/^\/api\/uploads\/users\/.+\.png$/);
+
+      const firstPath = path.join(UPLOADS_ROOT, "users", path.basename(firstUrl));
+      createdFiles.push(firstPath);
+      expect(fs.existsSync(firstPath)).toBe(true);
+
+      const staticRes = await api.get(firstUrl);
+      expect(staticRes.status).toBe(200);
+      expect(Buffer.compare(Buffer.from(staticRes.body), avatarBytes1)).toBe(0);
+
+      const updated = await api
+        .put(`/api/users/${created.body.userID}`)
+        .set(adminHeaders)
+        .field("userPhone", "3115556677")
+        .attach("image", avatarBytes2, {
+          filename: "mesero-foto2.webp",
+          contentType: "image/webp",
+        });
+
+      expect(updated.status).toBe(200);
+      const secondUrl = updated.body.data.userAvatarUrl;
+      expect(secondUrl).toMatch(/^\/api\/uploads\/users\/.+\.webp$/);
+
+      const secondPath = path.join(UPLOADS_ROOT, "users", path.basename(secondUrl));
+      createdFiles.push(secondPath);
+      expect(fs.existsSync(secondPath)).toBe(true);
+      expect(fs.existsSync(firstPath)).toBe(false);
+    } finally {
+      for (const filePath of createdFiles) {
+        await fs.promises.unlink(filePath).catch(() => {});
+      }
+    }
   });
 });

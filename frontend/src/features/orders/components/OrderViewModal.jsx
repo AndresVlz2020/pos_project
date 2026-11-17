@@ -1,19 +1,15 @@
 import { Modal, Button, M3Icon } from "@/shared";
 import { getProductImage } from "@/utils/imageHelper";
+import {
+  getOrderStatusBadgeMeta,
+  normalizeOrderStatus,
+} from "../utils/orderFormHelpers";
 
 export default function OrderViewModal({ order, isOpen, onClose }) {
   if (!order) return null;
 
-  const getStatusBadge = (status) => {
-    const s = String(status || "").toLowerCase();
-    if (s.includes("no pagada")) {
-      return "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]";
-    }
-    if (s.includes("pagada")) {
-      return "bg-[var(--color-success-bg)] text-[var(--color-success)] border border-[var(--color-success-border)]";
-    }
-    return "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)]";
-  };
+  const canonicalStatus = normalizeOrderStatus(order.status);
+  const statusMeta = getOrderStatusBadgeMeta(canonicalStatus);
 
   const handlePrintInvoice = () => {
     const printWindow = window.open("", "_blank", "width=420,height=650");
@@ -77,7 +73,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
             <div class="row"><span><strong>Ubicación:</strong></span><span class="font-bold">${order.tableNumber || "Mesa General"}</span></div>
             <div class="row"><span><strong>Atendido por:</strong></span><span>${order.waiter || "Sin asignar"}</span></div>
             <div class="row"><span><strong>Fecha / Hora:</strong></span><span>${order.createdAt || new Date().toLocaleString("es-CO")}</span></div>
-            <div class="row"><span><strong>Estado:</strong></span><span>${order.status || "No Pagada"}</span></div>
+            <div class="row"><span><strong>Estado:</strong></span><span>${canonicalStatus}</span></div>
             <div class="row"><span><strong>Método de pago:</strong></span><span>${order.paymentMethod || order.payment_method || "Sin especificar"}</span></div>
           </div>
 
@@ -147,11 +143,9 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
           <div>
             <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">Estado</span>
             <span
-              className={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full ${getStatusBadge(
-                order.status
-              )}`}
+              className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-medium rounded-full mt-0.5 ${statusMeta.className}`}
             >
-              {order.status}
+              {canonicalStatus}
             </span>
           </div>
 
@@ -206,7 +200,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
                     <td className="py-2 px-2 sm:px-3 font-medium text-[var(--md-sys-color-on-surface)] min-w-0">
                       <div className="flex items-center gap-2 min-w-0">
                         <img
-                          src={getProductImage({ name: item.name })}
+                          src={getProductImage(item)}
                           alt={item.name}
                           className="size-7 rounded-lg object-cover border border-[var(--md-sys-color-outline-variant)] shrink-0"
                           onError={(e) => { e.currentTarget.style.display = "none"; }}
@@ -249,14 +243,14 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
           <Button variant="text" size="md" onClick={onClose}>
             Cerrar
           </Button>
-          {String(order.status || "").toLowerCase() === "pagada" && (
+          {canonicalStatus === "Pagada" && (
             <Button
               variant="filled"
               size="md"
               leadingIcon="print"
               onClick={handlePrintInvoice}
             >
-              Imprimir Factura
+              Imprimir
             </Button>
           )}
         </div>

@@ -37,12 +37,12 @@ export function ConfirmDialog({
       <div
         role="alertdialog"
         aria-modal="true"
-        className="dpiero-modal-in w-full max-w-md bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-6 m3-elevation-3 text-[var(--md-sys-color-on-surface)]"
+        className="dpiero-modal-in w-full max-w-md bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-5 sm:p-6 m3-elevation-3 text-[var(--md-sys-color-on-surface)]"
       >
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0">
             <div
-              className={`size-10 flex items-center justify-center rounded-full shrink-0 ${
+              className={`size-10 mt-0.5 flex items-center justify-center rounded-full shrink-0 ${
                 isDestructive
                   ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]"
                   : "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
@@ -50,30 +50,36 @@ export function ConfirmDialog({
             >
               <M3Icon name="warning" filled size={20} />
             </div>
-            <h3 className="text-2xl leading-8 font-medium text-[var(--md-sys-color-on-surface)]">
-              {title}
-            </h3>
+            <div className="min-w-0">
+              <h3 className="text-lg sm:text-xl leading-6 sm:leading-7 font-semibold text-[var(--md-sys-color-on-surface)]">
+                {title}
+              </h3>
+              <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] mt-1.5">
+                {description}
+              </p>
+            </div>
           </div>
+
           <IconButton
             ariaLabel="Cerrar diálogo"
             variant="standard"
+            hitSize={40}
+            iconSize={20}
+            className="-mt-1 -mr-1 shrink-0"
             onClick={onCancel}
           >
             <M3Icon name="close" size={20} />
           </IconButton>
         </div>
 
-        <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] mb-6">
-          {description}
-        </p>
-
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-2.5 mt-6">
           <Button
             type="button"
             variant="text"
             size="md"
             onClick={onCancel}
             disabled={isLoading}
+            className="w-full sm:w-auto"
           >
             {cancelText}
           </Button>
@@ -83,6 +89,7 @@ export function ConfirmDialog({
             size="md"
             onClick={onConfirm}
             disabled={isLoading}
+            className="w-full sm:w-auto"
           >
             {isLoading ? "Procesando..." : confirmText}
           </Button>

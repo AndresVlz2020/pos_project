@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, M3Icon, showWarningAlert } from "@/shared";
+import { logout } from "@/services/authService";
 
 export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
   const navigate = useNavigate();
@@ -14,15 +15,13 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
   const warningTimerRef = useRef(null);
   const countdownIntervalRef = useRef(null);
 
-  const resetTimers = () => {
+  const scheduleTimers = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
     if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
 
-    setShowWarning(false);
-    setRemainingSeconds(warningSeconds);
-
     warningTimerRef.current = setTimeout(() => {
+      setRemainingSeconds(warningSeconds);
       setShowWarning(true);
       countdownIntervalRef.current = setInterval(() => {
         setRemainingSeconds((prev) => {
@@ -36,10 +35,7 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
     }, warningMs);
 
     timerRef.current = setTimeout(async () => {
-      localStorage.removeItem("auth_token");
-      localStorage.removeItem("auth_user");
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
+      await logout();
       setShowWarning(false);
 
       await showWarningAlert({
@@ -50,18 +46,24 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
 
       navigate("/Auth", { replace: true });
     }, timeoutMs);
-  };
+  }, [navigate, timeoutMs, warningMs, warningSeconds]);
+
+  const resetTimers = useCallback(() => {
+    setShowWarning(false);
+    setRemainingSeconds(warningSeconds);
+    scheduleTimers();
+  }, [scheduleTimers, warningSeconds]);
 
   useEffect(() => {
     const events = ["mousedown", "mousemove", "keydown", "scroll", "touchstart"];
     const handleActivity = () => {
       if (!showWarning) {
-        resetTimers();
+        scheduleTimers();
       }
     };
 
     events.forEach((event) => window.addEventListener(event, handleActivity));
-    resetTimers();
+    scheduleTimers();
 
     return () => {
       events.forEach((event) => window.removeEventListener(event, handleActivity));
@@ -69,7 +71,7 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
       if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
     };
-  }, [showWarning]);
+  }, [scheduleTimers, showWarning]);
 
   if (!showWarning) return null;
 
@@ -93,14 +95,14 @@ export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
           </strong>
           .
         </p>
-        <div className="flex gap-2 justify-end">
+        <div className="flex flex-wrap gap-2 justify-center">
           <Button
             type="button"
             variant="text"
             size="md"
-            onClick={() => {
-              localStorage.removeItem("auth_token");
-              navigate("/Auth");
+            onClick={async () => {
+              await logout();
+              navigate("/Auth", { replace: true });
             }}
           >
             Cerrar ahora

@@ -44,9 +44,6 @@ export default function ReadUser1() {
             <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
               Ver Usuario
             </h1>
-            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-              Información del perfil y credenciales del colaborador.
-            </p>
           </div>
           <Link to="/dashboard/userList">
             <Button variant="outlined" size="md" leadingIcon="arrow_back">

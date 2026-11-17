@@ -3,6 +3,7 @@ import { productController } from "./product.controller.js";
 import { authenticateToken } from "../../middlewares/auth.middleware.js";
 import { requirePermission } from "../../middlewares/permission.middleware.js";
 import { requireAdminStepUp } from "../../middlewares/stepUp.middleware.js";
+import { optionalImageUpload } from "../../middlewares/upload.middleware.js";
 
 const router = Router();
 
@@ -12,8 +13,8 @@ router.get("/", productController.getAll);
 router.get("/:id", productController.getById);
 
 // Rutas de mutación: protegidas con JWT + permiso RBAC correspondiente
-router.post("/", authenticateToken, requirePermission("create_product"), productController.create);
-router.put("/:id", authenticateToken, requirePermission("update_product"), productController.update);
+router.post("/", authenticateToken, requirePermission("create_product"), optionalImageUpload("products"), productController.create);
+router.put("/:id", authenticateToken, requirePermission("update_product"), optionalImageUpload("products"), productController.update);
 router.patch("/:id/status", authenticateToken, requirePermission("disable_product"), requireAdminStepUp, productController.updateStatus);
 
 export default router;

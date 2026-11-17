@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { M3Icon } from "@/shared";
 import { extractTableNumber } from "../utils/orderFormHelpers";
 
@@ -114,108 +115,162 @@ export function TableIllustration({
 }
 
 /**
- * Selector visual de mesas estilo mapa de salón: muestra cada mesa ilustrada
- * con su número centrado, sillas, capacidad y estado en tiempo real.
+ * Selector visual de mesas desplegable estilo mapa de salón: muestra "Mesas"
+ * sin duplicar la palabra, se colapsa automáticamente al seleccionar una mesa
+ * y permite desplegar nuevamente mediante la flecha hacia abajo.
  */
 export default function TableSelectorGrid({
   tables = [],
   selectedTableNumber = "",
   onSelectTable,
+  isExpanded: controlledExpanded,
+  onToggleExpanded,
   error,
 }) {
+  const [internalExpanded, setInternalExpanded] = useState(true);
+  const isExpanded =
+    controlledExpanded !== undefined ? controlledExpanded : internalExpanded;
+
   const freeCount = tables.filter((t) => t.isAvailable).length;
+  const selectedShortNumber = selectedTableNumber
+    ? extractTableNumber({ tableNumber: selectedTableNumber }) || selectedTableNumber
+    : "";
+
+  const handleToggle = () => {
+    if (onToggleExpanded) {
+      onToggleExpanded(!isExpanded);
+    } else {
+      setInternalExpanded((prev) => !prev);
+    }
+  };
+
+  const handleSelect = (table) => {
+    onSelectTable?.(table);
+    if (table.isAvailable) {
+      if (onToggleExpanded) {
+        onToggleExpanded(false);
+      } else {
+        setInternalExpanded(false);
+      }
+    }
+  };
 
   return (
     <div className="space-y-2.5">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-label-md font-medium text-[var(--md-sys-color-on-surface-variant)]">
-          Mesa *{" "}
-          {selectedTableNumber && (
-            <span className="ml-1 font-semibold text-[var(--md-sys-color-primary)]">
-              · {selectedTableNumber}
+      <button
+        type="button"
+        onClick={handleToggle}
+        aria-expanded={isExpanded}
+        aria-label={isExpanded ? "Ocultar selector de mesas" : "Desplegar selector de mesas"}
+        className={`m3-state w-full min-h-[56px] px-4 py-2.5 rounded-xl border flex items-center justify-between gap-3 text-left transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
+          error
+            ? "border-[var(--md-sys-color-error)] bg-[var(--md-sys-color-error-container)]/20"
+            : isExpanded
+            ? "border-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-surface)]"
+            : "border-[var(--md-sys-color-outline)] bg-[var(--md-sys-color-surface)] hover:border-[var(--md-sys-color-primary)]/70"
+        }`}
+      >
+        <div className="flex items-center gap-2.5 min-w-0">
+          <M3Icon
+            name="table_restaurant"
+            size={20}
+            className="text-[var(--md-sys-color-primary)] shrink-0"
+          />
+          <span className="text-sm font-medium text-[var(--md-sys-color-on-surface)]">
+            Mesas
+          </span>
+          {selectedShortNumber && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] tabular-nums shrink-0">
+              #{selectedShortNumber}
             </span>
           )}
-        </span>
-        <span className="text-label-md font-medium text-[var(--md-sys-color-primary)] tabular-nums">
-          {freeCount} {freeCount === 1 ? "libre" : "libres"}
-        </span>
-      </div>
-
-      <div className="p-2 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] max-h-[264px] overflow-y-auto overscroll-contain pr-1">
-        <div
-          role="radiogroup"
-          aria-label="Seleccionar mesa"
-          className="grid grid-cols-3 gap-1.5"
-        >
-          {tables.map((t) => {
-            const isSelected = selectedTableNumber === t.tableNumber;
-            const number = extractTableNumber(t);
-
-            return (
-              <button
-                key={t.id}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                aria-label={`${t.tableNumber}, ${t.isAvailable ? "Libre" : "Ocupada"}, capacidad ${t.capacity || 4} personas`}
-                onClick={() => onSelectTable?.(t)}
-                title={`${t.tableNumber} · ${t.isAvailable ? "Libre" : "Ocupada"} (${t.capacity || 4} pers.)${
-                  !t.isAvailable && t.activeOrderNumber ? ` · Orden ${t.activeOrderNumber}` : ""
-                }`}
-                className={`group relative flex flex-col items-center justify-between gap-1 px-1 pt-2 pb-1.5 rounded-xl border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]/50 transition-colors duration-150 cursor-pointer m3-state ${
-                  isSelected
-                    ? "bg-[var(--md-sys-color-primary-container)]/35 border-2 border-[var(--md-sys-color-primary)] m3-elevation-1"
-                    : t.isAvailable
-                    ? "bg-[var(--md-sys-color-surface)] border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-primary)]/60 hover:bg-[var(--md-sys-color-surface-container)]"
-                    : "bg-[var(--md-sys-color-surface-container-highest)]/50 border-[var(--md-sys-color-outline-variant)] opacity-75"
-                }`}
-              >
-                {/* Indicador de selección superior derecho */}
-                {t.isAvailable && (
-                  <span
-                    aria-hidden="true"
-                    className={`absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center transition-colors ${
-                      isSelected
-                        ? "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]"
-                        : "border border-[var(--md-sys-color-outline)] group-hover:border-[var(--md-sys-color-primary)]"
-                    }`}
-                  >
-                    {isSelected && <M3Icon name="check" size={11} />}
-                  </span>
-                )}
-
-                <TableIllustration
-                  number={number}
-                  capacity={t.capacity}
-                  isSelected={isSelected}
-                  isAvailable={t.isAvailable}
-                  sizeClassName="w-10 h-[31px]"
-                />
-
-                <div className="flex flex-col items-center gap-0.5 w-full">
-                  <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-medium leading-4 border ${
-                      t.isAvailable
-                        ? "bg-[var(--md-sys-color-primary-container)]/50 border-[var(--md-sys-color-primary)]/40 text-[var(--md-sys-color-on-primary-container)]"
-                        : "bg-[var(--md-sys-color-error-container)]/60 border-[var(--md-sys-color-error)]/40 text-[var(--md-sys-color-on-error-container)]"
-                    }`}
-                  >
-                    {t.isAvailable ? "Libre" : "Ocupada"}
-                  </span>
-                  <span className="text-label-sm leading-4 text-[var(--md-sys-color-on-surface-variant)]">
-                    {t.capacity || 4} pers.
-                  </span>
-                </div>
-              </button>
-            );
-          })}
         </div>
-      </div>
 
-      {tables.length > 9 && (
-        <p className="text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)]">
-          Desliza dentro del recuadro para ver las {tables.length} mesas.
-        </p>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-xs font-medium text-[var(--md-sys-color-primary)] tabular-nums">
+            {freeCount} {freeCount === 1 ? "libre" : "libres"}
+          </span>
+          <M3Icon
+            name="keyboard_arrow_down"
+            size={22}
+            className={`text-[var(--md-sys-color-on-surface-variant)] transition-transform duration-200 ${
+              isExpanded ? "rotate-180 text-[var(--md-sys-color-primary)]" : ""
+            }`}
+          />
+        </div>
+      </button>
+
+      {isExpanded && (
+        <div className="p-2.5 sm:p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] max-h-[280px] overflow-y-auto overscroll-contain">
+          <div
+            role="radiogroup"
+            aria-label="Mesas disponibles"
+            className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2"
+          >
+            {tables.map((t) => {
+              const isSelected = selectedTableNumber === t.tableNumber;
+              const number = extractTableNumber(t);
+
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  aria-label={`Número ${number}, ${t.isAvailable ? "Libre" : "Ocupada"}, capacidad ${t.capacity || 4} personas`}
+                  onClick={() => handleSelect(t)}
+                  title={`#${number} · ${t.isAvailable ? "Libre" : "Ocupada"} (${t.capacity || 4} pers.)${
+                    !t.isAvailable && t.activeOrderNumber ? ` · Orden ${t.activeOrderNumber}` : ""
+                  }`}
+                  className={`group relative flex flex-col items-center justify-between gap-1 px-1.5 pt-2 pb-1.5 rounded-xl border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]/50 transition-colors duration-150 cursor-pointer m3-state ${
+                    isSelected
+                      ? "bg-[var(--md-sys-color-primary-container)]/35 border-2 border-[var(--md-sys-color-primary)] m3-elevation-1"
+                      : t.isAvailable
+                      ? "bg-[var(--md-sys-color-surface)] border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-primary)]/60 hover:bg-[var(--md-sys-color-surface-container)]"
+                      : "bg-[var(--md-sys-color-surface-container-highest)]/50 border-[var(--md-sys-color-outline-variant)] opacity-75"
+                  }`}
+                >
+                  {/* Indicador de selección superior derecho */}
+                  {t.isAvailable && (
+                    <span
+                      aria-hidden="true"
+                      className={`absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center transition-colors ${
+                        isSelected
+                          ? "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]"
+                          : "border border-[var(--md-sys-color-outline)] group-hover:border-[var(--md-sys-color-primary)]"
+                      }`}
+                    >
+                      {isSelected && <M3Icon name="check" size={11} />}
+                    </span>
+                  )}
+
+                  <TableIllustration
+                    number={number}
+                    capacity={t.capacity}
+                    isSelected={isSelected}
+                    isAvailable={t.isAvailable}
+                    sizeClassName="w-10 h-[31px]"
+                  />
+
+                  <div className="flex flex-col items-center gap-0.5 w-full">
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-medium leading-4 border ${
+                        t.isAvailable
+                          ? "bg-[var(--md-sys-color-primary-container)]/50 border-[var(--md-sys-color-primary)]/40 text-[var(--md-sys-color-on-primary-container)]"
+                          : "bg-[var(--md-sys-color-error-container)]/60 border-[var(--md-sys-color-error)]/40 text-[var(--md-sys-color-on-error-container)]"
+                      }`}
+                    >
+                      {t.isAvailable ? "Libre" : "Ocupada"}
+                    </span>
+                    <span className="text-label-sm leading-4 text-[var(--md-sys-color-on-surface-variant)]">
+                      {t.capacity || 4} pers.
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {error && (

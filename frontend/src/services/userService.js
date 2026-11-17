@@ -1,14 +1,60 @@
 // Servicio de comunicación con la API Backend de usuarios
 import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
+import {
+  getAuthToken,
+  getMultipartAuthHeaders,
+} from "@/shared/utils/authStorage";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 function getStoredToken() {
-  return (
-    localStorage.getItem("auth_token") ||
-    sessionStorage.getItem("token") ||
-    ""
-  );
+  return getAuthToken();
+}
+
+function buildUserRequest(userData, extraHeaders = {}) {
+  const token = getStoredToken();
+
+  if (userData instanceof FormData) {
+    return {
+      body: userData,
+      headers: getMultipartAuthHeaders(extraHeaders),
+    };
+  }
+
+  if (userData?.imageFile instanceof File || userData?.imageFile instanceof Blob) {
+    const formData = new FormData();
+    Object.entries(userData).forEach(([key, value]) => {
+      if (key === "imageFile" || value === undefined || value === null) return;
+      formData.append(key, String(value));
+    });
+    formData.append("image", userData.imageFile);
+    return {
+      body: formData,
+      headers: getMultipartAuthHeaders(extraHeaders),
+    };
+  }
+
+  return {
+    body: JSON.stringify(userData),
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...extraHeaders,
+    },
+  };
+}
+
+function rethrowUserServiceError(err) {
+  if (
+    err?.name === "TypeError" ||
+    err?.message?.includes("fetch") ||
+    err?.message?.includes("NetworkError")
+  ) {
+    throw new Error("Error inesperado de conexión con el servidor backend.", {
+      cause: err,
+    });
+  }
+  throw err;
 }
 
 /**
@@ -18,16 +64,12 @@ function getStoredToken() {
  */
 export async function createUser(userData) {
   try {
-    const token = getStoredToken();
     const stepUpHeaders = await getAdminStepUpHeaders("Confirmar creación de usuario");
+    const { body, headers } = buildUserRequest(userData, stepUpHeaders);
     const response = await fetch(`${API_BASE_URL}/users`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...stepUpHeaders,
-      },
-      body: JSON.stringify(userData),
+      headers,
+      body,
     });
 
     const data = await response.json().catch(() => ({}));
@@ -38,10 +80,7 @@ export async function createUser(userData) {
 
     return data;
   } catch (err) {
-    if (err.name === "TypeError" || err.message?.includes("fetch") || err.message?.includes("NetworkError")) {
-      throw new Error("Error inesperado de conexión con el servidor backend.");
-    }
-    throw err;
+    rethrowUserServiceError(err);
   }
 }
 
@@ -71,10 +110,7 @@ export async function getUsers({ activeOnly = false } = {}) {
 
     return Array.isArray(data) ? data : data.data || [];
   } catch (err) {
-    if (err.name === "TypeError" || err.message?.includes("fetch") || err.message?.includes("NetworkError")) {
-      throw new Error("Error inesperado de conexión con el servidor backend.");
-    }
-    throw err;
+    rethrowUserServiceError(err);
   }
 }
 
@@ -117,16 +153,12 @@ export async function updateUserStatus(userId, isActive) {
  */
 export async function updateUser(id, userData) {
   try {
-    const token = getStoredToken();
     const stepUpHeaders = await getAdminStepUpHeaders("Confirmar edición de usuario");
+    const { body, headers } = buildUserRequest(userData, stepUpHeaders);
     const response = await fetch(`${API_BASE_URL}/users/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...stepUpHeaders,
-      },
-      body: JSON.stringify(userData),
+      headers,
+      body,
     });
 
     const data = await response.json().catch(() => ({}));
@@ -137,9 +169,6 @@ export async function updateUser(id, userData) {
 
     return data.data || data;
   } catch (err) {
-    if (err.name === "TypeError" || err.message?.includes("fetch") || err.message?.includes("NetworkError")) {
-      throw new Error("Error inesperado de conexión con el servidor backend.");
-    }
-    throw err;
+    rethrowUserServiceError(err);
   }
 }

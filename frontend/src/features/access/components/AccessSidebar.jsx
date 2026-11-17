@@ -62,9 +62,9 @@ export default function AccessSidebar({
     });
 
   return (
-    <aside className="w-full md:w-[320px] shrink-0 space-y-5">
-      <section className="rounded-2xl p-5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
-        <h2 className="text-title-md font-semibold mb-4 text-[var(--md-sys-color-on-surface)]">
+    <aside className="w-full lg:w-[272px] shrink-0 space-y-3.5">
+      <section className="rounded-2xl p-4 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
+        <h2 className="text-title-sm font-semibold mb-2.5 text-[var(--md-sys-color-on-surface)]">
           Grupos usuarios
         </h2>
 
@@ -99,8 +99,8 @@ export default function AccessSidebar({
         />
       </section>
 
-      <section className="rounded-2xl p-5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
-        <h2 className="text-title-md font-semibold mb-4 text-[var(--md-sys-color-on-surface)]">
+      <section className="rounded-2xl p-4 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
+        <h2 className="text-title-sm font-semibold mb-2.5 text-[var(--md-sys-color-on-surface)]">
           Usuario individual
         </h2>
 

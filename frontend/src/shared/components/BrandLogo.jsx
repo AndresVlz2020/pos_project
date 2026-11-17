@@ -1,24 +1,32 @@
-import { logoWhite, logoOrange } from "@/utils/imageHelper";
+import { logoOrange } from "@/utils/imageHelper";
 
 export default function BrandLogo({ className = "h-10 w-auto object-contain", alt = "D'Piero Restaurante" }) {
   return (
-    <>
-      <img
-        src={logoWhite}
-        alt={alt}
-        className={`logo-dark-theme ${className}`}
-        onError={(e) => {
-          e.currentTarget.src = "/assets/images/logo-dpiero.png";
-        }}
-      />
+    <span className="relative inline-flex items-center shrink-0">
       <img
         src={logoOrange}
         alt={alt}
-        className={`logo-light-theme ${className}`}
+        className={`block ${className} dark:opacity-0`}
         onError={(e) => {
+          e.currentTarget.onerror = null;
           e.currentTarget.src = "/assets/images/logo-dpiero-orange.png";
         }}
       />
-    </>
+      <span
+        aria-hidden="true"
+        className="hidden dark:block absolute inset-0"
+        style={{
+          backgroundColor: "var(--md-sys-color-primary)",
+          WebkitMaskImage: `url("${logoOrange}")`,
+          maskImage: `url("${logoOrange}")`,
+          WebkitMaskSize: "contain",
+          maskSize: "contain",
+          WebkitMaskRepeat: "no-repeat",
+          maskRepeat: "no-repeat",
+          WebkitMaskPosition: "center",
+          maskPosition: "center",
+        }}
+      />
+    </span>
   );
 }

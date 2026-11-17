@@ -3,7 +3,12 @@ import { DataTable, Button, ListReportModal, ConfirmDialog, Alert } from "@/shar
 import { getOrderColumns } from "../table/OrderColumns";
 import { getOrders, cancelOrder } from "../services/orderServices";
 import OrderViewModal from "../components/OrderViewModal";
+import KitchenOrdersView from "../components/KitchenOrdersView";
+import WaiterOrdersView from "../components/WaiterOrdersView";
+import OrderStatusFilterBar from "../components/OrderStatusFilterBar";
 import usePermission from "@/features/access/services/usePermission";
+import { getUserRoleFlags } from "@/shared/utils/authStorage";
+import { summarizeOrderStatuses } from "../utils/orderFormHelpers";
 import { Link } from "react-router-dom";
 
 const orderReportFields = [
@@ -17,8 +22,12 @@ const orderReportFields = [
 ];
 
 export default function OrderListPage() {
+  const { isAdmin, isCajero, isMesero, isCocina } = getUserRoleFlags();
+  const canPayOrder = isAdmin || isCajero;
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -45,17 +54,34 @@ export default function OrderListPage() {
   }, []);
 
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    if (isCocina || isMesero) return;
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) fetchOrders();
+    });
+    return () => {
+      active = false;
+    };
+  }, [fetchOrders, isCocina, isMesero]);
 
-  // Ordenar por fecha descendente (RFADMIN28)
-  const sortedOrders = useMemo(() => {
-    return [...orders].sort((a, b) => {
+  // Ordenar por fecha descendente y normalizar estados canónicos (Creada / Completada / Pagada / Anulada)
+  const { sortedOrders, statusCounts, filteredOrders } = useMemo(() => {
+    const sorted = [...orders].sort((a, b) => {
       const dateA = new Date(a.createdAt || a.created_at || 0);
       const dateB = new Date(b.createdAt || b.created_at || 0);
       return dateB - dateA;
     });
-  }, [orders]);
+    const { normalizedOrders, counts } = summarizeOrderStatuses(sorted);
+    const filtered =
+      statusFilter === "all"
+        ? normalizedOrders
+        : normalizedOrders.filter((o) => o.status === statusFilter);
+    return {
+      sortedOrders: normalizedOrders,
+      statusCounts: counts,
+      filteredOrders: filtered,
+    };
+  }, [orders, statusFilter]);
 
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
@@ -106,20 +132,26 @@ export default function OrderListPage() {
         onViewOrder: handleViewOrder,
         onRequestCancel: handleRequestCancel,
         canEdit: canEditOrder,
+        canPay: canPayOrder,
       }),
-    [canEditOrder]
+    [canEditOrder, canPayOrder]
   );
+
+  if (isCocina) {
+    return <KitchenOrdersView />;
+  }
+
+  if (isMesero) {
+    return <WaiterOrdersView />;
+  }
 
   return (
     <div className="flex-1 flex flex-col w-full rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] p-5 sm:p-6 m3-elevation-1 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4">
         <div>
           <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
             Listado de Órdenes
           </h1>
-          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-            Consulta pedidos activos, comprobantes y facturación del restaurante.
-          </p>
         </div>
 
         <div className="flex flex-wrap gap-2.5">
@@ -140,6 +172,14 @@ export default function OrderListPage() {
         </div>
       </div>
 
+      {/* Filtros M3 por estado canónico (Creada / Completada / Pagada / Anulada) */}
+      <OrderStatusFilterBar
+        value={statusFilter}
+        onChange={setStatusFilter}
+        counts={statusCounts}
+        className="mb-3"
+      />
+
       {feedback && (
         <div className="mb-4">
           <Alert
@@ -156,7 +196,7 @@ export default function OrderListPage() {
           Cargando órdenes desde PostgreSQL...
         </div>
       ) : (
-        <DataTable className="flex-1" data={sortedOrders} columns={columns} />
+        <DataTable className="flex-1" data={filteredOrders} columns={columns} />
       )}
 
       {/* Modal de consulta de orden */}

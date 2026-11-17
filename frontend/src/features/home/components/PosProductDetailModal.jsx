@@ -64,14 +64,17 @@ export default function PosProductDetailModal({
     product.status === "No disponible" ||
     product.is_active === false;
 
-  const orderBlocked = isInhabilitado || (!loadingPermission && !canCreateOrder);
+  const isOutOfStock = stockCount !== null && stockCount <= 0;
+  const maxOrderQty = stockCount !== null ? Math.max(1, stockCount) : 99;
+  const orderBlocked =
+    isInhabilitado || isOutOfStock || (!loadingPermission && !canCreateOrder);
   const imageSrc = getProductImage(product);
 
   const handleDecrease = () => setQuantity((q) => Math.max(1, q - 1));
-  const handleIncrease = () => setQuantity((q) => Math.min(99, q + 1));
+  const handleIncrease = () => setQuantity((q) => Math.min(maxOrderQty, q + 1));
   const handleConfirmOrder = () => {
     if (orderBlocked) return;
-    onOrder?.(product, quantity);
+    onOrder?.(product, Math.min(quantity, maxOrderQty));
   };
 
   return createPortal(
@@ -171,8 +174,8 @@ export default function PosProductDetailModal({
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            <div className="p-3.5 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] min-w-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
+            <div className="col-span-2 sm:col-span-1 p-3.5 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] min-w-0">
               <span className="flex items-center gap-1.5 text-label-sm uppercase tracking-wider font-medium text-[var(--md-sys-color-on-surface-variant)]">
                 <M3Icon name={categoryIconName} size={14} className="text-[var(--md-sys-color-primary)]" />
                 Categoría
@@ -200,12 +203,21 @@ export default function PosProductDetailModal({
               <p className="text-sm font-medium text-[var(--md-sys-color-on-surface)] truncate mt-1 tabular-nums">
                 {stockCount !== null && stockCount > 0
                   ? `${stockCount} un.`
-                  : isInhabilitado
+                  : isInhabilitado || isOutOfStock
                   ? "0 un."
                   : "En carta"}
               </p>
             </div>
           </div>
+
+          {!isInhabilitado && isOutOfStock && (
+            <div className="p-3.5 rounded-xl bg-[var(--md-sys-color-error-container)] border border-[var(--color-error-border)] text-xs text-[var(--md-sys-color-on-error-container)] flex items-start gap-2">
+              <M3Icon name="error" filled size={18} className="mt-0.5" />
+              <span>
+                Este platillo no cuenta con stock disponible en este momento.
+              </span>
+            </div>
+          )}
 
           {isInhabilitado && (
             <div className="p-3.5 rounded-xl bg-[var(--md-sys-color-error-container)] border border-[var(--color-error-border)] text-xs text-[var(--md-sys-color-on-error-container)] flex items-start gap-2">
@@ -216,7 +228,7 @@ export default function PosProductDetailModal({
             </div>
           )}
 
-          {!isInhabilitado && !loadingPermission && !canCreateOrder && (
+          {!isInhabilitado && !isOutOfStock && !loadingPermission && !canCreateOrder && (
             <div className="p-3.5 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-xs text-[var(--md-sys-color-on-surface-variant)] flex items-start gap-2">
               <M3Icon name="info" size={18} className="mt-0.5 text-[var(--md-sys-color-primary)]" />
               <span>
@@ -245,7 +257,7 @@ export default function PosProductDetailModal({
                 ariaLabel="Aumentar cantidad"
                 variant="tonal"
                 onClick={handleIncrease}
-                disabled={orderBlocked}
+                disabled={orderBlocked || quantity >= maxOrderQty}
               >
                 <M3Icon name="add" size={18} />
               </IconButton>

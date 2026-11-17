@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { DataTable, Button, ListReportModal, ConfirmDialog, Alert, showConfirmAlert, showSuccessAlert, showErrorAlert } from "@/shared";
+import { DataTable, Button, ListReportModal, Alert, showConfirmAlert, showSuccessAlert, showErrorAlert } from "@/shared";
 import { getProductColumns } from "../table/ProductColumns";
 import { getProducts, updateProductStatus } from "../services/productServices";
 import usePermission from "@/features/access/services/usePermission";
@@ -19,38 +19,44 @@ export default function ProductListPage() {
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isReportOpen, setIsReportOpen] = useState(false);
-  const [pendingChange, setPendingChange] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const { granted: canToggleStatus } = usePermission("disable_product");
   const { granted: canEdit } = usePermission("update_product");
   const { granted: canCreate } = usePermission("create_product");
 
-  const fetchProducts = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await getProducts();
-      const formatted = (data || []).map((p) => ({
-        ...p,
-        title: p.title || p.name,
-        category: p.category || p.category_name || "General",
-        status: p.is_active ? "Activo" : "Inactivo",
-      }));
-      setProductList(formatted);
-    } catch (error) {
-      console.error("Error al cargar productos desde PostgreSQL:", error);
-      setFeedback({
-        type: "error",
-        title: "Error de conexión",
-        message: "No se pudieron cargar los productos desde la base de datos.",
-      });
-    } finally {
-      setLoading(false);
-    }
+  const loadProductsData = useCallback(async () => {
+    const data = await getProducts();
+    return (data || []).map((p) => ({
+      ...p,
+      title: p.title || p.name,
+      category: p.category || p.category_name || "General",
+      status: p.is_active ? "Activo" : "Inactivo",
+    }));
   }, []);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    let active = true;
+    loadProductsData()
+      .then((formatted) => {
+        if (active) setProductList(formatted);
+      })
+      .catch((error) => {
+        console.error("Error al cargar productos desde PostgreSQL:", error);
+        if (active) {
+          setFeedback({
+            type: "error",
+            title: "Error de conexión",
+            message: "No se pudieron cargar los productos desde la base de datos.",
+          });
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [loadProductsData]);
 
   // Manejo de solicitud de cambio de estado con confirmación mediante SweetAlert
   const handleRequestStatusChange = async (product, targetState) => {
@@ -109,9 +115,6 @@ export default function ProductListPage() {
           <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
             Listado de Productos
           </h1>
-          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-            Gestiona platillos del menú, precios y disponibilidad en el terminal POS.
-          </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
           <Button
@@ -165,19 +168,6 @@ export default function ProductListPage() {
           })
         }
       />
-
-      {pendingChange && (
-        <ConfirmDialog
-          isOpen={Boolean(pendingChange)}
-          title={pendingChange.title}
-          description={pendingChange.description}
-          confirmText={pendingChange.targetState ? "Habilitar" : "Inhabilitar"}
-          cancelText="Cancelar"
-          isDestructive={pendingChange.isDestructive}
-          onConfirm={handleConfirmStatusChange}
-          onCancel={() => setPendingChange(null)}
-        />
-      )}
     </div>
   );
 }

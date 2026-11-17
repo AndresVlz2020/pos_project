@@ -3,7 +3,6 @@ import { useState } from "react";
 import { productSchema } from "../schemas/productSchema";
 import { Link, useNavigate } from "react-router-dom";
 import { createProduct } from "../services/productServices";
-import resizeImageFile from "@/utils/imageFile";
 
 export default function CreateProductPage() {
   const navigate = useNavigate();
@@ -79,10 +78,7 @@ export default function CreateProductPage() {
 
       const selectedCat = categoryMap[formProduct.productCategory] || "platos fuertes";
 
-      let imageUrl = null;
-      if (userImage.length) {
-        imageUrl = await resizeImageFile(userImage[0]);
-      }
+      const imageFile = userImage.length ? userImage[0] : undefined;
 
       await createProduct({
         name: formProduct.productName,
@@ -93,7 +89,7 @@ export default function CreateProductPage() {
         description: formProduct.productDescription,
         status: formProduct.productStatus === "habilitado" ? "Activo" : "Inactivo",
         isActive: formProduct.productStatus === "habilitado",
-        imageUrl,
+        ...(imageFile ? { imageFile } : {}),
       });
 
       await showSuccessAlert({
@@ -120,9 +116,6 @@ export default function CreateProductPage() {
           <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
             Crear Platillo / Menú
           </h1>
-          <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-            Registra un nuevo producto en la carta gastronómica del punto de venta.
-          </p>
         </div>
         <Link to="/productList">
           <Button variant="outlined" size="md" leadingIcon="arrow_back">

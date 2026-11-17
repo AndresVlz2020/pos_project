@@ -1,6 +1,7 @@
 // Importamos el pool de conexión a PostgreSQL.
 // Este pool es una instancia compartida configurada en la capa de infraestructura.
 import { pool } from "../../config/db.js";
+import { parseBooleanFlag } from "../../middlewares/upload.middleware.js";
 
 function resolveGroupNameFromUserType(userType, isSuper) {
     if (isSuper) return "Administrador";
@@ -67,8 +68,16 @@ export const userRepository = {
             isSuperuser,
         } = userData;
 
-        const isSuper = isSuperuser !== undefined ? isSuperuser : (isSuperUser !== undefined ? isSuperUser : (userType === 'admin' || userType === 'Admin'));
-        const staff = isStaff || userType === 'mesero' || userType === 'cajero' || userType === 'cocina';
+        const isSuper = isSuperuser !== undefined
+            ? parseBooleanFlag(isSuperuser)
+            : (isSuperUser !== undefined
+                ? parseBooleanFlag(isSuperUser)
+                : (userType === 'admin' || userType === 'Admin'));
+        const staff =
+            (isStaff !== undefined && parseBooleanFlag(isStaff)) ||
+            userType === 'mesero' ||
+            userType === 'cajero' ||
+            userType === 'cocina';
         const avatar = userAvatarUrl || (typeof userImage === 'string' && userImage.trim() ? userImage.trim() : null);
         const parsedStartDate = startDate && startDate.trim() !== '' ? startDate : null;
         const parsedEndDate = endDate && endDate.trim() !== '' ? endDate : null;
@@ -124,9 +133,9 @@ export const userRepository = {
             parsedStartDate,
             parsedEndDate,
             avatar,
-            Boolean(staff),
-            isActive !== undefined ? Boolean(isActive) : true,
-            Boolean(isSuper),
+            parseBooleanFlag(staff),
+            isActive !== undefined ? parseBooleanFlag(isActive) : true,
+            parseBooleanFlag(isSuper),
         ];
 
         const result = await pool.query(query, values);
@@ -135,6 +144,14 @@ export const userRepository = {
             await this.syncUserGroup(created.id, userType, isSuper);
         }
         return created;
+    },
+
+    async findAvatarById(id) {
+        const result = await pool.query(
+            `SELECT user_avatar_url AS "userAvatarUrl" FROM users WHERE id = $1 LIMIT 1`,
+            [id]
+        );
+        return result.rows[0]?.userAvatarUrl || null;
     },
 
     // Método para actualizar un usuario existente
@@ -180,10 +197,10 @@ export const userRepository = {
                     userData.userAvatarUrl !== undefined ? userData.userAvatarUrl : userData.userImage;
                 return rawIncoming && String(rawIncoming).trim() ? String(rawIncoming).trim() : null;
             })(),
-            isStaff: userData.isStaff !== undefined ? Boolean(userData.isStaff) : current.is_staff,
-            isActive: userData.isActive !== undefined ? Boolean(userData.isActive) : current.is_active,
-            isSuper: userData.isSuperuser !== undefined ? Boolean(userData.isSuperuser)
-                : userData.isSuperUser !== undefined ? Boolean(userData.isSuperUser)
+            isStaff: userData.isStaff !== undefined ? parseBooleanFlag(userData.isStaff) : current.is_staff,
+            isActive: userData.isActive !== undefined ? parseBooleanFlag(userData.isActive) : current.is_active,
+            isSuper: userData.isSuperuser !== undefined ? parseBooleanFlag(userData.isSuperuser)
+                : userData.isSuperUser !== undefined ? parseBooleanFlag(userData.isSuperUser)
                 : (userData.userType !== undefined ? (userData.userType === 'admin' || userData.userType === 'Admin') : current.is_superuser),
         };
 

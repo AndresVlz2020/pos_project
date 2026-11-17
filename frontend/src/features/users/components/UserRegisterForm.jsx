@@ -15,7 +15,6 @@ import {
  import { createUser } from "../../../services/userService";
  import { useNavigate } from "react-router-dom";
  import { userSchema } from "../schemas/userSchema";
- import resizeImageFile from "@/utils/imageFile";
 
 export default function UserRegisterForm() {
 
@@ -91,16 +90,13 @@ export default function UserRegisterForm() {
         setIsSubmitting(true);
 
         try {
-          let userAvatarUrl = null;
-          if (formData.userImage?.length) {
-            userAvatarUrl = await resizeImageFile(formData.userImage[0]);
-          }
+          const imageFile = formData.userImage?.length ? formData.userImage[0] : undefined;
 
-          // Llamamos al servicio frontend para que consuma la API
+          // Llamamos al servicio frontend para que envíe datos e imagen real al backend
           const response = await createUser({
             ...result.data,
             userImage: undefined,
-            userAvatarUrl,
+            ...(imageFile ? { imageFile } : {}),
           });
 
           console.log("✅ Usuario registrado exitosamente:", response);

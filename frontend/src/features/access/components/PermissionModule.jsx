@@ -43,7 +43,7 @@ export default function PermissionModule({
 
   const hasPermission = (codename) => {
     return permissionsDraft.some(
-      (permission) => permission.permission_codename === codename,
+      (permission) => permission.permission_codename === codename
     );
   };
 
@@ -52,7 +52,7 @@ export default function PermissionModule({
 
     if (!checked) {
       setPermissionsDraft((prev) =>
-        prev.filter((item) => item.permission_codename !== codename),
+        prev.filter((item) => item.permission_codename !== codename)
       );
       return;
     }
@@ -60,99 +60,98 @@ export default function PermissionModule({
     setPermissionsDraft((prev) => [...prev, permission]);
   };
 
-  // Agrupar permisos por módulo usando reduce()
-  const permissionsByModule = catalog.reduce(
-    (groupedPermissions, permission) => {
-      const moduleName = permission.display_name || "Usuarios";
-
-      if (!groupedPermissions[moduleName]) {
-        groupedPermissions[moduleName] = [];
-      }
-
-      groupedPermissions[moduleName].push(permission);
-
-      return groupedPermissions;
-    },
-    {},
-  );
+  const permissionsByModule = catalog.reduce((grouped, permission) => {
+    const moduleName = permission.display_name || "Usuarios";
+    if (!grouped[moduleName]) {
+      grouped[moduleName] = [];
+    }
+    grouped[moduleName].push(permission);
+    return grouped;
+  }, {});
 
   const activeName = selectedGroupName || selectedUserName;
   const activeTypeLabel = selectedUser ? "Usuario" : "Grupo";
 
   return (
-    <section className="flex-1 flex flex-col rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] p-5 sm:p-6 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--md-sys-color-outline-variant)]">
-        <div>
+    <section className="flex-1 flex flex-col rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] p-4 sm:p-5 text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-[var(--md-sys-color-outline-variant)]">
+        <div className="min-w-0">
           <p className="text-label-sm uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)] font-medium">
             {activeTypeLabel}
           </p>
-
-          <h2 className="text-title-lg font-semibold text-[var(--md-sys-color-on-surface)] mt-0.5">
+          <h2 className="text-title-lg font-semibold text-[var(--md-sys-color-on-surface)] truncate">
             {activeName || "Seleccione un grupo o usuario"}
           </h2>
         </div>
 
-        {!isEditing && (selectedGroup || selectedUser || activeName) && (
-          <IconButton
-            variant="tonal"
-            hitSize={40}
-            iconSize={18}
-            ariaLabel="Editar permisos"
-            title="Editar permisos"
-            onClick={onEdit}
-          >
-            <M3Icon name="edit" size={18} />
-          </IconButton>
-        )}
-      </div>
-
-      <div className="space-y-6 flex-1">
-        {Object.entries(permissionsByModule).map(
-          ([moduleName, permissions]) => (
-            <div
-              key={moduleName}
-              className="border-b border-[var(--md-sys-color-outline-variant)] pb-6 last:border-b-0 last:pb-0"
+        {isEditing ? (
+          <div className="flex items-center gap-2 shrink-0">
+            <Button type="button" variant="outlined" size="sm" onClick={onCancel}>
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant="filled"
+              size="sm"
+              leadingIcon="check_circle"
+              onClick={onSave}
             >
-              <h3 className="font-semibold text-[var(--md-sys-color-primary)] mb-4 text-title-sm tracking-wide">
-                Módulo {moduleName}
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                {permissions.map((permission) => (
-                  <div
-                    key={permission.permission_id}
-                    className="p-3 min-h-[48px] flex items-center rounded-xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] hover:border-[var(--md-sys-color-primary)]/60 focus-within:border-[var(--md-sys-color-primary)] transition-colors"
-                  >
-                    <Checkbox
-                      id={permission.permission_codename}
-                      name={permission.permission_codename}
-                      label={permission.permission_name}
-                      checked={hasPermission(permission.permission_codename)}
-                      disabled={!isEditing}
-                      className="w-full"
-                      onChange={(e) =>
-                        handlePermissionChange(permission, e.target.checked)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          ),
+              Guardar
+            </Button>
+          </div>
+        ) : (
+          (selectedGroup || selectedUser || activeName) && (
+            <IconButton
+              variant="tonal"
+              hitSize={40}
+              iconSize={18}
+              ariaLabel="Editar permisos"
+              title="Editar permisos"
+              onClick={onEdit}
+            >
+              <M3Icon name="edit" size={18} />
+            </IconButton>
+          )
         )}
       </div>
 
-      {isEditing && (
-        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[var(--md-sys-color-outline-variant)]">
-          <Button type="button" variant="outlined" onClick={onCancel}>
-            Cancelar
-          </Button>
+      {/* Grilla multi-columna por módulo para reducir drásticamente el scroll vertical */}
+      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3 flex-1 items-start">
+        {Object.entries(permissionsByModule).map(([moduleName, permissions]) => (
+          <div
+            key={moduleName}
+            className="rounded-xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] p-3 sm:p-3.5"
+          >
+            <h3 className="font-semibold text-[var(--md-sys-color-primary)] mb-2 text-sm tracking-wide flex items-center justify-between gap-2">
+              <span>{moduleName}</span>
+              <span className="text-label-sm font-medium text-[var(--md-sys-color-on-surface-variant)] tabular-nums">
+                {permissions.filter((p) => hasPermission(p.permission_codename)).length}/{permissions.length}
+              </span>
+            </h3>
 
-          <Button type="button" variant="filled" leadingIcon="check_circle" onClick={onSave}>
-            Guardar
-          </Button>
-        </div>
-      )}
+            <div className="space-y-1">
+              {permissions.map((permission) => (
+                <div
+                  key={permission.permission_id}
+                  className="px-2.5 rounded-lg border border-[var(--md-sys-color-outline-variant)]/70 bg-[var(--md-sys-color-surface)] hover:border-[var(--md-sys-color-primary)]/60 focus-within:border-[var(--md-sys-color-primary)] transition-colors"
+                >
+                  <Checkbox
+                    id={permission.permission_codename}
+                    name={permission.permission_codename}
+                    label={permission.permission_name}
+                    checked={hasPermission(permission.permission_codename)}
+                    disabled={!isEditing}
+                    className="w-full !min-h-[38px] !py-1 text-[13px]"
+                    onChange={(e) =>
+                      handlePermissionChange(permission, e.target.checked)
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

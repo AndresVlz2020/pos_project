@@ -2,15 +2,21 @@
 // El controller no implementa lógica de negocio,
 // Solo delega la operación al service correspondiente.
 import { userService } from "./user.service.js";
+import {
+    cleanupUploadedFile,
+    removeUploadedFileByUrl,
+} from "../../middlewares/upload.middleware.js";
 
 // Exportamos un objeto controlador con handlers escalables
 export const userController = {
     // Método encargado de manejar la creación de un usuario
     async create(req, res) {
-        console.log("📥 [Backend] POST /api/users - Datos recibidos:", req.body);
-
         try {
-            const user = await userService.create(req.body);
+            const payload = {
+                ...req.body,
+                ...(req.uploadedFileUrl ? { userAvatarUrl: req.uploadedFileUrl } : {}),
+            };
+            const user = await userService.create(payload);
 
             res.status(201).json({
                 success: true,
@@ -19,6 +25,7 @@ export const userController = {
                 data: user,
             });
         } catch (err) {
+            cleanupUploadedFile(req.file);
             console.error("❌ [Backend Error]:", err.message);
 
             res.status(500).json({
@@ -32,10 +39,32 @@ export const userController = {
     // Método encargado de actualizar un usuario existente
     async update(req, res) {
         const { id } = req.params;
-        console.log(`📥 [Backend] PUT /api/users/${id} - Datos recibidos:`, req.body);
 
         try {
-            const user = await userService.update(id, req.body);
+            const previousAvatarUrl = req.uploadedFileUrl
+                ? await userService.getAvatarById(id).catch(() => null)
+                : null;
+            const payload = {
+                ...req.body,
+                ...(req.uploadedFileUrl ? { userAvatarUrl: req.uploadedFileUrl } : {}),
+            };
+            const user = await userService.update(id, payload);
+            if (!user) {
+                cleanupUploadedFile(req.file);
+                return res.status(404).json({
+                    success: false,
+                    message: "Usuario no encontrado",
+                    error: "Usuario no encontrado",
+                });
+            }
+
+            if (
+                req.uploadedFileUrl &&
+                previousAvatarUrl &&
+                previousAvatarUrl !== req.uploadedFileUrl
+            ) {
+                await removeUploadedFileByUrl(previousAvatarUrl);
+            }
 
             res.status(200).json({
                 success: true,
@@ -43,6 +72,7 @@ export const userController = {
                 data: user,
             });
         } catch (err) {
+            cleanupUploadedFile(req.file);
             console.error("❌ [Backend Error]:", err.message);
 
             res.status(500).json({

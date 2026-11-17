@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { showErrorAlert } from "../services/alertService";
 import { endCurrentSession } from "@/services/sessionService";
+import { getAuthToken, getStoredAuthUser, clearAuthSession } from "@/shared/utils/authStorage";
 
 /**
  * Hook para cierre automático de sesión tras inactividad (RNF09)
@@ -11,16 +12,11 @@ export function useInactivityTimeout(timeoutMs = 10 * 60 * 1000) {
   const navigate = useNavigate();
   const timerRef = useRef(null);
   const intervalRef = useRef(null);
-  const lastActivityRef = useRef(Date.now());
+  const lastActivityRef = useRef(0);
   const triggeredRef = useRef(false);
 
   useEffect(() => {
-    const hasUser = Boolean(
-      localStorage.getItem("auth_user") ||
-        localStorage.getItem("auth_token") ||
-        sessionStorage.getItem("user") ||
-        sessionStorage.getItem("token")
-    );
+    const hasUser = Boolean(getStoredAuthUser() || getAuthToken());
     if (!hasUser) return;
 
     triggeredRef.current = false;
@@ -35,10 +31,7 @@ export function useInactivityTimeout(timeoutMs = 10 * 60 * 1000) {
 
       await endCurrentSession();
 
-      localStorage.removeItem("auth_user");
-      localStorage.removeItem("auth_token");
-      sessionStorage.removeItem("user");
-      sessionStorage.removeItem("token");
+      clearAuthSession();
 
       await showErrorAlert({
         title: "Sesión cerrada por inactividad",

@@ -124,15 +124,15 @@ export default function PinKeypad({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-2 pb-3 border-b border-[var(--md-sys-color-outline-variant)]">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-[var(--md-sys-color-outline-variant)]">
         <div className="flex items-center gap-2.5 min-w-0">
           <StaffAvatar staff={selectedStaff} sizeClass="size-10" />
           <div className="min-w-0">
             <p className="text-title-sm font-semibold text-[var(--md-sys-color-on-surface)] leading-tight truncate">
               {selectedStaff.userName || selectedStaff.name}
             </p>
-            <p className="text-label-md text-[var(--md-sys-color-primary)] font-medium mt-0.5 truncate">
+            <p className="text-sm leading-5 text-[var(--md-sys-color-primary)] font-medium truncate">
               {formatRole(selectedStaff.role)}
             </p>
           </div>
@@ -141,7 +141,7 @@ export default function PinKeypad({
         <button
           type="button"
           onClick={onBack}
-          className="m3-state inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer shrink-0"
+          className="m3-state inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer shrink-0"
         >
           <M3Icon name="arrow_back" size={16} />
           <span>Cambiar</span>
@@ -150,7 +150,7 @@ export default function PinKeypad({
 
       {/* Alerta de bloqueo temporal */}
       {isLocked && (
-        <div className="rounded-2xl bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)]/40 px-4 py-3 flex items-center gap-2.5 text-body-sm text-[var(--md-sys-color-on-error-container)]">
+        <div className="rounded-2xl bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)]/40 px-4 py-2.5 flex items-center gap-2.5 text-sm text-[var(--md-sys-color-on-error-container)]">
           <M3Icon name="warning" size={20} className="shrink-0" />
           <span>
             PIN bloqueado temporalmente por intentos fallidos. Intenta de nuevo en{" "}
@@ -159,8 +159,8 @@ export default function PinKeypad({
         </div>
       )}
 
-      <div className="py-1 text-center">
-        <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mb-2.5">
+      <div className="py-0.5 text-center">
+        <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] mb-2">
           Ingresa tu PIN de 4 dígitos
         </p>
         <div className="flex items-center justify-center gap-3.5">
@@ -180,20 +180,20 @@ export default function PinKeypad({
         </div>
 
         {pinError && !isLocked && (
-          <p className="text-label-md text-[var(--md-sys-color-error)] mt-2.5 font-medium">
+          <p className="text-sm text-[var(--md-sys-color-error)] mt-2 font-medium">
             {pinError}
           </p>
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-2.5 max-w-[280px] mx-auto">
+      <div className="grid grid-cols-3 gap-2 max-w-[264px] mx-auto">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
           <button
             key={num}
             type="button"
             disabled={isLocked || biometricBusy}
             onClick={() => handleNumpadPress(num.toString())}
-            className="m3-state bg-[var(--md-sys-color-surface-container-highest)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] text-headline-sm font-semibold rounded-full h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] disabled:opacity-38 disabled:cursor-not-allowed"
+            className="m3-state bg-[var(--md-sys-color-surface-container-highest)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] text-title-lg font-semibold rounded-full h-12 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] disabled:opacity-38 disabled:cursor-not-allowed"
           >
             {num}
           </button>
@@ -204,16 +204,16 @@ export default function PinKeypad({
           disabled={isLocked || biometricBusy}
           onClick={handleNumpadDelete}
           aria-label="Borrar dígito"
-          className="m3-state bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] rounded-full h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] disabled:opacity-38 disabled:cursor-not-allowed"
+          className="m3-state bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] rounded-full h-12 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] disabled:opacity-38 disabled:cursor-not-allowed"
         >
-          <M3Icon name="backspace" size={22} />
+          <M3Icon name="backspace" size={20} />
         </button>
 
         <button
           type="button"
           disabled={isLocked || biometricBusy}
           onClick={() => handleNumpadPress("0")}
-          className="m3-state bg-[var(--md-sys-color-surface-container-highest)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] text-headline-sm font-semibold rounded-full h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] disabled:opacity-38 disabled:cursor-not-allowed"
+          className="m3-state bg-[var(--md-sys-color-surface-container-highest)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] text-title-lg font-semibold rounded-full h-12 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] disabled:opacity-38 disabled:cursor-not-allowed"
         >
           0
         </button>
@@ -223,20 +223,20 @@ export default function PinKeypad({
           disabled={isLocked || biometricBusy || pinInput.length < 4}
           onClick={handleConfirm}
           aria-label="Confirmar PIN"
-          className="m3-state bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-full h-14 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] disabled:opacity-38 disabled:cursor-not-allowed"
+          className="m3-state bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-full h-12 transition-colors flex items-center justify-center cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] disabled:opacity-38 disabled:cursor-not-allowed"
         >
-          <M3Icon name="check" size={24} />
+          <M3Icon name="check" size={22} />
         </button>
       </div>
 
       {/* Acceso biométrico para trabajadores que tienen huella configurada */}
       {biometricsAvailableHere && (
-        <div className="max-w-[280px] mx-auto space-y-1.5 pt-1">
+        <div className="max-w-[264px] mx-auto space-y-1.5 pt-0.5">
           <button
             type="button"
             disabled={biometricBusy}
             onClick={() => triggerBiometricAuth(false)}
-            className="m3-state w-full min-h-[44px] flex items-center justify-center gap-2 py-2.5 px-6 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-label-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer disabled:opacity-38"
+            className="m3-state w-full min-h-[44px] flex items-center justify-center gap-2 py-2 px-5 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-label-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer disabled:opacity-38"
           >
             {biometricBusy ? (
               <M3Icon name="progress_activity" size={18} className="animate-spin" />
@@ -249,23 +249,23 @@ export default function PinKeypad({
           </button>
 
           {biometricHint && (
-            <p className="text-body-sm text-center text-[var(--md-sys-color-on-surface-variant)]">
+            <p className="text-sm text-center text-[var(--md-sys-color-on-surface-variant)]">
               {biometricHint}
             </p>
           )}
           {localBioError && (
-            <p className="text-label-sm text-center text-[var(--md-sys-color-error)]">
+            <p className="text-sm text-center text-[var(--md-sys-color-error)]">
               {localBioError}
             </p>
           )}
         </div>
       )}
 
-      <div className="text-center pt-0.5">
+      <div className="text-center">
         <button
           type="button"
           onClick={handleNumpadClear}
-          className="m3-state min-h-[40px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer"
+          className="m3-state min-h-[40px] px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer"
         >
           Limpiar
         </button>

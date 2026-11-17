@@ -4,8 +4,8 @@ import { getDocumentTypes } from "../../../services/selectServices";
 import { updateUser } from "../../../services/userService";
 import { createUserSchema } from "../schemas/userSchema";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import resizeImageFile from "@/utils/imageFile";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
+import { getStoredAuthUser, updateStoredAuthUser } from "@/shared/utils/authStorage";
 
 export default function EditUser1() {
   const navigate = useNavigate();
@@ -26,13 +26,7 @@ export default function EditUser1() {
   }, [location.state]);
 
   // Verificar si el usuario activo tiene rol de Administrador
-  const currentUser = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("auth_user") || "null");
-    } catch {
-      return null;
-    }
-  })();
+  const currentUser = getStoredAuthUser();
 
   const isAdmin = currentUser?.role === "Admin" || currentUser?.role === "Administrador";
 
@@ -122,15 +116,12 @@ export default function EditUser1() {
 
     setSubmitting(true);
     try {
-      let userAvatarUrl;
-      if (form.userImage?.length) {
-        userAvatarUrl = await resizeImageFile(form.userImage[0]);
-      }
+      const imageFile = form.userImage?.length ? form.userImage[0] : undefined;
 
       const payload = {
         ...formToValidate,
         userImage: undefined,
-        ...(userAvatarUrl !== undefined ? { userAvatarUrl } : {}),
+        ...(imageFile ? { imageFile } : {}),
       };
 
       if (editUser?.id) {
@@ -138,16 +129,14 @@ export default function EditUser1() {
         sessionStorage.removeItem("last_edited_user");
         sessionStorage.removeItem("last_viewed_user");
 
-        // Si el administrador editó su propia cuenta, reflejar foto/nombre al instante en localStorage
+        // Si el administrador editó su propia cuenta, reflejar foto/nombre del backend al instante
         if (Number(currentUser?.id) === Number(editUser.id)) {
-          const nextAvatar = res?.data?.userAvatarUrl ?? userAvatarUrl ?? currentUser.userAvatarUrl;
-          const updatedLocal = {
-            ...currentUser,
+          const nextAvatar = res?.userAvatarUrl ?? res?.data?.userAvatarUrl ?? currentUser.userAvatarUrl;
+          updateStoredAuthUser({
             name: payload.userName || currentUser.name,
             email: payload.userEmail || currentUser.email,
             ...(nextAvatar !== undefined ? { userAvatarUrl: nextAvatar, photo: nextAvatar } : {}),
-          };
-          localStorage.setItem("auth_user", JSON.stringify(updatedLocal));
+          });
         }
       }
       setErrors({});
@@ -201,9 +190,6 @@ export default function EditUser1() {
             <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
               Editar Usuario
             </h1>
-            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-              Actualiza datos personales, rol, credenciales de acceso y vigencia laboral.
-            </p>
           </div>
           <Link to="/dashboard/userList">
             <Button variant="outlined" size="md" leadingIcon="arrow_back">

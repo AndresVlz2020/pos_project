@@ -4,7 +4,6 @@ import { productSchema } from "../schemas/productSchema";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { updateProduct } from "../services/productServices";
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
-import resizeImageFile from "@/utils/imageFile";
 import usePermission from "@/features/access/services/usePermission";
 
 export default function EditProductPage() {
@@ -131,11 +130,8 @@ export default function EditProductPage() {
         throw new Error("No se identificó el ID del producto a modificar");
       }
 
-      // Si se elige una imagen nueva, se redimensiona y se envía (si no, queda la actual)
-      let imageUrl;
-      if (userImage.length) {
-        imageUrl = await resizeImageFile(userImage[0]);
-      }
+      // Si se elige una imagen nueva, se envía el archivo real al backend para almacenarlo en uploads/
+      const imageFile = userImage.length ? userImage[0] : undefined;
 
       const payload = {
         name: formProduct.productName,
@@ -144,7 +140,7 @@ export default function EditProductPage() {
         stock: Math.max(0, Math.trunc(Number(formProduct.productStock))),
         category: selectedCat,
         description: formProduct.productDescription,
-        imageUrl,
+        ...(imageFile ? { imageFile } : {}),
       };
 
       if (canToggleStatus) {
@@ -185,9 +181,6 @@ export default function EditProductPage() {
           <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
             Editar Producto
           </h1>
-          <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-            Actualiza precio, inventario disponible e imagen del platillo.
-          </p>
         </div>
         <Link to="/productList">
           <Button variant="outlined" size="md" leadingIcon="arrow_back">

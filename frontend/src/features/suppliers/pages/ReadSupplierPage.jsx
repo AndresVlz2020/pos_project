@@ -66,9 +66,6 @@ export default function ReadSupplierPage() {
             <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
               Ficha del Proveedor
             </h1>
-            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-              Consulta organizada en modo lectura de información corporativa y comercial.
-            </p>
           </div>
           <Link to="/supplierList">
             <Button variant="outlined" size="md" leadingIcon="arrow_back">

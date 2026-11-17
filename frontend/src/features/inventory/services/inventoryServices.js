@@ -1,23 +1,8 @@
 import { API_URL } from "@/features/config";
 import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
+import { getAuthHeaders } from "@/shared/utils/authStorage";
 
 const INVENTORY_URL = `${API_URL}/inventory`;
-
-function getStoredToken() {
-  return (
-    localStorage.getItem("auth_token") ||
-    sessionStorage.getItem("token") ||
-    ""
-  );
-}
-
-function getAuthHeaders() {
-  const token = getStoredToken();
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
 
 /**
  * Obtiene la lista completa de inventario/insumos desde PostgreSQL

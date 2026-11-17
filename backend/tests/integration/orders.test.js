@@ -91,22 +91,36 @@ describe("creación de orden", () => {
 });
 
 describe("transiciones de estado", () => {
-  it("mesero mueve el estado a 'Pagada'", async () => {
+  it("crea la orden automáticamente en estado 'Creada'", async () => {
     const created = await api.post("/api/orders").set(auth(meseroToken)).send({
       tableNumber: "Mesa 2",
       items: [{ productId: prodId, qty: 1, price: 56000 }],
     });
-    const orderNum = created.body.order.order_number;
-
-    const res = await api
-      .patch(`/api/orders/${orderNum}/status`)
-      .set(auth(meseroToken))
-      .send({ status: "No Pagada" });
-    expect(res.status).toBe(200);
-    expect(res.body.order.status).toBe("No Pagada");
+    expect(created.status).toBe(201);
+    expect(created.body.order.status).toBe("Creada");
   });
 
-  it("normaliza el estado por comparación insensible a mayúsculas", async () => {
+  it("impide que el mesero marque una orden como 'Pagada' (403)", async () => {
+    const created = await api.post("/api/orders").set(auth(meseroToken)).send({
+      tableNumber: "Mesa 2",
+      items: [{ productId: prodId, qty: 1, price: 56000 }],
+    });
+    const orderNum = created.body.order.order_number;
+
+    const statusRes = await api
+      .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(meseroToken))
+      .send({ status: "Pagada" });
+    expect(statusRes.status).toBe(403);
+
+    const putRes = await api
+      .put(`/api/orders/${orderNum}`)
+      .set(auth(meseroToken))
+      .send({ status: "Pagada", paymentMethod: "Efectivo" });
+    expect(putRes.status).toBe(403);
+  });
+
+  it("normaliza el estado por comparación insensible a mayúsculas (admin)", async () => {
     const created = await api.post("/api/orders").set(auth(meseroToken)).send({
       tableNumber: "Mesa 2",
       items: [{ productId: prodId, qty: 1, price: 56000 }],
@@ -115,7 +129,7 @@ describe("transiciones de estado", () => {
 
     const res = await api
       .patch(`/api/orders/${orderNum}/status`)
-      .set(auth(meseroToken))
+      .set(auth(adminToken))
       .send({ status: "pagada" });
     expect(res.status).toBe(200);
     expect(res.body.order.status).toBe("Pagada");
@@ -205,5 +219,107 @@ describe("transiciones de estado", () => {
     const listed = listRes.body.find((o) => o.id === legacyOrderNum);
     expect(listed).toBeDefined();
     expect(listed.waiter).toBe(meseroUser.user_name);
+  });
+
+  it("flujo Cocina -> Notificación al Mesero -> Mesero marca Entregada/Creada -> Cajero marca Pagada", async () => {
+    const cocinaToken = await getToken("cocina");
+    const cajeroToken = await getToken("cajero");
+
+    // 1. Mesero crea orden -> nace en Creada y ocupa la mesa
+    const created = await api.post("/api/orders").set(auth(meseroToken)).send({
+      tableNumber: "Mesa 7",
+      items: [{ productId: prodId, qty: 1, price: 56000 }],
+    });
+    expect(created.status).toBe(201);
+    const orderNum = created.body.order.order_number;
+
+    // 2. Cocinero completa la orden -> estado Completada y notifica al Mesero
+    const completedRes = await api
+      .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(cocinaToken))
+      .send({ status: "Completada" });
+    expect(completedRes.status).toBe(200);
+    expect(completedRes.body.order.status).toBe("Completada");
+
+    // 3. Mesero consulta su bandeja de notificaciones persistentes
+    const notifRes = await api.get("/api/notifications").set(auth(meseroToken));
+    expect(notifRes.status).toBe(200);
+    expect(notifRes.body.unreadCount).toBeGreaterThanOrEqual(1);
+    const createdNotif = notifRes.body.notifications.find(
+      (n) => n.orderNumber === orderNum
+    );
+    expect(createdNotif).toBeDefined();
+    expect(createdNotif.isRead).toBe(false);
+
+    // Cocinero NO puede marcar Entregada (403)
+    const kitchenDeliver = await api
+      .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(cocinaToken))
+      .send({ status: "Entregada" });
+    expect(kitchenDeliver.status).toBe(403);
+
+    // 4. Mesero marca la orden como Entregada y puede devolverla/marcarla como Creada
+    const deliveredRes = await api
+      .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(meseroToken))
+      .send({ status: "Entregada" });
+    expect(deliveredRes.status).toBe(200);
+    expect(deliveredRes.body.order.status).toBe("Entregada");
+
+    // La mesa sigue ocupada hasta que Cajero marque Pagada
+    const tablesBusy = await api.get("/api/orders/tables/availability");
+    const mesa7Busy = tablesBusy.body.find((t) => t.tableNumber === "Mesa 7");
+    expect(mesa7Busy.isAvailable).toBe(false);
+
+    const backToCreated = await api
+      .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(meseroToken))
+      .send({ status: "Creada" });
+    expect(backToCreated.status).toBe(200);
+    expect(backToCreated.body.order.status).toBe("Creada");
+
+    // Desde Creada no puede pasar directamente a Entregada hasta que Cocina complete de nuevo
+    const prematureDeliver = await api
+      .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(meseroToken))
+      .send({ status: "Entregada" });
+    expect(prematureDeliver.status).toBe(400);
+
+    await api
+      .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(cocinaToken))
+      .send({ status: "Completada" });
+
+    const redeliverRes = await api
+      .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(meseroToken))
+      .send({ status: "Entregada" });
+    expect(redeliverRes.status).toBe(200);
+    expect(redeliverRes.body.order.status).toBe("Entregada");
+
+    // 5. Mesero marca la notificación como leída (permanece guardada en historial)
+    const readRes = await api
+      .patch(`/api/notifications/${createdNotif.id}/read`)
+      .set(auth(meseroToken));
+    expect(readRes.status).toBe(200);
+
+    const afterReadRes = await api.get("/api/notifications").set(auth(meseroToken));
+    const persistedNotif = afterReadRes.body.notifications.find(
+      (n) => n.id === createdNotif.id
+    );
+    expect(persistedNotif).toBeDefined();
+    expect(persistedNotif.isRead).toBe(true);
+
+    // 6. Cajero cobra y marca Pagada -> libera la mesa
+    const paidRes = await api
+      .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(cajeroToken))
+      .send({ status: "Pagada" });
+    expect(paidRes.status).toBe(200);
+    expect(paidRes.body.order.status).toBe("Pagada");
+
+    const tablesFree = await api.get("/api/orders/tables/availability");
+    const mesa7Free = tablesFree.body.find((t) => t.tableNumber === "Mesa 7");
+    expect(mesa7Free.isAvailable).toBe(true);
   });
 });

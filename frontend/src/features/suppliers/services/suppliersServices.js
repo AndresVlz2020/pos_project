@@ -1,22 +1,11 @@
 import { API_URL } from "@/features/config";
 import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
+import { getAuthHeaders } from "@/shared/utils/authStorage";
 
 const SUPPLIERS_URL = `${API_URL}/suppliers`;
 
-function getStoredToken() {
-  return (
-    localStorage.getItem("auth_token") ||
-    sessionStorage.getItem("token") ||
-    ""
-  );
-}
-
 function getHeaders() {
-  const token = getStoredToken();
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  return getAuthHeaders();
 }
 
 export async function createSupplier(supplierData) {

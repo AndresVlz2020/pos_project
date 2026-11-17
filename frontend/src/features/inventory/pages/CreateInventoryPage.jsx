@@ -229,9 +229,6 @@ export default function CreateInventory() {
                     <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
                         {pageTitle}
                     </h1>
-                    <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-                        Registra lotes, proveedor responsable y existencias mínimas del almacén.
-                    </p>
                 </div>
                 <Link to="/inventoryList">
                     <Button variant="outlined" size="md" leadingIcon="arrow_back">

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { M3Icon } from "@/shared";
 import { API_URL } from "@/features/config";
 import { getSupplierImage } from "@/utils/imageHelper";
+import { getAuthToken } from "@/shared/utils/authStorage";
 
 export default function PosSuppliersPanel() {
   const [suppliers, setSuppliers] = useState([]);
@@ -10,8 +11,7 @@ export default function PosSuppliersPanel() {
 
   useEffect(() => {
     let active = true;
-    const token =
-      localStorage.getItem("auth_token") || sessionStorage.getItem("token");
+    const token = getAuthToken();
 
     fetch(`${API_URL}/suppliers`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},

@@ -1,26 +1,11 @@
 // frontend/src/features/access/services/permissionService.js
 import { API_URL } from "@/features/config";
 import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
+import { getAuthHeaders } from "@/shared/utils/authStorage";
 
 const GROUPS_API_URL = `${API_URL}/groups`;
 const USERS_API_URL = `${API_URL}/users`;
 const PERMISSIONS_API_URL = `${API_URL}/permissions`;
-
-function getStoredToken() {
-  return (
-    localStorage.getItem("auth_token") ||
-    sessionStorage.getItem("token") ||
-    ""
-  );
-}
-
-function getAuthHeaders() {
-  const token = getStoredToken();
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
 
 export async function getGroupPermissions(groupId) {
   const response = await fetch(`${GROUPS_API_URL}/${groupId}/permissions`, {

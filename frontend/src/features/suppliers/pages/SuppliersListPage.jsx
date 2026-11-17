@@ -106,9 +106,6 @@ export default function SuppliersListPage() {
           <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
             Listado de Proveedores
           </h1>
-          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-            Administra distribuidores, contactos comerciales y estado operativo.
-          </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
           <Button

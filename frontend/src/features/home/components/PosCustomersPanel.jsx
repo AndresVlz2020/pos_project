@@ -3,6 +3,8 @@ import PosSectionHeader from "./PosSectionHeader";
 import PosCardGrid from "./PosCardGrid";
 import PosInfoCard from "./PosInfoCard";
 import { API_URL } from "@/features/config";
+import { getAuthToken } from "@/shared/utils/authStorage";
+import { normalizeOrderStatus } from "@/features/orders/utils/orderFormHelpers";
 
 export default function PosCustomersPanel() {
   const [query, setQuery] = useState("");
@@ -11,8 +13,7 @@ export default function PosCustomersPanel() {
 
   useEffect(() => {
     let active = true;
-    const token =
-      localStorage.getItem("auth_token") || sessionStorage.getItem("token");
+    const token = getAuthToken();
 
     fetch(`${API_URL}/orders`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -46,7 +47,7 @@ export default function PosCustomersPanel() {
     0
   );
   const activas = todayOrders.filter(
-    (o) => !["pagada", "cerrada"].includes((o.status || "").toLowerCase())
+    (o) => !["Pagada", "Anulada"].includes(normalizeOrderStatus(o.status))
   ).length;
 
   const filtered = orders

@@ -1,7 +1,10 @@
 // Pruebas de integración del CRUD de productos.
+import fs from "fs";
+import path from "path";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { api, getToken, auth, stepUpAuth } from "../helpers/api.js";
 import { pool, resetDb, one } from "../helpers/db.js";
+import { UPLOADS_ROOT } from "../../src/middlewares/upload.middleware.js";
 
 let adminToken;
 
@@ -143,5 +146,73 @@ describe("actualización y estado de producto", () => {
     await api.put(`/api/products/${noImgId}`).set(auth(adminToken)).send({ stock: 7 });
     const rowNoImg = await one("SELECT image_url FROM products WHERE id = $1", [noImgId]);
     expect(rowNoImg.image_url).toBeNull();
+  });
+
+  it("guarda la imagen subida por multipart/form-data en backend/uploads/products y reemplaza la anterior", async () => {
+    const firstBytes = Buffer.from("fake-png-content-1");
+    const secondBytes = Buffer.from("fake-png-content-2");
+    const createdFiles = [];
+
+    try {
+      const created = await api
+        .post("/api/products")
+        .set(auth(adminToken))
+        .field("name", "TEST Upload Backend")
+        .field("price", "32000")
+        .field("stock", "12")
+        .field("code", "TEST-UPL-01")
+        .field("isActive", "false")
+        .attach("image", firstBytes, {
+          filename: "parrilla-test.png",
+          contentType: "image/png",
+        });
+
+      expect(created.status).toBe(201);
+      expect(created.body.product.is_active).toBe(false);
+      const firstUrl = created.body.product.image;
+      expect(firstUrl).toMatch(/^\/api\/uploads\/products\/.+\.png$/);
+
+      const firstFilePath = path.join(UPLOADS_ROOT, "products", path.basename(firstUrl));
+      createdFiles.push(firstFilePath);
+      expect(fs.existsSync(firstFilePath)).toBe(true);
+
+      const staticRes = await api.get(firstUrl);
+      expect(staticRes.status).toBe(200);
+      expect(Buffer.compare(Buffer.from(staticRes.body), firstBytes)).toBe(0);
+
+      const productId = created.body.product.id;
+      const updated = await api
+        .put(`/api/products/${productId}`)
+        .set(auth(adminToken))
+        .field("stock", "20")
+        .attach("image", secondBytes, {
+          filename: "parrilla-v2.jpg",
+          contentType: "image/jpeg",
+        });
+
+      expect(updated.status).toBe(200);
+      const secondUrl = updated.body.product.image;
+      expect(secondUrl).toMatch(/^\/api\/uploads\/products\/.+\.jpg$/);
+
+      const secondFilePath = path.join(UPLOADS_ROOT, "products", path.basename(secondUrl));
+      createdFiles.push(secondFilePath);
+      expect(fs.existsSync(secondFilePath)).toBe(true);
+      expect(fs.existsSync(firstFilePath)).toBe(false);
+
+      const invalidRes = await api
+        .post("/api/products")
+        .set(auth(adminToken))
+        .field("name", "TEST Invalid File")
+        .field("price", "1000")
+        .attach("image", Buffer.from("not an image"), {
+          filename: "script.txt",
+          contentType: "text/plain",
+        });
+      expect(invalidRes.status).toBe(400);
+    } finally {
+      for (const filePath of createdFiles) {
+        await fs.promises.unlink(filePath).catch(() => {});
+      }
+    }
   });
 });

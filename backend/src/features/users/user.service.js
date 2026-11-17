@@ -1,5 +1,6 @@
 import { userRepository } from "./user.repository.js";
 import bcrypt from "bcrypt";
+import { parseBooleanFlag } from "../../middlewares/upload.middleware.js";
 
 export const userService = {
     // Método para crear un usuario
@@ -8,12 +9,11 @@ export const userService = {
             throw new Error("Proveedor no es un rol de usuario válido en el POS");
         }
 
-        const isAdmin = Boolean(
-            data.isSuperuser || 
-            data.isSuperUser || 
-            data.userType === "admin" || 
-            data.userType === "Admin"
-        );
+        const isAdmin =
+            parseBooleanFlag(data.isSuperuser) ||
+            parseBooleanFlag(data.isSuperUser) ||
+            data.userType === "admin" ||
+            data.userType === "Admin";
 
         if (isAdmin) {
             // Administrador: cuenta con contraseña hasheada, sin PIN
@@ -59,6 +59,10 @@ export const userService = {
     // Alias compatible
     async createUser(data) {
         return await this.create(data);
+    },
+
+    async getAvatarById(id) {
+        return await userRepository.findAvatarById(id);
     },
 
     // Método para listar usuarios

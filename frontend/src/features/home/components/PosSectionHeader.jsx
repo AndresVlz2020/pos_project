@@ -35,7 +35,7 @@ export default function PosSectionHeader({
 
       <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
         {onSearchChange && (
-          <div className="flex-1 sm:flex-initial min-w-[200px] sm:w-72">
+          <div className="flex-1 sm:flex-initial min-w-0 w-full sm:w-72">
             <SearchField
               asForm={false}
               value={searchQuery}

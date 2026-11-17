@@ -22,7 +22,7 @@ export default function PosCategoryFilter({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2 w-full min-w-0">
+    <div className="flex flex-nowrap lg:flex-wrap items-center gap-2 w-full min-w-0 overflow-x-auto lg:overflow-visible scrollbar-none overscroll-x-contain py-0.5">
       {POS_CATEGORIES.map((cat) => {
         const count = getCount(cat.id);
         const isActive = selectedCategory === cat.id;
@@ -33,7 +33,7 @@ export default function PosCategoryFilter({
             type="button"
             onClick={() => onSelectCategory(cat.id)}
             className={`
-              m3-state inline-flex items-center gap-2 min-h-[40px] px-3.5 py-1.5 rounded-lg text-sm font-medium cursor-pointer whitespace-nowrap
+              m3-state shrink-0 inline-flex items-center gap-2 min-h-[40px] px-3.5 py-1.5 rounded-lg text-sm font-medium cursor-pointer whitespace-nowrap
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]
               ${
                 isActive

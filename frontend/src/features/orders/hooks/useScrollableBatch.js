@@ -19,6 +19,7 @@ export function useScrollableBatch(items = [], resetKey = "", batchSize = 10) {
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
+      scrollContainerRef.current.scrollLeft = 0;
     }
   }, [resetKey, batchSize]);
 
@@ -36,8 +37,21 @@ export function useScrollableBatch(items = [], resetKey = "", batchSize = 10) {
   const handleScroll = useCallback(
     (e) => {
       if (!hasMore) return;
-      const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
-      if (scrollTop + clientHeight >= scrollHeight - 96) {
+      const {
+        scrollTop,
+        clientHeight,
+        scrollHeight,
+        scrollLeft,
+        clientWidth,
+        scrollWidth,
+      } = e.currentTarget;
+      const nearBottom =
+        scrollHeight > clientHeight &&
+        scrollTop + clientHeight >= scrollHeight - 96;
+      const nearRight =
+        scrollWidth > clientWidth &&
+        scrollLeft + clientWidth >= scrollWidth - 140;
+      if (nearBottom || nearRight) {
         loadMore();
       }
     },

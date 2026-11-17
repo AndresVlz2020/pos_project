@@ -6,13 +6,7 @@ import PinKeypad from "./components/PinKeypad";
 import AdminLoginForm from "./components/AdminLoginForm";
 import { loginApi } from "@/services/authService";
 import { loginWithBiometricsApi } from "@/services/biometricService";
-
-function saveSession(token, userObj) {
-  localStorage.setItem("auth_token", token);
-  localStorage.setItem("auth_user", JSON.stringify(userObj));
-  sessionStorage.setItem("token", token);
-  sessionStorage.setItem("user", JSON.stringify(userObj));
-}
+import { setAuthSession, setLastProtectedRoute } from "@/shared/utils/authStorage";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -56,8 +50,12 @@ export default function Login() {
       isSuperuser: Boolean(result.user?.isSuperuser),
     };
 
-    saveSession(result.token, sessionUser);
-    navigate("/");
+    const isCocina = !isAdmin && baseRole === "Cocina";
+    const landingRoute = isCocina ? "/orders" : "/";
+
+    setAuthSession(result.token, sessionUser);
+    setLastProtectedRoute(landingRoute);
+    navigate(landingRoute);
   };
 
   const handleSelectStaff = (staff) => {
@@ -108,14 +106,14 @@ export default function Login() {
   const handleAdminBiometricLogin = async (email) => {
     const result = await loginWithBiometricsApi({ email });
     const emailClean = String(email || "").trim().toLowerCase();
-    localStorage.removeItem(`login_attempts_${emailClean}`);
+    sessionStorage.removeItem(`login_attempts_${emailClean}`);
     completeSessionLogin(result);
   };
 
   const handleAdminSubmit = async (form) => {
     const emailClean = form.userEmail.trim().toLowerCase();
     const attemptsKey = `login_attempts_${emailClean}`;
-    const currentAttempts = parseInt(localStorage.getItem(attemptsKey) || "0", 10);
+    const currentAttempts = parseInt(sessionStorage.getItem(attemptsKey) || "0", 10);
 
     // Verificación de bloqueo por 3 intentos fallidos (Rúbrica de seguridad)
     if (currentAttempts >= 3) {
@@ -132,7 +130,7 @@ export default function Login() {
 
     try {
       const result = await loginApi({ email: emailClean, password: form.userPassword });
-      localStorage.removeItem(attemptsKey);
+      sessionStorage.removeItem(attemptsKey);
       completeSessionLogin(result);
       return { success: true };
     } catch (err) {
@@ -151,7 +149,7 @@ export default function Login() {
       }
 
       const newAttempts = currentAttempts + 1;
-      localStorage.setItem(attemptsKey, String(newAttempts));
+      sessionStorage.setItem(attemptsKey, String(newAttempts));
 
       if (newAttempts >= 3) {
         await showErrorAlert({
@@ -176,21 +174,21 @@ export default function Login() {
 
   return (
     <div className="w-full flex flex-col items-center justify-center font-[family-name:var(--main-font)] text-[var(--md-sys-color-on-surface)]">
-      <div className="text-center mb-6">
-        <Link to="/" className="inline-flex items-center justify-center gap-2 mb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] rounded-lg">
-          <BrandLogo className="h-10 w-auto object-contain" alt="D'Piero Restaurante" />
+      <div className="text-center mb-3 sm:mb-4">
+        <Link to="/" className="inline-flex items-center justify-center gap-2 mb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] rounded-lg">
+          <BrandLogo className="h-9 sm:h-10 w-auto object-contain" alt="D'Piero Restaurante" />
         </Link>
-        <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] font-medium tracking-wide">
+        <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] font-medium tracking-wide">
           Sistema Punto de Venta & Facturación
         </p>
       </div>
 
-      <div className="dpiero-fade-up w-full max-w-lg rounded-[28px] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] p-6 sm:p-8 text-[var(--md-sys-color-on-surface)] m3-elevation-2">
+      <div className="dpiero-fade-up w-full max-w-xl rounded-[28px] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] p-5 sm:p-6 text-[var(--md-sys-color-on-surface)] m3-elevation-2">
         {/* M3 Segmented Button (40dp pill, outline border, vertical divider, secondary-container selected fill) */}
         <div
           role="tablist"
           aria-label="Modo de acceso"
-          className="grid grid-cols-2 rounded-full border border-[var(--md-sys-color-outline)] bg-[var(--md-sys-color-surface)] overflow-hidden divide-x divide-[var(--md-sys-color-outline)] mb-6"
+          className="grid grid-cols-2 rounded-full border border-[var(--md-sys-color-outline)] bg-[var(--md-sys-color-surface)] overflow-hidden divide-x divide-[var(--md-sys-color-outline)] mb-4 sm:mb-5"
         >
           <button
             type="button"

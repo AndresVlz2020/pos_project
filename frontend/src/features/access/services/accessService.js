@@ -1,26 +1,15 @@
 // frontend/src/features/access/services/accessService.js
 import { API_URL } from "@/features/config";
+import { getAuthToken, getStoredAuthUser } from "@/shared/utils/authStorage";
 
 const ACCESS_API_URL = `${API_URL}/access`;
 
 function getStoredToken() {
-  return (
-    localStorage.getItem("auth_token") ||
-    sessionStorage.getItem("token") ||
-    ""
-  );
+  return getAuthToken();
 }
 
 function getStoredUser() {
-  try {
-    const raw =
-      localStorage.getItem("auth_user") ||
-      sessionStorage.getItem("user") ||
-      "null";
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  return getStoredAuthUser();
 }
 
 export async function hasPermission(permissionCode) {

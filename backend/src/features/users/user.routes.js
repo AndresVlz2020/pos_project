@@ -10,6 +10,7 @@ import { userController } from "./user.controller.js";
 import { authenticateToken } from "../../middlewares/auth.middleware.js";
 import { requirePermission } from "../../middlewares/permission.middleware.js";
 import { requireAdminStepUp } from "../../middlewares/stepUp.middleware.js";
+import { optionalImageUpload } from "../../middlewares/upload.middleware.js";
 
 // Creamos una instancia de Router de express
 const router = Router();
@@ -20,7 +21,7 @@ router.get("/", userController.getAll);
 
 // Definimos la ruta para crear un usuario (requiere permiso de creación — solo admin + step-up)
 // POST /api/users
-router.post("/", authenticateToken, requirePermission("create_user"), requireAdminStepUp, userController.create);
+router.post("/", authenticateToken, requirePermission("create_user"), requireAdminStepUp, optionalImageUpload("users"), userController.create);
 
 // Actualizar estado activo/inactivo del usuario en tiempo real (solo administración + step-up)
 // PATCH y PUT comparten el mismo controlador; ambos quedan protegidos
@@ -33,7 +34,7 @@ router.put("/:userId/permissions", authenticateToken, requirePermission("admin")
 
 // Definimos la ruta para actualizar un usuario (requiere permiso de actualización + step-up)
 // PUT /api/users/:id
-router.put("/:id", authenticateToken, requirePermission("update_user"), requireAdminStepUp, userController.update);
+router.put("/:id", authenticateToken, requirePermission("update_user"), requireAdminStepUp, optionalImageUpload("users"), userController.update);
 
 // Exportamos el router para ser registrado en la aplicación principal
 export default router;

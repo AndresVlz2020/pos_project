@@ -88,9 +88,6 @@ export default function ReadInventoryPage() {
             <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
               Ficha del Insumo
             </h1>
-            <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-              Consulta organizada en modo lectura de existencias, proveedor y trazabilidad.
-            </p>
           </div>
           <Link to="/inventoryList">
             <Button variant="outlined" size="md" leadingIcon="arrow_back">

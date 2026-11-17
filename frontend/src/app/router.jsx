@@ -2,6 +2,10 @@
 import { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthLayout, DashboardLayout, ProtectedRoute } from "@/shared";
+import {
+  RootSessionGuard,
+  GuestAuthGuard,
+} from "@/shared/components/auth/SessionGuardProvider";
 
 const RouteLoader = (
   <div className="flex min-h-[40vh] items-center justify-center p-6 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
@@ -53,6 +57,9 @@ const AccessPage = lazyRoute(() => import("@/features/access"), "AccessPage");
 
 const router = createBrowserRouter([
   {
+    element: <RootSessionGuard />,
+    children: [
+  {
     path: "/",
     element: (
       <ProtectedRoute>
@@ -62,7 +69,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/Auth",
-    element: <AuthLayout />,
+    element: (
+      <GuestAuthGuard>
+        <AuthLayout />
+      </GuestAuthGuard>
+    ),
     children: [
       {
         index: true,
@@ -338,6 +349,8 @@ const router = createBrowserRouter([
   {
     path: "*",
     element: <Navigate to="/CreateOrder" replace />,
+  },
+    ],
   },
 ]);
 

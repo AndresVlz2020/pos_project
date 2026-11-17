@@ -4,6 +4,7 @@
 // siempre obtienen granted: true; para el resto se consulta /api/access/check.
 import { useState, useEffect } from "react";
 import { hasPermission } from "./accessService";
+import { getStoredAuthUser } from "@/shared/utils/authStorage";
 
 export default function usePermission(permissionCode) {
   const [state, setState] = useState({ granted: false, loading: true });
@@ -11,17 +12,7 @@ export default function usePermission(permissionCode) {
   useEffect(() => {
     let active = true;
 
-    const currentUser = (() => {
-      try {
-        return JSON.parse(
-          localStorage.getItem("auth_user") ||
-            sessionStorage.getItem("user") ||
-            "null"
-        );
-      } catch {
-        return null;
-      }
-    })();
+    const currentUser = getStoredAuthUser();
 
     const isAdmin =
       Boolean(currentUser?.isAdmin || currentUser?.isSuperuser) ||

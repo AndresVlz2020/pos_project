@@ -82,9 +82,6 @@ export default function CreateSuppliers() {
                     <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
                         Crear Proveedor
                     </h1>
-                    <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-                        Registra la ficha comercial y de contacto de un nuevo distribuidor.
-                    </p>
                 </div>
                 <Link to="/supplierList">
                     <Button variant="outlined" size="md" leadingIcon="arrow_back">

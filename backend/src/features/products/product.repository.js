@@ -1,4 +1,5 @@
 import { pool } from "../../config/db.js";
+import { parseBooleanFlag } from "../../middlewares/upload.middleware.js";
 
 export const productRepository = {
   async findAll({ activeOnly = false, category = null } = {}) {
@@ -118,6 +119,7 @@ export const productRepository = {
         description,
         price::numeric AS price,
         image_url AS image,
+        image_url,
         status,
         is_active,
         stock;
@@ -131,7 +133,7 @@ export const productRepository = {
       targetCategoryId,
       imageUrl || null,
       status,
-      Boolean(isActive),
+      parseBooleanFlag(isActive),
       Number(stock) || 0,
     ];
 
@@ -147,7 +149,12 @@ export const productRepository = {
     const description = data.description !== undefined ? data.description : current.description;
     const price = data.price !== undefined ? Number(data.price) : current.price;
     const status = data.status || current.status;
-    const isActive = data.is_active !== undefined ? Boolean(data.is_active) : (data.isActive !== undefined ? Boolean(data.isActive) : current.is_active);
+    const isActive =
+      data.is_active !== undefined
+        ? parseBooleanFlag(data.is_active)
+        : data.isActive !== undefined
+        ? parseBooleanFlag(data.isActive)
+        : current.is_active;
     const stock = data.stock !== undefined ? Number(data.stock) : current.stock;
     const incomingImage = data.imageUrl !== undefined ? data.imageUrl : data.image;
     const imageUrl = incomingImage !== undefined
@@ -186,6 +193,7 @@ export const productRepository = {
         description,
         price::numeric AS price,
         image_url AS image,
+        image_url,
         status,
         is_active,
         stock;

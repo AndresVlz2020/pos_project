@@ -105,6 +105,8 @@ describe("mutaciones exigen token (401 sin autenticar)", () => {
     ["PUT", "/api/groups/1/permissions"],
     ["GET", "/api/permissions"],
     ["GET", "/api/access/check/create_order"],
+    ["GET", "/api/notifications"],
+    ["PATCH", "/api/notifications/read-all"],
   ];
 
   it.each(cases)("%s %s → 401 sin token", async (method, path) => {
@@ -188,20 +190,41 @@ describe("RBAC: rol correcto → 2xx", () => {
     expect(res.status).toBe(201);
   });
 
-  it("mesero actualiza estado de orden (200)", async () => {
+  it("mesero actualiza orden manteniendo estado 'Creada' (200) y no puede marcar 'Pagada' (403)", async () => {
     const res = await api
       .patch(`/api/orders/${fixtures.orderNum}/status`)
       .set(auth(tokens.mesero))
-      .send({ status: "No Pagada" });
+      .send({ status: "Creada" });
     expect(res.status).toBe(200);
+
+    const forbiddenPay = await api
+      .patch(`/api/orders/${fixtures.orderNum}/status`)
+      .set(auth(tokens.mesero))
+      .send({ status: "Pagada" });
+    expect(forbiddenPay.status).toBe(403);
   });
 
-  it("cocina actualiza estado de orden (200)", async () => {
+  it("cocina completa orden a 'Completada' (200) y cajero la marca 'Pagada' (200)", async () => {
     const res = await api
       .patch(`/api/orders/${fixtures.orderNum}/status`)
       .set(auth(tokens.cocina))
-      .send({ status: "No Pagada" });
+      .send({ status: "Completada" });
     expect(res.status).toBe(200);
+    expect(res.body.order.status).toBe("Completada");
+
+    const freshOrder = await api
+      .post("/api/orders")
+      .set(auth(tokens.mesero))
+      .send({
+        tableNumber: "Mesa 10",
+        items: [{ productId: fixtures.prodId, qty: 1, price: 10000 }],
+      });
+    const cajeroPay = await api
+      .patch(`/api/orders/${freshOrder.body.order.order_number}/status`)
+      .set(auth(tokens.cajero))
+      .send({ status: "Pagada" });
+    expect(cajeroPay.status).toBe(200);
+    expect(cajeroPay.body.order.status).toBe("Pagada");
   });
 
   it("admin anula orden (200)", async () => {

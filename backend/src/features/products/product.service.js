@@ -1,4 +1,5 @@
 import { productRepository } from "./product.repository.js";
+import { parseBooleanFlag } from "../../middlewares/upload.middleware.js";
 
 export const productService = {
   async getAllProducts(filters) {
@@ -40,7 +41,11 @@ export const productService = {
       categoryId: data.categoryId || null,
       imageUrl: data.image || data.imageUrl || null,
       status: data.status || data.productStatus || "Disponible",
-      isActive: data.isActive !== undefined ? data.isActive : (data.is_active !== undefined ? data.is_active : true),
+      isActive: (() => {
+        const rawActive =
+          data.isActive !== undefined ? data.isActive : data.is_active;
+        return rawActive !== undefined ? parseBooleanFlag(rawActive) : true;
+      })(),
       stock,
     };
 

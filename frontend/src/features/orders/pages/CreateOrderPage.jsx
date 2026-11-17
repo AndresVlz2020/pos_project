@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Button,
   IconButton,
@@ -11,43 +12,75 @@ import {
   Input,
 } from "@/shared";
 import { getProducts } from "@/features/products/services/productServices";
-import { getOrders, createOrder, cancelOrder, getTablesAvailability } from "../services/orderServices";
+import {
+  getOrders,
+  createOrder,
+  cancelOrder,
+  getTablesAvailability,
+} from "../services/orderServices";
 import { getOrderColumns } from "../table/OrderColumns";
 import OrderViewModal from "../components/OrderViewModal";
+import KitchenOrdersView from "../components/KitchenOrdersView";
+import WaiterOrdersView from "../components/WaiterOrdersView";
+import OrderStatusFilterBar from "../components/OrderStatusFilterBar";
 import TableSelectorGrid from "../components/TableSelectorGrid";
+import OrderDishCard from "../components/OrderDishCard";
+import PosCategoryFilter from "@/features/home/components/PosCategoryFilter";
 import { useScrollableBatch } from "../hooks/useScrollableBatch";
+import usePermission from "@/features/access/services/usePermission";
+import { getUserRoleFlags } from "@/shared/utils/authStorage";
 import {
+  readOrderDraft,
+  saveOrderDraft,
   readInitialHandoffQty,
   clearOrderDraft,
   consumeOrderHandoff,
 } from "../utils/orderDraftStorage";
-import { getProductImage, imgPunta } from "@/utils/imageHelper";
+import {
+  summarizeOrderStatuses,
+  mapProductToDish,
+  filterDishesByQueryAndCategory,
+} from "../utils/orderFormHelpers";
 
 export default function CreateOrder() {
+  const location = useLocation();
+  const { isAdmin, isCajero, isMesero, isCocina } = getUserRoleFlags();
+  const canPayOrder = isAdmin || isCajero;
+  const { granted: canEditOrder } = usePermission("update_order");
+  const initialDraft = useMemo(() => readOrderDraft(), []);
+
   const [activeTab, setActiveTab] = useState("create"); // 'create' | 'list'
   const [orders, setOrders] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState(null);
 
   const [productsList, setProductsList] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
-
   const [tablesList, setTablesList] = useState([]);
+  const [isTablesExpanded, setIsTablesExpanded] = useState(true);
 
-  const [form, setForm] = useState({
-    tableNumber: "",
-    observations: "",
-  });
+  const [form, setForm] = useState(() => ({
+    tableNumber: initialDraft.tableNumber || "",
+    observations: initialDraft.observations || "",
+  }));
 
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   const [qty, setQty] = useState(() => readInitialHandoffQty());
-  const [pinnedDishIds, setPinnedDishIds] = useState(
-    () => new Set(Object.keys(readInitialHandoffQty()).map(String))
-  );
+  const [pinnedDishIds, setPinnedDishIds] = useState(() => {
+    const preId = Number(location.state?.preselectedProduct?.id);
+    return new Set([
+      ...(initialDraft.pinnedIds || []),
+      ...Object.keys(readInitialHandoffQty()).map(String),
+      ...(Number.isInteger(preId) && preId > 0 ? [String(preId)] : []),
+    ]);
+  });
   const [dishSearch, setDishSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const draftHydratedRef = useRef(false);
 
   // Cargar productos, órdenes y disponibilidad de mesas en tiempo real
   const fetchInitialData = useCallback(async () => {
@@ -64,29 +97,51 @@ export default function CreateOrder() {
           return [];
         }),
       ]);
-      setProductsList(prods || []);
+      const safeProds = prods || [];
+      setProductsList(safeProds);
       setOrders(ords || []);
       setTablesList(tbls || []);
 
-      // Consumir transferencia única enviada desde Inicio (sin arrastrar órdenes no registradas)
-      const handoffResult = consumeOrderHandoff(prods || []);
+      const handoffResult = consumeOrderHandoff(safeProds);
+      const stockMap = new Map(
+        safeProds.map((p) => [
+          String(p.id),
+          p.is_active ? Math.max(0, Math.floor(Number(p.stock) || 0)) : 0,
+        ])
+      );
+
+      setQty((prev) => {
+        const next = { ...prev };
+        if (handoffResult?.removeInvalidId) {
+          delete next[String(handoffResult.removeInvalidId)];
+        } else if (handoffResult?.resolvedQty) {
+          Object.entries(handoffResult.resolvedQty).forEach(([k, v]) => {
+            next[String(k)] = (next[String(k)] || 0) + v;
+          });
+        }
+        // Acotar siempre cada ítem guardado en el borrador al stock vigente de BD
+        if (safeProds.length > 0) {
+          Object.keys(next).forEach((idKey) => {
+            if (!stockMap.has(idKey)) return;
+            const avail = stockMap.get(idKey);
+            if (avail <= 0) {
+              delete next[idKey];
+            } else if (next[idKey] > avail) {
+              next[idKey] = avail;
+            }
+          });
+        }
+        return next;
+      });
+
       if (handoffResult?.removeInvalidId) {
         const badId = String(handoffResult.removeInvalidId);
-        setQty((prev) => {
-          const next = { ...prev };
-          delete next[badId];
-          return next;
-        });
         setPinnedDishIds((prev) => {
           const next = new Set(prev);
           next.delete(badId);
           return next;
         });
       } else if (handoffResult?.resolvedQty) {
-        setQty((prev) => ({
-          ...prev,
-          ...handoffResult.resolvedQty,
-        }));
         setPinnedDishIds((prev) => {
           const next = new Set(prev);
           Object.keys(handoffResult.resolvedQty).forEach((k) =>
@@ -111,11 +166,24 @@ export default function CreateOrder() {
     } catch (err) {
       console.error("Error al cargar datos en CreateOrder:", err);
     } finally {
+      draftHydratedRef.current = true;
       setLoadingProducts(false);
     }
   }, []);
 
+  // Persistir borrador activo en sessionStorage durante la sesión
   useEffect(() => {
+    if (!draftHydratedRef.current || isCocina) return;
+    saveOrderDraft({
+      qty,
+      tableNumber: form.tableNumber,
+      observations: form.observations,
+      pinnedIds: Array.from(pinnedDishIds),
+    });
+  }, [qty, form.tableNumber, form.observations, pinnedDishIds, isCocina]);
+
+  useEffect(() => {
+    if (isCocina) return;
     let active = true;
     Promise.resolve().then(() => {
       if (active) fetchInitialData();
@@ -123,9 +191,10 @@ export default function CreateOrder() {
     return () => {
       active = false;
     };
-  }, [fetchInitialData]);
+  }, [fetchInitialData, isCocina]);
 
   useEffect(() => {
+    if (isCocina) return;
     const handleRefresh = () => {
       if (document.visibilityState === "visible") {
         fetchInitialData();
@@ -137,38 +206,22 @@ export default function CreateOrder() {
       window.removeEventListener("focus", fetchInitialData);
       document.removeEventListener("visibilitychange", handleRefresh);
     };
-  }, [fetchInitialData]);
+  }, [fetchInitialData, isCocina]);
 
-  // Regla RFADMIN29 / RFADMIN24: Platillos inhabilitados excluidos de órdenes
-  const dishes = useMemo(() => {
-    return productsList.map((p) => ({
-      id: p.id,
-      code: p.code,
-      name: p.title || p.name,
-      price: Number(p.price) || 0,
-      stock: Number(p.stock) || 0,
-      status: p.is_active ? "Disponible" : "Inactivo",
-      image: p.image,
-    }));
-  }, [productsList]);
+  const dishes = useMemo(
+    () => productsList.map(mapProductToDish),
+    [productsList]
+  );
 
-  const filteredDishes = useMemo(() => {
-    const q = dishSearch.trim().toLowerCase();
-    const list = !q
-      ? dishes
-      : dishes.filter(
-          (d) =>
-            (d.name || "").toLowerCase().includes(q) ||
-            (d.code || "").toLowerCase().includes(q)
-        );
-
-    if (pinnedDishIds.size === 0) return list;
-    return [...list].sort((a, b) => {
-      const aPinned = pinnedDishIds.has(String(a.id)) ? 1 : 0;
-      const bPinned = pinnedDishIds.has(String(b.id)) ? 1 : 0;
-      return bPinned - aPinned;
-    });
-  }, [dishes, dishSearch, pinnedDishIds]);
+  const filteredDishes = useMemo(
+    () =>
+      filterDishesByQueryAndCategory(dishes, {
+        search: dishSearch,
+        category: selectedCategory,
+        pinnedIds: pinnedDishIds,
+      }),
+    [dishes, dishSearch, selectedCategory, pinnedDishIds]
+  );
 
   const {
     scrollContainerRef: dishesScrollRef,
@@ -178,7 +231,7 @@ export default function CreateOrder() {
     hasMore: hasMoreDishes,
     loadMore: loadMoreDishes,
     handleScroll: handleDishesScroll,
-  } = useScrollableBatch(filteredDishes, dishSearch, 10);
+  } = useScrollableBatch(filteredDishes, `${selectedCategory}::${dishSearch}`, 12);
 
   const totalAmount = useMemo(() => {
     return dishes.reduce(
@@ -200,9 +253,22 @@ export default function CreateOrder() {
       return;
     }
 
+    const availableStock = Math.max(0, Math.floor(Number(dish.stock ?? 0)));
+    const currentCount = qty[dish.id] || 0;
+    if (availableStock <= 0 || currentCount >= availableStock) {
+      showErrorAlert({
+        title: "Stock insuficiente",
+        text:
+          availableStock <= 0
+            ? `"${dish.name}" está agotado y no tiene unidades disponibles.`
+            : `Solo hay ${availableStock} ${availableStock === 1 ? "unidad disponible" : "unidades disponibles"} de "${dish.name}".`,
+      });
+      return;
+    }
+
     setQty((prev) => ({
       ...prev,
-      [dish.id]: (prev[dish.id] || 0) + 1,
+      [dish.id]: currentCount + 1,
     }));
   };
 
@@ -240,6 +306,7 @@ export default function CreateOrder() {
       return;
     }
     setForm((prev) => ({ ...prev, tableNumber: table.tableNumber }));
+    setIsTablesExpanded(false);
     if (errors.tableNumber) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -259,6 +326,7 @@ export default function CreateOrder() {
 
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
+      setIsTablesExpanded(true);
       return;
     }
 
@@ -270,7 +338,17 @@ export default function CreateOrder() {
       return;
     }
 
-    // Regla RFADMIN26: Validación de mesa disponible
+    const overStockDish = dishes.find(
+      (d) => (qty[d.id] || 0) > Math.max(0, Math.floor(Number(d.stock ?? 0)))
+    );
+    if (overStockDish) {
+      await showErrorAlert({
+        title: "Stock insuficiente",
+        text: `La cantidad de "${overStockDish.name}" supera el stock disponible (${overStockDish.stock}).`,
+      });
+      return;
+    }
+
     const currentTableObj = tablesList.find(
       (t) => t.tableNumber.toLowerCase() === form.tableNumber.toLowerCase()
     );
@@ -280,10 +358,10 @@ export default function CreateOrder() {
         title: "Mesa Ocupada",
         text: `La "${form.tableNumber}" ya tiene una orden activa (${currentTableObj.activeOrderNumber || "en curso"}). No se permite registrar una orden sobre una mesa ocupada.`,
       });
+      setIsTablesExpanded(true);
       return;
     }
 
-    // Construir items seleccionados para backend
     const selectedItems = dishes
       .filter((d) => (qty[d.id] || 0) > 0)
       .map((d) => ({
@@ -308,7 +386,6 @@ export default function CreateOrder() {
 
       const creatorName = created.order?.waiter;
 
-      // Notificación clara y limpia (sin mención de PostgreSQL)
       await showSuccessAlert({
         title: "Orden Creada",
         text: creatorName
@@ -316,9 +393,9 @@ export default function CreateOrder() {
           : `Orden ${created.order?.order_number || "creada"} para ${tableFormatted} registrada con éxito.`,
       });
 
-      // Resetear formulario y recargar mesas/órdenes (la factura se genera al pagar, no al crear)
       setQty({});
       setPinnedDishIds(new Set());
+      setForm((prev) => ({ ...prev, observations: "" }));
       clearOrderDraft();
       setErrors({});
       fetchInitialData();
@@ -378,16 +455,41 @@ export default function CreateOrder() {
       getOrderColumns({
         onViewOrder: handleViewOrder,
         onRequestCancel: handleRequestCancel,
+        canEdit: canEditOrder,
+        canPay: canPayOrder,
       }),
-    []
+    [canEditOrder, canPayOrder]
   );
 
+  const { normalizedOrders, statusCounts, filteredOrders } = useMemo(() => {
+    const sorted = [...orders].sort((a, b) => {
+      const dateA = new Date(a.createdAt || a.created_at || 0);
+      const dateB = new Date(b.createdAt || b.created_at || 0);
+      return dateB - dateA;
+    });
+    const { normalizedOrders: normalized, counts } =
+      summarizeOrderStatuses(sorted);
+    const filtered =
+      statusFilter === "all"
+        ? normalized
+        : normalized.filter((o) => o.status === statusFilter);
+    return {
+      normalizedOrders: normalized,
+      statusCounts: counts,
+      filteredOrders: filtered,
+    };
+  }, [orders, statusFilter]);
+
+  if (isCocina) {
+    return <KitchenOrdersView />;
+  }
+
   return (
-    <div className="w-full flex-1 flex flex-col font-[family-name:var(--main-font)]">
+    <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col font-[family-name:var(--main-font)]">
       {/* Cabecera M3 del módulo de órdenes */}
       <div className="bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-on-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl p-4 sm:p-5 m3-elevation-1 mb-4 sm:mb-5">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3.5 sm:gap-4">
-          <div className="grid grid-cols-[auto_1fr_auto] md:flex items-center gap-3 sm:gap-4 min-w-0">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3.5 sm:gap-4">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <IconButton
               type="button"
               variant="tonal"
@@ -395,6 +497,7 @@ export default function CreateOrder() {
               iconSize={20}
               ariaLabel="Volver"
               title="Volver"
+              className="shrink-0"
               onClick={() => {
                 if (activeTab === "list") {
                   setActiveTab("create");
@@ -407,23 +510,18 @@ export default function CreateOrder() {
               <M3Icon name="arrow_back" size={20} />
             </IconButton>
 
-            <div className="min-w-0 text-center md:text-left">
-              <h1 className="text-title-lg sm:text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
+            <div className="min-w-0 text-left">
+              <h1 className="text-title-lg sm:text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)] leading-tight">
                 {activeTab === "create" ? "Crear Nueva Orden" : "Listado de Órdenes"}
               </h1>
-              <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-                Gestión en tiempo real de mesas y órdenes del restaurante
-              </p>
             </div>
-
-            <div className="w-10 md:hidden" aria-hidden="true" />
           </div>
 
           {/* M3 Segmented Button para alternar creación / listado */}
           <div
             role="tablist"
             aria-label="Cambiar vista del módulo de órdenes"
-            className="grid grid-cols-2 rounded-full border border-[var(--md-sys-color-outline)] bg-[var(--md-sys-color-surface)] overflow-hidden divide-x divide-[var(--md-sys-color-outline)] w-full md:w-auto md:min-w-[384px] shrink-0"
+            className="grid grid-cols-2 rounded-full border border-[var(--md-sys-color-outline)] bg-[var(--md-sys-color-surface)] overflow-hidden divide-x divide-[var(--md-sys-color-outline)] w-full lg:w-auto lg:min-w-[336px] shrink-0"
           >
             <button
               type="button"
@@ -457,7 +555,7 @@ export default function CreateOrder() {
               <M3Icon name="receipt_long" size={18} />
               <span>Ver Órdenes</span>
               <span className="inline-flex items-center justify-center min-w-6 h-5 px-2 rounded-full text-label-sm font-semibold bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] tabular-nums">
-                {orders.length}
+                {normalizedOrders.length}
               </span>
             </button>
           </div>
@@ -467,33 +565,45 @@ export default function CreateOrder() {
       <div className="flex-1 flex flex-col">
         {activeTab === "create" ? (
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4 sm:gap-5">
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
-            {/* Formulario datos de la orden */}
-            <div className="lg:col-span-4 lg:sticky lg:top-20 space-y-4 bg-[var(--md-sys-color-surface-container-low)] p-4 sm:p-5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1">
+            {/* Datos de la orden centrados horizontalmente; al colapsar Mesas queda compacto sin espacio muerto */}
+            <div className="bg-[var(--md-sys-color-surface-container-low)] p-4 sm:p-5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1 space-y-3.5">
               <h2 className="text-label-lg font-semibold uppercase tracking-wider text-[var(--md-sys-color-primary)] border-b border-[var(--md-sys-color-outline-variant)] pb-2">
                 Datos de la Orden
               </h2>
 
-              {/* Mapa visual interactivo de mesas con su número */}
-              <TableSelectorGrid
-                tables={tablesList}
-                selectedTableNumber={form.tableNumber}
-                onSelectTable={handleSelectTablePill}
-                error={errors.tableNumber}
-              />
+              <div
+                className={
+                  isTablesExpanded
+                    ? "space-y-4"
+                    : "grid grid-cols-1 md:grid-cols-12 gap-3.5 items-end"
+                }
+              >
+                <div className={isTablesExpanded ? "w-full" : "md:col-span-5"}>
+                  <TableSelectorGrid
+                    tables={tablesList}
+                    selectedTableNumber={form.tableNumber}
+                    onSelectTable={handleSelectTablePill}
+                    isExpanded={isTablesExpanded}
+                    onToggleExpanded={setIsTablesExpanded}
+                    error={errors.tableNumber}
+                  />
+                </div>
 
-              <Input
-                label="Observaciones de cocina"
-                name="observations"
-                placeholder="Términos de carne, sin cebolla, etc."
-                value={form.observations}
-                onChange={handleChangeForm}
-              />
+                <div className={isTablesExpanded ? "w-full" : "md:col-span-7"}>
+                  <Input
+                    label="Observaciones de cocina"
+                    name="observations"
+                    placeholder="Términos de carne, sin cebolla, etc."
+                    value={form.observations}
+                    onChange={handleChangeForm}
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Selector de platillos gastronómicos en contenedor desplazable independiente */}
-            <div className="lg:col-span-8 flex flex-col bg-[var(--md-sys-color-surface-container-low)] p-4 sm:p-5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1">
-              <div className="pb-3 border-b border-[var(--md-sys-color-outline-variant)]">
+            {/* Selector de platillos con búsqueda y categorías horizontales */}
+            <div className="flex-1 flex flex-col bg-[var(--md-sys-color-surface-container-low)] p-4 sm:p-5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1">
+              <div className="space-y-3 pb-3 border-b border-[var(--md-sys-color-outline-variant)]">
                 <SearchField
                   asForm={false}
                   fullWidth={true}
@@ -506,111 +616,36 @@ export default function CreateOrder() {
                   size="sm"
                   variant="filled"
                 />
+
+                <PosCategoryFilter
+                  selectedCategory={selectedCategory}
+                  onSelectCategory={setSelectedCategory}
+                  products={dishes}
+                />
               </div>
 
               <div
                 ref={dishesScrollRef}
                 onScroll={handleDishesScroll}
-                className="mt-3 max-h-[420px] lg:max-h-[560px] overflow-y-auto overscroll-contain pr-1"
+                className="mt-3 max-h-[460px] lg:max-h-[580px] overflow-y-auto overscroll-contain pr-1"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {visibleDishes.length === 0 ? (
-                    <div className="md:col-span-2 2xl:col-span-3 py-12 text-center text-body-md text-[var(--md-sys-color-on-surface-variant)] rounded-2xl bg-[var(--md-sys-color-surface)] border border-dashed border-[var(--md-sys-color-outline-variant)]">
-                      No se encontraron platillos que coincidan con &ldquo;{dishSearch.trim()}&rdquo;.
+                    <div className="sm:col-span-2 lg:col-span-3 py-12 text-center text-body-md text-[var(--md-sys-color-on-surface-variant)] rounded-2xl bg-[var(--md-sys-color-surface)] border border-dashed border-[var(--md-sys-color-outline-variant)]">
+                      No se encontraron platillos que coincidan con el filtro aplicado.
                     </div>
-                  ) : visibleDishes.map((dish) => {
-                    const count = qty[dish.id] || 0;
-                    const isInactive = dish.status === "Inactivo";
-
-                    return (
-                      <div
+                  ) : (
+                    visibleDishes.map((dish) => (
+                      <OrderDishCard
                         key={dish.id}
-                        className={`p-3 rounded-2xl border transition-colors flex items-center justify-between gap-3 ${
-                          isInactive
-                            ? "bg-[var(--md-sys-color-surface-container-highest)]/40 border-[var(--md-sys-color-outline-variant)] opacity-50 cursor-not-allowed"
-                            : count > 0
-                            ? "bg-[var(--md-sys-color-primary-container)]/30 border-[var(--md-sys-color-primary)] m3-elevation-1"
-                            : "bg-[var(--md-sys-color-surface)] border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-primary)]/60"
-                        }`}
-                      >
-                        {/* Imagen pequeña del platillo */}
-                        <div className="size-12 sm:size-14 rounded-xl overflow-hidden border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] shrink-0">
-                          <img
-                            src={getProductImage(dish)}
-                            alt={dish.name}
-                            className={`w-full h-full object-cover transition duration-150 ${
-                              isInactive ? "grayscale contrast-75" : ""
-                            }`}
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src = imgPunta;
-                            }}
-                          />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <span
-                            className={`text-label-sm font-mono block ${
-                              isInactive
-                                ? "text-[var(--md-sys-color-outline)]"
-                                : "text-[var(--md-sys-color-on-surface-variant)]"
-                            }`}
-                          >
-                            {dish.code}
-                          </span>
-                          <h4
-                            className={`text-title-sm font-medium truncate ${
-                              isInactive
-                                ? "text-[var(--md-sys-color-on-surface-variant)]"
-                                : "text-[var(--md-sys-color-on-surface)]"
-                            }`}
-                          >
-                            {dish.name}
-                          </h4>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span
-                              className={`text-body-sm font-semibold tabular-nums ${
-                                isInactive
-                                  ? "text-[var(--md-sys-color-outline)]"
-                                  : "text-[var(--md-sys-color-primary)]"
-                              }`}
-                            >
-                              ${dish.price.toLocaleString("es-CO")}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Contador de unidades M3 de 40dp */}
-                        <div className="flex items-center gap-1 bg-[var(--md-sys-color-surface-container-high)] p-1 rounded-full border border-[var(--md-sys-color-outline-variant)] shrink-0">
-                          <IconButton
-                            type="button"
-                            variant="standard"
-                            hitSize={40}
-                            iconSize={18}
-                            disabled={count === 0}
-                            onClick={() => handleDecrement(dish)}
-                            ariaLabel={`Disminuir ${dish.name}`}
-                          >
-                            <M3Icon name="remove" size={18} />
-                          </IconButton>
-                          <span className="text-label-lg font-semibold w-7 text-center text-[var(--md-sys-color-on-surface)] tabular-nums">
-                            {count}
-                          </span>
-                          <IconButton
-                            type="button"
-                            variant="tonal"
-                            hitSize={40}
-                            iconSize={18}
-                            disabled={isInactive}
-                            onClick={() => handleIncrement(dish)}
-                            ariaLabel={`Aumentar ${dish.name}`}
-                          >
-                            <M3Icon name="add" size={18} />
-                          </IconButton>
-                        </div>
-                      </div>
-                    );
-                  })}
+                        dish={dish}
+                        count={qty[dish.id] || 0}
+                        maxStock={dish.stock}
+                        onIncrement={handleIncrement}
+                        onDecrement={handleDecrement}
+                      />
+                    ))
+                  )}
                 </div>
 
                 {totalFilteredDishes > 0 && (
@@ -632,15 +667,15 @@ export default function CreateOrder() {
                 )}
               </div>
             </div>
-            </div>
 
-            {/* Barra inferior fija dentro del área de trabajo para enviar orden sin cubrir el Navigation Rail */}
+            {/* Barra inferior fija dentro del área centrada */}
             <div className="sticky bottom-0 z-30 mt-auto bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl m3-elevation-2">
               <div className="w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 text-label-md text-[var(--md-sys-color-on-surface-variant)]">
+                  <div className="flex flex-wrap items-center gap-2 text-label-md text-[var(--md-sys-color-on-surface-variant)]">
                     <span>
-                      {totalItems} {totalItems === 1 ? "ítem" : "ítems"} • {form.tableNumber || "Sin mesa"}
+                      {totalItems} {totalItems === 1 ? "ítem" : "ítems"} •{" "}
+                      {form.tableNumber || "Sin mesa"}
                     </span>
                     {totalItems > 0 && (
                       <button
@@ -673,10 +708,22 @@ export default function CreateOrder() {
               </div>
             </div>
           </form>
+        ) : isMesero ? (
+          <WaiterOrdersView />
         ) : (
           /* Pestaña de listado */
           <div className="flex-1 flex flex-col bg-[var(--md-sys-color-surface-container-low)] p-4 sm:p-6 rounded-2xl border border-[var(--md-sys-color-outline-variant)] m3-elevation-1">
-            <DataTable className="flex-1" data={orders} columns={orderColumns} />
+            <OrderStatusFilterBar
+              value={statusFilter}
+              onChange={setStatusFilter}
+              counts={statusCounts}
+              className="mb-3"
+            />
+            <DataTable
+              className="flex-1"
+              data={filteredOrders}
+              columns={orderColumns}
+            />
           </div>
         )}
       </div>

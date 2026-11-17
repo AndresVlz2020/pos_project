@@ -3,10 +3,6 @@ import { Link } from "react-router-dom";
 import {
   ThemeToggle,
   BrandLogo,
-  Dropdown,
-  DropdownTrigger,
-  DropdownContent,
-  DropdownItem,
   IconButton,
   M3Icon,
 } from "@/shared";
@@ -15,6 +11,7 @@ import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
 import { formatDuration } from "@/services/sessionService";
 import SessionHistoryModal from "../components/SessionHistoryModal";
 import BiometricSettingsModal from "../components/BiometricSettingsModal";
+import NotificationBell from "@/features/notifications/components/NotificationBell";
 import Footer from "./Footer";
 
 export function AppShell({ children, showFooter = false }) {
@@ -24,14 +21,12 @@ export function AppShell({ children, showFooter = false }) {
     canCreateOrder,
     sessionAnchor,
     elapsedSeconds,
-    pathname,
     destinations,
     handleLogout,
-    navigate,
   } = useNavigationState();
 
   const [railExpanded, setRailExpanded] = useState(
-    () => localStorage.getItem("m3_rail_expanded") === "1"
+    () => sessionStorage.getItem("m3_rail_expanded") === "1"
   );
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -40,24 +35,17 @@ export function AppShell({ children, showFooter = false }) {
   const toggleRail = () => {
     setRailExpanded((prev) => {
       const next = !prev;
-      localStorage.setItem("m3_rail_expanded", next ? "1" : "0");
+      sessionStorage.setItem("m3_rail_expanded", next ? "1" : "0");
       return next;
     });
   };
 
-  // En CreateOrder / EditOrder móvil existe barra inferior fija de acciones, ocultamos Navigation Bar móvil ahí para evitar solapamiento
-  const hideBottomBarOnMobileForm =
-    pathname.includes("createorder") || pathname.includes("editorder");
-
-  const mobileBarItems = destinations.slice(0, 4);
-  const activeDest = destinations.find((d) => d.active);
-
   return (
     <div className="min-h-screen w-full flex bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] font-[family-name:var(--main-font)]">
-      {/* Desktop M3 Navigation Rail / Expandable Navigation Drawer (lg+) */}
+      {/* Tablet & Desktop M3 Fixed Navigation Rail / Expandable Navigation Drawer (md+) */}
       <aside
         aria-label="Navegación principal M3"
-        className={`hidden lg:flex flex-col shrink-0 sticky top-0 h-screen bg-[var(--md-sys-color-surface-container-low)] border-r border-[var(--md-sys-color-outline-variant)] transition-[width] duration-200 z-30 ${
+        className={`hidden md:flex flex-col shrink-0 fixed inset-y-0 left-0 h-dvh bg-[var(--md-sys-color-surface-container-low)] border-r border-[var(--md-sys-color-outline-variant)] transition-[width] duration-200 z-40 ${
           railExpanded ? "w-60 px-3" : "w-[88px] px-2 items-center"
         } py-3 select-none`}
       >
@@ -179,22 +167,53 @@ export function AppShell({ children, showFooter = false }) {
             <M3Icon name="fingerprint" size={20} />
             {railExpanded && <span className="truncate">Biometría</span>}
           </button>
+
+          {isAdmin && (
+            <Link
+              to="/dashboard/access"
+              title="Admin (Gestión de permisos)"
+              aria-label="Admin"
+              className={`m3-state flex items-center rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
+                railExpanded ? "w-full h-11 px-4 gap-3 text-sm font-medium" : "size-11 justify-center"
+              }`}
+            >
+              <M3Icon name="admin_panel_settings" size={20} />
+              {railExpanded && <span className="truncate">Admin</span>}
+            </Link>
+          )}
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+            className={`m3-state flex items-center cursor-pointer rounded-full text-[var(--md-sys-color-error)] hover:text-[var(--md-sys-color-error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
+              railExpanded ? "w-full h-11 px-4 gap-3 text-sm font-medium" : "size-11 justify-center"
+            }`}
+          >
+            <M3Icon name="logout" size={20} />
+            {railExpanded && <span className="truncate">Cerrar sesión</span>}
+          </button>
         </div>
       </aside>
 
       {/* Columna Principal: Top App Bar + Workspace 100% Ancho y Alto */}
-      <div className="flex-1 min-w-0 min-h-screen flex flex-col">
+      <div
+        className={`flex-1 min-w-0 min-h-screen flex flex-col transition-[padding-left] duration-200 ${
+          railExpanded ? "md:pl-60" : "md:pl-[88px]"
+        }`}
+      >
         {/* M3 Small Top App Bar (64dp) */}
-        <header className="sticky top-0 z-40 h-16 shrink-0 bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
+        <header className="sticky top-0 z-30 h-16 shrink-0 bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            {/* Botón Drawer en Móvil / Tablet (< lg) */}
+            {/* Botón Drawer en Móvil (< md) */}
             <IconButton
               hitSize={40}
               iconSize={22}
               variant="standard"
               ariaLabel="Abrir menú de navegación"
               onClick={() => setMobileDrawerOpen(true)}
-              className="lg:hidden"
+              className="md:hidden"
             >
               <M3Icon name="menu" size={22} />
             </IconButton>
@@ -209,13 +228,6 @@ export function AppShell({ children, showFooter = false }) {
               />
             </Link>
 
-            {activeDest && (
-              <div className="hidden md:flex items-center gap-2 pl-2 border-l border-[var(--md-sys-color-outline-variant)] min-w-0">
-                <span className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] truncate">
-                  {activeDest.label}
-                </span>
-              </div>
-            )}
           </div>
 
           {/* Indicador de Turno Móvil Compacto (solo avatar circular o timer operativo, sin texto cortado) */}
@@ -280,131 +292,24 @@ export function AppShell({ children, showFooter = false }) {
               </div>
             )}
 
+            <NotificationBell />
+
             <ThemeToggle hitSize={40} iconSize={20} />
-
-            <Dropdown>
-              <DropdownTrigger>
-                <IconButton
-                  hitSize={40}
-                  iconSize={20}
-                  variant="outlined"
-                  ariaLabel="Menu de cuenta y opciones"
-                >
-                  <M3Icon name="keyboard_arrow_down" size={20} />
-                </IconButton>
-              </DropdownTrigger>
-
-              <DropdownContent className="right-0 min-w-[240px]">
-                {isAdmin && (
-                  <DropdownItem
-                    icon="admin_panel_settings"
-                    onClick={() => navigate("/dashboard/access")}
-                    className={
-                      pathname.includes("access")
-                        ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-medium"
-                        : ""
-                    }
-                  >
-                    Admin (Gestión de permisos)
-                  </DropdownItem>
-                )}
-
-                <DropdownItem
-                  icon="fingerprint"
-                  onClick={() => setIsBiometricsOpen(true)}
-                >
-                  Configurar Biometría / Huella
-                </DropdownItem>
-
-                <DropdownItem
-                  icon="history"
-                  onClick={() => setIsHistoryOpen(true)}
-                >
-                  {isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}
-                </DropdownItem>
-
-                <div className="my-1 border-t border-[var(--md-sys-color-outline-variant)]" />
-
-                <DropdownItem
-                  icon="logout"
-                  onClick={handleLogout}
-                  className="text-[var(--md-sys-color-error)]"
-                >
-                  Cerrar sesión
-                </DropdownItem>
-              </DropdownContent>
-            </Dropdown>
           </div>
         </header>
 
-        {/* Área de Contenido Fluida PC (cero max-w-7xl, flex-1 llena hasta abajo) */}
-        <main
-          className={`flex-1 w-full flex flex-col min-h-0 px-3 sm:px-6 py-4 ${
-            hideBottomBarOnMobileForm ? "pb-24" : "pb-24 lg:pb-6"
-          }`}
-        >
+        {/* Área de Contenido Fluida PC y Móvil (sin menú inferior redundante) */}
+        <main className="flex-1 w-full flex flex-col min-h-0 px-3 sm:px-6 py-4 pb-6">
           {children}
         </main>
 
         {showFooter && <Footer />}
       </div>
 
-      {/* M3 Bottom Navigation Bar para Móvil y Tablet (< lg) */}
-      {!hideBottomBarOnMobileForm && (
-        <nav
-          aria-label="Barra de navegación móvil"
-          className="lg:hidden fixed bottom-0 inset-x-0 z-40 h-20 bg-[var(--md-sys-color-surface-container)] border-t border-[var(--md-sys-color-outline-variant)] px-2 flex items-center justify-around m3-elevation-2"
-        >
-          {mobileBarItems.map((dest) => {
-            const isActive = dest.active;
-            return (
-              <Link
-                key={dest.id}
-                to={dest.to}
-                aria-current={isActive ? "page" : undefined}
-                className="flex-1 flex flex-col items-center justify-center gap-1 py-1 focus-visible:outline-none"
-              >
-                <span
-                  className={`m3-state flex items-center justify-center w-16 h-8 rounded-full ${
-                    isActive
-                      ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
-                      : "text-[var(--md-sys-color-on-surface-variant)]"
-                  }`}
-                >
-                  <M3Icon name={dest.icon} filled={isActive} size={20} />
-                </span>
-                <span
-                  className={`text-label-sm leading-4 truncate max-w-[76px] ${
-                    isActive
-                      ? "font-medium text-[var(--md-sys-color-on-surface)]"
-                      : "text-[var(--md-sys-color-on-surface-variant)]"
-                  }`}
-                >
-                  {dest.label}
-                </span>
-              </Link>
-            );
-          })}
-
-          <button
-            type="button"
-            onClick={() => setMobileDrawerOpen(true)}
-            className="flex-1 flex flex-col items-center justify-center gap-1 py-1 cursor-pointer focus-visible:outline-none"
-          >
-            <span className="m3-state flex items-center justify-center w-16 h-8 rounded-full text-[var(--md-sys-color-on-surface-variant)]">
-              <M3Icon name="menu" size={20} />
-            </span>
-            <span className="text-label-sm leading-4 text-[var(--md-sys-color-on-surface-variant)]">
-              Más
-            </span>
-          </button>
-        </nav>
-      )}
-
-      {/* M3 Modal Navigation Drawer (< lg) */}
+      {/* M3 Modal Navigation Drawer (< md) */}
       {mobileDrawerOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-[105] flex bg-[var(--md-sys-color-scrim)] backdrop-blur-xs"
+          className="md:hidden fixed inset-0 z-[105] flex bg-[var(--md-sys-color-scrim)] backdrop-blur-xs"
           onClick={() => setMobileDrawerOpen(false)}
         >
           <aside
@@ -422,6 +327,17 @@ export function AppShell({ children, showFooter = false }) {
                 <M3Icon name="close" size={20} />
               </IconButton>
             </div>
+
+            {canCreateOrder && (
+              <Link
+                to="/CreateOrder"
+                onClick={() => setMobileDrawerOpen(false)}
+                className="m3-state flex items-center gap-3 h-12 px-4 mb-2 rounded-2xl bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] text-sm font-semibold m3-elevation-1"
+              >
+                <M3Icon name="add" size={20} />
+                <span>Nueva Orden</span>
+              </Link>
+            )}
 
             <nav className="flex-1 overflow-y-auto space-y-1">
               {destinations.map((dest) => (
@@ -464,6 +380,16 @@ export function AppShell({ children, showFooter = false }) {
                 <M3Icon name="history" size={20} />
                 <span>{isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}</span>
               </button>
+              {isAdmin && (
+                <Link
+                  to="/dashboard/access"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  className="m3-state w-full flex items-center gap-3 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] cursor-pointer"
+                >
+                  <M3Icon name="admin_panel_settings" size={20} />
+                  <span>Admin</span>
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => {

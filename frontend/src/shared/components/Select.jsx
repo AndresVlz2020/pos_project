@@ -13,6 +13,7 @@ export default function Select({
   includeEmptyOption = true,
   disabled = false,
   size = "lg",
+  leadingIcon,
   className = "",
   buttonClassName = "",
   ariaLabel,
@@ -175,7 +176,16 @@ export default function Select({
         `}
         {...props}
       >
-        <span className="truncate">{displayText}</span>
+        <span className="flex items-center gap-2 min-w-0">
+          {leadingIcon && (
+            <M3Icon
+              name={leadingIcon}
+              size={18}
+              className="text-[var(--md-sys-color-on-surface-variant)] shrink-0"
+            />
+          )}
+          <span className="truncate">{displayText}</span>
+        </span>
         <M3Icon
           name="keyboard_arrow_down"
           size={20}

@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import {
   DataTable,
   Button,
-  ConfirmDialog,
   Alert,
   M3Icon,
   showConfirmAlert,
@@ -16,26 +15,16 @@ import { hasPermission } from "@/features/access/services/accessService";
 import usePermission from "@/features/access/services/usePermission";
 import { Link } from "react-router-dom";
 import ReportConfigModal from "../reports/components/ReportConfigModal";
+import { getStoredAuthUser } from "@/shared/utils/authStorage";
 
 export default function UserListPage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [userList, setUserList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [pendingChange, setPendingChange] = useState(null);
   const [feedback, setFeedback] = useState(null);
 
   // Verificar si el usuario activo tiene rol de Administrador o permiso list_user
-  const currentUser = (() => {
-    try {
-      return JSON.parse(
-        localStorage.getItem("auth_user") ||
-          sessionStorage.getItem("user") ||
-          "null"
-      );
-    } catch {
-      return null;
-    }
-  })();
+  const currentUser = getStoredAuthUser();
 
   const isAdmin =
     Boolean(currentUser?.isAdmin || currentUser?.isSuperuser) ||
@@ -48,20 +37,28 @@ export default function UserListPage() {
   const { granted: canToggleStatus } = usePermission("disable_user");
 
   useEffect(() => {
-    if (isAdmin) {
-      setCanViewUsers(true);
-      setCanCreateUsers(true);
-    } else {
+    let active = true;
+
+    if (!isAdmin) {
       hasPermission("list_user")
-        .then((res) => setCanViewUsers(Boolean(res.granted)))
-        .catch(() => setCanViewUsers(true));
+        .then((res) => {
+          if (active) setCanViewUsers(Boolean(res.granted));
+        })
+        .catch(() => {
+          if (active) setCanViewUsers(true);
+        });
       hasPermission("create_user")
-        .then((res) => setCanCreateUsers(Boolean(res.granted)))
-        .catch(() => setCanCreateUsers(true));
+        .then((res) => {
+          if (active) setCanCreateUsers(Boolean(res.granted));
+        })
+        .catch(() => {
+          if (active) setCanCreateUsers(true);
+        });
     }
 
     getUsers()
       .then((data) => {
+        if (!active) return;
         if (Array.isArray(data) && data.length > 0) {
           setUserList(data);
         } else {
@@ -70,9 +67,15 @@ export default function UserListPage() {
       })
       .catch((err) => {
         console.warn("Backend users unreachable, using mock data:", err.message);
-        setUserList(initialMockUsers);
+        if (active) setUserList(initialMockUsers);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [isAdmin]);
 
   // Manejo de solicitud de cambio de estado con confirmación mediante SweetAlert
@@ -152,9 +155,6 @@ export default function UserListPage() {
           <h1 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
             Listado de Usuarios
           </h1>
-          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
-            Administración de personal operativo y credenciales de acceso POS
-          </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
           <Button
@@ -194,19 +194,6 @@ export default function UserListPage() {
         data={userList}
         filePrefix="usuarios"
       />
-
-      {pendingChange && (
-        <ConfirmDialog
-          isOpen={Boolean(pendingChange)}
-          title={pendingChange.title}
-          description={pendingChange.description}
-          confirmText={pendingChange.targetState ? "Habilitar" : "Inhabilitar"}
-          cancelText="Cancelar"
-          isDestructive={pendingChange.isDestructive}
-          onConfirm={handleConfirmStatusChange}
-          onCancel={() => setPendingChange(null)}
-        />
-      )}
     </div>
   );
 }
