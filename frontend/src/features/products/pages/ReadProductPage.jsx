@@ -1,13 +1,14 @@
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/shared";
 import usePermission from "@/features/access/services/usePermission";
+import { getProductById } from "../services/productServices";
 
 export default function ReadProductPage() {
   const location = useLocation();
   const { granted: canEdit } = usePermission("update_product");
-  const product =
+  const initialProduct =
     location.state?.product ||
     (() => {
       try {
@@ -22,20 +23,42 @@ export default function ReadProductPage() {
       description: "Corte premium a la parrilla 350g, acompañado de papas criollas y ensalada fresca.",
     };
 
+  const [freshProduct, setFreshProduct] = useState(null);
+
   useEffect(() => {
     if (location.state?.product) {
       sessionStorage.setItem("last_viewed_product", JSON.stringify(location.state.product));
     }
   }, [location.state]);
 
+  useEffect(() => {
+    if (!initialProduct?.id) return undefined;
+    let active = true;
+    getProductById(initialProduct.id)
+      .then((data) => {
+        if (active && data) setFreshProduct(data);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [initialProduct?.id]);
+
+  const product = freshProduct || initialProduct;
+
   const title = product?.title || product?.name || "Producto sin nombre";
   const category = product?.category || product?.category_name || "General";
   const price = product?.price ? Number(product.price).toLocaleString("es-CO") : "0";
   const description = product?.description || "Sin descripción adicional";
   const code = product?.code || `PROD-${product?.id || "001"}`;
-  const stock = product?.stock ?? 0;
+  const stock = Math.max(0, Math.trunc(Number(product?.stock ?? 0)));
+  const ingredients = Array.isArray(product?.ingredients) ? product.ingredients : [];
+  const hasRecipe = Boolean(
+    product?.hasRecipe || product?.stockMode === "recipe" || ingredients.length > 0
+  );
   const isAvailable = product?.is_active ?? (product?.status === "Activo" || product?.status === "disponible");
-  const status = isAvailable ? "Activo (Disponible)" : "Inactivo";
+  const isOutOfStock = stock <= 0;
+  const status = !isAvailable ? "Inactivo" : isOutOfStock ? "Agotado" : "Activo (Disponible)";
   const imageSrc = getProductImage(product);
 
   return (
@@ -88,14 +111,17 @@ export default function ReadProductPage() {
               <p>
                 Stock disponible:{" "}
                 <span className="font-semibold text-[var(--md-sys-color-on-surface)] tabular-nums">
-                  {Math.trunc(Number(stock ?? 0))} un.
+                  {stock} un.
+                </span>
+                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-medium bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]">
+                  {hasRecipe ? "Preparado por insumos" : "Stock directo"}
                 </span>
               </p>
               <p>
                 Estado:{" "}
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-medium border ${
-                    isAvailable
+                    isAvailable && !isOutOfStock
                       ? "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-[var(--md-sys-color-primary)]/40"
                       : "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border-[var(--md-sys-color-error)]/40"
                   }`}
@@ -103,6 +129,44 @@ export default function ReadProductPage() {
                   {status}
                 </span>
               </p>
+              {hasRecipe && ingredients.length > 0 && (
+                <div className="pt-2 space-y-2">
+                  <span className="text-label-md font-semibold text-[var(--md-sys-color-on-surface)] block">
+                    Insumos vinculados (Receta):
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {ingredients.map((ing, idx) => {
+                      const req = Number(ing.cantidadRequerida ?? ing.cantidad_requerida ?? 0);
+                      const invStock = Number(ing.currentStock ?? 0);
+                      const yieldCount = req > 0 ? Math.floor((Math.max(0, invStock) + 1e-9) / req) : 0;
+                      return (
+                        <div
+                          key={ing.id || ing.insumoId || idx}
+                          className="p-2.5 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] flex items-center justify-between gap-2 text-xs"
+                        >
+                          <div className="min-w-0">
+                            <p className="font-medium text-[var(--md-sys-color-on-surface)] truncate">
+                              {ing.itemName || `Insumo #${ing.insumoId}`}
+                            </p>
+                            <p className="text-[var(--md-sys-color-on-surface-variant)] tabular-nums">
+                              Requiere {req} {ing.unitMeasure || "un."} · Stock: {invStock} {ing.unitMeasure || "un."}
+                            </p>
+                          </div>
+                          <span
+                            className={`px-2 py-0.5 rounded-full font-medium shrink-0 tabular-nums ${
+                              yieldCount <= 0
+                                ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]"
+                                : "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)]"
+                            }`}
+                          >
+                            {yieldCount} un.
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <p className="flex items-center gap-2 pt-3 border-t border-[var(--md-sys-color-outline-variant)]">
                 Precio al público:{" "}
                 <span className="font-bold text-[var(--md-sys-color-primary)] text-headline-sm tabular-nums">

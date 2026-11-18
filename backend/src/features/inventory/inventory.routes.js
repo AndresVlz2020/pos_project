@@ -8,6 +8,7 @@ const router = Router();
 
 // Lectura: pública (POS de consulta)
 router.get("/", inventoryController.getAll);
+router.get("/:id/movements", inventoryController.getMovements);
 router.get("/:id", inventoryController.getById);
 
 // Mutaciones: protegidas con JWT + permiso RBAC

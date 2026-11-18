@@ -98,7 +98,7 @@ export default function ResetPassword() {
 
       await showSuccessAlert({
         title: "¡Contraseña Actualizada!",
-        text: "Tu nueva clave de acceso ha sido guardada en la base de datos. Ya puedes iniciar sesión.",
+        text: "Tu nueva clave de acceso ha sido guardada. Ya puedes iniciar sesión.",
       });
 
       navigate("/Auth");

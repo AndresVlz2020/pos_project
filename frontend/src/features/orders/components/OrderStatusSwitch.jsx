@@ -1,5 +1,8 @@
 import { M3Icon } from "@/shared";
-import { normalizeOrderStatus } from "../utils/orderFormHelpers";
+import {
+  getOrderStatusStepIndex,
+  normalizeOrderStatus,
+} from "../utils/orderFormHelpers";
 
 const STATUS_OPTIONS = [
   { value: "Creada", label: "Creada", icon: "schedule" },
@@ -10,11 +13,13 @@ const STATUS_OPTIONS = [
 
 /**
  * Selector M3 Segmented Button de 4 estados operativos
- * (Creada / Completada / Entregada / Pagada) con control de permisos por rol.
+ * (Creada / Completada / Entregada / Pagada) con bloqueo de retroceso secuencial
+ * y control de permisos por rol.
  */
 export default function OrderStatusSwitch({
   label = "Estado de la Orden *",
   value = "Creada",
+  currentStatus,
   onChange,
   disabled = false,
   canMarkCreated = true,
@@ -23,10 +28,22 @@ export default function OrderStatusSwitch({
   canMarkPaid = true,
 }) {
   const normalized = normalizeOrderStatus(value);
-  const isCanceled = normalized === "Anulada";
+  const persistedStatus = normalizeOrderStatus(currentStatus ?? value);
+  const currentStepIndex = getOrderStatusStepIndex(persistedStatus);
+  const isCanceled = normalized === "Anulada" || persistedStatus === "Anulada";
+
+  const isBackwardStatus = (optionValue) => {
+    const optionStepIndex = getOrderStatusStepIndex(optionValue);
+    return (
+      currentStepIndex >= 0 &&
+      optionStepIndex >= 0 &&
+      optionStepIndex < currentStepIndex
+    );
+  };
 
   const isOptionDisabled = (optionValue) => {
-    if (disabled) return true;
+    if (disabled || isCanceled) return true;
+    if (isBackwardStatus(optionValue)) return true;
     if (optionValue === "Creada") return !canMarkCreated && normalized !== "Creada";
     if (optionValue === "Completada") return !canMarkCompleted && normalized !== "Completada";
     if (optionValue === "Entregada") return !canMarkDelivered && normalized !== "Entregada";
@@ -57,6 +74,7 @@ export default function OrderStatusSwitch({
       >
         {STATUS_OPTIONS.map((opt) => {
           const isSelected = normalized === opt.value;
+          const isBackward = isBackwardStatus(opt.value);
           const optDisabled = isOptionDisabled(opt.value);
           return (
             <button
@@ -64,6 +82,11 @@ export default function OrderStatusSwitch({
               type="button"
               aria-pressed={isSelected}
               disabled={optDisabled}
+              title={
+                isBackward
+                  ? "No es posible retroceder a un estado anterior"
+                  : undefined
+              }
               onClick={() => {
                 if (!optDisabled) onChange?.(opt.value);
               }}

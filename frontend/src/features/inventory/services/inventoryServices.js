@@ -21,7 +21,7 @@ export async function getInventory({ activeOnly = false, category = null } = {})
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || "Error al obtener el inventario desde la base de datos");
+      throw new Error(errorData.error || "Error al obtener el inventario");
     }
 
     return await response.json();
@@ -98,6 +98,28 @@ export async function updateInventory(id, itemData) {
   } catch (error) {
     console.error("Error en updateInventory:", error);
     throw error;
+  }
+}
+
+/**
+ * Obtiene el historial de movimientos de inventario de un insumo
+ */
+export async function getInventoryMovements(id, limit = 50) {
+  try {
+    const response = await fetch(`${INVENTORY_URL}/${id}/movements?limit=${limit}`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Error al obtener movimientos del insumo");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error en getInventoryMovements:", error);
+    return [];
   }
 }
 

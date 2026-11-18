@@ -113,7 +113,7 @@ export default function PosCustomersPanel() {
       <PosCardGrid
         emptyMessage={
           loading
-            ? "Cargando órdenes desde la base de datos..."
+            ? "Cargando órdenes..."
             : "No se encontraron órdenes con el criterio de búsqueda."
         }
       >

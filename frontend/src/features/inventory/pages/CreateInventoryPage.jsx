@@ -129,7 +129,7 @@ export default function CreateInventory() {
         if (selectedSupplier && selectedSupplier.is_active === false) {
             await showErrorAlert({
                 title: "Proveedor inhabilitado",
-                text: `El proveedor "${selectedSupplier.company_name || selectedSupplier.companyName}" está inhabilitado en PostgreSQL. No se pueden asociar insumos a un proveedor inactivo.`
+                text: `El proveedor "${selectedSupplier.company_name || selectedSupplier.companyName}" está inhabilitado. No se pueden asociar insumos a un proveedor inactivo.`
             });
             return;
         }
@@ -157,13 +157,13 @@ export default function CreateInventory() {
                 await updateInventory(editItem.id, payload);
                 await showSuccessAlert({
                     title: "Inventario actualizado",
-                    text: "El insumo ha sido actualizado correctamente en PostgreSQL."
+                    text: "El insumo ha sido actualizado correctamente."
                 });
             } else {
                 await createInventory(payload);
                 await showSuccessAlert({
                     title: "Inventario registrado",
-                    text: "Insumo registrado correctamente en PostgreSQL."
+                    text: "Insumo registrado correctamente."
                 });
             }
 
@@ -172,7 +172,7 @@ export default function CreateInventory() {
             console.error("Error al guardar inventario:", err);
             await showErrorAlert({
                 title: "Error al guardar",
-                text: err.message || "No se pudo sincronizar el insumo con PostgreSQL."
+                text: err.message || "No se pudo guardar el insumo."
             });
         } finally {
             setSubmitting(false);

@@ -19,7 +19,10 @@ function buildProductPayload(productData) {
     const formData = new FormData();
     Object.entries(productData).forEach(([key, value]) => {
       if (key === "imageFile" || value === undefined || value === null) return;
-      formData.append(key, String(value));
+      formData.append(
+        key,
+        typeof value === "object" ? JSON.stringify(value) : String(value)
+      );
     });
     formData.append("image", productData.imageFile);
     return {
@@ -51,7 +54,7 @@ export async function getProducts({ activeOnly = false, category = null } = {}) 
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || "Error al obtener los productos desde la base de datos");
+      throw new Error(errorData.error || "Error al obtener los productos");
     }
 
     return await response.json();
@@ -98,7 +101,7 @@ export async function createProduct(productData) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || "Error al crear el producto en la base de datos");
+      throw new Error(data.error || "Error al crear el producto");
     }
 
     return data;

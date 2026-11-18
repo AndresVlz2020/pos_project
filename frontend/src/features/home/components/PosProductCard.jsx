@@ -13,6 +13,10 @@ export default function PosProductCard({ product, onSelect }) {
     status === "No disponible" ||
     product?.is_active === false;
 
+  const stockValue = Math.floor(Number(product?.stock ?? 0));
+  const isOutOfStock = Number.isNaN(stockValue) || stockValue <= 0;
+  const isUnavailable = isInhabilitado || isOutOfStock;
+
   const handleActivate = () => {
     onSelect?.(product);
   };
@@ -32,7 +36,7 @@ export default function PosProductCard({ product, onSelect }) {
       onClick={handleActivate}
       onKeyDown={handleKeyDown}
       className={`group rounded-xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-on-surface)] overflow-hidden flex flex-col justify-between cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
-        isInhabilitado
+        isUnavailable
           ? "opacity-65"
           : "m3-elevation-1 hover:m3-elevation-2 hover:border-[var(--md-sys-color-primary)]"
       }`}
@@ -43,7 +47,7 @@ export default function PosProductCard({ product, onSelect }) {
             src={image}
             alt={displayName}
             className={`w-full h-full object-cover transition-transform duration-200 ${
-              isInhabilitado ? "grayscale" : "group-hover:scale-105"
+              isUnavailable ? "grayscale" : "group-hover:scale-105"
             }`}
             loading="lazy"
             decoding="async"
@@ -52,7 +56,7 @@ export default function PosProductCard({ product, onSelect }) {
               e.currentTarget.src = imgPunta;
             }}
           />
-          {!isInhabilitado && (
+          {!isUnavailable && (
             <div className="hidden sm:flex items-center gap-1.5 absolute bottom-2 right-2 px-3 py-1 rounded-full bg-black/75 text-white text-label-sm font-medium backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               <M3Icon name="visibility" size={14} className="text-white" />
               <span>Ver detalle</span>
@@ -89,12 +93,12 @@ export default function PosProductCard({ product, onSelect }) {
 
           <span
             className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
-              isInhabilitado
+              isUnavailable
                 ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]"
                 : "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
             }`}
           >
-            {isInhabilitado ? "No disponible" : "Disponible"}
+            {isUnavailable ? "Agotado" : "Disponible"}
           </span>
         </div>
       </div>

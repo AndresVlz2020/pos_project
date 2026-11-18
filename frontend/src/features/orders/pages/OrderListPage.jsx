@@ -46,7 +46,7 @@ export default function OrderListPage() {
       setFeedback({
         type: "error",
         title: "Error de conexión",
-        message: "No se pudieron cargar las órdenes desde la base de datos.",
+        message: "No se pudieron cargar las órdenes.",
       });
     } finally {
       setLoading(false);
@@ -111,7 +111,7 @@ export default function OrderListPage() {
       setFeedback({
         type: "success",
         title: "Orden Anulada",
-        message: `La orden ${orderToCancel.id} (${orderToCancel.tableNumber}) ha sido anulada en PostgreSQL y su stock fue restaurado.`,
+        message: `La orden ${orderToCancel.id} (${orderToCancel.tableNumber}) ha sido anulada y su stock fue restaurado.`,
       });
     } catch (error) {
       if (error?.isStepUpCancelled) return;
@@ -119,7 +119,7 @@ export default function OrderListPage() {
       setFeedback({
         type: "error",
         title: "Error al anular",
-        message: error.message || "No se pudo anular la orden en la base de datos.",
+        message: error.message || "No se pudo anular la orden.",
       });
     } finally {
       setOrderToCancel(null);
@@ -193,7 +193,7 @@ export default function OrderListPage() {
 
       {loading && orders.length === 0 ? (
         <div className="flex-1 flex items-center justify-center py-12 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
-          Cargando órdenes desde PostgreSQL...
+          Cargando órdenes...
         </div>
       ) : (
         <DataTable className="flex-1" data={filteredOrders} columns={columns} />
@@ -214,7 +214,7 @@ export default function OrderListPage() {
         <ConfirmDialog
           isOpen={Boolean(orderToCancel)}
           title="Anular Orden del Sistema"
-          description={`¿Estás seguro de que deseas anular la orden ${orderToCancel.id} perteneciente a la ${orderToCancel.tableNumber}? Esta acción marcará la orden como ANULADA en PostgreSQL.`}
+          description={`¿Estás seguro de que deseas anular la orden ${orderToCancel.id} perteneciente a la ${orderToCancel.tableNumber}? Esta acción marcará la orden como ANULADA.`}
           confirmText="Sí, anular orden"
           cancelText="No, conservar"
           isDestructive={true}

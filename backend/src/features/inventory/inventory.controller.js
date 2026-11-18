@@ -23,6 +23,16 @@ export const inventoryController = {
     }
   },
 
+  async getMovements(req, res) {
+    try {
+      const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 50));
+      const movements = await inventoryService.getMovements(req.params.id, limit);
+      res.status(200).json(movements);
+    } catch (error) {
+      res.status(404).json({ error: error.message });
+    }
+  },
+
   async create(req, res) {
     try {
       const created = await inventoryService.create(req.body);
@@ -38,7 +48,11 @@ export const inventoryController = {
 
   async update(req, res) {
     try {
-      const updated = await inventoryService.update(req.params.id, req.body);
+      const updated = await inventoryService.update(
+        req.params.id,
+        req.body,
+        req.user?.id || null
+      );
       res.status(200).json({
         message: "Insumo actualizado exitosamente",
         item: updated,

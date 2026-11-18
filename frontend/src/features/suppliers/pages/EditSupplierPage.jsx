@@ -152,14 +152,14 @@ export default function EditSupplierPage() {
 
             await showSuccessAlert({
                 title: "Proveedor actualizado",
-                text: "Los datos del proveedor se actualizaron exitosamente en PostgreSQL."
+                text: "Los datos del proveedor se actualizaron exitosamente."
             });
             navigate("/supplierList");
         } catch (error) {
             console.error("Error al actualizar proveedor:", error);
             await showErrorAlert({
                 title: "Error al actualizar",
-                text: error.message || "No se pudo actualizar el proveedor en la base de datos."
+                text: error.message || "No se pudo actualizar el proveedor."
             });
         } finally {
             setSubmitting(false);
@@ -190,7 +190,7 @@ export default function EditSupplierPage() {
 
             {loadingData ? (
                 <div className="flex-1 flex items-center justify-center p-12 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
-                    Cargando datos del proveedor desde PostgreSQL...
+                    Cargando información del proveedor...
                 </div>
             ) : (
                 <form onSubmit={handleSubmit} className="flex-1 flex flex-col">

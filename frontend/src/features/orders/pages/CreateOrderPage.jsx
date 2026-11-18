@@ -40,6 +40,7 @@ import {
   summarizeOrderStatuses,
   mapProductToDish,
   filterDishesByQueryAndCategory,
+  computeDishDynamicMaxStock,
 } from "../utils/orderFormHelpers";
 
 export default function CreateOrder() {
@@ -253,7 +254,7 @@ export default function CreateOrder() {
       return;
     }
 
-    const availableStock = Math.max(0, Math.floor(Number(dish.stock ?? 0)));
+    const availableStock = computeDishDynamicMaxStock(dish, dishes, qty);
     const currentCount = qty[dish.id] || 0;
     if (availableStock <= 0 || currentCount >= availableStock) {
       showErrorAlert({
@@ -339,12 +340,13 @@ export default function CreateOrder() {
     }
 
     const overStockDish = dishes.find(
-      (d) => (qty[d.id] || 0) > Math.max(0, Math.floor(Number(d.stock ?? 0)))
+      (d) => (qty[d.id] || 0) > computeDishDynamicMaxStock(d, dishes, qty)
     );
     if (overStockDish) {
+      const dynamicMax = computeDishDynamicMaxStock(overStockDish, dishes, qty);
       await showErrorAlert({
         title: "Stock insuficiente",
-        text: `La cantidad de "${overStockDish.name}" supera el stock disponible (${overStockDish.stock}).`,
+        text: `La cantidad de "${overStockDish.name}" supera el stock disponible (${dynamicMax}).`,
       });
       return;
     }
@@ -640,7 +642,7 @@ export default function CreateOrder() {
                         key={dish.id}
                         dish={dish}
                         count={qty[dish.id] || 0}
-                        maxStock={dish.stock}
+                        maxStock={computeDishDynamicMaxStock(dish, dishes, qty)}
                         onIncrement={handleIncrement}
                         onDecrement={handleDecrement}
                       />

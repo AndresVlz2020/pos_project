@@ -44,7 +44,7 @@ export async function getOrders({ status = null } = {}) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || "Error al obtener las órdenes desde la base de datos");
+      throw new Error(errorData.error || "Error al obtener las órdenes");
     }
 
     return await response.json();
@@ -90,7 +90,7 @@ export async function createOrder(orderData) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || "Error al registrar la orden en PostgreSQL");
+      throw new Error(data.error || "Error al registrar la orden");
     }
 
     return data;

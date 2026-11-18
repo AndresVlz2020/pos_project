@@ -83,9 +83,10 @@ export const inventoryRepository = {
         TO_CHAR(i.last_updated, 'YYYY-MM-DD') AS "lastUpdated"
       FROM inventory i
       LEFT JOIN suppliers s ON s.id = i.supplier_id
-      WHERE i.id = $1 OR i.code = $1::text;
+      WHERE (CASE WHEN $1::text ~ '^[0-9]+$' THEN i.id = $1::int ELSE FALSE END)
+         OR i.code = $1::text;
     `;
-    const result = await pool.query(query, [id]);
+    const result = await pool.query(query, [String(id)]);
     return result.rows[0] || null;
   },
 
@@ -173,14 +174,15 @@ export const inventoryRepository = {
     return result.rows[0];
   },
 
-  async update(id, data) {
+  async update(id, data, actorUserId = null) {
     const current = await this.findById(id);
     if (!current) return null;
 
     const itemName = data.itemName || data.productName || current.productName;
     const category = data.category || data.productCategory || current.category;
     const brand = data.brand || current.brand;
-    const currentStock = data.currentStock !== undefined ? Number(data.currentStock) : current.currentStock;
+    const prevStock = Math.round(Number(current.currentStock || 0) * 1000) / 1000;
+    const currentStock = data.currentStock !== undefined ? Number(data.currentStock) : prevStock;
     const minStock = data.minStock !== undefined ? Number(data.minStock) : current.minStock;
     const maxStock = data.maxStock !== undefined ? Number(data.maxStock) : current.maxStock;
     const unitMeasure = data.unitMeasure || current.unitMeasure;
@@ -191,63 +193,130 @@ export const inventoryRepository = {
     const status = data.status || current.status;
     const isActive = data.isActive !== undefined ? Boolean(data.isActive) : (data.is_active !== undefined ? Boolean(data.is_active) : current.isActive);
 
-    let supplierId = data.supplierId !== undefined ? data.supplierId : current.supplier_id;
-    if (data.supplier && data.supplier !== current.supplier) {
-      const supRes = await pool.query(
-        "SELECT id FROM suppliers WHERE LOWER(company_name) = LOWER($1) OR nit = $1 LIMIT 1",
-        [data.supplier]
-      );
-      if (supRes.rows[0]) supplierId = supRes.rows[0].id;
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      let supplierId = data.supplierId !== undefined ? data.supplierId : current.supplier_id;
+      if (data.supplier && data.supplier !== current.supplier) {
+        const supRes = await client.query(
+          "SELECT id FROM suppliers WHERE LOWER(company_name) = LOWER($1) OR nit = $1 LIMIT 1",
+          [data.supplier]
+        );
+        if (supRes.rows[0]) supplierId = supRes.rows[0].id;
+      }
+
+      const query = `
+        UPDATE inventory
+        SET
+          item_name = $1,
+          category = $2,
+          brand = $3,
+          current_stock = $4,
+          min_stock = $5,
+          max_stock = $6,
+          unit_measure = $7,
+          supplier_id = $8,
+          location = $9,
+          price_buy = $10,
+          batch_number = $11,
+          expiration_date = $12,
+          status = $13,
+          is_active = $14,
+          last_updated = NOW()
+        WHERE id = $15
+        RETURNING
+          id,
+          COALESCE(code, CONCAT('INV-', LPAD(id::text, 3, '0'))) AS code,
+          item_name AS "productName",
+          current_stock::numeric AS "currentStock",
+          status,
+          is_active AS "isActive";
+      `;
+
+      const values = [
+        itemName,
+        category,
+        brand,
+        currentStock,
+        minStock,
+        maxStock,
+        unitMeasure,
+        supplierId,
+        location,
+        priceBuy,
+        batchNumber,
+        expirationDate ? new Date(expirationDate) : null,
+        status,
+        isActive,
+        current.id,
+      ];
+
+      const result = await client.query(query, values);
+
+      const stockDelta = Math.round((currentStock - prevStock) * 1000) / 1000;
+      if (stockDelta !== 0) {
+        await client.query(
+          `INSERT INTO movimientos_inventario (
+             insumo_id,
+             tipo_movimiento,
+             cantidad,
+             stock_anterior,
+             stock_nuevo,
+             observacion,
+             usuario_id
+           )
+           VALUES ($1, 'AJUSTE_MANUAL', $2, $3, $4, $5, $6);`,
+          [
+            current.id,
+            stockDelta,
+            prevStock,
+            Math.round(currentStock * 1000) / 1000,
+            "Ajuste manual desde edición de inventario",
+            actorUserId || null,
+          ]
+        );
+      }
+
+      await client.query("COMMIT");
+      return result.rows[0];
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
     }
+  },
+
+  async findMovementsByInsumoId(id, limit = 50) {
+    const item = await this.findById(id);
+    if (!item) return null;
 
     const query = `
-      UPDATE inventory
-      SET
-        item_name = $1,
-        category = $2,
-        brand = $3,
-        current_stock = $4,
-        min_stock = $5,
-        max_stock = $6,
-        unit_measure = $7,
-        supplier_id = $8,
-        location = $9,
-        price_buy = $10,
-        batch_number = $11,
-        expiration_date = $12,
-        status = $13,
-        is_active = $14,
-        last_updated = NOW()
-      WHERE id = $15
-      RETURNING
-        id,
-        COALESCE(code, CONCAT('INV-', LPAD(id::text, 3, '0'))) AS code,
-        item_name AS "productName",
-        current_stock::numeric AS "currentStock",
-        status,
-        is_active AS "isActive";
+      SELECT
+        m.id,
+        m.insumo_id AS "insumoId",
+        m.orden_id AS "ordenId",
+        o.order_number AS "orderNumber",
+        m.producto_id AS "productoId",
+        p.name AS "productName",
+        m.tipo_movimiento AS "tipoMovimiento",
+        m.cantidad::numeric AS cantidad,
+        m.stock_anterior::numeric AS "stockAnterior",
+        m.stock_nuevo::numeric AS "stockNuevo",
+        m.observacion,
+        u.user_name AS usuario,
+        TO_CHAR(m.created_at, 'YYYY-MM-DD HH24:MI:SS') AS "createdAt"
+      FROM movimientos_inventario m
+      LEFT JOIN orders o ON o.id = m.orden_id
+      LEFT JOIN products p ON p.id = m.producto_id
+      LEFT JOIN users u ON u.id = m.usuario_id
+      WHERE m.insumo_id = $1
+      ORDER BY m.created_at DESC, m.id DESC
+      LIMIT $2;
     `;
-
-    const values = [
-      itemName,
-      category,
-      brand,
-      currentStock,
-      minStock,
-      maxStock,
-      unitMeasure,
-      supplierId,
-      location,
-      priceBuy,
-      batchNumber,
-      expirationDate ? new Date(expirationDate) : null,
-      status,
-      isActive,
-      current.id,
-    ];
-
-    const result = await pool.query(query, values);
-    return result.rows[0];
+    const result = await pool.query(query, [item.id, limit]);
+    return result.rows;
   },
 
   async updateStatus(id, isActive) {

@@ -9,13 +9,25 @@ export const PAYMENT_METHOD_VALUES = [
 
 const VALID_PAYMENT_SET = new Set(PAYMENT_METHOD_VALUES);
 
-export const ORDER_STATUS_VALUES = [
+export const ORDER_STATUS_FLOW = [
   "Creada",
   "Completada",
   "Entregada",
   "Pagada",
+];
+
+export const ORDER_STATUS_VALUES = [
+  ...ORDER_STATUS_FLOW,
   "Anulada",
 ];
+
+/**
+ * Retorna el índice secuencial (0..3) dentro del flujo operativo de la orden,
+ * o -1 si la orden está Anulada.
+ */
+export function getOrderStatusStepIndex(status) {
+  return ORDER_STATUS_FLOW.indexOf(normalizeOrderStatus(status));
+}
 
 /**
  * Normaliza los distintos formatos de estado de una orden a los estados canónicos:
@@ -112,6 +124,18 @@ export function normalizeFilterText(text = "") {
  * Mapea un producto del API a la forma uniforme usada en Crear/Editar Orden.
  */
 export function mapProductToDish(p) {
+  const ingredients = Array.isArray(p.ingredients)
+    ? p.ingredients.map((ing) => ({
+        insumoId: Number(ing.insumoId ?? ing.insumo_id),
+        cantidadRequerida: Number(
+          ing.cantidadRequerida ?? ing.cantidad_requerida ?? 0
+        ),
+        itemName: ing.itemName || ing.item_name || "",
+        unitMeasure: ing.unitMeasure || ing.unit_measure || "un.",
+        currentStock: Number(ing.currentStock ?? ing.current_stock ?? 0),
+      }))
+    : [];
+
   return {
     id: p.id,
     code: p.code,
@@ -119,9 +143,75 @@ export function mapProductToDish(p) {
     category: p.category || p.category_name || "general",
     price: Number(p.price) || 0,
     stock: Math.max(0, Math.floor(Number(p.stock) || 0)),
+    stockMode: p.stockMode || (ingredients.length > 0 ? "recipe" : "direct"),
+    hasRecipe: Boolean(p.hasRecipe || ingredients.length > 0),
+    ingredients,
     status: p.is_active ? "Disponible" : "Inactivo",
     image: p.image || p.image_url,
   };
+}
+
+/**
+ * Calcula el stock máximo disponible de un platillo dentro del carrito actual
+ * teniendo en cuenta ingredientes compartidos con otros platillos seleccionados
+ * y el compromiso previo en modo edición (initialQtyMap).
+ */
+export function computeDishDynamicMaxStock(
+  dish,
+  dishes = [],
+  qtyMap = {},
+  initialQtyMap = {}
+) {
+  if (!dish) return 0;
+
+  if (!Array.isArray(dish.ingredients) || dish.ingredients.length === 0) {
+    return (
+      Math.max(0, Math.floor(Number(dish.stock ?? 0))) +
+      Math.max(0, Math.floor(Number(initialQtyMap[dish.id] ?? 0)))
+    );
+  }
+
+  let minPortions = Infinity;
+
+  for (const targetIng of dish.ingredients) {
+    const insumoId = Number(targetIng.insumoId);
+    const reqForDish = Number(targetIng.cantidadRequerida);
+    if (!insumoId || reqForDish <= 0) {
+      minPortions = 0;
+      break;
+    }
+
+    const baseInvStock = Math.max(0, Number(targetIng.currentStock ?? 0));
+    let initialCommitted = 0;
+    let selectedByOthers = 0;
+
+    for (const d of dishes) {
+      if (!Array.isArray(d.ingredients) || d.ingredients.length === 0) continue;
+      const match = d.ingredients.find((ing) => Number(ing.insumoId) === insumoId);
+      if (!match) continue;
+
+      const req = Number(match.cantidadRequerida || 0);
+      const initQ = Math.max(0, Math.floor(Number(initialQtyMap[d.id] ?? 0)));
+      if (initQ > 0) {
+        initialCommitted += initQ * req;
+      }
+      if (d.id !== dish.id) {
+        const curQ = Math.max(0, Math.floor(Number(qtyMap[d.id] ?? 0)));
+        if (curQ > 0) {
+          selectedByOthers += curQ * req;
+        }
+      }
+    }
+
+    const remainingForDish = Math.max(
+      0,
+      baseInvStock + initialCommitted - selectedByOthers
+    );
+    const portions = Math.floor((remainingForDish + 1e-9) / reqForDish);
+    if (portions < minPortions) minPortions = portions;
+  }
+
+  return Number.isFinite(minPortions) ? Math.max(0, minPortions) : 0;
 }
 
 /**

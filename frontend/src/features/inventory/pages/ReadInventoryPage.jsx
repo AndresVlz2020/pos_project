@@ -1,10 +1,36 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { M3Icon } from "@/shared";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/shared";
+import { getInventoryMovements } from "../services/inventoryServices";
+
+const MOVEMENT_BADGE_MAP = {
+  SALIDA_ORDEN: {
+    label: "Salida por orden",
+    className:
+      "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]",
+  },
+  ENTRADA_ANULACION: {
+    label: "Reverso por anulación",
+    className:
+      "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]",
+  },
+  AJUSTE_ORDEN: {
+    label: "Ajuste en orden",
+    className:
+      "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]",
+  },
+  AJUSTE_MANUAL: {
+    label: "Ajuste manual",
+    className:
+      "bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface)]",
+  },
+};
 
 export default function ReadInventoryPage() {
   const location = useLocation();
+  const [movements, setMovements] = useState([]);
+  const [loadingMovements, setLoadingMovements] = useState(false);
 
   const item =
     location.state?.item ||
@@ -22,6 +48,24 @@ export default function ReadInventoryPage() {
       sessionStorage.setItem("last_viewed_inventory_item", JSON.stringify(location.state.item));
     }
   }, [location.state]);
+
+  useEffect(() => {
+    if (!item?.id) return undefined;
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) setLoadingMovements(true);
+    });
+    getInventoryMovements(item.id, 30)
+      .then((rows) => {
+        if (active) setMovements(Array.isArray(rows) ? rows : []);
+      })
+      .finally(() => {
+        if (active) setLoadingMovements(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [item?.id]);
 
   if (!item) {
     return (
@@ -54,7 +98,7 @@ export default function ReadInventoryPage() {
   const description = item.description || "Insumo de inventario gastronómico.";
   const locationArea = item.location || "Almacén Central / Bodega";
   const batchNumber = item.numberBatch || item.batch_number || `LT-${item.id ?? "001"}`;
-  const unit = item.unit || "un.";
+  const unit = item.unitMeasure || item.unit_measure || item.unit || "un.";
   const currentStock = Number(item.currentStock ?? item.quantity ?? 0);
   const minStock = Number(item.minStock ?? 5);
   const isLowStock = currentStock <= minStock;
@@ -230,6 +274,81 @@ export default function ReadInventoryPage() {
               </span>
               <p className="text-[var(--md-sys-color-on-surface)] leading-relaxed">{description}</p>
             </div>
+          </div>
+        </div>
+
+        {/* Sección 4: Historial de Movimientos */}
+        <div>
+          <h3 className="text-label-lg font-semibold uppercase tracking-wider text-[var(--md-sys-color-primary)] flex items-center gap-2 mb-3">
+            <M3Icon name="history" size={18} />
+            4. Historial de Movimientos Recientes
+          </h3>
+          <div className="p-4 sm:p-5 rounded-2xl bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]">
+            {loadingMovements ? (
+              <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] py-4 text-center">
+                Cargando historial de movimientos...
+              </p>
+            ) : movements.length === 0 ? (
+              <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] py-4 text-center">
+                Aún no se registran movimientos automáticos o manuales para este insumo.
+              </p>
+            ) : (
+              <div className="divide-y divide-[var(--md-sys-color-outline-variant)]">
+                {movements.map((mov) => {
+                  const meta = MOVEMENT_BADGE_MAP[mov.tipoMovimiento] || {
+                    label: mov.tipoMovimiento,
+                    className:
+                      "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)]",
+                  };
+                  const delta = Number(mov.cantidad || 0);
+                  const sign = delta > 0 ? "+" : "";
+                  return (
+                    <div
+                      key={mov.id}
+                      className="py-2.5 flex flex-wrap items-center justify-between gap-2 text-body-sm"
+                    >
+                      <div className="min-w-0 space-y-0.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${meta.className}`}
+                          >
+                            {meta.label}
+                          </span>
+                          {mov.orderNumber && (
+                            <span className="font-mono text-xs text-[var(--md-sys-color-primary)]">
+                              {mov.orderNumber}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-[var(--md-sys-color-on-surface)]">
+                          {mov.observacion || mov.productName || "Movimiento de inventario"}
+                        </p>
+                        <p className="text-[11px] text-[var(--md-sys-color-on-surface-variant)]">
+                          {mov.createdAt}
+                          {mov.usuario ? ` • ${mov.usuario}` : ""}
+                        </p>
+                      </div>
+
+                      <div className="text-right shrink-0 tabular-nums">
+                        <span
+                          className={`font-semibold text-sm block ${
+                            delta < 0
+                              ? "text-[var(--md-sys-color-error)]"
+                              : "text-[var(--md-sys-color-primary)]"
+                          }`}
+                        >
+                          {sign}
+                          {delta} {unit}
+                        </span>
+                        <span className="text-[11px] text-[var(--md-sys-color-on-surface-variant)]">
+                          {mov.stockAnterior} → {mov.stockNuevo} {unit}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 

@@ -37,10 +37,16 @@ export const inventoryService = {
     return await inventoryRepository.create(payload);
   },
 
-  async update(id, data) {
-    const updated = await inventoryRepository.update(id, data);
+  async update(id, data, actorUserId = null) {
+    const updated = await inventoryRepository.update(id, data, actorUserId);
     if (!updated) throw new Error("Insumo no encontrado para actualizar");
     return updated;
+  },
+
+  async getMovements(id, limit = 50) {
+    const movements = await inventoryRepository.findMovementsByInsumoId(id, limit);
+    if (movements === null) throw new Error("Insumo de inventario no encontrado");
+    return movements;
   },
 
   async updateStatus(id, isActive) {

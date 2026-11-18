@@ -46,7 +46,7 @@ export default function ProductListPage() {
           setFeedback({
             type: "error",
             title: "Error de conexión",
-            message: "No se pudieron cargar los productos desde la base de datos.",
+            message: "No se pudieron cargar los productos.",
           });
         }
       })
@@ -147,7 +147,7 @@ export default function ProductListPage() {
 
       {loading && productList.length === 0 ? (
         <div className="flex-1 flex items-center justify-center py-12 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
-          Cargando productos desde la base de datos...
+          Cargando productos...
         </div>
       ) : (
         <DataTable className="flex-1" data={productList} columns={columns} />

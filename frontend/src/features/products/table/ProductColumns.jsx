@@ -1,7 +1,5 @@
 import { StatusSwitch } from "@/shared";
 import ProductRowActions from "../components/ProductRowActions";
-import { updateProductStatus } from "../services/productServices";
-import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
 
 export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = false, canEdit = true } = {}) => [
@@ -61,11 +59,32 @@ export const getProductColumns = ({ onRequestStatusChange, canToggleStatus = fal
   {
     accessorKey: "stock",
     header: "Stock",
-    cell: ({ row }) => (
-      <span className="font-mono text-label-md text-[var(--md-sys-color-on-surface)] tabular-nums">
-        {Math.trunc(Number(row.original.stock ?? 0))}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const product = row.original;
+      const stockValue = Math.max(0, Math.trunc(Number(product.stock ?? 0)));
+      const hasRecipe = Boolean(
+        product.hasRecipe ||
+          product.stockMode === "recipe" ||
+          (Array.isArray(product.ingredients) && product.ingredients.length > 0)
+      );
+      return (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="font-mono text-label-md text-[var(--md-sys-color-on-surface)] tabular-nums">
+            {stockValue}
+          </span>
+          {stockValue <= 0 && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]">
+              Agotado
+            </span>
+          )}
+          {hasRecipe && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]">
+              Receta
+            </span>
+          )}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "status",

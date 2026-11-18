@@ -258,7 +258,7 @@ describe("transiciones de estado", () => {
       .send({ status: "Entregada" });
     expect(kitchenDeliver.status).toBe(403);
 
-    // 4. Mesero marca la orden como Entregada y puede devolverla/marcarla como Creada
+    // 4. Mesero marca la orden como Entregada y no puede retroceder a Completada ni Creada
     const deliveredRes = await api
       .patch(`/api/orders/${orderNum}/status`)
       .set(auth(meseroToken))
@@ -275,27 +275,25 @@ describe("transiciones de estado", () => {
       .patch(`/api/orders/${orderNum}/status`)
       .set(auth(meseroToken))
       .send({ status: "Creada" });
-    expect(backToCreated.status).toBe(200);
-    expect(backToCreated.body.order.status).toBe("Creada");
+    expect(backToCreated.status).toBe(400);
 
-    // Desde Creada no puede pasar directamente a Entregada hasta que Cocina complete de nuevo
-    const prematureDeliver = await api
+    const backToCompleted = await api
       .patch(`/api/orders/${orderNum}/status`)
+      .set(auth(adminToken))
+      .send({ status: "Completada" });
+    expect(backToCompleted.status).toBe(400);
+
+    // Una orden en Creada tampoco puede pasar directamente a Entregada sin Completada
+    const freshOrder = await api.post("/api/orders").set(auth(meseroToken)).send({
+      tableNumber: "Mesa 6",
+      items: [{ productId: prodId, qty: 1, price: 56000 }],
+    });
+    const freshNum = freshOrder.body.order.order_number;
+    const prematureDeliver = await api
+      .patch(`/api/orders/${freshNum}/status`)
       .set(auth(meseroToken))
       .send({ status: "Entregada" });
     expect(prematureDeliver.status).toBe(400);
-
-    await api
-      .patch(`/api/orders/${orderNum}/status`)
-      .set(auth(cocinaToken))
-      .send({ status: "Completada" });
-
-    const redeliverRes = await api
-      .patch(`/api/orders/${orderNum}/status`)
-      .set(auth(meseroToken))
-      .send({ status: "Entregada" });
-    expect(redeliverRes.status).toBe(200);
-    expect(redeliverRes.body.order.status).toBe("Entregada");
 
     // 5. Mesero marca la notificación como leída (permanece guardada en historial)
     const readRes = await api
@@ -321,5 +319,93 @@ describe("transiciones de estado", () => {
     const tablesFree = await api.get("/api/orders/tables/availability");
     const mesa7Free = tablesFree.body.find((t) => t.tableNumber === "Mesa 7");
     expect(mesa7Free.isAvailable).toBe(true);
+  });
+});
+
+describe("recetas / escandallo y descuento atómico en inventario", () => {
+  it("calcula stock dinámico por receta, descuenta insumos al crear orden, ajusta en edición y restaura al anular", async () => {
+    const invMeatRes = await api.post("/api/inventory").set(auth(adminToken)).send({
+      itemName: "TEST Carne Receta (kg)",
+      category: "Carnes",
+      currentStock: 2.0,
+      minStock: 0.5,
+      unitMeasure: "kg",
+    });
+    expect(invMeatRes.status).toBe(201);
+    const meatId = invMeatRes.body.item.id;
+
+    const invBunRes = await api.post("/api/inventory").set(auth(adminToken)).send({
+      itemName: "TEST Pan Brioche (un)",
+      category: "Panadería",
+      currentStock: 3,
+      minStock: 1,
+      unitMeasure: "unidad",
+    });
+    expect(invBunRes.status).toBe(201);
+    const bunId = invBunRes.body.item.id;
+
+    // Carne alcanza para floor(2.0 / 0.5) = 4, pero pan solo alcanza para floor(3 / 1) = 3 => stock = 3
+    const dishRes = await api.post("/api/products").set(auth(adminToken)).send({
+      name: "TEST Burger Receta",
+      price: 35000,
+      code: "TEST-REC-01",
+      stockMode: "recipe",
+      ingredients: [
+        { insumoId: meatId, cantidadRequerida: 0.5 },
+        { insumoId: bunId, cantidadRequerida: 1 },
+      ],
+    });
+    expect(dishRes.status).toBe(201);
+    const recipeProdId = dishRes.body.product.id;
+    expect(Number(dishRes.body.product.stock)).toBe(3);
+    expect(dishRes.body.product.stockMode).toBe("recipe");
+    expect(dishRes.body.product.hasRecipe).toBe(true);
+
+    // Rechaza atómicamente orden que excede el stock calculado (4 > 3) sin descontar nada
+    const overflowOrder = await api.post("/api/orders").set(auth(meseroToken)).send({
+      tableNumber: "Mesa 12",
+      items: [{ productId: recipeProdId, qty: 4, price: 35000 }],
+    });
+    expect(overflowOrder.status).toBe(400);
+
+    // Crea orden de 2 unidades -> descuenta 1.0 kg carne (queda 1.0) y 2 panes (queda 1)
+    const okOrder = await api.post("/api/orders").set(auth(meseroToken)).send({
+      tableNumber: "Mesa 12",
+      items: [{ productId: recipeProdId, qty: 2, price: 35000 }],
+    });
+    expect(okOrder.status).toBe(201);
+    const orderNum = okOrder.body.order.order_number;
+
+    const meatAfterCreate = await one("SELECT current_stock::numeric AS s FROM inventory WHERE id = $1", [meatId]);
+    const bunAfterCreate = await one("SELECT current_stock::numeric AS s FROM inventory WHERE id = $1", [bunId]);
+    expect(Number(meatAfterCreate.s)).toBeCloseTo(1.0, 3);
+    expect(Number(bunAfterCreate.s)).toBeCloseTo(1.0, 3);
+
+    // Producto ahora reporta stock dinámico = min(floor(1/0.5)=2, floor(1/1)=1) = 1
+    const prodAfterOrder = await api.get(`/api/products/${recipeProdId}`);
+    expect(Number(prodAfterOrder.body.stock)).toBe(1);
+
+    // Historial de movimientos registra SALIDA_ORDEN
+    const movAfterCreate = await api.get(`/api/inventory/${meatId}/movements`);
+    expect(movAfterCreate.status).toBe(200);
+    expect(movAfterCreate.body[0].tipoMovimiento).toBe("SALIDA_ORDEN");
+    expect(Number(movAfterCreate.body[0].cantidad)).toBeCloseTo(-1.0, 3);
+
+    // Anular orden restaura insumos (vuelve carne a 2.0 y pan a 3) y registra ENTRADA_ANULACION
+    const cancelRes = await api
+      .patch(`/api/orders/${orderNum}/cancel`)
+      .set(await stepUpAuth(adminToken))
+      .send({ reason: "Prueba de reverso de insumos" });
+    expect(cancelRes.status).toBe(200);
+    expect(cancelRes.body.order.status).toBe("Anulada");
+
+    const meatAfterCancel = await one("SELECT current_stock::numeric AS s FROM inventory WHERE id = $1", [meatId]);
+    const bunAfterCancel = await one("SELECT current_stock::numeric AS s FROM inventory WHERE id = $1", [bunId]);
+    expect(Number(meatAfterCancel.s)).toBeCloseTo(2.0, 3);
+    expect(Number(bunAfterCancel.s)).toBeCloseTo(3.0, 3);
+
+    const movAfterCancel = await api.get(`/api/inventory/${meatId}/movements`);
+    expect(movAfterCancel.body[0].tipoMovimiento).toBe("ENTRADA_ANULACION");
+    expect(Number(movAfterCancel.body[0].cantidad)).toBeCloseTo(1.0, 3);
   });
 });

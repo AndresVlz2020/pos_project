@@ -66,7 +66,7 @@ export const orderController = {
     try {
       const { id } = req.params;
       const { reason } = req.body || {};
-      const order = await orderService.cancelOrder(id, reason);
+      const order = await orderService.cancelOrder(id, reason, req.user);
       res.status(200).json({
         message: "Orden anulada exitosamente",
         order,

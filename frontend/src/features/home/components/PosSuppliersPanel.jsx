@@ -56,7 +56,7 @@ export default function PosSuppliersPanel() {
 
       {loading ? (
         <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] py-10 text-center">
-          Cargando proveedores desde la base de datos...
+          Cargando proveedores...
         </p>
       ) : suppliers.length === 0 ? (
         <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] py-10 text-center border border-dashed border-[var(--md-sys-color-outline-variant)] rounded-xl">

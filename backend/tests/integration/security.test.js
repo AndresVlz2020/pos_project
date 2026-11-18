@@ -26,17 +26,22 @@ beforeAll(async () => {
 
   // Fixtures que mutan: los crea el admin/mesero para que las rutas tengan un
   // id real sobre el que operar.
-  const prod = await api
-    .post("/api/products")
-    .set(auth(tokens.admin))
-    .send({ name: "TEST SEC Producto", price: 10000, code: "TEST-SEC-01", stock: 50 });
-  const prodId = prod.body.product.id;
-
   const inv = await api
     .post("/api/inventory")
     .set(auth(tokens.admin))
     .send({ itemName: "TEST SEC Insumo (kg)", currentStock: 20, minStock: 1, maxStock: 50 });
   const invId = inv.body.item.id;
+
+  const prod = await api
+    .post("/api/products")
+    .set(auth(tokens.admin))
+    .send({
+      name: "TEST SEC Producto",
+      price: 10000,
+      code: "TEST-SEC-01",
+      ingredients: [{ insumoId: invId, cantidadRequerida: 1 }],
+    });
+  const prodId = prod.body.product.id;
 
   const supp = await api
     .post("/api/suppliers")
@@ -175,7 +180,12 @@ describe("RBAC: rol correcto → 2xx", () => {
     const res = await api
       .post("/api/products")
       .set(auth(tokens.admin))
-      .send({ name: "TEST SEC Producto 2", price: 5000, code: "TEST-SEC-02", stock: 10 });
+      .send({
+        name: "TEST SEC Producto 2",
+        price: 5000,
+        code: "TEST-SEC-02",
+        ingredients: [{ insumoId: fixtures.invId, cantidadRequerida: 1 }],
+      });
     expect(res.status).toBe(201);
   });
 

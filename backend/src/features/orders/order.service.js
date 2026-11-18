@@ -8,6 +8,12 @@ import { notificationService } from "../notifications/notification.service.js";
 //   * "Pagada"     -> Cobrada por Cajero / Admin (cierra la cuenta y libera mesa)
 //   * "Anulada"    -> Cancelada (libera mesa y restaura stock)
 const VALID_STATUSES = ["Creada", "Completada", "Entregada", "Pagada", "Anulada"];
+const STATUS_SEQUENCE = {
+  Creada: 0,
+  Completada: 1,
+  Entregada: 2,
+  Pagada: 3,
+};
 
 export class OrderServiceError extends Error {
   constructor(message, status = 400) {
@@ -53,6 +59,20 @@ function assertStatusTransitionAllowed({
   if (currentStatus === "Pagada" || currentStatus === "Anulada") {
     throw new OrderServiceError(
       `La orden ya se encuentra "${currentStatus}" y no admite modificaciones.`,
+      400
+    );
+  }
+
+  const currentStep = STATUS_SEQUENCE[currentStatus];
+  const nextStep = STATUS_SEQUENCE[nextStatus];
+  if (
+    nextStatus !== "Anulada" &&
+    currentStep !== undefined &&
+    nextStep !== undefined &&
+    nextStep < currentStep
+  ) {
+    throw new OrderServiceError(
+      `No es posible retroceder la orden de "${currentStatus}" a "${nextStatus}".`,
       400
     );
   }
@@ -119,6 +139,7 @@ export const orderService = {
     const orderData = { ...data };
     if (authenticatedUser?.id) {
       orderData.waiterId = authenticatedUser.id;
+      orderData.actorUserId = authenticatedUser.id;
     }
 
     // Toda orden creada desde el flujo operativo inicia automáticamente en estado "Creada".
@@ -161,6 +182,7 @@ export const orderService = {
 
     if (authenticatedUser?.id) {
       payload.waiterId = authenticatedUser.id;
+      payload.actorUserId = authenticatedUser.id;
     }
 
     const updated = await orderRepository.update(id, payload);
@@ -198,11 +220,14 @@ export const orderService = {
       authenticatedUser,
     });
 
-    const updated = await orderRepository.updateStatus(
-      id,
-      normalized,
-      authenticatedUser?.id || null
-    );
+    const updated =
+      normalized === "Anulada"
+        ? await orderRepository.cancelWithStockRestore(id, authenticatedUser?.id || null)
+        : await orderRepository.updateStatus(
+            id,
+            normalized,
+            authenticatedUser?.id || null
+          );
     if (!updated) {
       throw new OrderServiceError(
         "Orden no encontrada para actualizar estado",
@@ -224,8 +249,21 @@ export const orderService = {
     return updated;
   },
 
-  async cancelOrder(id) {
-    const updated = await orderRepository.updateStatus(id, "Anulada", null);
+  async cancelOrder(id, _reason = null, authenticatedUser = null) {
+    const existing = await orderRepository.findById(id);
+    if (!existing) {
+      throw new OrderServiceError("Orden no encontrada para anular", 404);
+    }
+    if (existing.status === "Pagada") {
+      throw new OrderServiceError(
+        "Las órdenes pagadas no admiten anulación.",
+        400
+      );
+    }
+    const updated = await orderRepository.cancelWithStockRestore(
+      id,
+      authenticatedUser?.id || null
+    );
     if (!updated) {
       throw new OrderServiceError("Orden no encontrada para anular", 404);
     }

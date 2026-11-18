@@ -20,6 +20,8 @@ import PosCategoryFilter from "@/features/home/components/PosCategoryFilter";
 import { useScrollableBatch } from "../hooks/useScrollableBatch";
 import { getUserRoleFlags } from "@/shared/utils/authStorage";
 import {
+  computeDishDynamicMaxStock,
+  getOrderStatusStepIndex,
   normalizeOrderStatus,
   normalizePaymentMethod,
   mapProductToDish,
@@ -156,8 +158,7 @@ export default function EditOrder() {
   }, [qty]);
 
   const getMaxAllowedForDish = (dish) =>
-    Math.max(0, Math.floor(Number(dish.stock ?? 0))) +
-    Math.max(0, Math.floor(Number(initialQtyMap[dish.id] ?? 0)));
+    computeDishDynamicMaxStock(dish, dishes, qty, initialQtyMap);
 
   const handleIncrement = (dish) => {
     if (isClosedOrPaid || isCanceled) return;
@@ -205,6 +206,11 @@ export default function EditOrder() {
   const handleFieldUpdate = (name, value) => {
     if (isClosedOrPaid || isCanceled) return;
     if (name === "orderStatus") {
+      const currentStep = getOrderStatusStepIndex(savedStatus);
+      const nextStep = getOrderStatusStepIndex(value);
+      if (currentStep >= 0 && nextStep >= 0 && nextStep < currentStep) {
+        return;
+      }
       if (value === "Pagada" && !canMarkPaid) return;
       if (
         value === "Completada" &&
@@ -407,6 +413,7 @@ export default function EditOrder() {
               <OrderStatusSwitch
                 label="Estado de la Orden *"
                 value={formOrder.orderStatus}
+                currentStatus={savedStatus}
                 onChange={(nextStatus) => handleFieldUpdate("orderStatus", nextStatus)}
                 disabled={isClosedOrPaid || isCanceled}
                 canMarkCreated={canMarkCreated}
@@ -611,7 +618,7 @@ export default function EditOrder() {
         <ConfirmDialog
           isOpen={isCancelConfirmOpen}
           title="Anular Orden"
-          description={`¿Estás seguro de que deseas anular la orden ${formOrder.id}? Esta acción revertirá el stock de productos en PostgreSQL.`}
+          description={`¿Estás seguro de que deseas anular la orden ${formOrder.id}? Esta acción revertirá el stock de productos.`}
           confirmText="Sí, anular orden"
           cancelText="Conservar"
           isDestructive={true}

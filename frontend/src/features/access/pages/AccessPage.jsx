@@ -56,7 +56,7 @@ export default function AccessPage() {
 
       await showSuccessAlert({
         title: "Permisos actualizados",
-        text: "Los permisos se han guardado correctamente en PostgreSQL.",
+        text: "Los permisos se han guardado correctamente.",
       });
     } catch (error) {
       if (error?.isStepUpCancelled) return;

@@ -95,7 +95,7 @@ export default function PosProductDetailModal({
             src={imageSrc}
             alt={displayName}
             className={`w-full h-full object-cover ${
-              isInhabilitado ? "grayscale contrast-75" : ""
+              isInhabilitado || isOutOfStock ? "grayscale contrast-75" : ""
             }`}
             onError={(e) => {
               e.currentTarget.onerror = null;
@@ -131,10 +131,10 @@ export default function PosProductDetailModal({
           <div className="absolute bottom-3 inset-x-4 sm:bottom-4 sm:inset-x-5 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
             <div className="min-w-0 space-y-1.5">
               <div className="flex flex-wrap items-center gap-1.5">
-                {isInhabilitado ? (
+                {isInhabilitado || isOutOfStock ? (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--md-sys-color-error)] text-[var(--md-sys-color-on-error)]">
                     <M3Icon name="block" size={14} />
-                    No disponible
+                    Agotado
                   </span>
                 ) : (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]">

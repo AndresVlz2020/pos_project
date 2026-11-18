@@ -45,7 +45,7 @@ export default function InventoryListPage() {
       setFeedback({
         type: "error",
         title: "Error de conexión",
-        message: "No se pudo cargar el inventario desde la base de datos.",
+        message: "No se pudo cargar el inventario.",
       });
     } finally {
       setLoading(false);
@@ -93,7 +93,7 @@ export default function InventoryListPage() {
         title: "Estado actualizado",
         message: `El insumo "${itemName}" fue ${
           targetState ? "habilitado" : "inhabilitado"
-        } exitosamente en PostgreSQL.`,
+        } exitosamente.`,
       });
     } catch (error) {
       if (error?.isStepUpCancelled) {
@@ -104,7 +104,7 @@ export default function InventoryListPage() {
       setFeedback({
         type: "error",
         title: "Error al actualizar",
-        message: error.message || "No se pudo sincronizar el cambio con la base de datos.",
+        message: error.message || "No se pudo actualizar el estado del insumo.",
       });
     }
 
@@ -155,7 +155,7 @@ export default function InventoryListPage() {
 
       {loading && inventoryList.length === 0 ? (
         <div className="flex-1 flex items-center justify-center py-12 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
-          Cargando inventario desde la base de datos...
+          Cargando inventario...
         </div>
       ) : (
         <DataTable className="flex-1" data={inventoryList} columns={columns} />

@@ -2,9 +2,15 @@ import { Input, Button, Select, FileInput, showSuccessAlert, showErrorAlert } fr
 import { useState, useEffect, useMemo } from "react";
 import { productSchema } from "../schemas/productSchema";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { updateProduct } from "../services/productServices";
+import { getProductById, updateProduct } from "../services/productServices";
+import { getInventory } from "@/features/inventory/services/inventoryServices";
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
 import usePermission from "@/features/access/services/usePermission";
+import ProductRecipeSection from "../components/ProductRecipeSection";
+import {
+  calculateRecipeAvailableStock,
+  validateRecipeRows,
+} from "../utils/productRecipeHelpers";
 
 export default function EditProductPage() {
   const navigate = useNavigate();
@@ -29,18 +35,26 @@ export default function EditProductPage() {
   const [formProduct, setProduct] = useState({
     productName: "",
     productPrice: "",
-    productStock: "0",
     productCategory: "2",
     productDescription: "",
     productStatus: "habilitado",
   });
+
+  const [readonlyStock, setReadonlyStock] = useState("0");
+  const [hadRecipeInitially, setHadRecipeInitially] = useState(false);
+  const [ingredients, setIngredients] = useState([]);
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [loadingInventory, setLoadingInventory] = useState(true);
 
   const [userImage, setUserImage] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (productToEdit) {
+    let active = true;
+
+    const applyProductState = (prod) => {
+      if (!prod) return;
       const categoryMapReverse = {
         entradas: "1",
         "platos fuertes": "2",
@@ -50,24 +64,70 @@ export default function EditProductPage() {
         "comidas rápidas": "5",
       };
 
-      const catKey = (productToEdit.category || productToEdit.category_name || "").toLowerCase();
+      const catKey = (prod.category || prod.category_name || "").toLowerCase();
       const catVal = categoryMapReverse[catKey] || "2";
-      const parsedStock = Math.max(0, Math.trunc(Number(productToEdit.stock ?? 0)));
+      const parsedStock = Math.max(
+        0,
+        Math.trunc(Number(prod.stock ?? 0))
+      );
 
+      const rawIngredients = Array.isArray(prod.ingredients) ? prod.ingredients : [];
+
+      setProduct({
+        productName: prod.title || prod.name || "",
+        productPrice: String(prod.price || ""),
+        productCategory: catVal,
+        productDescription: prod.description || "",
+        productStatus: (prod.is_active ?? (prod.status === "Activo" || prod.status === "disponible"))
+          ? "habilitado"
+          : "inhabilitado",
+      });
+      setReadonlyStock(String(Number.isFinite(parsedStock) ? parsedStock : 0));
+      setHadRecipeInitially(rawIngredients.length > 0);
+      setIngredients(
+        rawIngredients.map((ing) => ({
+          insumoId: String(ing.insumoId ?? ing.insumo_id ?? ""),
+          cantidadRequerida: String(
+            ing.cantidadRequerida ?? ing.cantidad_requerida ?? "1"
+          ),
+          unitMeasure: ing.unitMeasure || ing.unit_measure || "un.",
+          currentStock: Number(ing.currentStock ?? ing.current_stock ?? 0),
+        }))
+      );
+    };
+
+    if (productToEdit) {
       Promise.resolve().then(() => {
-        setProduct({
-          productName: productToEdit.title || productToEdit.name || "",
-          productPrice: String(productToEdit.price || ""),
-          productStock: String(Number.isFinite(parsedStock) ? parsedStock : 0),
-          productCategory: catVal,
-          productDescription: productToEdit.description || "",
-          productStatus: (productToEdit.is_active ?? (productToEdit.status === "Activo" || productToEdit.status === "disponible"))
-            ? "habilitado"
-            : "inhabilitado",
-        });
+        if (active) applyProductState(productToEdit);
       });
     }
+
+    const loadLatestData = async () => {
+      try {
+        const [invRes, prodRes] = await Promise.all([
+          getInventory().catch(() => []),
+          productToEdit?.id ? getProductById(productToEdit.id).catch(() => null) : Promise.resolve(null),
+        ]);
+        if (!active) return;
+        setInventoryItems(Array.isArray(invRes) ? invRes : []);
+        if (prodRes) {
+          applyProductState(prodRes);
+        }
+      } finally {
+        if (active) setLoadingInventory(false);
+      }
+    };
+
+    loadLatestData();
+    return () => {
+      active = false;
+    };
   }, [productToEdit]);
+
+  const calculatedRecipeStock = useMemo(
+    () => calculateRecipeAvailableStock(ingredients, inventoryItems),
+    [ingredients, inventoryItems]
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,6 +139,17 @@ export default function EditProductPage() {
       delete nextErrors[name];
       return nextErrors;
     });
+  };
+
+  const handleIngredientsChange = (nextRows) => {
+    setIngredients(nextRows);
+    if (errors.recipe) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.recipe;
+        return next;
+      });
+    }
   };
 
   const categoryOptions = [
@@ -102,11 +173,25 @@ export default function EditProductPage() {
       userImage: userImage.length ? userImage : undefined,
     });
 
+    const fieldErrors = {};
     if (!result.success) {
-      const fieldErrors = {};
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+    }
+
+    const shouldSendIngredients = hadRecipeInitially || ingredients.length > 0;
+    let normalizedIngredients;
+    if (shouldSendIngredients) {
+      const recipeCheck = validateRecipeRows(ingredients);
+      if (!recipeCheck.valid) {
+        fieldErrors.recipe = recipeCheck.error;
+      } else {
+        normalizedIngredients = recipeCheck.normalized;
+      }
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
       return;
     }
@@ -137,7 +222,7 @@ export default function EditProductPage() {
         name: formProduct.productName,
         title: formProduct.productName,
         price: Number(formProduct.productPrice),
-        stock: Math.max(0, Math.trunc(Number(formProduct.productStock))),
+        ...(shouldSendIngredients ? { ingredients: normalizedIngredients } : {}),
         category: selectedCat,
         description: formProduct.productDescription,
         ...(imageFile ? { imageFile } : {}),
@@ -155,14 +240,14 @@ export default function EditProductPage() {
 
       await showSuccessAlert({
         title: "Menú actualizado",
-        text: "El platillo se ha actualizado correctamente en PostgreSQL.",
+        text: "El platillo se ha actualizado correctamente.",
       });
       navigate("/productList");
     } catch (error) {
       console.error("Error al actualizar:", error);
       await showErrorAlert({
         title: "Error al actualizar",
-        text: error.message || "No se pudo actualizar el producto en la base de datos.",
+        text: error.message || "No se pudo actualizar el producto.",
       });
     } finally {
       setLoading(false);
@@ -234,15 +319,17 @@ export default function EditProductPage() {
               error={errors.productPrice}
             />
             <Input
-              label="Stock disponible *"
+              label="Stock disponible (Solo lectura)"
               name="productStock"
               type="number"
-              min="0"
-              step="1"
-              value={formProduct.productStock}
-              placeholder="Ej: 20"
-              onChange={handleChange}
-              error={errors.productStock}
+              value={
+                ingredients.length > 0
+                  ? String(calculatedRecipeStock)
+                  : readonlyStock
+              }
+              disabled={true}
+              readOnly
+              supportingText="No editable manualmente. Ajusta existencias en Inventario o vincula insumos abajo."
             />
             <Select
               label="Categoría *"
@@ -272,6 +359,19 @@ export default function EditProductPage() {
                 error={errors.productDescription}
               />
             </div>
+
+            <ProductRecipeSection
+              ingredients={ingredients}
+              onIngredientsChange={handleIngredientsChange}
+              inventoryItems={inventoryItems}
+              loadingInventory={loadingInventory}
+              helperNote={
+                !hadRecipeInitially && ingredients.length === 0
+                  ? "Este platillo aún no tiene insumos vinculados. Agrega sus ingredientes para que su disponibilidad dependa en tiempo real del inventario."
+                  : ""
+              }
+              error={errors.recipe}
+            />
           </div>
         </div>
 
@@ -282,7 +382,7 @@ export default function EditProductPage() {
             </Button>
           </Link>
           <Button variant="filled" type="submit" leadingIcon="check_circle" disabled={loading}>
-            {loading ? "Actualizando en BD..." : "Guardar Cambios"}
+            {loading ? "Guardando cambios..." : "Guardar Cambios"}
           </Button>
         </div>
       </form>

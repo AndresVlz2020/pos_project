@@ -1,7 +1,5 @@
 import { StatusSwitch } from "@/shared";
 import InventoryRowActions from "../components/InventoryRowActions";
-import { updateInventoryStatus } from "../services/inventoryServices";
-import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 
 export const getInventoryColumns = ({ onRequestStatusChange, canToggleStatus = false, canEdit = true } = {}) => [
   {
@@ -65,7 +63,7 @@ export const getInventoryColumns = ({ onRequestStatusChange, canToggleStatus = f
       const current = Number(item.currentStock ?? item.quantity ?? 0);
       const min = Number(item.minStock ?? 5);
       const isLow = current <= min;
-      const unit = item.unit || "un.";
+      const unit = item.unitMeasure || item.unit_measure || item.unit || "un.";
       return (
         <span
           className={

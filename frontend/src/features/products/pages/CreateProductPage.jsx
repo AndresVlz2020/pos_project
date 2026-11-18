@@ -1,24 +1,57 @@
 import { Input, Button, Select, Alert, FileInput, showSuccessAlert, showErrorAlert } from "@/shared";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { productSchema } from "../schemas/productSchema";
 import { Link, useNavigate } from "react-router-dom";
 import { createProduct } from "../services/productServices";
+import { getInventory } from "@/features/inventory/services/inventoryServices";
+import ProductRecipeSection from "../components/ProductRecipeSection";
+import {
+  calculateRecipeAvailableStock,
+  validateRecipeRows,
+} from "../utils/productRecipeHelpers";
 
 export default function CreateProductPage() {
   const navigate = useNavigate();
   const [formProduct, setProduct] = useState({
     productName: "",
     productPrice: "",
-    productStock: "0",
     productCategory: "2",
     productDescription: "",
     productStatus: "habilitado",
   });
 
+  const [ingredients, setIngredients] = useState([
+    { insumoId: "", cantidadRequerida: "1", currentStock: 0 },
+  ]);
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [loadingInventory, setLoadingInventory] = useState(true);
+
   const [userImage, setUserImage] = useState([]);
   const [errors, setErrors] = useState({});
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    getInventory()
+      .then((items) => {
+        if (active) setInventoryItems(Array.isArray(items) ? items : []);
+      })
+      .catch((err) => {
+        console.warn("No se pudieron cargar insumos para receta:", err);
+      })
+      .finally(() => {
+        if (active) setLoadingInventory(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const calculatedRecipeStock = useMemo(
+    () => calculateRecipeAvailableStock(ingredients, inventoryItems),
+    [ingredients, inventoryItems]
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,6 +62,17 @@ export default function CreateProductPage() {
         const nextErrors = { ...prevErrors };
         delete nextErrors[name];
         return nextErrors;
+      });
+    }
+  };
+
+  const handleIngredientsChange = (nextRows) => {
+    setIngredients(nextRows);
+    if (errors.recipe) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.recipe;
+        return next;
       });
     }
   };
@@ -55,11 +99,19 @@ export default function CreateProductPage() {
       userImage: userImage.length ? userImage : undefined,
     });
 
+    const fieldErrors = {};
     if (!result.success) {
-      const fieldErrors = {};
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+    }
+
+    const recipeCheck = validateRecipeRows(ingredients);
+    if (!recipeCheck.valid) {
+      fieldErrors.recipe = recipeCheck.error;
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
       return;
     }
@@ -84,7 +136,7 @@ export default function CreateProductPage() {
         name: formProduct.productName,
         title: formProduct.productName,
         price: Number(formProduct.productPrice),
-        stock: Math.max(0, Math.trunc(Number(formProduct.productStock))),
+        ingredients: recipeCheck.normalized,
         category: selectedCat,
         description: formProduct.productDescription,
         status: formProduct.productStatus === "habilitado" ? "Activo" : "Inactivo",
@@ -94,7 +146,7 @@ export default function CreateProductPage() {
 
       await showSuccessAlert({
         title: "Platillo creado",
-        text: "Platillo registrado correctamente en PostgreSQL.",
+        text: "Platillo registrado correctamente.",
       });
 
       navigate("/productList");
@@ -102,7 +154,7 @@ export default function CreateProductPage() {
       console.error("Error al registrar producto:", err);
       await showErrorAlert({
         title: "Error al registrar",
-        text: err.message || "No se pudo guardar el producto en la base de datos",
+        text: err.message || "No se pudo guardar el producto.",
       });
     } finally {
       setLoading(false);
@@ -179,15 +231,13 @@ export default function CreateProductPage() {
             />
 
             <Input
-              label="Stock inicial *"
+              label="Stock disponible (Calculado por insumos)"
               name="productStock"
               type="number"
-              min="0"
-              step="1"
-              placeholder="Ej: 20"
-              value={formProduct.productStock}
-              onChange={handleChange}
-              error={errors.productStock}
+              value={String(calculatedRecipeStock)}
+              disabled={true}
+              readOnly
+              supportingText="No editable manualmente. Depende exclusivamente de los insumos vinculados en Inventario."
             />
 
             <Select
@@ -218,6 +268,14 @@ export default function CreateProductPage() {
                 error={errors.productDescription}
               />
             </div>
+
+            <ProductRecipeSection
+              ingredients={ingredients}
+              onIngredientsChange={handleIngredientsChange}
+              inventoryItems={inventoryItems}
+              loadingInventory={loadingInventory}
+              error={errors.recipe}
+            />
           </div>
         </div>
 
@@ -228,7 +286,7 @@ export default function CreateProductPage() {
             </Button>
           </Link>
           <Button variant="filled" type="submit" leadingIcon="check_circle" disabled={loading}>
-            {loading ? "Guardando en BD..." : "Guardar Platillo"}
+            {loading ? "Guardando platillo..." : "Guardar Platillo"}
           </Button>
         </div>
       </form>
