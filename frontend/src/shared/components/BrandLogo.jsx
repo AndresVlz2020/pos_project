@@ -1,4 +1,4 @@
-import { logoOrange } from "@/utils/imageHelper";
+import { logoOrange } from "@/utils/avatarHelper";
 
 export default function BrandLogo({ className = "h-10 w-auto object-contain", alt = "D'Piero Restaurante" }) {
   return (
@@ -6,6 +6,11 @@ export default function BrandLogo({ className = "h-10 w-auto object-contain", al
       <img
         src={logoOrange}
         alt={alt}
+        width={460}
+        height={75}
+        style={{ aspectRatio: "460 / 75" }}
+        fetchPriority="high"
+        decoding="sync"
         className={`block ${className} dark:opacity-0`}
         onError={(e) => {
           e.currentTarget.onerror = null;

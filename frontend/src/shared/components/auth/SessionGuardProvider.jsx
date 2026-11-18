@@ -1,5 +1,7 @@
 import {
+  Suspense,
   createContext,
+  lazy,
   useCallback,
   useContext,
   useEffect,
@@ -19,6 +21,10 @@ import {
   getLastProtectedRoute,
   setLastProtectedRoute,
 } from "@/shared/utils/authStorage";
+
+const AdminStepUpModal = lazy(() =>
+  import("@/shared/components/AdminStepUpModal")
+);
 
 const LogoutConfirmContext = createContext({
   requestLogoutConfirm: () => {},
@@ -81,10 +87,17 @@ export function RootSessionGuard() {
   }, [navigate]);
 
   const isBackAttempt = confirmState.reason === "back";
+  const hasActiveSession = Boolean(getAuthToken());
 
   return (
     <LogoutConfirmContext.Provider value={{ requestLogoutConfirm }}>
       <Outlet />
+
+      {hasActiveSession && (
+        <Suspense fallback={null}>
+          <AdminStepUpModal />
+        </Suspense>
+      )}
 
       <ConfirmDialog
         isOpen={confirmState.open}

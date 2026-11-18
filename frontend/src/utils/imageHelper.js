@@ -1,84 +1,100 @@
-// Importaciones directas de Vite para empaquetado infalible
-import imgPunta from "@/assets/images/punta-de-anca-hd.jpg";
-import imgCostillas from "@/assets/images/costillas-bbq-hd.jpg";
-import imgHamburguesa from "@/assets/images/hamburguesa-hd.jpg";
-import imgChicharron from "@/assets/images/chicharron-hd.jpg";
-import imgEmpanadas from "@/assets/images/empanadas-hd.jpg";
-import imgLimonada from "@/assets/images/limonada-hd.jpg";
-import imgCoctel from "@/assets/images/coctel-fresa-hd.jpg";
-import imgCerveza from "@/assets/images/cerveza-hd.jpg";
-import imgJugo from "@/assets/images/jugo-natural-hd.jpg";
-import imgCoco from "@/assets/images/postre-coco-hd.jpg";
-import imgTresLeches from "@/assets/images/tres-leches-hd.jpg";
-import imgPapas from "@/assets/images/papas-rusticas-hd.jpg";
+// Importaciones optimizadas WebP vía Vite + re-export de avatares compartidos
+import imgPunta from "@/assets/images/punta-de-anca-hd.webp";
+import imgCostillas from "@/assets/images/costillas-bbq-hd.webp";
+import imgHamburguesa from "@/assets/images/hamburguesa-hd.webp";
+import imgChicharron from "@/assets/images/chicharron-hd.webp";
+import imgEmpanadas from "@/assets/images/empanadas-hd.webp";
+import imgLimonada from "@/assets/images/limonada-hd.webp";
+import imgCoctel from "@/assets/images/coctel-fresa-hd.webp";
+import imgCerveza from "@/assets/images/cerveza-hd.webp";
+import imgJugo from "@/assets/images/jugo-natural-hd.webp";
+import imgCoco from "@/assets/images/postre-coco-hd.webp";
+import imgTresLeches from "@/assets/images/tres-leches-hd.webp";
+import imgPapas from "@/assets/images/papas-rusticas-hd.webp";
 
-import imgCarnes from "@/assets/images/supplier-carnes.jpg";
-import imgLacteos from "@/assets/images/supplier-lacteos.jpg";
-import imgFruver from "@/assets/images/supplier-fruver.jpg";
-import imgBebidas from "@/assets/images/supplier-bebidas.jpg";
-import imgMariscos from "@/assets/images/supplier-mariscos.jpg";
-import imgEmpaques from "@/assets/images/supplier-empaques.jpg";
+import imgCarnes from "@/assets/images/supplier-carnes.webp";
+import imgLacteos from "@/assets/images/supplier-lacteos.webp";
+import imgFruver from "@/assets/images/supplier-fruver.webp";
+import imgBebidas from "@/assets/images/supplier-bebidas.webp";
+import imgMariscos from "@/assets/images/supplier-mariscos.webp";
+import imgEmpaques from "@/assets/images/supplier-empaques.webp";
 
-import imgWorkerCarlos from "@/assets/images/worker-carlos.jpg";
-import imgWorkerMaria from "@/assets/images/worker-maria.jpg";
-import imgWorkerJuan from "@/assets/images/worker-juan.jpg";
-import imgWorkerAna from "@/assets/images/worker-ana.jpg";
+import {
+  resolveUploadedAssetUrl,
+  getUserAvatar,
+  imgWorkerCarlos,
+  imgWorkerMaria,
+  imgWorkerJuan,
+  imgWorkerAna,
+  logoOrange,
+} from "./avatarHelper";
 
-import logoOrange from "@/assets/images/logo-d,piero-orange.png";
-
-// Carga automática vía Vite de todas las imágenes generadas en assets/images/products
+// Carga automática vía Vite de todas las imágenes optimizadas en assets/images/products
 const GENERATED_PRODUCT_MODULES = import.meta.glob(
-  "@/assets/images/products/*.{jpg,jpeg,png,webp}",
+  "@/assets/images/products/*.{webp,jpg,jpeg,png}",
   { eager: true, import: "default" }
 );
 
 const ALL_PRODUCT_ASSETS = {
   "punta-de-anca-hd.jpg": imgPunta,
+  "punta-de-anca-hd.webp": imgPunta,
   "costillas-bbq-hd.jpg": imgCostillas,
+  "costillas-bbq-hd.webp": imgCostillas,
   "hamburguesa-hd.jpg": imgHamburguesa,
+  "hamburguesa-hd.webp": imgHamburguesa,
   "chicharron-hd.jpg": imgChicharron,
+  "chicharron-hd.webp": imgChicharron,
   "empanadas-hd.jpg": imgEmpanadas,
+  "empanadas-hd.webp": imgEmpanadas,
   "limonada-hd.jpg": imgLimonada,
+  "limonada-hd.webp": imgLimonada,
   "coctel-fresa-hd.jpg": imgCoctel,
+  "coctel-fresa-hd.webp": imgCoctel,
   "cerveza-hd.jpg": imgCerveza,
+  "cerveza-hd.webp": imgCerveza,
   "jugo-natural-hd.jpg": imgJugo,
+  "jugo-natural-hd.webp": imgJugo,
   "postre-coco-hd.jpg": imgCoco,
+  "postre-coco-hd.webp": imgCoco,
   "tres-leches-hd.jpg": imgTresLeches,
+  "tres-leches-hd.webp": imgTresLeches,
   "papas-rusticas-hd.jpg": imgPapas,
+  "papas-rusticas-hd.webp": imgPapas,
   ...Object.fromEntries(
-    Object.entries(GENERATED_PRODUCT_MODULES).map(([fullPath, src]) => [
-      fullPath.split("/").pop().toLowerCase(),
-      src,
-    ])
+    Object.entries(GENERATED_PRODUCT_MODULES).flatMap(([fullPath, src]) => {
+      const name = fullPath.split("/").pop().toLowerCase();
+      const jpgAlias = name.replace(/\.webp$/i, ".jpg");
+      return name === jpgAlias ? [[name, src]] : [[name, src], [jpgAlias, src]];
+    })
   ),
 };
 
 const PRODUCT_FILENAME_BY_CODE = {
-  "PAR-01": "punta-de-anca-hd.jpg",
-  "PAR-02": "costillas-bbq-hd.jpg",
-  "PAR-03": "hamburguesa-hd.jpg",
-  "PAR-04": "pechuga-gratinada.jpg",
-  "PAR-05": "salmon-parrilla.jpg",
-  "PAR-06": "trucha-al-ajillo.jpg",
-  "PAR-07": "picada-parrillera.jpg",
-  "PAR-08": "fetuccini-camarones.jpg",
-  "ENT-01": "chicharron-hd.jpg",
-  "ENT-02": "empanadas-hd.jpg",
-  "ENT-03": "chorizo-santandereano.jpg",
-  "BEB-01": "limonada-hd.jpg",
-  "BEB-02": "coctel-fresa-hd.jpg",
-  "BEB-03": "cerveza-hd.jpg",
-  "BEB-04": "jugo-natural-hd.jpg",
-  "BEB-05": "limonada-coco.jpg",
-  "POS-01": "postre-coco-hd.jpg",
-  "POS-02": "tres-leches-hd.jpg",
-  "POS-03": "tiramisu-clasico.jpg",
-  "POS-04": "flan-caramelo.jpg",
-  "POS-05": "volcan-chocolate.jpg",
-  "GUA-01": "papas-rusticas-hd.jpg",
-  "GUA-02": "maduro-con-queso.jpg",
-  "GUA-03": "ensalada-cesar.jpg",
-  "GUA-04": "arepa-con-queso.jpg",
+  "PAR-01": "punta-de-anca-hd.webp",
+  "PAR-02": "costillas-bbq-hd.webp",
+  "PAR-03": "hamburguesa-hd.webp",
+  "PAR-04": "pechuga-gratinada.webp",
+  "PAR-05": "salmon-parrilla.webp",
+  "PAR-06": "trucha-al-ajillo.webp",
+  "PAR-07": "picada-parrillera.webp",
+  "PAR-08": "fetuccini-camarones.webp",
+  "ENT-01": "chicharron-hd.webp",
+  "ENT-02": "empanadas-hd.webp",
+  "ENT-03": "chorizo-santandereano.webp",
+  "BEB-01": "limonada-hd.webp",
+  "BEB-02": "coctel-fresa-hd.webp",
+  "BEB-03": "cerveza-hd.webp",
+  "BEB-04": "jugo-natural-hd.webp",
+  "BEB-05": "limonada-coco.webp",
+  "POS-01": "postre-coco-hd.webp",
+  "POS-02": "tres-leches-hd.webp",
+  "POS-03": "tiramisu-clasico.webp",
+  "POS-04": "flan-caramelo.webp",
+  "POS-05": "volcan-chocolate.webp",
+  "GUA-01": "papas-rusticas-hd.webp",
+  "GUA-02": "maduro-con-queso.webp",
+  "GUA-03": "ensalada-cesar.webp",
+  "GUA-04": "arepa-con-queso.webp",
 };
 
 const normalizeProductKey = (text = "") =>
@@ -90,35 +106,34 @@ const normalizeProductKey = (text = "") =>
     .trim();
 
 const PRODUCT_FILENAME_BY_NAME = {
-  "punta de anca angus 400g": "punta-de-anca-hd.jpg",
-  "costillas ahumadas bbq d'piero": "costillas-bbq-hd.jpg",
-  "hamburguesa d'piero artesanal": "hamburguesa-hd.jpg",
-  "pechuga gratinada a las brasas": "pechuga-gratinada.jpg",
-  "salmon a la parrilla con eneldo": "salmon-parrilla.jpg",
-  "trucha arcoiris al ajillo": "trucha-al-ajillo.jpg",
-  "picada parrillera familiar d'piero": "picada-parrillera.jpg",
-  "fetuccini alfredo con camarones": "fetuccini-camarones.jpg",
-  "chicharron carnudo crocante": "chicharron-hd.jpg",
-  "empanadas de carne & papa (x5)": "empanadas-hd.jpg",
-  "chorizo santandereano con arepa": "chorizo-santandereano.jpg",
-  "limonada hierbabuena artesanal": "limonada-hd.jpg",
-  "coctel de frutos rojos & fresa": "coctel-fresa-hd.jpg",
-  "cerveza artesanal rubia 330ml": "cerveza-hd.jpg",
-  "jugo natural de fruta fresca": "jugo-natural-hd.jpg",
-  "limonada de coco cremosa": "limonada-coco.jpg",
-  "postre gourmet de coco": "postre-coco-hd.jpg",
-  "torta tradicional tres leches": "tres-leches-hd.jpg",
-  "tiramisu clasico italiano": "tiramisu-clasico.jpg",
-  "flan de caramelo artesanal": "flan-caramelo.jpg",
-  "volcan de chocolate fundido": "volcan-chocolate.jpg",
-  "papas rusticas a las finas hierbas": "papas-rusticas-hd.jpg",
-  "papas rusticas con romero & ajo": "papas-rusticas-hd.jpg",
-  "platano maduro asado con queso": "maduro-con-queso.jpg",
-  "ensalada cesar clasica": "ensalada-cesar.jpg",
-  "arepa con queso asada a la brasa": "arepa-con-queso.jpg",
+  "punta de anca angus 400g": "punta-de-anca-hd.webp",
+  "costillas ahumadas bbq d'piero": "costillas-bbq-hd.webp",
+  "hamburguesa d'piero artesanal": "hamburguesa-hd.webp",
+  "pechuga gratinada a las brasas": "pechuga-gratinada.webp",
+  "salmon a la parrilla con eneldo": "salmon-parrilla.webp",
+  "trucha arcoiris al ajillo": "trucha-al-ajillo.webp",
+  "picada parrillera familiar d'piero": "picada-parrillera.webp",
+  "fetuccini alfredo con camarones": "fetuccini-camarones.webp",
+  "chicharron carnudo crocante": "chicharron-hd.webp",
+  "empanadas de carne & papa (x5)": "empanadas-hd.webp",
+  "chorizo santandereano con arepa": "chorizo-santandereano.webp",
+  "limonada hierbabuena artesanal": "limonada-hd.webp",
+  "coctel de frutos rojos & fresa": "coctel-fresa-hd.webp",
+  "cerveza artesanal rubia 330ml": "cerveza-hd.webp",
+  "jugo natural de fruta fresca": "jugo-natural-hd.webp",
+  "limonada de coco cremosa": "limonada-coco.webp",
+  "postre gourmet de coco": "postre-coco-hd.webp",
+  "torta tradicional tres leches": "tres-leches-hd.webp",
+  "tiramisu clasico italiano": "tiramisu-clasico.webp",
+  "flan de caramelo artesanal": "flan-caramelo.webp",
+  "volcan de chocolate fundido": "volcan-chocolate.webp",
+  "papas rusticas a las finas hierbas": "papas-rusticas-hd.webp",
+  "papas rusticas con romero & ajo": "papas-rusticas-hd.webp",
+  "platano maduro asado con queso": "maduro-con-queso.webp",
+  "ensalada cesar clasica": "ensalada-cesar.webp",
+  "arepa con queso asada a la brasa": "arepa-con-queso.webp",
 };
 
-// Mapa de productos según slug o coincidencias de nombre
 export const PRODUCT_IMAGES = {
   punta: imgPunta,
   costilla: imgCostillas,
@@ -138,28 +153,8 @@ export const PRODUCT_IMAGES = {
   ...ALL_PRODUCT_ASSETS,
 };
 
-const RAW_API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
-const API_ORIGIN = RAW_API_URL.replace(/\/+$/, "").startsWith("http")
-  ? RAW_API_URL.replace(/\/+$/, "").replace(/\/api$/i, "")
-  : "";
-
 /**
- * Resuelve rutas de imágenes almacenadas en el backend (/api/uploads/...)
- */
-export function resolveUploadedAssetUrl(rawUrl) {
-  const url = String(rawUrl || "").trim();
-  if (!url) return "";
-  if (url.startsWith("/api/uploads/")) {
-    return `${API_ORIGIN}${url}`;
-  }
-  if (url.startsWith("/uploads/")) {
-    return `${API_ORIGIN}/api${url}`;
-  }
-  return "";
-}
-
-/**
- * Resuelve la imagen correcta para un producto (usando importación Vite estática o backend uploads)
+ * Resuelve la imagen correcta para un producto (usando importación Vite optimizada o backend uploads)
  */
 export function getProductImage(product) {
   if (!product) return imgPunta;
@@ -190,7 +185,7 @@ export function getProductImage(product) {
     return ALL_PRODUCT_ASSETS[codeFile];
   }
 
-  // 3. Coincidencia exacta por nombre normalizado (útil para detalles de órdenes / facturas)
+  // 3. Coincidencia exacta por nombre normalizado
   const exactNameFile = PRODUCT_FILENAME_BY_NAME[normalizeProductKey(product.title || product.name || "")];
   if (exactNameFile && ALL_PRODUCT_ASSETS[exactNameFile]) {
     return ALL_PRODUCT_ASSETS[exactNameFile];
@@ -249,68 +244,9 @@ export function getSupplierImage(supplier) {
   return { image: imgLacteos, category: "Insumos Generales de Restaurante" };
 }
 
-const WORKER_ASSETS = {
-  "worker-carlos.jpg": imgWorkerCarlos,
-  "worker-maria.jpg": imgWorkerMaria,
-  "worker-juan.jpg": imgWorkerJuan,
-  "worker-ana.jpg": imgWorkerAna,
-};
-
-/**
- * Resuelve la imagen de avatar para un usuario del sistema POS
- */
-export function getUserAvatar(user) {
-  if (!user) return imgWorkerCarlos;
-
-  const rawUrl = String(
-    user.userAvatarUrl ||
-      user.user_avatar_url ||
-      user.photo ||
-      user.avatar ||
-      user.image ||
-      ""
-  ).trim();
-
-  // Imágenes almacenadas físicamente en backend/uploads
-  const uploadedAvatar = resolveUploadedAssetUrl(rawUrl);
-  if (uploadedAvatar) {
-    return uploadedAvatar;
-  }
-
-  // Imágenes personalizadas cargadas por el usuario (Data URL / HTTP / HTTPS)
-  if (
-    rawUrl.startsWith("data:image/") ||
-    rawUrl.startsWith("http://") ||
-    rawUrl.startsWith("https://")
-  ) {
-    return rawUrl;
-  }
-
-  // Assets conocidos de empleados (solo si fueron guardados explícitamente)
-  const filename = rawUrl.split("/").pop()?.split("?")[0]?.toLowerCase() || "";
-  if (filename && WORKER_ASSETS[filename]) {
-    return WORKER_ASSETS[filename];
-  }
-
-  const text = `${user.userName || user.name || ""} ${user.role || user.userType || ""} ${user.userEmail || user.email || ""}`.toLowerCase();
-
-  if (text.includes("maría") || text.includes("maria") || text.includes("cajera")) {
-    return imgWorkerMaria;
-  }
-  if (text.includes("ana") || text.includes("cocina") || text.includes("cocin")) {
-    return imgWorkerAna;
-  }
-  if (text.includes("santiago") || text.includes("admin") || text.includes("velez") || text.includes("juan")) {
-    return imgWorkerJuan;
-  }
-  if (text.includes("carlos") || text.includes("mesero") || text.includes("salon")) {
-    return imgWorkerCarlos;
-  }
-
-  return imgWorkerCarlos;
-}
-
 export {
+  resolveUploadedAssetUrl,
+  getUserAvatar,
   imgPunta,
   imgCostillas,
   imgHamburguesa,

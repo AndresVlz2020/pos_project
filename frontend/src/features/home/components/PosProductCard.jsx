@@ -46,6 +46,7 @@ export default function PosProductCard({ product, onSelect }) {
               isInhabilitado ? "grayscale" : "group-hover:scale-105"
             }`}
             loading="lazy"
+            decoding="async"
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = imgPunta;

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { loginSchema } from "@/features/users/schemas/userSchema";
-import { Button, M3Icon } from "@/shared";
+import Button from "@/shared/components/Button";
+import M3Icon from "@/shared/components/M3Icon";
 import {
   checkAdminEmailApi,
   getBiometricCapabilities,

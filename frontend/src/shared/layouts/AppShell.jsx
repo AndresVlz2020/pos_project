@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  ThemeToggle,
-  BrandLogo,
-  IconButton,
-  M3Icon,
-} from "@/shared";
+import ThemeToggle from "../components/ThemeToggle";
+import BrandLogo from "../components/BrandLogo";
+import { IconButton } from "../components/IconButton";
+import M3Icon from "../components/M3Icon";
 import { useNavigationState } from "@/shared/hooks/useNavigationState";
-import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
+import { getUserAvatar, imgWorkerCarlos } from "@/utils/avatarHelper";
 import { formatDuration } from "@/services/sessionService";
 import SessionHistoryModal from "../components/SessionHistoryModal";
 import BiometricSettingsModal from "../components/BiometricSettingsModal";
@@ -238,6 +236,9 @@ export function AppShell({ children, showFooter = false }) {
                   src={getUserAvatar(currentUser)}
                   alt={currentUser.name || "Usuario"}
                   title={`${currentUser.name || "Usuario"} (${currentUser.role || ""})`}
+                  width={32}
+                  height={32}
+                  decoding="async"
                   className="size-8 rounded-full object-cover shrink-0"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
@@ -266,6 +267,9 @@ export function AppShell({ children, showFooter = false }) {
                 <img
                   src={getUserAvatar(currentUser)}
                   alt={currentUser.name || "Usuario"}
+                  width={32}
+                  height={32}
+                  decoding="async"
                   className="size-8 rounded-full object-cover border border-[var(--md-sys-color-outline-variant)] shrink-0"
                   onError={(e) => {
                     e.currentTarget.onerror = null;

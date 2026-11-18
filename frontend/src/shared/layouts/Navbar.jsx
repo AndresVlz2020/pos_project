@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  IconButton,
-  ThemeToggle,
-  BrandLogo,
-  M3Icon,
-} from "@/shared";
+import { IconButton } from "../components/IconButton";
+import ThemeToggle from "../components/ThemeToggle";
+import BrandLogo from "../components/BrandLogo";
+import M3Icon from "../components/M3Icon";
 import { useNavigationState } from "@/shared/hooks/useNavigationState";
-import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
+import { getUserAvatar, imgWorkerCarlos } from "@/utils/avatarHelper";
 import { formatDuration } from "@/services/sessionService";
 import SessionHistoryModal from "../components/SessionHistoryModal";
 import BiometricSettingsModal from "../components/BiometricSettingsModal";
@@ -65,6 +63,9 @@ export default function Navbar() {
                   <img
                     src={getUserAvatar(currentUser)}
                     alt={currentUser.name || "Usuario"}
+                    width={32}
+                    height={32}
+                    decoding="async"
                     className="size-8 rounded-full object-cover border border-[var(--md-sys-color-outline-variant)] shrink-0"
                     onError={(e) => {
                       e.currentTarget.onerror = null;

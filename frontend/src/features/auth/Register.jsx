@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Input, Button, Select, Checkbox, BrandLogo, showSuccessAlert, showErrorAlert } from "@/shared";
+import { Input, Button, Select, Checkbox, BrandLogo, showSuccessAlert } from "@/shared";
 import { Link, useNavigate } from "react-router-dom";
-import bgRegister from "@/assets/images/bg-register-restaurant.jpg";
+import bgRegister from "@/assets/images/bg-register-restaurant.webp";
 import { getDocumentTypes } from "../../services/selectServices";
 import { userSchema } from "@/features/users/schemas/userSchema";
 

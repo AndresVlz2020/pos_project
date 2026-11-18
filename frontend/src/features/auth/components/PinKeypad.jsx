@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { M3Icon } from "@/shared";
-import { formatRole, StaffAvatar } from "./QuickAccessSelector";
+import M3Icon from "@/shared/components/M3Icon";
+import { StaffAvatar } from "./QuickAccessSelector";
+import { formatRole } from "@/utils/avatarHelper";
 import {
   getBiometricCapabilities,
   getUserBiometricStatusApi,

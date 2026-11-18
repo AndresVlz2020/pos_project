@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { M3Icon, SearchField } from "@/shared";
-import { users as fallbackUsers } from "@/features/users/data/users";
+import M3Icon from "@/shared/components/M3Icon";
+import SearchField from "@/shared/components/SearchField";
 import { getUsers } from "@/services/userService";
-import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
+import { formatRole, getUserAvatar, imgWorkerCarlos } from "@/utils/avatarHelper";
 
 const normalizeText = (text = "") =>
   text
@@ -11,20 +11,14 @@ const normalizeText = (text = "") =>
     .toLowerCase()
     .trim();
 
-export const formatRole = (role = "") => {
-  const r = role.toLowerCase();
-  if (r.includes("caj")) return "Cajero";
-  if (r.includes("meser") || r.includes("salon")) return "Mesero";
-  if (r.includes("cocin") || r.includes("parrill") || r.includes("brasa")) return "Cocina";
-  if (r.includes("admin")) return "Administrador";
-  return role || "Mesero";
-};
-
 export function StaffAvatar({ staff, sizeClass = "size-9" }) {
   return (
     <img
       src={getUserAvatar(staff)}
       alt={staff?.userName || staff?.name || "Colaborador"}
+      width={36}
+      height={36}
+      decoding="async"
       className={`${sizeClass} rounded-full object-cover border border-[var(--md-sys-color-outline-variant)] shrink-0`}
       onError={(e) => {
         e.currentTarget.onerror = null;
@@ -37,10 +31,13 @@ export function StaffAvatar({ staff, sizeClass = "size-9" }) {
 export default function QuickAccessSelector({ onSelectStaff }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [staffUsers, setStaffUsers] = useState([]);
+  const [loadingStaff, setLoadingStaff] = useState(true);
 
   useEffect(() => {
+    let active = true;
     getUsers({ activeOnly: true })
-      .then((data) => {
+      .then(async (data) => {
+        if (!active) return;
         if (Array.isArray(data) && data.length > 0) {
           const operationalActive = data.filter((u) => {
             const isActive = Boolean(u.isActive ?? u.is_active ?? true);
@@ -48,22 +45,37 @@ export default function QuickAccessSelector({ onSelectStaff }) {
             const isAdmin = Boolean(u.isSuperUser || u.is_superuser || roleText === "admin" || roleText === "administrador");
             return isActive && !isAdmin;
           });
-          setStaffUsers(operationalActive);
-        } else {
+          if (operationalActive.length > 0) {
+            setStaffUsers(operationalActive);
+            return;
+          }
+        }
+        const { users: fallbackUsers } = await import("@/features/users/data/users");
+        if (active) {
           setStaffUsers(
             fallbackUsers.filter((u) => u.isActive !== false && u.role !== "Administrador")
           );
         }
       })
-      .catch(() => {
-        setStaffUsers(
-          fallbackUsers.filter((u) => u.isActive !== false && u.role !== "Administrador")
-        );
+      .catch(async () => {
+        if (!active) return;
+        const { users: fallbackUsers } = await import("@/features/users/data/users");
+        if (active) {
+          setStaffUsers(
+            fallbackUsers.filter((u) => u.isActive !== false && u.role !== "Administrador")
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setLoadingStaff(false);
       });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const quickStaffList = useMemo(() => {
-    return staffUsers;
+    return staffUsers.slice(0, 4);
   }, [staffUsers]);
 
   const filteredStaffList = useMemo(() => {
@@ -172,28 +184,44 @@ export default function QuickAccessSelector({ onSelectStaff }) {
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            {quickStaffList.map((staff) => (
-              <button
-                key={staff.id}
-                type="button"
-                onClick={() => onSelectStaff(staff)}
-                className="m3-state px-3.5 py-2.5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] hover:border-[var(--md-sys-color-primary)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer group flex items-center gap-2.5"
-              >
-                <StaffAvatar staff={staff} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-title-sm font-semibold text-[var(--md-sys-color-on-surface)] truncate">
-                    {staff.userName || staff.name}
-                  </p>
-                  <p className="text-sm leading-5 text-[var(--md-sys-color-primary)] font-medium truncate">
-                    {formatRole(staff.role || staff.userType)}
-                  </p>
+          <div className="grid grid-cols-2 gap-4 min-h-[148px]">
+            {loadingStaff ? (
+              [0, 1, 2, 3].map((slot) => (
+                <div
+                  key={slot}
+                  aria-hidden="true"
+                  className="h-[66px] px-3.5 py-2.5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] flex items-center gap-2.5 animate-pulse"
+                >
+                  <div className="size-9 rounded-full bg-[var(--md-sys-color-surface-container-high)] shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3.5 w-3/4 rounded bg-[var(--md-sys-color-surface-container-high)]" />
+                    <div className="h-3 w-1/2 rounded bg-[var(--md-sys-color-surface-container)]" />
+                  </div>
                 </div>
-              </button>
-            ))}
+              ))
+            ) : (
+              quickStaffList.map((staff) => (
+                <button
+                  key={staff.id}
+                  type="button"
+                  onClick={() => onSelectStaff(staff)}
+                  className="m3-state h-[66px] px-3.5 py-2.5 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] hover:border-[var(--md-sys-color-primary)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer group flex items-center gap-2.5"
+                >
+                  <StaffAvatar staff={staff} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-title-sm font-semibold text-[var(--md-sys-color-on-surface)] truncate">
+                      {staff.userName || staff.name}
+                    </p>
+                    <p className="text-sm leading-5 text-[var(--md-sys-color-primary)] font-medium truncate">
+                      {formatRole(staff.role || staff.userType)}
+                    </p>
+                  </div>
+                </button>
+              ))
+            )}
           </div>
 
-          <p className="text-sm leading-5 text-center text-[var(--md-sys-color-on-surface-variant)] pt-0.5">
+          <p className="min-h-[40px] flex items-center justify-center text-sm leading-5 text-center text-[var(--md-sys-color-on-surface-variant)] pt-0.5">
             ¿No apareces en esta lista? Escribe tu nombre o documento en el buscador superior.
           </p>
         </div>

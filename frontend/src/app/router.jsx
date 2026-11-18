@@ -1,7 +1,9 @@
 // src/app/router.jsx
 import { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { AuthLayout, DashboardLayout, ProtectedRoute } from "@/shared";
+import AuthLayout from "@/shared/layouts/AuthLayout";
+import ProtectedRoute from "@/shared/components/auth/ProtectedRoute";
+import Login from "@/features/auth/Login";
 import {
   RootSessionGuard,
   GuestAuthGuard,
@@ -29,10 +31,10 @@ const lazyRoute = (loader, exportName) => {
   };
 };
 
+const DashboardLayout = lazyRoute(() => import("@/shared/layouts/DashboardLayout"));
 const CreateOrder = lazyRoute(() => import("@/features/orders/pages/CreateOrderPage"));
 const EditOrder = lazyRoute(() => import("@/features/orders/pages/EditOrderPage"));
 const UsersManagement = lazyRoute(() => import("@/features/users/pages/UsersManagementPage"));
-const Login = lazyRoute(() => import("@/features/auth/Login"));
 const ForgotPassword = lazyRoute(() => import("@/features/auth/ForgotPassword"));
 const ResetPassword = lazyRoute(() => import("@/features/auth/ResetPassword"));
 const CreateUser = lazyRoute(() => import("@/features/users/pages/CreateUserPage"));

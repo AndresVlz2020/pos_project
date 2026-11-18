@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Input, Button, Alert, BrandLogo, M3Icon } from "@/shared";
+import Input from "@/shared/components/Input";
+import Button from "@/shared/components/Button";
+import Alert from "@/shared/components/Alert";
+import BrandLogo from "@/shared/components/BrandLogo";
+import M3Icon from "@/shared/components/M3Icon";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { resetPasswordApi, forgotPasswordApi } from "@/services/authService";
 import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";

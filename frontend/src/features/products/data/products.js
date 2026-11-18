@@ -1,16 +1,18 @@
-import { getProductImage } from "@/utils/imageHelper";
-import imgPunta from "@/assets/images/punta-de-anca-hd.jpg";
-import imgLimonada from "@/assets/images/limonada-hd.jpg";
-import imgPostre from "@/assets/images/postre-coco-hd.jpg";
-import imgCoctel from "@/assets/images/coctel-fresa-hd.jpg";
-import imgCostillas from "@/assets/images/costillas-bbq-hd.jpg";
-import imgHamburguesa from "@/assets/images/hamburguesa-hd.jpg";
-import imgChicharron from "@/assets/images/chicharron-hd.jpg";
-import imgEmpanadas from "@/assets/images/empanadas-hd.jpg";
-import imgCerveza from "@/assets/images/cerveza-hd.jpg";
-import imgJugo from "@/assets/images/jugo-natural-hd.jpg";
-import imgTresLeches from "@/assets/images/tres-leches-hd.jpg";
-import imgPapas from "@/assets/images/papas-rusticas-hd.jpg";
+import {
+  getProductImage,
+  imgPunta,
+  imgLimonada,
+  imgCoco as imgPostre,
+  imgCoctel,
+  imgCostillas,
+  imgHamburguesa,
+  imgChicharron,
+  imgEmpanadas,
+  imgCerveza,
+  imgJugo,
+  imgTresLeches,
+  imgPapas,
+} from "@/utils/imageHelper";
 
 export const products = [
     {

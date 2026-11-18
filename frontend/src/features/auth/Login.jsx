@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BrandLogo, M3Icon, showErrorAlert } from "@/shared";
-import QuickAccessSelector, { formatRole } from "./components/QuickAccessSelector";
-import PinKeypad from "./components/PinKeypad";
-import AdminLoginForm from "./components/AdminLoginForm";
+import BrandLogo from "@/shared/components/BrandLogo";
+import M3Icon from "@/shared/components/M3Icon";
+import QuickAccessSelector from "./components/QuickAccessSelector";
+import { formatRole } from "@/utils/avatarHelper";
 import { loginApi } from "@/services/authService";
-import { loginWithBiometricsApi } from "@/services/biometricService";
 import { setAuthSession, setLastProtectedRoute } from "@/shared/utils/authStorage";
+
+const PinKeypad = lazy(() => import("./components/PinKeypad"));
+const AdminLoginForm = lazy(() => import("./components/AdminLoginForm"));
 
 export default function Login() {
   const navigate = useNavigate();
@@ -97,6 +99,7 @@ export default function Login() {
   };
 
   const handleStaffBiometricLogin = async (staff) => {
+    const { loginWithBiometricsApi } = await import("@/services/biometricService");
     const result = await loginWithBiometricsApi({ userId: staff.id });
     setPinLockSeconds(0);
     setPinError("");
@@ -104,6 +107,7 @@ export default function Login() {
   };
 
   const handleAdminBiometricLogin = async (email) => {
+    const { loginWithBiometricsApi } = await import("@/services/biometricService");
     const result = await loginWithBiometricsApi({ email });
     const emailClean = String(email || "").trim().toLowerCase();
     sessionStorage.removeItem(`login_attempts_${emailClean}`);
@@ -117,6 +121,7 @@ export default function Login() {
 
     // Verificación de bloqueo por 3 intentos fallidos (Rúbrica de seguridad)
     if (currentAttempts >= 3) {
+      const { showErrorAlert } = await import("@/shared/services/alertService");
       await showErrorAlert({
         title: "Cuenta bloqueada",
         text: "Se ha bloqueado la cuenta por superar 3 intentos fallidos consecutivos. Contacte al administrador central.",
@@ -137,6 +142,7 @@ export default function Login() {
       console.warn("Backend login failed or unreachable:", err.message);
 
       if (err.isNetworkError) {
+        const { showErrorAlert } = await import("@/shared/services/alertService");
         await showErrorAlert({
           title: "Sin conexión",
           text: "No fue posible conectar con el sistema en este momento. Verifica tu conexión e inténtalo de nuevo.",
@@ -152,6 +158,7 @@ export default function Login() {
       sessionStorage.setItem(attemptsKey, String(newAttempts));
 
       if (newAttempts >= 3) {
+        const { showErrorAlert } = await import("@/shared/services/alertService");
         await showErrorAlert({
           title: "Cuenta bloqueada",
           text: "Ha alcanzado el límite de 3 intentos fallidos. Su cuenta ha sido bloqueada.",
@@ -183,7 +190,7 @@ export default function Login() {
         </p>
       </div>
 
-      <div className="dpiero-fade-up w-full max-w-xl rounded-[28px] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] p-5 sm:p-6 text-[var(--md-sys-color-on-surface)] m3-elevation-2">
+      <div className="w-full max-w-xl rounded-[28px] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] p-5 sm:p-6 text-[var(--md-sys-color-on-surface)] m3-elevation-2">
         {/* M3 Segmented Button (40dp pill, outline border, vertical divider, secondary-container selected fill) */}
         <div
           role="tablist"
@@ -234,26 +241,42 @@ export default function Login() {
             {!selectedStaff ? (
               <QuickAccessSelector onSelectStaff={handleSelectStaff} />
             ) : (
-              <PinKeypad
-                key={selectedStaff.id}
-                selectedStaff={selectedStaff}
-                onBack={handleBackToStaffList}
-                onValidatePin={handleValidatePin}
-                onBiometricLogin={handleStaffBiometricLogin}
-                pinError={pinError}
-                lockSeconds={pinLockSeconds}
-                onSyncLockSeconds={setPinLockSeconds}
-                onClearError={() => setPinError("")}
-              />
+              <Suspense
+                fallback={
+                  <div className="min-h-[240px] flex items-center justify-center text-sm text-[var(--md-sys-color-on-surface-variant)]">
+                    Cargando teclado...
+                  </div>
+                }
+              >
+                <PinKeypad
+                  key={selectedStaff.id}
+                  selectedStaff={selectedStaff}
+                  onBack={handleBackToStaffList}
+                  onValidatePin={handleValidatePin}
+                  onBiometricLogin={handleStaffBiometricLogin}
+                  pinError={pinError}
+                  lockSeconds={pinLockSeconds}
+                  onSyncLockSeconds={setPinLockSeconds}
+                  onClearError={() => setPinError("")}
+                />
+              </Suspense>
             )}
           </div>
         )}
 
         {authMode === "admin" && (
-          <AdminLoginForm
-            onSubmit={handleAdminSubmit}
-            onBiometricLogin={handleAdminBiometricLogin}
-          />
+          <Suspense
+            fallback={
+              <div className="min-h-[200px] flex items-center justify-center text-sm text-[var(--md-sys-color-on-surface-variant)]">
+                Cargando acceso administrativo...
+              </div>
+            }
+          >
+            <AdminLoginForm
+              onSubmit={handleAdminSubmit}
+              onBiometricLogin={handleAdminBiometricLogin}
+            />
+          </Suspense>
         )}
       </div>
     </div>

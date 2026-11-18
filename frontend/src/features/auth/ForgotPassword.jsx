@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Input, Button, Alert, BrandLogo, M3Icon } from "@/shared";
+import Input from "@/shared/components/Input";
+import Button from "@/shared/components/Button";
+import Alert from "@/shared/components/Alert";
+import BrandLogo from "@/shared/components/BrandLogo";
+import M3Icon from "@/shared/components/M3Icon";
 import { Link } from "react-router-dom";
 import { forgotPasswordApi } from "@/services/authService";
 
@@ -8,7 +12,6 @@ export default function ForgotPassword() {
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [resetToken, setResetToken] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
