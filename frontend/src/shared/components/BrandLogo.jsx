@@ -6,9 +6,9 @@ export default function BrandLogo({ className = "h-10 w-auto object-contain", al
       <img
         src={logoOrange}
         alt={alt}
-        width={460}
-        height={75}
-        style={{ aspectRatio: "460 / 75" }}
+        width={276}
+        height={45}
+        style={{ aspectRatio: "276 / 45" }}
         fetchPriority="high"
         decoding="sync"
         className={`block ${className} dark:opacity-0`}
