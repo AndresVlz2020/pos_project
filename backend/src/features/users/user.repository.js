@@ -98,9 +98,10 @@ export const userRepository = {
                 user_avatar_url,
                 is_staff,
                 is_active,
-                is_superuser
+                is_superuser,
+                data_consent_accepted_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW())
             RETURNING 
                 id, 
                 user_name AS "userName", 
@@ -391,6 +392,7 @@ export const userRepository = {
                 is_staff AS "isStaff",
                 COALESCE(is_active, TRUE) AS "isActive",
                 is_superuser AS "isSuperUser",
+                data_consent_accepted_at AS "dataConsentAcceptedAt",
                 created_at AS "createdAt"
             FROM users
             WHERE id = $1;

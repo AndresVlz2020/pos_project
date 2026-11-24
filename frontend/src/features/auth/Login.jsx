@@ -5,6 +5,7 @@ import M3Icon from "@/shared/components/M3Icon";
 import QuickAccessSelector from "./components/QuickAccessSelector";
 import { formatRole } from "@/utils/avatarHelper";
 import { loginApi } from "@/services/authService";
+import { getPublicSettingsApi } from "@/services/settingsService";
 import { setAuthSession, setLastProtectedRoute } from "@/shared/utils/authStorage";
 
 const PinKeypad = lazy(() => import("./components/PinKeypad"));
@@ -16,6 +17,19 @@ export default function Login() {
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [pinError, setPinError] = useState("");
   const [pinLockSeconds, setPinLockSeconds] = useState(0);
+  const [supportEmail, setSupportEmail] = useState("soporte@dpiero.com");
+
+  useEffect(() => {
+    let active = true;
+    getPublicSettingsApi()
+      .then((res) => {
+        if (active && res?.supportEmail) setSupportEmail(res.supportEmail);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Cuenta regresiva en tiempo real para el bloqueo de 60s por intentos fallidos
   useEffect(() => {
@@ -278,6 +292,19 @@ export default function Login() {
             />
           </Suspense>
         )}
+
+        <div className="mt-5 pt-4 border-t border-[var(--md-sys-color-outline-variant)]/70 flex flex-col sm:flex-row items-center justify-center gap-1.5 text-center text-xs sm:text-sm text-[var(--md-sys-color-on-surface-variant)]">
+          <span className="inline-flex items-center gap-1.5">
+            <M3Icon name="support_agent" size={17} className="text-[var(--md-sys-color-primary)] shrink-0" />
+            <span>¿Aún no tienes acceso o necesitas soporte?</span>
+          </span>
+          <a
+            href={`mailto:${supportEmail}`}
+            className="font-semibold text-[var(--md-sys-color-primary)] hover:underline break-all"
+          >
+            {supportEmail}
+          </a>
+        </div>
       </div>
     </div>
   );

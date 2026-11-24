@@ -101,7 +101,12 @@ export async function createProduct(productData) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || "Error al crear el producto");
+      if (response.status === 412 || response.status === 413) {
+        throw new Error(
+          `El servidor rechazó la imagen (${response.status}). Intenta con una imagen más liviana.`
+        );
+      }
+      throw new Error(data.error || data.message || "Error al crear el producto");
     }
 
     return data;
@@ -126,7 +131,12 @@ export async function updateProduct(id, productData) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || "Error al actualizar el producto");
+      if (response.status === 412 || response.status === 413) {
+        throw new Error(
+          `El servidor rechazó la imagen (${response.status}). Intenta con una imagen más liviana.`
+        );
+      }
+      throw new Error(data.error || data.message || "Error al actualizar el producto");
     }
 
     return data;

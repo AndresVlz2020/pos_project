@@ -423,21 +423,24 @@ export default function CreateOrder() {
 
   const handleConfirmCancel = async () => {
     if (!orderToCancel) return;
+    const targetOrder = orderToCancel;
+    setOrderToCancel(null);
     try {
-      const identifier = orderToCancel.numericId || orderToCancel.id;
+      const identifier = targetOrder.numericId || targetOrder.id;
       await cancelOrder(identifier, "Cancelada desde módulo de orden");
 
       setOrders((prev) =>
         prev.map((o) =>
-          o.id === orderToCancel.id
+          o.id === targetOrder.id
             ? { ...o, status: "Anulada", orderStatus: "Anulada" }
             : o
         )
       );
+      window.dispatchEvent(new CustomEvent("dpiero:orders-updated"));
 
       await showSuccessAlert({
         title: "Orden Anulada",
-        text: `La orden ${orderToCancel.id} ha sido anulada correctamente.`,
+        text: `La orden ${targetOrder.id} ha sido anulada correctamente.`,
       });
       fetchInitialData();
     } catch (err) {
@@ -447,8 +450,6 @@ export default function CreateOrder() {
         title: "Error al anular",
         text: err.message || "No se pudo anular la orden.",
       });
-    } finally {
-      setOrderToCancel(null);
     }
   };
 

@@ -92,26 +92,28 @@ export default function OrderListPage() {
     setOrderToCancel(order);
   };
 
-  // Confirmación explícita antes de anular (RFADMIN30) y actualización en PostgreSQL
   const handleConfirmCancel = async () => {
     if (!orderToCancel) return;
+    const targetOrder = orderToCancel;
+    setOrderToCancel(null);
 
     try {
-      const identifier = orderToCancel.numericId || orderToCancel.id;
+      const identifier = targetOrder.numericId || targetOrder.id;
       await cancelOrder(identifier, "Cancelada por usuario en pantalla de administración");
 
       setOrders((prev) =>
         prev.map((o) =>
-          o.id === orderToCancel.id
+          o.id === targetOrder.id
             ? { ...o, status: "Anulada", orderStatus: "Anulada" }
             : o
         )
       );
+      window.dispatchEvent(new CustomEvent("dpiero:orders-updated"));
 
       setFeedback({
         type: "success",
         title: "Orden Anulada",
-        message: `La orden ${orderToCancel.id} (${orderToCancel.tableNumber}) ha sido anulada y su stock fue restaurado.`,
+        message: `La orden ${targetOrder.id} (${targetOrder.tableNumber}) ha sido anulada y su stock fue restaurado.`,
       });
     } catch (error) {
       if (error?.isStepUpCancelled) return;
@@ -121,8 +123,6 @@ export default function OrderListPage() {
         title: "Error al anular",
         message: error.message || "No se pudo anular la orden.",
       });
-    } finally {
-      setOrderToCancel(null);
     }
   };
 

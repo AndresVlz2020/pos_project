@@ -6,28 +6,59 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "./Button";
 import SearchField from "./SearchField";
 import Select from "./Select";
 import M3Icon from "./M3Icon";
 import { IconButton } from "./IconButton";
 
+const VALID_PAGE_SIZES = [5, 7, 10, 20, 50];
+
+function resolveTableStorageKey(storageKey) {
+  if (storageKey) return `dpiero_table_page_size:${storageKey}`;
+  if (typeof window !== "undefined" && window.location?.pathname) {
+    return `dpiero_table_page_size:${window.location.pathname.toLowerCase()}`;
+  }
+  return "dpiero_table_page_size:default";
+}
+
+function readPersistedPageSize(key, fallback) {
+  try {
+    if (typeof window === "undefined") return fallback;
+    const raw = Number(sessionStorage.getItem(key));
+    return VALID_PAGE_SIZES.includes(raw) ? raw : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export default function DataTable({
   data,
   columns,
   compact = false,
   defaultPageSize = 5,
+  storageKey = "",
 }) {
+  const resolvedKey = resolveTableStorageKey(storageKey);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState(() => ({
     pageIndex: 0,
-    pageSize: defaultPageSize,
-  });
+    pageSize: readPersistedPageSize(resolvedKey, defaultPageSize),
+  }));
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(resolvedKey, String(pagination.pageSize));
+    } catch {
+      // Ignorar errores de almacenamiento
+    }
+  }, [resolvedKey, pagination.pageSize]);
 
   const table = useReactTable({
     data,
     columns,
+    autoResetPageIndex: false,
     state: {
       globalFilter,
       pagination,
@@ -38,6 +69,16 @@ export default function DataTable({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  const pageCount = table.getPageCount();
+  useEffect(() => {
+    if (pageCount > 0 && pagination.pageIndex >= pageCount) {
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: Math.max(0, pageCount - 1),
+      }));
+    }
+  }, [pageCount, pagination.pageIndex]);
 
   return (
     <div className="flex-1 flex flex-col min-h-0 gap-4">
@@ -215,10 +256,14 @@ export default function DataTable({
               type="number"
               min={1}
               max={table.getPageCount() || 1}
-              defaultValue={table.getState().pagination.pageIndex + 1}
+              value={table.getState().pagination.pageIndex + 1}
               onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                table.setPageIndex(page);
+                const totalPages = Math.max(1, table.getPageCount() || 1);
+                const parsed = Number(e.target.value);
+                const clamped = Number.isFinite(parsed)
+                  ? Math.min(totalPages, Math.max(1, parsed))
+                  : 1;
+                table.setPageIndex(clamped - 1);
               }}
               className="m3-outlined-field h-10 bg-transparent text-[var(--md-sys-color-on-surface)] text-sm rounded-[4px] px-2.5 w-16 text-center outline-none focus:border-[var(--md-sys-color-primary)]"
             />

@@ -10,6 +10,7 @@ import {
   showErrorAlert,
 } from "@/shared";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import usePermission from "@/features/access/services/usePermission";
 import { getProducts } from "@/features/products/services/productServices";
 import { getOrderById, updateOrder, cancelOrder } from "../services/orderServices";
 import OrderViewModal from "../components/OrderViewModal";
@@ -32,6 +33,7 @@ export default function EditOrder() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAdmin, isCajero, isCocina, isMesero } = getUserRoleFlags();
+  const { granted: canCancelOrder } = usePermission("cancel_order");
   const canMarkPaid = isAdmin || isCajero;
   const canMarkCreated = isAdmin || isMesero || isCocina || isCajero;
 
@@ -304,6 +306,7 @@ export default function EditOrder() {
       });
 
       const resolvedWaiter = updatedRes?.order?.waiter || formOrder.waiter;
+      window.dispatchEvent(new CustomEvent("dpiero:orders-updated"));
 
       await showSuccessAlert({
         title: "Orden Actualizada",
@@ -350,12 +353,14 @@ export default function EditOrder() {
   };
 
   const handleConfirmCancel = async () => {
+    setIsCancelConfirmOpen(false);
+    setSubmitting(true);
     try {
       const identifier = formOrder.numericId || formOrder.id;
       await cancelOrder(identifier, "Cancelada desde formulario de edición");
 
       setFormOrder((prev) => ({ ...prev, orderStatus: "Anulada" }));
-      setIsCancelConfirmOpen(false);
+      window.dispatchEvent(new CustomEvent("dpiero:orders-updated"));
 
       await showSuccessAlert({
         title: "Orden Anulada",
@@ -370,6 +375,8 @@ export default function EditOrder() {
         title: "Error al anular",
         text: err.message || "No se pudo anular la orden.",
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -559,7 +566,7 @@ export default function EditOrder() {
 
           <div className="sticky bottom-0 z-30 mt-auto bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] rounded-2xl m3-elevation-2">
             <div className="w-full px-4 sm:px-6 py-3 flex items-center gap-2 sm:gap-3">
-              {!isClosedOrPaid && !isCanceled && (
+              {canCancelOrder && !isClosedOrPaid && !isCanceled && (
                 <Button
                   type="button"
                   variant="destructive"
@@ -575,7 +582,7 @@ export default function EditOrder() {
               <Link
                 to="/orderList"
                 className={`flex-1 sm:flex-none ${
-                  isClosedOrPaid || isCanceled ? "sm:ml-auto" : ""
+                  !canCancelOrder || isClosedOrPaid || isCanceled ? "sm:ml-auto" : ""
                 }`}
               >
                 <Button

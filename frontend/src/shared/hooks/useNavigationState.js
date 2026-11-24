@@ -10,7 +10,7 @@ export function useNavigationState() {
   const navigate = useNavigate();
   const { requestLogoutConfirm } = useLogoutConfirm();
 
-  const currentUser = getStoredAuthUser();
+  const [currentUser, setCurrentUser] = useState(() => getStoredAuthUser());
   const {
     role,
     isAdmin: initialIsAdmin,
@@ -18,6 +18,16 @@ export function useNavigationState() {
     isMesero,
     isCocina,
   } = getUserRoleFlags(currentUser);
+
+  useEffect(() => {
+    const syncStoredUser = () => {
+      setCurrentUser(getStoredAuthUser());
+    };
+    window.addEventListener("dpiero:user-profile-updated", syncStoredUser);
+    return () => {
+      window.removeEventListener("dpiero:user-profile-updated", syncStoredUser);
+    };
+  }, []);
 
   const [isAdmin, setIsAdmin] = useState(initialIsAdmin);
   const [canViewUsers, setCanViewUsers] = useState(initialIsAdmin);
@@ -69,7 +79,7 @@ export function useNavigationState() {
   const currentUserId = currentUser?.id || null;
 
   useEffect(() => {
-    if (!currentUserId || isAdmin) {
+    if (!currentUserId) {
       Promise.resolve().then(() => {
         setSessionAnchor(null);
         setElapsedSeconds(0);
@@ -94,12 +104,25 @@ export function useNavigationState() {
     };
 
     getCurrentSession()
-      .then((session) => applySession(session))
-      .catch(() => {});
+      .then((res) => {
+        if (!active) return;
+        if (res?.session?.startedAt) {
+          applySession(res.session);
+        } else {
+          applySession({ startedAt: new Date().toISOString(), durationSeconds: 0 });
+        }
+      })
+      .catch(() => {
+        if (active) {
+          applySession({ startedAt: new Date().toISOString(), durationSeconds: 0 });
+        }
+      });
 
     const hbId = setInterval(() => {
       sendSessionHeartbeat()
-        .then((session) => applySession(session))
+        .then((res) => {
+          if (res?.session?.startedAt) applySession(res.session);
+        })
         .catch(() => {});
     }, 30000);
 
@@ -107,10 +130,10 @@ export function useNavigationState() {
       active = false;
       clearInterval(hbId);
     };
-  }, [currentUserId, isAdmin]);
+  }, [currentUserId]);
 
   useEffect(() => {
-    if (!sessionAnchor || isAdmin) return;
+    if (!sessionAnchor) return;
     const tickId = setInterval(() => {
       const delta = Math.max(
         0,
@@ -119,7 +142,7 @@ export function useNavigationState() {
       setElapsedSeconds(sessionAnchor.baseSeconds + delta);
     }, 1000);
     return () => clearInterval(tickId);
-  }, [sessionAnchor, isAdmin]);
+  }, [sessionAnchor]);
 
   const pathname = location.pathname.toLowerCase();
   const isHome = pathname === "/";

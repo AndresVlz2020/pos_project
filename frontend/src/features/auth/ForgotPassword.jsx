@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "@/shared/components/Input";
 import Button from "@/shared/components/Button";
 import Alert from "@/shared/components/Alert";
@@ -6,12 +6,26 @@ import BrandLogo from "@/shared/components/BrandLogo";
 import M3Icon from "@/shared/components/M3Icon";
 import { Link } from "react-router-dom";
 import { forgotPasswordApi } from "@/services/authService";
+import { getPublicSettingsApi } from "@/services/settingsService";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [supportEmail, setSupportEmail] = useState("soporte@dpiero.com");
+
+  useEffect(() => {
+    let active = true;
+    getPublicSettingsApi()
+      .then((res) => {
+        if (active && res?.supportEmail) setSupportEmail(res.supportEmail);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -118,6 +132,18 @@ export default function ForgotPassword() {
             </div>
           </form>
         )}
+        <div className="mt-5 pt-4 border-t border-[var(--md-sys-color-outline-variant)]/70 flex flex-col items-center justify-center gap-1 text-center text-xs text-[var(--md-sys-color-on-surface-variant)]">
+          <span className="inline-flex items-center gap-1">
+            <M3Icon name="support_agent" size={16} className="text-[var(--md-sys-color-primary)] shrink-0" />
+            <span>Soporte técnico:</span>
+          </span>
+          <a
+            href={`mailto:${supportEmail}`}
+            className="font-semibold text-[var(--md-sys-color-primary)] hover:underline break-all"
+          >
+            {supportEmail}
+          </a>
+        </div>
       </div>
     </div>
   );

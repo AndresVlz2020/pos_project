@@ -53,13 +53,11 @@ export default function AdminStepUpModal() {
 
     try {
       const caps = await getBiometricCapabilities();
-      if (caps.isDesktop || !caps.supported || !caps.platformAvailable) {
+      if (!caps.supported || !caps.platformAvailable) {
         cachedOptionsRef.current = null;
         setHasBiometricOption(false);
         setInfoMsg(
-          caps.isDesktop
-            ? "En este equipo PC confirma la acción con tu contraseña de administrador."
-            : "Este dispositivo no admite biometría compatible; confirma con tu contraseña."
+          "Este dispositivo no admite biometría compatible; confirma con tu contraseña."
         );
         return;
       }
@@ -103,12 +101,10 @@ export default function AdminStepUpModal() {
       try {
         const caps = await getBiometricCapabilities();
         if (!mounted) return;
-        if (caps.isDesktop || !caps.supported || !caps.platformAvailable) {
+        if (!caps.supported || !caps.platformAvailable) {
           setHasBiometricOption(false);
           setInfoMsg(
-            caps.isDesktop
-              ? "En este equipo PC confirma la acción con tu contraseña de administrador."
-              : "Este dispositivo no admite biometría compatible; confirma con tu contraseña."
+            "Este dispositivo no admite biometría compatible; confirma con tu contraseña."
           );
           return;
         }

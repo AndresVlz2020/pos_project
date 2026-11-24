@@ -30,6 +30,7 @@ services:
       DB_PORT: 5432
     volumes:
       - backend_uploads:/app/uploads
+      - ./backend/backups:/app/backups
     ports:
       - "9006:4000"
     depends_on:

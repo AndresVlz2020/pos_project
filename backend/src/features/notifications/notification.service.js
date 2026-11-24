@@ -105,4 +105,9 @@ export const notificationService = {
       includeAllRoles: isAdmin,
     });
   },
+
+  async markResolvedByOrder(orderIdentifier) {
+    if (!orderIdentifier) return 0;
+    return await notificationRepository.markResolvedByOrder(orderIdentifier);
+  },
 };

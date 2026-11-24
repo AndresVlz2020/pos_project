@@ -38,18 +38,34 @@ function addDismissedIds(userId, ids) {
   }
 }
 
+function isResolvedOrderStatus(status) {
+  const s = String(status || "").trim().toLowerCase();
+  return s === "entregada" || s === "pagada" || s === "anulada";
+}
+
 function mergeUnreadBanners(prev, rows, userId) {
   const dismissed = readDismissedSet(userId);
+  const rowsById = new Map(rows.map((r) => [Number(r.id), r]));
+
+  const activePrev = prev.filter((item) => {
+    const latest = rowsById.get(Number(item.id));
+    if (!latest) return false;
+    return !latest.isRead && !isResolvedOrderStatus(latest.currentOrderStatus);
+  });
+
   const freshUnread = rows.filter(
-    (n) => !n.isRead && !dismissed.has(Number(n.id))
+    (n) =>
+      !n.isRead &&
+      !isResolvedOrderStatus(n.currentOrderStatus) &&
+      !dismissed.has(Number(n.id))
   );
-  if (freshUnread.length === 0) return prev;
-  const prevIds = new Set(prev.map((p) => Number(p.id)));
+  if (freshUnread.length === 0) return activePrev;
+  const prevIds = new Set(activePrev.map((p) => Number(p.id)));
   const additions = freshUnread
     .slice(0, 3)
     .filter((n) => !prevIds.has(Number(n.id)));
-  if (additions.length === 0) return prev;
-  return [...additions, ...prev].slice(0, 3);
+  if (additions.length === 0) return activePrev;
+  return [...additions, ...activePrev].slice(0, 3);
 }
 
 /**
@@ -143,6 +159,7 @@ export function useOrderNotifications() {
 
     window.addEventListener("focus", onRefreshEvent);
     window.addEventListener("dpiero:notifications-refresh", onRefreshEvent);
+    window.addEventListener("dpiero:orders-updated", onRefreshEvent);
     document.addEventListener("visibilitychange", onVisible);
 
     return () => {
@@ -150,6 +167,7 @@ export function useOrderNotifications() {
       clearInterval(intervalId);
       window.removeEventListener("focus", onRefreshEvent);
       window.removeEventListener("dpiero:notifications-refresh", onRefreshEvent);
+      window.removeEventListener("dpiero:orders-updated", onRefreshEvent);
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, [enabled, userId]);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Input, Button, Select, Checkbox, BrandLogo, showSuccessAlert } from "@/shared";
+import { Input, Button, Select, BrandLogo, showSuccessAlert } from "@/shared";
+import DataConsentField from "@/shared/components/DataConsentField";
 import { Link, useNavigate } from "react-router-dom";
 import bgRegister from "@/assets/images/bg-register-restaurant.webp";
 import { getDocumentTypes } from "../../services/selectServices";
@@ -41,11 +42,16 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const result = userSchema.safeParse(form);
-    if (!result.success) {
+    if (!result.success || !form.terms) {
       const fieldErrors = {};
-      result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
-      });
+      if (!result.success) {
+        result.error.issues.forEach((issue) => {
+          fieldErrors[issue.path[0]] = issue.message;
+        });
+      }
+      if (!form.terms) {
+        fieldErrors.terms = "Debes aceptar el tratamiento de datos personales y términos.";
+      }
       setErrors(fieldErrors);
       return;
     }
@@ -165,12 +171,13 @@ export default function Register() {
                 htmlFor="register-confirm-password"
                 error={errors.confirmPassword}
               />
-              <Checkbox
+              <DataConsentField
                 id="register-terms"
                 name="terms"
-                label="Acepto términos y condiciones"
+                label="Acepto el tratamiento de datos personales, términos y condiciones."
                 checked={form.terms}
                 onChange={handleChange}
+                error={errors.terms}
               />
             </div>
 

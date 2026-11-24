@@ -11,6 +11,7 @@ import {
     showSuccessAlert,
     showErrorAlert,
  } from "@/shared";
+import DataConsentField from "@/shared/components/DataConsentField";
  import { getDocumentTypes } from "../../../services/selectServices";
  import { createUser } from "../../../services/userService";
  import { useNavigate } from "react-router-dom";
@@ -39,6 +40,7 @@ export default function UserRegisterForm() {
         isStaff: false,
         isActive: true,
         isSuperUser: false,
+        dataConsentAccepted: false,
     });
 
     // Handle generico
@@ -73,12 +75,17 @@ export default function UserRegisterForm() {
             userImage: formData.userImage?.length ? formData.userImage : undefined,
         });
 
+        const fieldErrors = {};
         if (!result.success) {
-            const fieldErrors = {};
             result.error.issues.forEach((issue) => {
                 fieldErrors[issue.path[0]] = issue.message;
             });
-
+        }
+        if (!formData.dataConsentAccepted) {
+            fieldErrors.dataConsentAccepted =
+                "Debes autorizar el tratamiento de datos personales para continuar.";
+        }
+        if (Object.keys(fieldErrors).length > 0) {
             setErrors(fieldErrors);
             return;
         }
@@ -264,6 +271,15 @@ export default function UserRegisterForm() {
           onChange={handleChange}
           />
           </div>
+
+          <DataConsentField
+            id="register-user-data-consent"
+            name="dataConsentAccepted"
+            checked={formData.dataConsentAccepted}
+            onChange={handleChange}
+            label="Autorizo el tratamiento de mis datos personales conforme a la política de privacidad."
+            error={errors.dataConsentAccepted}
+          />
 
           <div className="flex gap-3 items-center justify-end w-full pt-4 border-t border-[var(--md-sys-color-outline-variant)]">
            <Button

@@ -81,12 +81,10 @@ export async function issueSessionForUser(user) {
   );
 
   let activeSession = null;
-  if (!isAdmin) {
-    try {
-      activeSession = await sessionRepository.startSession(user.id);
-    } catch (err) {
-      console.warn("No se pudo iniciar registro de sesión de turno:", err.message);
-    }
+  try {
+    activeSession = await sessionRepository.startSession(user.id);
+  } catch (err) {
+    console.warn("No se pudo iniciar registro de sesión de turno:", err.message);
   }
 
   return {

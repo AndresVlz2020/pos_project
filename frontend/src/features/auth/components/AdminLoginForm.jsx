@@ -14,6 +14,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
     userEmail: "",
     userPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [validatedAccount, setValidatedAccount] = useState(null);
   const [biometricsReadyHere, setBiometricsReadyHere] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
@@ -45,7 +46,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
 
     try {
       const caps = await getBiometricCapabilities();
-      if (caps.isDesktop || !caps.supported || !caps.platformAvailable) {
+      if (!caps.supported || !caps.platformAvailable) {
         setBiometricsReadyHere(false);
         return;
       }
@@ -105,7 +106,6 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
       }
 
       const canUseBioHere =
-        !caps.isDesktop &&
         Boolean(emailStatus.hasBiometrics) &&
         Boolean(caps.supported) &&
         Boolean(caps.platformAvailable);
@@ -292,7 +292,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
 
       {validatedAccount?.hasBiometrics && !biometricsReadyHere && (
         <p className="text-sm leading-5 text-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-xl px-3.5 py-2">
-          Este equipo PC no cuenta con lector de huella físico; ingresa con tu contraseña.
+          Este dispositivo no tiene biometría configurada en este navegador; ingresa con tu contraseña.
         </p>
       )}
 
@@ -307,14 +307,23 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
           <M3Icon name="lock" size={20} className="ml-3.5 text-[var(--md-sys-color-on-surface-variant)] shrink-0" />
           <input
             id="admin-password-step2"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="userPassword"
             value={form.userPassword}
             onChange={handleChange}
             placeholder="••••••••"
             autoFocus={!biometricsReadyHere}
-            className="w-full h-14 px-3 bg-transparent text-[var(--md-sys-color-on-surface)] text-body-lg outline-none placeholder:text-[var(--md-sys-color-on-surface-variant)]"
+            className="w-full h-14 pl-3 pr-12 bg-transparent text-[var(--md-sys-color-on-surface)] text-body-lg outline-none placeholder:text-[var(--md-sys-color-on-surface-variant)]"
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            className="m3-state absolute right-1.5 flex items-center justify-center size-10 rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer"
+          >
+            <M3Icon name={showPassword ? "visibility_off" : "visibility"} size={20} />
+          </button>
         </div>
         {errors.userPassword && (
           <p className="text-sm text-[var(--md-sys-color-error)] mt-0.5">{errors.userPassword}</p>

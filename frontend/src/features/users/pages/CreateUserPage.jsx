@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Input, Select, Button, FileInput, M3Icon, showSuccessAlert, showErrorAlert, showWarningAlert } from "@/shared";
+import DataConsentField from "@/shared/components/DataConsentField";
 import { getDocumentTypes } from "../../../services/selectServices";
 import { createUser, getUsers } from "../../../services/userService";
 import { createUserSchema } from "../schemas/userSchema";
@@ -25,6 +26,7 @@ export default function CreateUser() {
     pin: "",
     userPassword: "",
     userImage: [],
+    dataConsentAccepted: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -88,11 +90,17 @@ export default function CreateUser() {
       ...form,
       userImage: form.userImage?.length ? form.userImage : undefined,
     });
+    const fieldErrors = {};
     if (!result.success) {
-      const fieldErrors = {};
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+    }
+    if (!form.dataConsentAccepted) {
+      fieldErrors.dataConsentAccepted =
+        "Debes autorizar el tratamiento de datos personales del colaborador.";
+    }
+    if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
       return;
     }
@@ -328,6 +336,26 @@ export default function CreateUser() {
                 />
               </>
             )}
+            <div className="md:col-span-2">
+              <DataConsentField
+                id="create-user-data-consent"
+                name="dataConsentAccepted"
+                checked={form.dataConsentAccepted}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setForm((prev) => ({ ...prev, dataConsentAccepted: checked }));
+                  if (errors.dataConsentAccepted) {
+                    setErrors((prev) => {
+                      const next = { ...prev };
+                      delete next.dataConsentAccepted;
+                      return next;
+                    });
+                  }
+                }}
+                label="El colaborador autoriza el tratamiento de sus datos personales (Ley 1581 de 2012)."
+                error={errors.dataConsentAccepted}
+              />
+            </div>
           </div>
         </div>
 

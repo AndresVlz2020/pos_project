@@ -109,7 +109,56 @@ export async function resetPasswordApi(params, maybePassword) {
 
 import { endCurrentSession } from "./sessionService";
 import { clearAllOrderDrafts } from "@/features/orders/utils/orderDraftStorage";
-import { clearAuthSession } from "@/shared/utils/authStorage";
+import {
+  clearAuthSession,
+  getAuthHeaders,
+  getMultipartAuthHeaders,
+} from "@/shared/utils/authStorage";
+import { getAdminStepUpHeaders } from "@/shared/services/adminStepUpService";
+
+export async function getMyProfileApi() {
+  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    method: "GET",
+    cache: "no-store",
+    headers: getAuthHeaders(),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || data.message || "No se pudo cargar tu perfil.");
+  }
+  return data;
+}
+
+export async function updateMyProfileApi(payload) {
+  const stepUpHeaders = await getAdminStepUpHeaders("Actualizar mi perfil");
+  let body;
+  let headers;
+
+  if (payload?.imageFile instanceof File || payload?.imageFile instanceof Blob) {
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      if (key === "imageFile" || value === undefined || value === null) return;
+      formData.append(key, String(value));
+    });
+    formData.append("image", payload.imageFile);
+    body = formData;
+    headers = getMultipartAuthHeaders(stepUpHeaders);
+  } else {
+    body = JSON.stringify(payload);
+    headers = getAuthHeaders(stepUpHeaders);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    method: "PUT",
+    headers,
+    body,
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || data.message || `Error al actualizar perfil (${response.status})`);
+  }
+  return data;
+}
 
 export async function logout() {
   await endCurrentSession();
@@ -133,5 +182,7 @@ export default {
   loginApi,
   forgotPasswordApi,
   resetPasswordApi,
+  getMyProfileApi,
+  updateMyProfileApi,
   logout,
 };

@@ -13,28 +13,19 @@ function isAdminUser(user) {
 
 export const sessionService = {
   async getCurrent(user) {
-    if (isAdminUser(user)) {
-      return { isAdmin: true, session: null };
-    }
     let session = await sessionRepository.getCurrentSession(user.id);
     if (!session) {
       session = await sessionRepository.startSession(user.id);
     }
-    return { isAdmin: false, session };
+    return { isAdmin: isAdminUser(user), session };
   },
 
   async heartbeat(user) {
-    if (isAdminUser(user)) {
-      return { ok: true, isAdmin: true, session: null };
-    }
     const session = await sessionRepository.heartbeat(user.id);
-    return { ok: true, isAdmin: false, session };
+    return { ok: true, isAdmin: isAdminUser(user), session };
   },
 
   async end(user) {
-    if (isAdminUser(user)) {
-      return { ok: true, session: null };
-    }
     const session = await sessionRepository.endSession(user.id);
     return { ok: true, session };
   },

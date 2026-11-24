@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { M3Icon, Button, IconButton, Input } from "@/shared";
+import M3Icon from "./M3Icon";
+import Button from "./Button";
+import { IconButton } from "./IconButton";
+import Input from "./Input";
+import { ConfirmDialog } from "./ConfirmDialog";
+import DataConsentField from "./DataConsentField";
 import {
   getBiometricCapabilities,
   listMyBiometricsApi,
@@ -38,6 +43,9 @@ export default function BiometricSettingsModal({
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [credToDelete, setCredToDelete] = useState(null);
+  const [biometricConsent, setBiometricConsent] = useState(false);
+  const [consentError, setConsentError] = useState("");
   const [deviceLabel, setDeviceLabel] = useState("");
   const [feedback, setFeedback] = useState(null);
 
@@ -86,6 +94,9 @@ export default function BiometricSettingsModal({
 
   const handleCloseModal = () => {
     setDeviceLabel("");
+    setBiometricConsent(false);
+    setConsentError("");
+    setCredToDelete(null);
     setFeedback(null);
     setLoading(true);
     onClose();
@@ -94,12 +105,20 @@ export default function BiometricSettingsModal({
   const handleEnroll = async (e) => {
     e.preventDefault();
     if (enrolling) return;
+    if (!biometricConsent) {
+      setConsentError(
+        "Debes autorizar el tratamiento de datos biométricos antes de vincular este dispositivo."
+      );
+      return;
+    }
+    setConsentError("");
     setEnrolling(true);
     setFeedback(null);
 
     try {
       const res = await enrollMyBiometricApi(deviceLabel);
       setDeviceLabel("");
+      setBiometricConsent(false);
       setFeedback({
         type: "success",
         message: res?.message || "Dispositivo biométrico vinculado correctamente.",
@@ -116,16 +135,22 @@ export default function BiometricSettingsModal({
     }
   };
 
-  const handleDelete = async (cred) => {
+  const handleRequestDelete = (cred) => {
     if (deletingId) return;
-    setDeletingId(cred.id);
+    setCredToDelete(cred);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!credToDelete || deletingId) return;
+    const target = credToDelete;
+    setDeletingId(target.id);
     setFeedback(null);
     try {
-      await deleteMyBiometricApi(cred.id);
-      setCredentials((prev) => prev.filter((item) => item.id !== cred.id));
+      await deleteMyBiometricApi(target.id);
+      setCredentials((prev) => prev.filter((item) => item.id !== target.id));
       setFeedback({
         type: "success",
-        message: `Dispositivo "${cred.deviceLabel}" desvinculado.`,
+        message: `Dispositivo "${target.deviceLabel}" desvinculado.`,
       });
     } catch (err) {
       setFeedback({
@@ -134,13 +159,14 @@ export default function BiometricSettingsModal({
       });
     } finally {
       setDeletingId(null);
+      setCredToDelete(null);
     }
   };
 
   if (!isOpen) return null;
 
   const canEnroll =
-    !capabilities.isDesktop &&
+    capabilities.secureContext &&
     capabilities.supported &&
     capabilities.platformAvailable;
   const currentDeviceCred = credentials.find((cred) => cred.isCurrentDevice) || null;
@@ -188,8 +214,8 @@ export default function BiometricSettingsModal({
             </div>
             <p className="leading-4">
               {isAdmin
-                ? "Por seguridad, en PC/Windows confirmarás siempre con tu contraseña (Windows Hello está deshabilitado). Desde celular o tablet compatible puedes vincular Huella o Face ID (sin claves guardadas en la nube)."
-                : "Opcional: puedes seguir usando tu PIN siempre, o vincular Huella o Face ID desde un celular o tablet compatible (Windows Hello en PC está deshabilitado por seguridad)."}
+                ? "Opcional: vincula Windows Hello (sensor de huella en PC), Touch ID o tu huella/Face ID móvil para iniciar sesión y confirmar acciones administrativas."
+                : "Opcional: puedes seguir usando tu PIN siempre, o vincular Windows Hello (huella en PC), Huella o Face ID desde tu dispositivo compatible."}
             </p>
           </div>
 
@@ -214,19 +240,7 @@ export default function BiometricSettingsModal({
             </div>
           ) : (
             <>
-              {capabilities.isDesktop ? (
-                <div className="rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] p-4 flex items-start gap-2.5 text-xs text-[var(--md-sys-color-on-surface-variant)]">
-                  <M3Icon name="warning" filled size={18} className="mt-0.5 text-[var(--color-warning)]" />
-                  <div>
-                    <p className="font-medium text-[var(--md-sys-color-on-surface)]">
-                      Este equipo PC no cuenta con lector de huella físico
-                    </p>
-                    <p className="mt-0.5 leading-4">
-                      Por seguridad no se utiliza Windows Hello ni llaves guardadas en el navegador. En PC se requiere un lector USB biométrico físico dedicado; mientras tanto usa tu contraseña o PIN.
-                    </p>
-                  </div>
-                </div>
-              ) : !capabilities.secureContext ? (
+              {!capabilities.secureContext ? (
                 <div className="rounded-xl bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] p-4 flex items-start gap-2.5 text-xs text-[var(--md-sys-color-on-surface)]">
                   <M3Icon name="warning" filled size={18} className="mt-0.5 text-[var(--color-warning)]" />
                   <div>
@@ -270,7 +284,23 @@ export default function BiometricSettingsModal({
                     maxLength={80}
                     value={deviceLabel}
                     onChange={(e) => setDeviceLabel(e.target.value)}
-                    placeholder="Ej: Celular Caja, Tablet Cocina, Mi iPhone..."
+                    placeholder={
+                      capabilities.isWindows
+                        ? "Ej: Portátil Caja Windows Hello, PC Gerencia..."
+                        : "Ej: Celular Caja, Tablet Cocina, Mi iPhone..."
+                    }
+                  />
+
+                  <DataConsentField
+                    id="biometric-data-consent"
+                    name="biometricConsent"
+                    checked={biometricConsent}
+                    onChange={(e) => {
+                      setBiometricConsent(e.target.checked);
+                      if (consentError) setConsentError("");
+                    }}
+                    label="Autorizo el tratamiento de datos biométricos personales para autenticación en D'Piero."
+                    error={consentError}
                   />
 
                   <Button
@@ -283,7 +313,9 @@ export default function BiometricSettingsModal({
                   >
                     {enrolling
                       ? "Confirma con tu huella o Face ID..."
-                      : "Registrar huella o Face ID de este dispositivo"}
+                      : capabilities.isWindows
+                        ? "Registrar huella con Windows Hello"
+                        : "Registrar huella o Face ID de este dispositivo"}
                   </Button>
                 </form>
               ) : (
@@ -291,13 +323,11 @@ export default function BiometricSettingsModal({
                   <M3Icon name="warning" filled size={18} className="mt-0.5 text-[var(--color-warning)]" />
                   <div>
                     <p className="font-medium text-[var(--md-sys-color-on-surface)]">
-                      {capabilities.isDesktop
-                        ? "Este equipo PC no cuenta con lector de huella físico"
-                        : "Este dispositivo no tiene sensor biométrico disponible"}
+                      Este dispositivo no tiene sensor biométrico disponible
                     </p>
                     <p className="mt-0.5 leading-4">
-                      {capabilities.isDesktop
-                        ? "Por seguridad no se utiliza Windows Hello ni llaves guardadas en el navegador. En PC se requiere un lector USB biométrico físico dedicado; mientras tanto usa tu contraseña o PIN."
+                      {capabilities.isWindows
+                        ? "Verifica que Windows Hello con huella esté configurado en tu equipo, o continúa usando tu contraseña o PIN."
                         : "Puedes continuar usando tu contraseña o PIN en este equipo, y administrar abajo cualquier dispositivo registrado."}
                     </p>
                   </div>
@@ -347,7 +377,7 @@ export default function BiometricSettingsModal({
                           ariaLabel={`Desvincular ${cred.deviceLabel}`}
                           title="Desvincular este dispositivo"
                           disabled={deletingId === cred.id}
-                          onClick={() => handleDelete(cred)}
+                          onClick={() => handleRequestDelete(cred)}
                           className="hover:text-[var(--md-sys-color-error)]"
                         >
                           <M3Icon
@@ -365,6 +395,24 @@ export default function BiometricSettingsModal({
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={Boolean(credToDelete)}
+        title="Confirmar eliminación de huella"
+        description={
+          credToDelete
+            ? `¿Estás seguro de que deseas desvincular la huella registrada en "${credToDelete.deviceLabel}"? Tendrás que volver a registrarla si deseas usarla en ese equipo.`
+            : ""
+        }
+        confirmText="Sí, eliminar huella"
+        cancelText="Cancelar"
+        isDestructive={true}
+        isLoading={Boolean(deletingId)}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          if (!deletingId) setCredToDelete(null);
+        }}
+      />
     </div>,
     document.body
   );

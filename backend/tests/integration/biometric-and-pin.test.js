@@ -436,124 +436,97 @@ describe("Admin 2 pasos (email-check) + Step-Up Auth (huella o contraseña)", ()
   });
 });
 
-describe("bloqueo estricto de Windows Hello, passkeys sincronizadas y PC Windows", () => {
-  it("rechaza registro desde User-Agent Windows y devuelve step-up sin biometría en PC Windows", async () => {
+describe("soporte de Windows Hello y biometría en PC Windows", () => {
+  it("permite registro y verificación con Windows Hello Hardware TPM desde Windows y omite transporte hybrid", async () => {
     const windowsUa =
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
-    const regBlocked = await api
+    // 1. Opciones de registro permitidas desde Windows y ofrece ES256 (-7) y RS256 (-257)
+    const regOpts = await api
       .post("/api/auth/webauthn/register/options")
       .set("Origin", "http://localhost:5173")
       .set("User-Agent", windowsUa)
+      .set("Sec-CH-UA-Platform", '"Windows"')
       .set(auth(meseroToken));
-    expect(regBlocked.status).toBe(403);
-    expect(regBlocked.body.code).toBe("DESKTOP_BIOMETRICS_DISABLED");
+    expect(regOpts.status).toBe(200);
+    expect(regOpts.body.options.authenticatorSelection.residentKey).toBe("discouraged");
+    const algs = (regOpts.body.options.pubKeyCredParams || []).map((p) => p.alg);
+    expect(algs).toContain(-7);
+    expect(algs).toContain(-257);
 
-    const stepUpWindows = await api
-      .post("/api/auth/step-up/options")
-      .set("Origin", "http://localhost:5173")
-      .set("User-Agent", windowsUa)
-      .set(auth(adminToken));
-    expect(stepUpWindows.status).toBe(200);
-    expect(stepUpWindows.body.hasBiometrics).toBe(false);
-    expect(stepUpWindows.body.options).toBeNull();
-    expect(stepUpWindows.body.reason).toBe("DESKTOP_BIOMETRICS_DISABLED");
-  });
-
-  it("solicita residentKey=discouraged y rechaza AAGUID de Windows Hello y passkeys respaldadas", async () => {
-    // 1. Verificar política anti-passkey en opciones de registro
-    const optsRes = await api
-      .post("/api/auth/webauthn/register/options")
-      .set("Origin", "http://localhost:5173")
-      .set(auth(meseroToken));
-    expect(optsRes.status).toBe(200);
-    expect(optsRes.body.options.authenticatorSelection.residentKey).toBe("discouraged");
-
-    // 2. Simular atestación de Windows Hello Hardware TPM (08987058-...) → 403 WINDOWS_HELLO_FORBIDDEN
+    // 2. Registrar atestación de Windows Hello Hardware TPM (08987058-...) → 201 Created
     const winHelloAuth = createVirtualAuthenticator("localhost", "http://localhost:5173", {
       aaguidHex: "08987058-cadc-4b81-b6e1-30de50dcbe96",
+      backedUp: true,
     });
-    const winHelloAtt = winHelloAuth.buildRegistration(optsRes.body.options.challenge);
+    const winHelloAtt = winHelloAuth.buildRegistration(regOpts.body.options.challenge);
     const winHelloRes = await api
       .post("/api/auth/webauthn/register/verify")
       .set("Origin", "http://localhost:5173")
+      .set("User-Agent", windowsUa)
+      .set("Sec-CH-UA-Platform", '"Windows"')
       .set(auth(meseroToken))
-      .send({ response: winHelloAtt, deviceLabel: "Intento Windows Hello" });
-    expect(winHelloRes.status).toBe(403);
-    expect(winHelloRes.body.code).toBe("WINDOWS_HELLO_FORBIDDEN");
+      .send({ response: winHelloAtt, deviceLabel: "Huella Windows Hello" });
+    expect(winHelloRes.status).toBe(201);
+    expect(winHelloRes.body.credential.deviceLabel).toBe("Huella Windows Hello");
 
-    // 3. Simular passkey sincronizada en la nube (backedUp=true / multiDevice) → 400 SYNCED_PASSKEY_FORBIDDEN
-    const optsRes2 = await api
-      .post("/api/auth/webauthn/register/options")
+    // 3. Login biométrico desde Windows → 200 Token
+    const loginOpts = await api
+      .post("/api/auth/webauthn/login/options")
       .set("Origin", "http://localhost:5173")
+      .set("User-Agent", windowsUa)
+      .set("Sec-CH-UA-Platform", '"Windows"')
+      .send({ userId: meseroId });
+    expect(loginOpts.status).toBe(200);
+
+    const loginAssert = winHelloAuth.buildAssertion(loginOpts.body.options.challenge);
+    const loginVerify = await api
+      .post("/api/auth/webauthn/login/verify")
+      .set("Origin", "http://localhost:5173")
+      .set("User-Agent", windowsUa)
+      .set("Sec-CH-UA-Platform", '"Windows"')
+      .send({ userId: meseroId, response: loginAssert });
+    expect(loginVerify.status).toBe(200);
+    expect(loginVerify.body.token).toBeTruthy();
+
+    // Limpiar credencial Windows de Mesero para pruebas posteriores
+    await api
+      .delete(`/api/auth/webauthn/credentials/${winHelloRes.body.credential.id}`)
       .set(auth(meseroToken));
-    const syncedAuth = createVirtualAuthenticator("localhost", "http://localhost:5173", {
-      backedUp: true,
+
+    // 4. También verifica que step-up en Windows funciona con biometría cuando el Admin tiene huella, sin transporte hybrid
+    const stepAdminAuth = createVirtualAuthenticator("localhost", "http://localhost:5173", {
+      aaguidHex: "08987058-cadc-4b81-b6e1-30de50dcbe96",
     });
-    const syncedAtt = syncedAuth.buildRegistration(optsRes2.body.options.challenge);
-    const syncedRes = await api
-      .post("/api/auth/webauthn/register/verify")
-      .set("Origin", "http://localhost:5173")
-      .set(auth(meseroToken))
-      .send({ response: syncedAtt, deviceLabel: "Passkey Nube" });
-    expect(syncedRes.status).toBe(400);
-    expect(syncedRes.body.code).toBe("SYNCED_PASSKEY_FORBIDDEN");
-  });
-
-  it("bloquea por Sec-CH-UA-Platform Windows aun con User-Agent móvil y omite transporte hybrid", async () => {
-    const spoofedMobileUa =
-      "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36";
-
-    const regChBlocked = await api
-      .post("/api/auth/webauthn/register/options")
-      .set("Origin", "http://localhost:5173")
-      .set("User-Agent", spoofedMobileUa)
-      .set("Sec-CH-UA-Platform", '"Windows"')
-      .set(auth(meseroToken));
-    expect(regChBlocked.status).toBe(403);
-    expect(regChBlocked.body.code).toBe("DESKTOP_BIOMETRICS_DISABLED");
-
-    const stepUpChBlocked = await api
-      .post("/api/auth/step-up/options")
-      .set("Origin", "http://localhost:5173")
-      .set("User-Agent", spoofedMobileUa)
-      .set("Sec-CH-UA-Platform", '"Windows"')
-      .set(auth(adminToken));
-    expect(stepUpChBlocked.status).toBe(200);
-    expect(stepUpChBlocked.body.hasBiometrics).toBe(false);
-    expect(stepUpChBlocked.body.options).toBeNull();
-    expect(stepUpChBlocked.body.reason).toBe("DESKTOP_BIOMETRICS_DISABLED");
-
     const regHybridOpts = await api
       .post("/api/auth/webauthn/register/options")
       .set("Origin", "http://localhost:5173")
-      .set("User-Agent", spoofedMobileUa)
-      .set("Sec-CH-UA-Platform", '"Android"')
+      .set("User-Agent", windowsUa)
+      .set("Sec-CH-UA-Platform", '"Windows"')
       .set(auth(adminToken));
     expect(regHybridOpts.status).toBe(200);
 
-    const mobileAuth = createVirtualAuthenticator("localhost", "http://localhost:5173");
-    const att = mobileAuth.buildRegistration(regHybridOpts.body.options.challenge);
+    const att = stepAdminAuth.buildRegistration(regHybridOpts.body.options.challenge);
     att.response.transports = ["internal", "hybrid"];
 
     const regVerify = await api
       .post("/api/auth/webauthn/register/verify")
       .set("Origin", "http://localhost:5173")
-      .set("User-Agent", spoofedMobileUa)
-      .set("Sec-CH-UA-Platform", '"Android"')
+      .set("User-Agent", windowsUa)
+      .set("Sec-CH-UA-Platform", '"Windows"')
       .set(auth(adminToken))
-      .send({ response: att, deviceLabel: "Android Hybrid Test" });
+      .send({ response: att, deviceLabel: "Windows Hybrid Test" });
     expect(regVerify.status).toBe(201);
 
-    const stepUpAndroid = await api
+    const stepUpWindows = await api
       .post("/api/auth/step-up/options")
       .set("Origin", "http://localhost:5173")
-      .set("User-Agent", spoofedMobileUa)
-      .set("Sec-CH-UA-Platform", '"Android"')
+      .set("User-Agent", windowsUa)
+      .set("Sec-CH-UA-Platform", '"Windows"')
       .set(auth(adminToken));
-    expect(stepUpAndroid.status).toBe(200);
-    expect(stepUpAndroid.body.hasBiometrics).toBe(true);
-    const allTransports = (stepUpAndroid.body.options?.allowCredentials || []).flatMap(
+    expect(stepUpWindows.status).toBe(200);
+    expect(stepUpWindows.body.hasBiometrics).toBe(true);
+    const allTransports = (stepUpWindows.body.options?.allowCredentials || []).flatMap(
       (c) => c.transports || []
     );
     expect(allTransports).not.toContain("hybrid");

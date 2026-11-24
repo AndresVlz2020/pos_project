@@ -8,6 +8,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "migrate": "node src/scripts/migrate.js",
+    "backup": "node src/scripts/backup.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "perf:all": "node tests/performance/runner.js --mode=all",

@@ -81,7 +81,10 @@ export const notificationRepository = {
         o.status AS "currentOrderStatus",
         n.metadata,
         n.created_at AS "createdAt",
-        (nr.read_at IS NOT NULL) AS "isRead",
+        (
+          nr.read_at IS NOT NULL
+          OR LOWER(TRIM(COALESCE(o.status, ''))) IN ('entregada', 'pagada', 'anulada')
+        ) AS "isRead",
         nr.read_at AS "readAt"
       FROM notifications n
       LEFT JOIN notification_reads nr
@@ -100,8 +103,11 @@ export const notificationRepository = {
       FROM notifications n
       LEFT JOIN notification_reads nr
         ON nr.notification_id = n.id AND nr.user_id = $1
+      LEFT JOIN orders o
+        ON o.id = n.order_id
       WHERE ($2::boolean = TRUE OR LOWER(n.target_role) = LOWER($3))
-        AND nr.read_at IS NULL;
+        AND nr.read_at IS NULL
+        AND LOWER(TRIM(COALESCE(o.status, ''))) NOT IN ('entregada', 'pagada', 'anulada');
     `;
 
     const [listRes, countRes] = await Promise.all([
@@ -152,5 +158,30 @@ export const notificationRepository = {
       [uid, Boolean(includeAllRoles), targetRole]
     );
     return { ok: true };
+  },
+
+  async markResolvedByOrder(orderIdentifier) {
+    const raw = String(orderIdentifier || "").trim();
+    if (!raw) return 0;
+
+    const result = await pool.query(
+      `INSERT INTO notification_reads (notification_id, user_id, read_at)
+       SELECT DISTINCT n.id, u.id, NOW()
+       FROM notifications n
+       LEFT JOIN orders o ON o.id = n.order_id
+       CROSS JOIN users u
+       WHERE (
+         n.order_number = $1
+         OR o.order_number = $1
+         OR (CASE WHEN $1 ~ '^[0-9]+$' THEN n.order_id = $1::int ELSE FALSE END)
+       )
+         AND (
+           u.is_superuser = TRUE
+           OR LOWER(COALESCE(u.user_type, '')) IN ('admin', 'administrador', LOWER(COALESCE(n.target_role, 'mesero')))
+         )
+       ON CONFLICT (notification_id, user_id) DO NOTHING;`,
+      [raw]
+    );
+    return result.rowCount || 0;
   },
 };

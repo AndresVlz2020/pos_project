@@ -138,7 +138,7 @@ export async function updateOrderStatus(id, status) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || "Error al actualizar el estado de la orden");
+      throw new Error(data.error || data.message || "Error al actualizar el estado de la orden");
     }
 
     return data;
@@ -167,7 +167,7 @@ export async function cancelOrder(id, reason = "Cancelada por usuario") {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.error || "Error al anular la orden");
+      throw new Error(data.error || data.message || "Error al anular la orden");
     }
 
     return data;

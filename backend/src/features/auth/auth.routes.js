@@ -5,11 +5,25 @@ import { Router } from "express";
 import { authController } from "./auth.controller.js";
 import { webauthnController } from "./webauthn.controller.js";
 import { authenticateToken } from "../../middlewares/auth.middleware.js";
+import { requirePermission } from "../../middlewares/permission.middleware.js";
+import { requireAdminStepUp } from "../../middlewares/stepUp.middleware.js";
+import { optionalImageUpload } from "../../middlewares/upload.middleware.js";
 
 const router = Router();
 
 // POST /api/auth/login
 router.post("/login", authController.login);
+
+// Perfil propio (cualquier usuario autenticado consulta su perfil; solo Administrador edita)
+router.get("/me", authenticateToken, authController.getProfile);
+router.put(
+  "/me",
+  authenticateToken,
+  requirePermission("admin"),
+  requireAdminStepUp,
+  optionalImageUpload("users"),
+  authController.updateProfile
+);
 
 // POST /api/auth/forgot-password
 router.post("/forgot-password", authController.forgotPassword);

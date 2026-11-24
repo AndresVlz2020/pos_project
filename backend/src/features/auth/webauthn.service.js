@@ -21,18 +21,6 @@ import { webauthnRepository } from "./webauthn.repository.js";
 const RP_NAME = process.env.WEBAUTHN_RP_NAME || "D'Piero POS";
 const LOCALHOST_ORIGIN_RE = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
-// AAGUIDs oficiales de Microsoft Windows Hello (TPM Hardware, VBS Hardware, Software).
-// Se bloquean explícitamente en backend para impedir su registro aun fuera de la UI.
-const WINDOWS_HELLO_AAGUIDS = new Set([
-  "08987058-cadc-4b81-b6e1-30de50dcbe96",
-  "9ddd1817-af5a-4672-a2b9-3e3dd95000a9",
-  "6028b017-b1d4-4c02-b4b3-afcdafc96bb2",
-]);
-
-function normalizeAaguid(value) {
-  return String(value || "").trim().toLowerCase();
-}
-
 export function isWindowsDesktopUserAgent(userAgent = "", secChUaPlatform = "") {
   const chPlatform = String(secChUaPlatform || "")
     .replace(/["']/g, "")
@@ -46,16 +34,6 @@ export function isWindowsDesktopUserAgent(userAgent = "", secChUaPlatform = "") 
   if (!ua) return false;
   if (ua.includes("windows phone")) return false;
   return /windows nt|win64|wow64/.test(ua);
-}
-
-function assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform = "") {
-  if (isWindowsDesktopUserAgent(userAgent, secChUaPlatform)) {
-    throw new AuthServiceError(
-      "Windows Hello está deshabilitado por seguridad en equipos PC/Windows. Usa tu contraseña, PIN o un lector físico dedicado.",
-      403,
-      { code: "DESKTOP_BIOMETRICS_DISABLED" }
-    );
-  }
 }
 
 // Rate-limiter ligero en memoria para validación de correo (Admin paso 1)
@@ -349,11 +327,10 @@ export const webauthnService = {
   async createRegistrationOptions(
     userId,
     requestOrigin,
-    userAgent = "",
+    _userAgent = "",
     deviceInstanceId = null,
-    secChUaPlatform = ""
+    _secChUaPlatform = ""
   ) {
-    assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
     const user = await resolveActiveUser({ userId });
     const context = resolveWebAuthnContext(requestOrigin);
     await assertDeviceInstanceAvailable(user.id, deviceInstanceId);
@@ -366,6 +343,7 @@ export const webauthnService = {
       userName: user.user_email || `staff-${user.id}@dpiero.local`,
       userDisplayName: user.user_name || "Usuario D'Piero",
       attestationType: "none",
+      supportedAlgorithmIDs: [-7, -257],
       excludeCredentials: existing.map(toCredentialDescriptor),
       authenticatorSelection: {
         authenticatorAttachment: "platform",
@@ -388,10 +366,9 @@ export const webauthnService = {
 
   async verifyAndSaveRegistration(
     userId,
-    { response, deviceLabel, deviceInstanceId, userAgent, secChUaPlatform = "" },
+    { response, deviceLabel, deviceInstanceId, userAgent = "" },
     requestOrigin
   ) {
-    assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
     const user = await resolveActiveUser({ userId });
     const context = resolveWebAuthnContext(requestOrigin);
     const normalizedDeviceId = await assertDeviceInstanceAvailable(
@@ -435,23 +412,7 @@ export const webauthnService = {
     }
 
     const { registrationInfo } = verification;
-    const { credential, credentialDeviceType, credentialBackedUp, aaguid } = registrationInfo;
-
-    if (WINDOWS_HELLO_AAGUIDS.has(normalizeAaguid(aaguid))) {
-      throw new AuthServiceError(
-        "Windows Hello está bloqueado por seguridad (acepta PIN de Windows y guarda llaves locales). Usa contraseña o un lector físico dedicado.",
-        403,
-        { code: "WINDOWS_HELLO_FORBIDDEN" }
-      );
-    }
-
-    if (credentialBackedUp || credentialDeviceType === "multiDevice") {
-      throw new AuthServiceError(
-        "No se permiten llaves de acceso (passkeys) sincronizadas o guardadas en la nube/navegador.",
-        400,
-        { code: "SYNCED_PASSKEY_FORBIDDEN" }
-      );
-    }
+    const { credential, credentialDeviceType, credentialBackedUp } = registrationInfo;
 
     const existingByCredId = await webauthnRepository.findByCredentialId(credential.id);
     const existingByPubKey = existingByCredId
@@ -562,18 +523,16 @@ export const webauthnService = {
     };
   },
 
-  async createLoginOptions({ userId, email, userAgent = "", secChUaPlatform = "" }, requestOrigin) {
-    assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
+  async createLoginOptions({ userId, email }, requestOrigin) {
     const user = await resolveActiveUser({ userId, email });
     const context = resolveWebAuthnContext(requestOrigin);
     return createAuthChallengeForUser(user, "login", context);
   },
 
   async verifyLoginAssertion(
-    { userId, email, response, userAgent = "", secChUaPlatform = "" },
+    { userId, email, response },
     requestOrigin
   ) {
-    assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
     const user = await resolveActiveUser({ userId, email });
     await verifyAuthChallengeForUser(user, "login", response, requestOrigin);
 
@@ -584,10 +543,7 @@ export const webauthnService = {
     return issueSessionForUser(user);
   },
 
-  async createStepUpOptions(userId, requestOrigin, userAgent = "", secChUaPlatform = "") {
-    if (isWindowsDesktopUserAgent(userAgent, secChUaPlatform)) {
-      return { hasBiometrics: false, options: null, reason: "DESKTOP_BIOMETRICS_DISABLED" };
-    }
+  async createStepUpOptions(userId, requestOrigin) {
     const user = await resolveActiveUser({ userId });
     const count = await webauthnRepository.countByUserId(user.id);
     if (count === 0) {
@@ -600,14 +556,13 @@ export const webauthnService = {
 
   async verifyStepUp(
     userId,
-    { response, password, userAgent = "", secChUaPlatform = "" },
+    { response, password },
     requestOrigin
   ) {
     const user = await resolveActiveUser({ userId });
     let verifiedMethod = null;
 
     if (response) {
-      assertNonWindowsWebAuthnClient(userAgent, secChUaPlatform);
       await verifyAuthChallengeForUser(user, "step_up", response, requestOrigin);
       verifiedMethod = "biometric";
     } else if (password !== undefined && password !== null && String(password).trim() !== "") {

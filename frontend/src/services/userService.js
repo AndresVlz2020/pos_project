@@ -75,6 +75,11 @@ export async function createUser(userData) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      if (response.status === 412 || response.status === 413) {
+        throw new Error(
+          `El servidor rechazó la imagen (${response.status}). Intenta con una imagen más liviana.`
+        );
+      }
       throw new Error(data.message || data.error || `Error en el servidor (${response.status})`);
     }
 
@@ -164,6 +169,11 @@ export async function updateUser(id, userData) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      if (response.status === 412 || response.status === 413) {
+        throw new Error(
+          `El servidor rechazó la imagen (${response.status}). Intenta con una imagen más liviana.`
+        );
+      }
       throw new Error(data.message || data.error || `Error al actualizar usuario (${response.status})`);
     }
 

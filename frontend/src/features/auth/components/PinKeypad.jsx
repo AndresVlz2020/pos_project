@@ -34,7 +34,7 @@ export default function PinKeypad({
 
     try {
       const caps = await getBiometricCapabilities();
-      if (caps.isDesktop || !caps.supported || !caps.platformAvailable) {
+      if (!caps.supported || !caps.platformAvailable) {
         setBiometricsAvailableHere(false);
         return;
       }
@@ -71,7 +71,6 @@ export default function PinKeypad({
       }
 
       const canUseBio =
-        !caps.isDesktop &&
         Boolean(status?.hasBiometrics) &&
         Boolean(caps.supported) &&
         Boolean(caps.platformAvailable);

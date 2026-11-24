@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useMemo } from "react";
 import { Infinity as InfinityLoader } from "ldrs/react";
 import "ldrs/react/Infinity.css";
 import { isImageFile } from "@/shared/schemas/fileSchema";
+import { compressImageIfNeeded } from "@/shared/utils/imageCompression";
 import M3Icon from "./M3Icon";
 
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -69,11 +70,14 @@ export default function FileInput({
     if (valid.length === 0) return;
 
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 180));
+    const processed = [];
+    for (const file of valid) {
+      processed.push(await compressImageIfNeeded(file));
+    }
 
     const data = allowMultiple
-      ? [...safeValue, ...valid].slice(0, limit)
-      : [valid[0]];
+      ? [...safeValue, ...processed].slice(0, limit)
+      : [processed[0]];
     onChange?.(data);
     setBrokenExisting(false);
     setIsLoading(false);

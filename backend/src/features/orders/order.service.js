@@ -201,6 +201,12 @@ export const orderService = {
         );
     }
 
+    if (["Entregada", "Pagada", "Anulada"].includes(updated.status)) {
+      await notificationService
+        .markResolvedByOrder(updated.id || updated.order_number)
+        .catch(() => {});
+    }
+
     return updated;
   },
 
@@ -244,6 +250,12 @@ export const orderService = {
         .catch((err) =>
           console.warn("No se pudo registrar notificación de orden completada:", err)
         );
+    }
+
+    if (["Entregada", "Pagada", "Anulada"].includes(updated.status)) {
+      await notificationService
+        .markResolvedByOrder(updated.id || updated.order_number)
+        .catch(() => {});
     }
 
     return updated;
