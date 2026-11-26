@@ -630,7 +630,7 @@ export default function CreateOrder() {
               <div
                 ref={dishesScrollRef}
                 onScroll={handleDishesScroll}
-                className="mt-3 max-h-[460px] lg:max-h-[580px] overflow-y-auto overscroll-contain pr-1"
+                className="mt-3"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {visibleDishes.length === 0 ? (

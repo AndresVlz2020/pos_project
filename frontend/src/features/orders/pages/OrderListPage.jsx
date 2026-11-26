@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { DataTable, Button, ListReportModal, ConfirmDialog, Alert } from "@/shared";
+import { DataTable, Button, ListReportModal, ConfirmDialog, Alert, Select, Input } from "@/shared";
 import { getOrderColumns } from "../table/OrderColumns";
 import { getOrders, cancelOrder } from "../services/orderServices";
 import OrderViewModal from "../components/OrderViewModal";
@@ -28,6 +28,9 @@ export default function OrderListPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [tableFilter, setTableFilter] = useState("all");
+  const [waiterFilter, setWaiterFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -65,23 +68,42 @@ export default function OrderListPage() {
   }, [fetchOrders, isCocina, isMesero]);
 
   // Ordenar por fecha descendente y normalizar estados canónicos (Creada / Completada / Pagada / Anulada)
-  const { sortedOrders, statusCounts, filteredOrders } = useMemo(() => {
+  const { sortedOrders, statusCounts, tableOptions, waiterOptions, filteredOrders } = useMemo(() => {
     const sorted = [...orders].sort((a, b) => {
       const dateA = new Date(a.createdAt || a.created_at || 0);
       const dateB = new Date(b.createdAt || b.created_at || 0);
       return dateB - dateA;
     });
     const { normalizedOrders, counts } = summarizeOrderStatuses(sorted);
-    const filtered =
-      statusFilter === "all"
-        ? normalizedOrders
-        : normalizedOrders.filter((o) => o.status === statusFilter);
+
+    const uniqueTables = Array.from(
+      new Set(normalizedOrders.map((o) => o.tableNumber || o.table_number).filter(Boolean))
+    ).sort();
+    const uniqueWaiters = Array.from(
+      new Set(normalizedOrders.map((o) => o.waiter).filter(Boolean))
+    ).sort();
+
+    const filtered = normalizedOrders.filter((o) => {
+      if (statusFilter !== "all" && o.status !== statusFilter) return false;
+      const tbl = o.tableNumber || o.table_number || "";
+      if (tableFilter !== "all" && tbl !== tableFilter) return false;
+      if (waiterFilter !== "all" && (o.waiter || "") !== waiterFilter) return false;
+      if (dateFilter) {
+        const rawDate = o.createdAt || o.created_at;
+        const isoDay = rawDate ? new Date(rawDate).toISOString().slice(0, 10) : "";
+        if (isoDay !== dateFilter) return false;
+      }
+      return true;
+    });
+
     return {
       sortedOrders: normalizedOrders,
       statusCounts: counts,
+      tableOptions: [{ value: "all", label: "Todas las mesas" }, ...uniqueTables.map((t) => ({ value: t, label: t }))],
+      waiterOptions: [{ value: "all", label: "Todos los meseros" }, ...uniqueWaiters.map((w) => ({ value: w, label: w }))],
       filteredOrders: filtered,
     };
-  }, [orders, statusFilter]);
+  }, [orders, statusFilter, tableFilter, waiterFilter, dateFilter]);
 
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
@@ -179,6 +201,33 @@ export default function OrderListPage() {
         counts={statusCounts}
         className="mb-3"
       />
+
+      {/* Filtros en tiempo real por mesa, mesero y fecha */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+        <Select
+          label="Filtrar por mesa"
+          size="sm"
+          includeEmptyOption={false}
+          value={tableFilter}
+          onChange={(e) => setTableFilter(e.target.value)}
+          options={tableOptions}
+        />
+        <Select
+          label="Filtrar por mesero"
+          size="sm"
+          includeEmptyOption={false}
+          value={waiterFilter}
+          onChange={(e) => setWaiterFilter(e.target.value)}
+          options={waiterOptions}
+        />
+        <Input
+          label="Filtrar por fecha"
+          type="date"
+          size="sm"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+        />
+      </div>
 
       {feedback && (
         <div className="mb-4">

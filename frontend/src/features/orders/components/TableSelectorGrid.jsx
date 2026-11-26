@@ -201,7 +201,7 @@ export default function TableSelectorGrid({
       </button>
 
       {isExpanded && (
-        <div className="p-2.5 sm:p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] max-h-[280px] overflow-y-auto overscroll-contain">
+        <div className="p-2.5 sm:p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)]">
           <div
             role="radiogroup"
             aria-label="Mesas disponibles"

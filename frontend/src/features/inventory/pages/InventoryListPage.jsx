@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { DataTable, Button, ListReportModal, ConfirmDialog, Alert } from "@/shared";
+import { DataTable, Button, ListReportModal, ConfirmDialog, Alert, Select } from "@/shared";
 import { getInventoryColumns } from "../table/InventoryColumns";
 import { getInventory, updateInventoryStatus } from "../services/inventoryServices";
 import usePermission from "@/features/access/services/usePermission";
@@ -20,6 +20,8 @@ const inventoryReportFields = [
 export default function InventoryListPage() {
   const [inventoryList, setInventoryList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [brandFilter, setBrandFilter] = useState("all");
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [pendingChange, setPendingChange] = useState(null);
   const [feedback, setFeedback] = useState(null);
@@ -31,14 +33,28 @@ export default function InventoryListPage() {
     try {
       setLoading(true);
       const data = await getInventory();
-      const formatted = (data || []).map((item) => ({
-        ...item,
-        productName: item.productName || item.name,
-        productCategory: item.productCategory || item.category || "General",
-        currentStock: Number(item.currentStock ?? item.quantity ?? 0),
-        status: item.is_active ? "Activo" : "Inactivo",
-        supplier: item.supplier || item.supplier_name || "—",
-      }));
+      const formatted = (data || []).map((item) => {
+        const stock = Number(item.currentStock ?? item.quantity ?? 0);
+        const exp = item.expirationDate ? new Date(item.expirationDate) : null;
+        const isExpired = Boolean(exp && !Number.isNaN(exp.getTime()) && exp < new Date(new Date().toDateString()));
+        const isOut = stock <= 0;
+        const derivedStatus = !item.is_active
+          ? "Inactivo"
+          : isExpired
+          ? "Vencido"
+          : isOut
+          ? "Agotado"
+          : "Activo";
+
+        return {
+          ...item,
+          productName: item.productName || item.name,
+          productCategory: item.productCategory || item.category || "General",
+          currentStock: stock,
+          status: derivedStatus,
+          supplier: item.supplier || item.supplier_name || "—",
+        };
+      });
       setInventoryList(formatted);
     } catch (error) {
       console.error("Error al cargar inventario desde PostgreSQL:", error);
@@ -111,6 +127,28 @@ export default function InventoryListPage() {
     setPendingChange(null);
   };
 
+  const { brandOptions, filteredInventory } = useMemo(() => {
+    const uniqueBrands = Array.from(
+      new Set(inventoryList.map((i) => i.brand).filter(Boolean))
+    ).sort();
+    const filtered = inventoryList.filter((item) => {
+      if (statusFilter !== "all" && String(item.status || "").toLowerCase() !== statusFilter.toLowerCase()) {
+        return false;
+      }
+      if (brandFilter !== "all" && String(item.brand || "").toLowerCase() !== brandFilter.toLowerCase()) {
+        return false;
+      }
+      return true;
+    });
+    return {
+      brandOptions: [
+        { value: "all", label: "Todas las marcas" },
+        ...uniqueBrands.map((b) => ({ value: b, label: b })),
+      ],
+      filteredInventory: filtered,
+    };
+  }, [inventoryList, statusFilter, brandFilter]);
+
   const columns = useMemo(
     () => getInventoryColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus, canEdit }),
     [canToggleStatus, canEdit]
@@ -153,19 +191,44 @@ export default function InventoryListPage() {
         </div>
       )}
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+        <Select
+          label="Filtrar por estado"
+          size="sm"
+          includeEmptyOption={false}
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          options={[
+            { value: "all", label: "Todos los estados" },
+            { value: "Activo", label: "Activo" },
+            { value: "Agotado", label: "Agotado" },
+            { value: "Vencido", label: "Vencido" },
+            { value: "Inactivo", label: "Inactivo" },
+          ]}
+        />
+        <Select
+          label="Filtrar por marca"
+          size="sm"
+          includeEmptyOption={false}
+          value={brandFilter}
+          onChange={(e) => setBrandFilter(e.target.value)}
+          options={brandOptions}
+        />
+      </div>
+
       {loading && inventoryList.length === 0 ? (
         <div className="flex-1 flex items-center justify-center py-12 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
           Cargando inventario...
         </div>
       ) : (
-        <DataTable className="flex-1" data={inventoryList} columns={columns} />
+        <DataTable className="flex-1" data={filteredInventory} columns={columns} />
       )}
 
       <ListReportModal
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         title="inventario de insumos"
-        data={inventoryList}
+        data={filteredInventory}
         fields={inventoryReportFields}
         filePrefix="inventario"
         statusKey="status"

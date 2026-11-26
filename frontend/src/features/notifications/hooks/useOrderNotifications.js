@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   getAuthToken,
   getStoredAuthUser,
-  getUserRoleFlags,
 } from "@/shared/utils/authStorage";
 import {
   getNotifications,
@@ -76,9 +75,8 @@ function mergeUnreadBanners(prev, rows, userId) {
  */
 export function useOrderNotifications() {
   const user = getStoredAuthUser();
-  const { isAdmin, isMesero } = getUserRoleFlags(user);
   const token = getAuthToken();
-  const enabled = Boolean(token && (isMesero || isAdmin));
+  const enabled = Boolean(token && user?.id);
   const userId = user?.id || null;
 
   const [notifications, setNotifications] = useState([]);

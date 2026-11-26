@@ -33,6 +33,7 @@ export default function EditProductPage() {
   }, [location.state]);
 
   const [formProduct, setProduct] = useState({
+    productCode: "",
     productName: "",
     productPrice: "",
     productCategory: "2",
@@ -74,6 +75,7 @@ export default function EditProductPage() {
       const rawIngredients = Array.isArray(prod.ingredients) ? prod.ingredients : [];
 
       setProduct({
+        productCode: prod.code || "",
         productName: prod.title || prod.name || "",
         productPrice: String(prod.price || ""),
         productCategory: catVal,
@@ -219,6 +221,7 @@ export default function EditProductPage() {
       const imageFile = userImage.length ? userImage[0] : undefined;
 
       const payload = {
+        code: formProduct.productCode?.trim() || null,
         name: formProduct.productName,
         title: formProduct.productName,
         price: Number(formProduct.productPrice),
@@ -240,7 +243,7 @@ export default function EditProductPage() {
 
       await showSuccessAlert({
         title: "Menú actualizado",
-        text: "El platillo se ha actualizado correctamente.",
+        text: "El menú ha sido actualizado correctamente",
       });
       navigate("/productList");
     } catch (error) {
@@ -298,17 +301,25 @@ export default function EditProductPage() {
 
           {/* Campos */}
           <div className="md:col-span-8 xl:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="md:col-span-2">
-              <Input
-                label="Nombre del Platillo *"
-                name="productName"
-                type="text"
-                value={formProduct.productName}
-                placeholder="Ingrese el nombre del platillo"
-                onChange={handleChange}
-                error={errors.productName}
-              />
-            </div>
+            <Input
+              label="Nombre del Platillo *"
+              name="productName"
+              type="text"
+              value={formProduct.productName}
+              placeholder="Ingrese el nombre del platillo"
+              onChange={handleChange}
+              error={errors.productName}
+            />
+            <Input
+              label="ID / Código del Platillo"
+              name="productCode"
+              type="text"
+              value={formProduct.productCode}
+              placeholder="Ej: PAR-01 (opcional)"
+              onChange={handleChange}
+              error={errors.productCode}
+              supportingText="Debe ser único; si queda vacío se asigna automáticamente."
+            />
             <Input
               label="Precio (COP) *"
               name="productPrice"

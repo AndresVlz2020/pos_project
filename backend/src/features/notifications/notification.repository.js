@@ -83,7 +83,8 @@ export const notificationRepository = {
         n.created_at AS "createdAt",
         (
           nr.read_at IS NOT NULL
-          OR LOWER(TRIM(COALESCE(o.status, ''))) IN ('entregada', 'pagada', 'anulada')
+          OR (n.order_id IS NOT NULL AND LOWER(TRIM(COALESCE(o.status, ''))) IN ('entregada', 'pagada', 'anulada'))
+          OR COALESCE((n.metadata->>'resolved')::boolean, FALSE) = TRUE
         ) AS "isRead",
         nr.read_at AS "readAt"
       FROM notifications n
@@ -107,7 +108,8 @@ export const notificationRepository = {
         ON o.id = n.order_id
       WHERE ($2::boolean = TRUE OR LOWER(n.target_role) = LOWER($3))
         AND nr.read_at IS NULL
-        AND LOWER(TRIM(COALESCE(o.status, ''))) NOT IN ('entregada', 'pagada', 'anulada');
+        AND (n.order_id IS NULL OR LOWER(TRIM(COALESCE(o.status, ''))) NOT IN ('entregada', 'pagada', 'anulada'))
+        AND COALESCE((n.metadata->>'resolved')::boolean, FALSE) = FALSE;
     `;
 
     const [listRes, countRes] = await Promise.all([
@@ -183,5 +185,48 @@ export const notificationRepository = {
       [raw]
     );
     return result.rowCount || 0;
+  },
+
+  async findActiveStockNotification(insumoId, type) {
+    const query = `
+      SELECT id, type, metadata
+      FROM notifications
+      WHERE type = $1
+        AND (metadata->>'insumoId')::int = $2
+        AND COALESCE((metadata->>'resolved')::boolean, FALSE) = FALSE
+      ORDER BY created_at DESC, id DESC
+      LIMIT 1;
+    `;
+    const result = await pool.query(query, [type, Number(insumoId)]);
+    return result.rows[0] || null;
+  },
+
+  async resolveStockNotificationsByInsumo(insumoId, types = ["inventory_low_stock", "inventory_out_of_stock"]) {
+    const idNum = Number(insumoId);
+    if (!Number.isInteger(idNum) || idNum <= 0) return 0;
+
+    const updated = await pool.query(
+      `UPDATE notifications
+       SET metadata = COALESCE(metadata, '{}'::jsonb) || '{"resolved": true}'::jsonb
+       WHERE type = ANY($1::text[])
+         AND (metadata->>'insumoId')::int = $2
+         AND COALESCE((metadata->>'resolved')::boolean, FALSE) = FALSE
+       RETURNING id;`,
+      [types, idNum]
+    );
+
+    if (updated.rows.length > 0) {
+      const ids = updated.rows.map((r) => r.id);
+      await pool.query(
+        `INSERT INTO notification_reads (notification_id, user_id, read_at)
+         SELECT n_id, u.id, NOW()
+         FROM UNNEST($1::int[]) AS n_id
+         CROSS JOIN users u
+         ON CONFLICT (notification_id, user_id) DO NOTHING;`,
+        [ids]
+      );
+    }
+
+    return updated.rowCount || 0;
   },
 };

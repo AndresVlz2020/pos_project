@@ -521,7 +521,7 @@ export default function EditOrder() {
               <div
                 ref={dishesScrollRef}
                 onScroll={handleDishesScroll}
-                className="p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-lowest)] max-h-[380px] lg:max-h-[560px] overflow-y-auto overscroll-contain pr-1.5"
+                className="p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-lowest)]"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {visibleDishes.length === 0 ? (

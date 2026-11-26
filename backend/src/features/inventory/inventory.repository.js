@@ -90,6 +90,23 @@ export const inventoryRepository = {
     return result.rows[0] || null;
   },
 
+  async findByCode(code, excludeId = null) {
+    const normalized = String(code || "").trim();
+    if (!normalized) return null;
+    const query = `
+      SELECT id, code, item_name
+      FROM inventory
+      WHERE LOWER(COALESCE(code, CONCAT('INV-', LPAD(id::text, 3, '0')))) = LOWER($1)
+        AND ($2::int IS NULL OR id <> $2)
+      LIMIT 1;
+    `;
+    const result = await pool.query(query, [
+      normalized,
+      excludeId !== null && excludeId !== undefined ? Number(excludeId) : null,
+    ]);
+    return result.rows[0] || null;
+  },
+
   async create(data) {
     const {
       itemName,
@@ -192,6 +209,15 @@ export const inventoryRepository = {
     const expirationDate = data.expirationDate || current.expirationDate;
     const status = data.status || current.status;
     const isActive = data.isActive !== undefined ? Boolean(data.isActive) : (data.is_active !== undefined ? Boolean(data.is_active) : current.isActive);
+    const hasCodeUpdate = data.code !== undefined;
+    const nextCode = hasCodeUpdate ? (String(data.code || "").trim() || null) : null;
+
+    if (hasCodeUpdate && nextCode) {
+      const existing = await this.findByCode(nextCode, current.id);
+      if (existing) {
+        throw new Error(`Ya existe un insumo registrado con el ID/Código "${nextCode}".`);
+      }
+    }
 
     const client = await pool.connect();
     try {
@@ -223,8 +249,9 @@ export const inventoryRepository = {
           expiration_date = $12,
           status = $13,
           is_active = $14,
+          code = CASE WHEN $15::boolean THEN $16 ELSE code END,
           last_updated = NOW()
-        WHERE id = $15
+        WHERE id = $17
         RETURNING
           id,
           COALESCE(code, CONCAT('INV-', LPAD(id::text, 3, '0'))) AS code,
@@ -249,6 +276,8 @@ export const inventoryRepository = {
         expirationDate ? new Date(expirationDate) : null,
         status,
         isActive,
+        hasCodeUpdate,
+        nextCode,
         current.id,
       ];
 

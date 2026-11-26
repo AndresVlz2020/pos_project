@@ -81,7 +81,7 @@ export default function DataTable({
   }, [pageCount, pagination.pageIndex]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 gap-4">
+    <div className="w-full flex flex-col gap-4">
       {/* Toolbar M3: SearchBar + Selector de filas */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div className="w-full sm:w-96">
@@ -166,9 +166,9 @@ export default function DataTable({
         )}
       </div>
 
-      {/* Data Table M3 Desktop / Tablet (>= sm): ocupa altura completa disponible sin desperdicio */}
-      <div className="hidden sm:flex sm:flex-col flex-1 min-h-0 overflow-hidden border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-lowest)] rounded-xl">
-        <div className="flex-1 overflow-auto">
+      {/* Data Table M3 Desktop / Tablet (>= sm): sin scroll vertical interno innecesario */}
+      <div className="hidden sm:flex sm:flex-col overflow-hidden border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-lowest)] rounded-xl">
+        <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead className="sticky top-0 z-10 bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border-b border-[var(--md-sys-color-outline-variant)]">
               {table.getHeaderGroups().map((headerGroup) => (

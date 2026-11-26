@@ -155,7 +155,18 @@ export const orderService = {
       orderData.status = "Creada";
     }
 
-    return await orderRepository.create(orderData);
+    const created = await orderRepository.create(orderData);
+    if (created?.numericId || created?.id) {
+      await notificationService
+        .syncLowStockNotificationsForOrder(
+          created.numericId || created.id,
+          authenticatedUser
+        )
+        .catch((err) =>
+          console.warn("No se pudo evaluar alerta de stock tras crear orden:", err)
+        );
+    }
+    return created;
   },
 
   async updateOrder(id, data, authenticatedUser = null) {
@@ -206,6 +217,15 @@ export const orderService = {
         .markResolvedByOrder(updated.id || updated.order_number)
         .catch(() => {});
     }
+
+    await notificationService
+      .syncLowStockNotificationsForOrder(
+        updated.numericId || updated.id,
+        authenticatedUser
+      )
+      .catch((err) =>
+        console.warn("No se pudo evaluar alerta de stock tras actualizar orden:", err)
+      );
 
     return updated;
   },
@@ -258,6 +278,15 @@ export const orderService = {
         .catch(() => {});
     }
 
+    await notificationService
+      .syncLowStockNotificationsForOrder(
+        updated.numericId || updated.id,
+        authenticatedUser
+      )
+      .catch((err) =>
+        console.warn("No se pudo evaluar alerta de stock tras actualizar orden:", err)
+      );
+
     return updated;
   },
 
@@ -279,6 +308,15 @@ export const orderService = {
     if (!updated) {
       throw new OrderServiceError("Orden no encontrada para anular", 404);
     }
+    await notificationService
+      .markResolvedByOrder(updated.id || updated.order_number)
+      .catch(() => {});
+    await notificationService
+      .syncLowStockNotificationsForOrder(
+        updated.numericId || updated.id,
+        authenticatedUser
+      )
+      .catch(() => {});
     return updated;
   },
 

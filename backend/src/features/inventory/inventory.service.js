@@ -1,4 +1,5 @@
 import { inventoryRepository } from "./inventory.repository.js";
+import { notificationService } from "../notifications/notification.service.js";
 
 export const inventoryService = {
   async getAll(filters) {
@@ -16,7 +17,16 @@ export const inventoryService = {
       throw new Error("El nombre del insumo es obligatorio");
     }
 
+    const normalizedCode = data.code ? String(data.code).trim() : null;
+    if (normalizedCode) {
+      const existing = await inventoryRepository.findByCode(normalizedCode);
+      if (existing) {
+        throw new Error(`Ya existe un insumo registrado con el ID/Código "${normalizedCode}".`);
+      }
+    }
+
     const payload = {
+      code: normalizedCode,
       itemName: data.itemName || data.productName || data.inventoryProductName,
       category: data.category || data.productCategory || "Insumos Secos",
       brand: data.brand || data.productBrandSelect || "Genérica",
@@ -34,12 +44,30 @@ export const inventoryService = {
       isActive: data.isActive !== undefined ? data.isActive : true,
     };
 
-    return await inventoryRepository.create(payload);
+    const created = await inventoryRepository.create(payload);
+    if (created?.id) {
+      await notificationService
+        .syncInventoryStockAlertsByInsumoIds([created.id])
+        .catch((err) =>
+          console.warn("No se pudo evaluar alerta de stock al crear insumo:", err)
+        );
+    }
+    return created;
   },
 
   async update(id, data, actorUserId = null) {
     const updated = await inventoryRepository.update(id, data, actorUserId);
     if (!updated) throw new Error("Insumo no encontrado para actualizar");
+    if (updated?.id) {
+      await notificationService
+        .syncInventoryStockAlertsByInsumoIds(
+          [updated.id],
+          actorUserId ? { id: actorUserId } : null
+        )
+        .catch((err) =>
+          console.warn("No se pudo evaluar alerta de stock al actualizar insumo:", err)
+        );
+    }
     return updated;
   },
 

@@ -1,4 +1,5 @@
 import { notificationRepository } from "./notification.repository.js";
+import { pool } from "../../config/db.js";
 
 function resolveNotificationScope(user) {
   const role = String(user?.role || "").trim().toLowerCase();
@@ -9,7 +10,8 @@ function resolveNotificationScope(user) {
       role === "administrador"
   );
   const isMesero = !isAdmin && (role === "mesero" || role === "salon");
-  return { isAdmin, isMesero };
+  const targetRole = isMesero ? "Mesero" : "NON_MESERO";
+  return { isAdmin, isMesero, targetRole };
 }
 
 function buildItemsSummary(items = []) {
@@ -60,22 +62,18 @@ export const notificationService = {
       return { notifications: [], unreadCount: 0 };
     }
 
-    const { isAdmin, isMesero } = resolveNotificationScope(authenticatedUser);
-    if (!isAdmin && !isMesero) {
-      return { notifications: [], unreadCount: 0 };
-    }
+    const { isAdmin, targetRole } = resolveNotificationScope(authenticatedUser);
 
     return await notificationRepository.findForUser({
       userId,
-      targetRole: "Mesero",
+      targetRole,
       includeAllRoles: isAdmin,
     });
   },
 
   async markAsRead(notificationId, authenticatedUser) {
     const userId = Number(authenticatedUser?.id);
-    const { isAdmin, isMesero } = resolveNotificationScope(authenticatedUser);
-    if (!Number.isInteger(userId) || (!isAdmin && !isMesero)) {
+    if (!Number.isInteger(userId) || userId <= 0) {
       const err = new Error("No autorizado para actualizar esta notificación.");
       err.status = 403;
       throw err;
@@ -92,16 +90,17 @@ export const notificationService = {
 
   async markAllAsRead(authenticatedUser) {
     const userId = Number(authenticatedUser?.id);
-    const { isAdmin, isMesero } = resolveNotificationScope(authenticatedUser);
-    if (!Number.isInteger(userId) || (!isAdmin && !isMesero)) {
+    if (!Number.isInteger(userId) || userId <= 0) {
       const err = new Error("No autorizado para actualizar notificaciones.");
       err.status = 403;
       throw err;
     }
 
+    const { isAdmin, targetRole } = resolveNotificationScope(authenticatedUser);
+
     return await notificationRepository.markAllAsRead({
       userId,
-      targetRole: "Mesero",
+      targetRole,
       includeAllRoles: isAdmin,
     });
   },
@@ -109,5 +108,112 @@ export const notificationService = {
   async markResolvedByOrder(orderIdentifier) {
     if (!orderIdentifier) return 0;
     return await notificationRepository.markResolvedByOrder(orderIdentifier);
+  },
+
+  async syncInventoryStockAlertsByInsumoIds(insumoIds = [], actorUser = null) {
+    const uniqueIds = Array.from(
+      new Set(
+        (insumoIds || [])
+          .map((id) => Number(id))
+          .filter((id) => Number.isInteger(id) && id > 0)
+      )
+    );
+    if (uniqueIds.length === 0) return [];
+
+    const { rows } = await pool.query(
+      `SELECT
+         id,
+         COALESCE(code, CONCAT('INV-', LPAD(id::text, 3, '0'))) AS code,
+         item_name,
+         unit_measure,
+         COALESCE(current_stock, 0)::numeric AS current_stock,
+         COALESCE(min_stock, 0)::numeric AS min_stock,
+         COALESCE(is_active, TRUE) AS is_active
+       FROM inventory
+       WHERE id = ANY($1::int[]);`,
+      [uniqueIds]
+    );
+
+    const created = [];
+    for (const row of rows) {
+      if (row.is_active === false) continue;
+
+      const currentStock = Number(row.current_stock || 0);
+      const minStock = Number(row.min_stock || 0);
+      const unit = row.unit_measure || "un.";
+      const code = row.code || `INV-${row.id}`;
+
+      if (currentStock <= 0) {
+        await notificationRepository.resolveStockNotificationsByInsumo(row.id, ["inventory_low_stock"]);
+        const existing = await notificationRepository.findActiveStockNotification(row.id, "inventory_out_of_stock");
+        if (!existing) {
+          const notif = await notificationRepository.create({
+            type: "inventory_out_of_stock",
+            title: `Sin stock: ${row.item_name}`,
+            message: `${code} · Stock agotado (0 ${unit}). Requiere reposición inmediata.`,
+            orderId: null,
+            orderNumber: code,
+            tableNumber: "Inventario",
+            targetRole: "NON_MESERO",
+            targetUserId: null,
+            createdByUserId: Number(actorUser?.id) || null,
+            metadata: {
+              insumoId: Number(row.id),
+              insumoCode: code,
+              insumoName: row.item_name,
+              currentStock,
+              minStock,
+              unitMeasure: unit,
+              resolved: false,
+            },
+          });
+          if (notif) created.push(notif);
+        }
+      } else if (minStock > 0 && currentStock <= minStock) {
+        await notificationRepository.resolveStockNotificationsByInsumo(row.id, ["inventory_out_of_stock"]);
+        const existing = await notificationRepository.findActiveStockNotification(row.id, "inventory_low_stock");
+        if (!existing) {
+          const notif = await notificationRepository.create({
+            type: "inventory_low_stock",
+            title: `Poco stock: ${row.item_name}`,
+            message: `${code} · Quedan ${currentStock} ${unit} (mínimo: ${minStock} ${unit}). Reabastecer pronto.`,
+            orderId: null,
+            orderNumber: code,
+            tableNumber: "Inventario",
+            targetRole: "NON_MESERO",
+            targetUserId: null,
+            createdByUserId: Number(actorUser?.id) || null,
+            metadata: {
+              insumoId: Number(row.id),
+              insumoCode: code,
+              insumoName: row.item_name,
+              currentStock,
+              minStock,
+              unitMeasure: unit,
+              resolved: false,
+            },
+          });
+          if (notif) created.push(notif);
+        }
+      } else {
+        await notificationRepository.resolveStockNotificationsByInsumo(row.id);
+      }
+    }
+
+    return created;
+  },
+
+  async syncLowStockNotificationsForOrder(orderId, actorUser = null) {
+    const oid = Number(orderId);
+    if (!Number.isInteger(oid) || oid <= 0) return [];
+    const { rows } = await pool.query(
+      `SELECT DISTINCT pi.insumo_id
+       FROM order_items oi
+       JOIN producto_insumos pi ON pi.producto_id = oi.product_id
+       WHERE oi.order_id = $1;`,
+      [oid]
+    );
+    const insumoIds = rows.map((r) => Number(r.insumo_id));
+    return await this.syncInventoryStockAlertsByInsumoIds(insumoIds, actorUser);
   },
 };

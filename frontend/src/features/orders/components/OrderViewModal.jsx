@@ -178,7 +178,7 @@ export default function OrderViewModal({ order, isOpen, onClose }) {
             <M3Icon name="restaurant" size={16} className="text-[var(--md-sys-color-primary)]" />
             Resumen de Platillos Ordenados ({(order.items || []).length})
           </h4>
-          <div className="border border-[var(--md-sys-color-outline-variant)] rounded-xl max-h-[36dvh] overflow-y-auto overflow-x-hidden bg-[var(--md-sys-color-surface)]">
+          <div className="border border-[var(--md-sys-color-outline-variant)] rounded-xl overflow-x-auto bg-[var(--md-sys-color-surface)]">
             <table className="w-full text-left text-xs leading-4">
               <thead className="sticky top-0 z-10 bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border-b border-[var(--md-sys-color-outline-variant)]">
                 <tr>

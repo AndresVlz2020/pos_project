@@ -68,9 +68,23 @@ export default function NotificationBell() {
 
   if (!enabled) return null;
 
-  const handleOpenOrder = (notification) => {
+  const handleOpenNotification = (notification) => {
     setIsOpen(false);
     markRead(notification.id);
+
+    if (
+      notification.type === "inventory_low_stock" ||
+      notification.type === "inventory_out_of_stock"
+    ) {
+      navigate("/inventoryList", {
+        state: {
+          highlightInsumoId: notification.metadata?.insumoId || null,
+          fromNotificationId: notification.id,
+        },
+      });
+      return;
+    }
+
     navigate("/orders", {
       state: {
         highlightOrderId: notification.orderNumber || String(notification.orderId || ""),
@@ -184,16 +198,40 @@ export default function NotificationBell() {
                 </div>
               ) : (
                 visibleNotifications.map((notif) => {
+                  const isOutOfStock = notif.type === "inventory_out_of_stock";
+                  const isLowStock = notif.type === "inventory_low_stock";
+                  const isStockAlert = isOutOfStock || isLowStock;
+
                   const canonicalOrderStatus = normalizeOrderStatus(
                     notif.currentOrderStatus || "Completada"
                   );
                   const orderMeta = getOrderStatusBadgeMeta(canonicalOrderStatus);
                   const relTime = formatRelativeNotificationTime(notif.createdAt);
 
+                  const iconWrapperClass = isOutOfStock
+                    ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]"
+                    : isLowStock
+                    ? "bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]"
+                    : canonicalOrderStatus === "Completada"
+                    ? "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]"
+                    : "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]";
+
+                  const badgeClass = isOutOfStock
+                    ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border border-[var(--md-sys-color-error)]/40"
+                    : isLowStock
+                    ? "bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] border border-[var(--md-sys-color-outline-variant)]"
+                    : orderMeta.className;
+
+                  const badgeLabel = isOutOfStock
+                    ? "Sin stock"
+                    : isLowStock
+                    ? "Poco stock"
+                    : orderMeta.label;
+
                   return (
                     <div
                       key={notif.id}
-                      onClick={() => handleOpenOrder(notif)}
+                      onClick={() => handleOpenNotification(notif)}
                       className={`p-3.5 transition-colors cursor-pointer flex items-start gap-3 ${
                         notif.isRead
                           ? "bg-[var(--md-sys-color-surface)] hover:bg-[var(--md-sys-color-surface-container-low)]"
@@ -201,15 +239,15 @@ export default function NotificationBell() {
                       }`}
                     >
                       <div
-                        className={`size-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                          canonicalOrderStatus === "Completada"
-                            ? "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]"
-                            : "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]"
-                        }`}
+                        className={`size-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${iconWrapperClass}`}
                       >
                         <M3Icon
                           name={
-                            canonicalOrderStatus === "Entregada"
+                            isOutOfStock
+                              ? "error"
+                              : isLowStock
+                              ? "warning"
+                              : canonicalOrderStatus === "Entregada"
                               ? "room_service"
                               : "notifications_active"
                           }
@@ -237,9 +275,9 @@ export default function NotificationBell() {
                         <div className="flex flex-wrap items-center justify-between gap-1.5 pt-0.5">
                           <div className="flex items-center gap-1.5">
                             <span
-                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${orderMeta.className}`}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${badgeClass}`}
                             >
-                              {orderMeta.label}
+                              {badgeLabel}
                             </span>
                             {relTime && (
                               <span className="text-[11px] text-[var(--md-sys-color-on-surface-variant)]">
@@ -249,7 +287,11 @@ export default function NotificationBell() {
                           </div>
 
                           <span className="text-[11px] font-semibold text-[var(--md-sys-color-primary)]">
-                            {canonicalOrderStatus === "Completada" ? "Ir a entregar →" : "Ver orden →"}
+                            {isStockAlert
+                              ? "Ir a inventario →"
+                              : canonicalOrderStatus === "Completada"
+                              ? "Ir a entregar →"
+                              : "Ver orden →"}
                           </span>
                         </div>
                       </div>
@@ -269,56 +311,79 @@ export default function NotificationBell() {
           aria-label="Alertas recientes de cocina"
           className="fixed top-[68px] left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 z-[75] w-[calc(100vw-1.5rem)] max-w-md flex flex-col gap-2 pointer-events-none"
         >
-          {topBanners.map((banner) => (
-            <div
-              key={banner.id}
-              className="dpiero-modal-in pointer-events-auto rounded-2xl border-2 border-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)] px-4 py-3 m3-elevation-3 flex items-start gap-3"
-            >
-              <div className="size-10 rounded-xl bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] flex items-center justify-center shrink-0">
-                <M3Icon name="room_service" size={20} />
-              </div>
+          {topBanners.map((banner) => {
+            const isOutOfStock = banner.type === "inventory_out_of_stock";
+            const isLowStock = banner.type === "inventory_low_stock";
+            const isStockAlert = isOutOfStock || isLowStock;
 
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[var(--md-sys-color-on-surface)] leading-tight">
-                  {banner.title}
-                </p>
-                <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-0.5 line-clamp-2">
-                  {banner.message}
-                </p>
-
-                <div className="flex items-center gap-2 mt-2">
-                  <Button
-                    type="button"
-                    variant="filled"
-                    size="sm"
-                    onClick={() => handleOpenOrder(banner)}
-                  >
-                    Ver / Entregar
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="text"
-                    size="sm"
-                    onClick={() => dismissBanner(banner.id)}
-                  >
-                    Ocultar aviso
-                  </Button>
-                </div>
-              </div>
-
-              <IconButton
-                ariaLabel="Cerrar aviso"
-                title="Cerrar aviso (permanece guardado en la campanita)"
-                variant="standard"
-                hitSize={34}
-                iconSize={18}
-                className="-mt-1 -mr-1 shrink-0"
-                onClick={() => dismissBanner(banner.id)}
+            return (
+              <div
+                key={banner.id}
+                className={`dpiero-modal-in pointer-events-auto rounded-2xl border-2 ${
+                  isOutOfStock
+                    ? "border-[var(--md-sys-color-error)]"
+                    : isLowStock
+                    ? "border-[var(--md-sys-color-tertiary)]"
+                    : "border-[var(--md-sys-color-primary)]"
+                } bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)] px-4 py-3 m3-elevation-3 flex items-start gap-3`}
               >
-                <M3Icon name="close" size={18} />
-              </IconButton>
-            </div>
-          ))}
+                <div
+                  className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${
+                    isOutOfStock
+                      ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]"
+                      : isLowStock
+                      ? "bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]"
+                      : "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]"
+                  }`}
+                >
+                  <M3Icon
+                    name={isOutOfStock ? "error" : isLowStock ? "warning" : "room_service"}
+                    size={20}
+                  />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-[var(--md-sys-color-on-surface)] leading-tight">
+                    {banner.title}
+                  </p>
+                  <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-0.5 line-clamp-2">
+                    {banner.message}
+                  </p>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <Button
+                      type="button"
+                      variant="filled"
+                      size="sm"
+                      onClick={() => handleOpenNotification(banner)}
+                    >
+                      {isStockAlert ? "Ver inventario" : "Ver / Entregar"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="text"
+                      size="sm"
+                      onClick={() => dismissBanner(banner.id)}
+                    >
+                      Ocultar aviso
+                    </Button>
+                  </div>
+                </div>
+
+                <IconButton
+                  ariaLabel="Cerrar aviso"
+                  title="Cerrar aviso (permanece guardado en la campanita)"
+                  variant="standard"
+                  hitSize={34}
+                  iconSize={18}
+                  className="-mt-1 -mr-1 shrink-0"
+                  onClick={() => dismissBanner(banner.id)}
+                >
+                  <M3Icon name="close" size={18} />
+                </IconButton>
+              </div>
+            );
+          })}
         </aside>
       )}
     </>

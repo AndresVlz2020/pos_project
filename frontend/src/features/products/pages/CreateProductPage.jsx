@@ -13,6 +13,7 @@ import {
 export default function CreateProductPage() {
   const navigate = useNavigate();
   const [formProduct, setProduct] = useState({
+    productCode: "",
     productName: "",
     productPrice: "",
     productCategory: "2",
@@ -133,6 +134,7 @@ export default function CreateProductPage() {
       const imageFile = userImage.length ? userImage[0] : undefined;
 
       await createProduct({
+        code: formProduct.productCode?.trim() || null,
         name: formProduct.productName,
         title: formProduct.productName,
         price: Number(formProduct.productPrice),
@@ -209,16 +211,24 @@ export default function CreateProductPage() {
 
           {/* Campos del formulario */}
           <div className="md:col-span-8 xl:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="md:col-span-2">
-              <Input
-                label="Nombre del Platillo *"
-                name="productName"
-                placeholder="Ej: Churrasco 350g, Limonada de Coco..."
-                value={formProduct.productName}
-                onChange={handleChange}
-                error={errors.productName}
-              />
-            </div>
+            <Input
+              label="Nombre del Platillo *"
+              name="productName"
+              placeholder="Ej: Churrasco 350g, Limonada de Coco..."
+              value={formProduct.productName}
+              onChange={handleChange}
+              error={errors.productName}
+            />
+
+            <Input
+              label="ID / Código del Platillo"
+              name="productCode"
+              placeholder="Ej: PAR-01 (opcional)"
+              value={formProduct.productCode}
+              onChange={handleChange}
+              error={errors.productCode}
+              supportingText="Debe ser único; si queda vacío se asigna automáticamente."
+            />
 
             <Input
               label="Precio (COP) *"

@@ -106,8 +106,8 @@ export const productService = {
     }
 
     const price = Number(data.price || data.productPrice);
-    if (isNaN(price) || price < 0) {
-      throw new Error("El precio debe ser un número mayor o igual a 0");
+    if (isNaN(price) || price <= 0) {
+      throw new Error("El precio debe ser un número positivo mayor a 0");
     }
 
     if (hasManualStockField(data)) {
@@ -153,8 +153,8 @@ export const productService = {
 
     if (data.price !== undefined) {
       const price = Number(data.price);
-      if (isNaN(price) || price < 0) {
-        throw new Error("El precio debe ser un número mayor o igual a 0");
+      if (isNaN(price) || price <= 0) {
+        throw new Error("El precio debe ser un número positivo mayor a 0");
       }
     }
 

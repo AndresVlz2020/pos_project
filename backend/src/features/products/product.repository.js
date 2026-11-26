@@ -125,6 +125,23 @@ export const productRepository = {
     return result.rows[0] || null;
   },
 
+  async findByCode(code, excludeId = null) {
+    const normalized = String(code || "").trim();
+    if (!normalized) return null;
+    const query = `
+      SELECT id, code, name
+      FROM products
+      WHERE LOWER(COALESCE(code, CONCAT('PROD-', LPAD(id::text, 3, '0')))) = LOWER($1)
+        AND ($2::int IS NULL OR id <> $2)
+      LIMIT 1;
+    `;
+    const result = await pool.query(query, [
+      normalized,
+      excludeId !== null && excludeId !== undefined ? Number(excludeId) : null,
+    ]);
+    return result.rows[0] || null;
+  },
+
   async create(data) {
     const {
       name,
@@ -142,6 +159,14 @@ export const productRepository = {
     } = data;
 
     const productName = name || title;
+    const normalizedCode = code ? String(code).trim() : null;
+
+    if (normalizedCode) {
+      const existing = await this.findByCode(normalizedCode);
+      if (existing) {
+        throw new Error(`Ya existe un platillo registrado con el ID/Código "${normalizedCode}".`);
+      }
+    }
 
     const client = await pool.connect();
     try {
@@ -153,9 +178,29 @@ export const productRepository = {
           "SELECT id FROM categories WHERE LOWER(name) = LOWER($1) LIMIT 1",
           [category]
         );
-        if (catRes.rows[0]) {
-          targetCategoryId = catRes.rows[0].id;
+        if (!catRes.rows[0]) {
+          throw new Error("Debe seleccionar una categoría previamente registrada en el sistema.");
         }
+        targetCategoryId = catRes.rows[0].id;
+      } else if (targetCategoryId) {
+        const catRes = await client.query(
+          "SELECT id FROM categories WHERE id = $1 LIMIT 1",
+          [Number(targetCategoryId)]
+        );
+        if (!catRes.rows[0]) {
+          throw new Error("Debe seleccionar una categoría previamente registrada en el sistema.");
+        }
+      }
+
+      const duplicateRes = await client.query(
+        `SELECT id FROM products
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))
+           AND category_id IS NOT DISTINCT FROM $2
+         LIMIT 1;`,
+        [productName, targetCategoryId]
+      );
+      if (duplicateRes.rows[0]) {
+        throw new Error("Ya existe un platillo registrado con ese nombre dentro de la misma categoría.");
       }
 
       const query = `
@@ -178,7 +223,7 @@ export const productRepository = {
 
       const values = [
         productName,
-        code || null,
+        normalizedCode,
         description || "",
         Number(price) || 0,
         targetCategoryId,
@@ -223,6 +268,15 @@ export const productRepository = {
     const imageUrl = incomingImage !== undefined
       ? (incomingImage && String(incomingImage).trim() ? String(incomingImage).trim() : null)
       : (current.image_url || null);
+    const hasCodeUpdate = data.code !== undefined;
+    const nextCode = hasCodeUpdate ? (String(data.code || "").trim() || null) : null;
+
+    if (hasCodeUpdate && nextCode) {
+      const existing = await this.findByCode(nextCode, current.id);
+      if (existing) {
+        throw new Error(`Ya existe un platillo registrado con el ID/Código "${nextCode}".`);
+      }
+    }
 
     const client = await pool.connect();
     try {
@@ -234,9 +288,22 @@ export const productRepository = {
           "SELECT id FROM categories WHERE LOWER(name) = LOWER($1) LIMIT 1",
           [data.category]
         );
-        if (catRes.rows[0]) {
-          categoryId = catRes.rows[0].id;
+        if (!catRes.rows[0]) {
+          throw new Error("Debe seleccionar una categoría previamente registrada en el sistema.");
         }
+        categoryId = catRes.rows[0].id;
+      }
+
+      const duplicateRes = await client.query(
+        `SELECT id FROM products
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))
+           AND category_id IS NOT DISTINCT FROM $2
+           AND id <> $3
+         LIMIT 1;`,
+        [name, categoryId, current.id]
+      );
+      if (duplicateRes.rows[0]) {
+        throw new Error("Ya existe un platillo registrado con ese nombre dentro de la misma categoría.");
       }
 
       const query = `
@@ -249,8 +316,9 @@ export const productRepository = {
           image_url = $5,
           status = $6,
           is_active = $7,
+          code = CASE WHEN $8::boolean THEN $9 ELSE code END,
           updated_at = NOW()
-        WHERE id = $8;
+        WHERE id = $10;
       `;
 
       await client.query(query, [
@@ -261,6 +329,8 @@ export const productRepository = {
         imageUrl,
         status,
         isActive,
+        hasCodeUpdate,
+        nextCode,
         current.id,
       ]);
 

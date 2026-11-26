@@ -34,6 +34,7 @@ export default function CreateInventory() {
     const [submitting, setSubmitting] = useState(false);
 
     const [formInventory, setInventory] = useState({
+        code: editItem?.code || "",
         inventorySupplierSelect: editItem?.supplier || editItem?.supplier_id || "",
         inventoryProductName: editItem?.productName || editItem?.name || "",
         inventoryProductAccountant: editItem?.code || editItem?.id || "",
@@ -69,6 +70,7 @@ export default function CreateInventory() {
         if (!editItem) return;
         Promise.resolve().then(() => {
             setInventory({
+                code: editItem.code || "",
                 inventorySupplierSelect: String(editItem.supplier_id || editItem.supplier || ""),
                 inventoryProductName: editItem.productName || editItem.name || "",
                 inventoryProductAccountant: editItem.code || editItem.id || "",
@@ -138,6 +140,7 @@ export default function CreateInventory() {
 
         try {
             const payload = {
+                code: formInventory.code?.trim() || null,
                 itemName: formInventory.inventoryProductName,
                 productName: formInventory.inventoryProductName,
                 brand: formInventory.productBrandSelect,
@@ -268,6 +271,18 @@ export default function CreateInventory() {
                     </div>
 
                     <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+                        <Input
+                            label="ID / Código del Insumo"
+                            name="code"
+                            type="text"
+                            value={formInventory.code}
+                            placeholder="Ej: INV-001 (opcional)"
+                            htmlFor="inventory-code"
+                            onChange={handleChange}
+                            disabled={isReadOnly}
+                            error={errors.code}
+                            supportingText="Debe ser único; si queda vacío se asigna automáticamente."
+                        />
                         <Select
                             label="Proveedor"
                             name="inventorySupplierSelect"

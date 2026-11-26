@@ -72,8 +72,8 @@ export default function ForgotPassword() {
           <div className="space-y-4">
             <Alert
               type="success"
-              title="¡Código de 6 Dígitos Enviado!"
-              message={`Hemos enviado un código de verificación a ${email}. Abre tu bandeja de entrada de correo y cópialo para continuar.`}
+              title="Se ha enviado un correo de restablecimiento"
+              message={`Se ha enviado un correo de restablecimiento con tu código de 6 dígitos a ${email}. Abre tu bandeja de entrada y cópialo para continuar.`}
               autoClose={false}
             />
 

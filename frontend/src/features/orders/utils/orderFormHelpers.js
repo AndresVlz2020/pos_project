@@ -49,7 +49,7 @@ export function getOrderStatusBadgeMeta(status) {
       label: "Pagada",
       icon: "check_circle",
       className:
-        "bg-[var(--color-success-bg)] text-[var(--color-success)] border border-[var(--color-success-border)]",
+        "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] border border-[var(--md-sys-color-primary)]",
     };
   }
   if (normalized === "Entregada") {
@@ -57,7 +57,7 @@ export function getOrderStatusBadgeMeta(status) {
       label: "Entregada",
       icon: "room_service",
       className:
-        "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border border-[var(--md-sys-color-secondary)]/40",
+        "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border border-[var(--md-sys-color-primary)]/35",
     };
   }
   if (normalized === "Completada") {
@@ -65,7 +65,7 @@ export function getOrderStatusBadgeMeta(status) {
       label: "Completada",
       icon: "task_alt",
       className:
-        "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border border-[var(--md-sys-color-primary)]/40",
+        "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border border-[var(--md-sys-color-outline-variant)]",
     };
   }
   if (normalized === "Anulada") {
@@ -80,7 +80,7 @@ export function getOrderStatusBadgeMeta(status) {
     label: "Creada",
     icon: "schedule",
     className:
-      "bg-[var(--color-warning-bg)] text-[var(--color-warning)] border border-[var(--color-warning-border)]",
+      "bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)]",
   };
 }
 
