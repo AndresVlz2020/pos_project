@@ -4,14 +4,16 @@ import Button from "@/shared/components/Button";
 import Alert from "@/shared/components/Alert";
 import BrandLogo from "@/shared/components/BrandLogo";
 import M3Icon from "@/shared/components/M3Icon";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { resetPasswordApi, forgotPasswordApi } from "@/services/authService";
 import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const initialEmail = searchParams.get("email") || "";
+  const initialSentMessage = location.state?.sentMessage || "";
 
   const [form, setForm] = useState({
     email: initialEmail,
@@ -22,7 +24,7 @@ export default function ResetPassword() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [resendMessage, setResendMessage] = useState("");
+  const [resendMessage, setResendMessage] = useState(initialSentMessage);
 
   const validate = () => {
     const errs = {};
@@ -134,7 +136,7 @@ export default function ResetPassword() {
 
         {resendMessage && (
           <div className="mb-4">
-            <Alert type="success" title="Código Reenviado" message={resendMessage} autoClose={true} />
+            <Alert type="success" title="Se ha enviado un correo de restablecimiento" message={resendMessage} autoClose={false} />
           </div>
         )}
 

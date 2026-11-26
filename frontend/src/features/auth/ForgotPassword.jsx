@@ -4,14 +4,14 @@ import Button from "@/shared/components/Button";
 import Alert from "@/shared/components/Alert";
 import BrandLogo from "@/shared/components/BrandLogo";
 import M3Icon from "@/shared/components/M3Icon";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { forgotPasswordApi } from "@/services/authService";
 import { getPublicSettingsApi } from "@/services/settingsService";
 
 export default function ForgotPassword() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [supportEmail, setSupportEmail] = useState("soporte@dpiero.com");
 
@@ -45,8 +45,13 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      await forgotPasswordApi(email.trim().toLowerCase());
-      setIsSubmitted(true);
+      const normalizedEmail = email.trim().toLowerCase();
+      await forgotPasswordApi(normalizedEmail);
+      navigate(`/Auth/reset-password?email=${encodeURIComponent(normalizedEmail)}`, {
+        state: {
+          sentMessage: `Se ha enviado un correo de restablecimiento con tu código de 6 dígitos a ${normalizedEmail}.`,
+        },
+      });
     } catch (err) {
       setError(err.message || "Error al procesar la solicitud.");
     } finally {
@@ -68,70 +73,43 @@ export default function ForgotPassword() {
           </p>
         </div>
 
-        {isSubmitted ? (
-          <div className="space-y-4">
-            <Alert
-              type="success"
-              title="Se ha enviado un correo de restablecimiento"
-              message={`Se ha enviado un correo de restablecimiento con tu código de 6 dígitos a ${email}. Abre tu bandeja de entrada y cópialo para continuar.`}
-              autoClose={false}
-            />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Correo Electrónico"
+            name="email"
+            type="email"
+            leadingIcon="mail"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (error) setError("");
+            }}
+            placeholder="correo@ejemplo.com"
+            htmlFor="forgot-email"
+            error={error}
+          />
 
-            <Link to={`/Auth/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}`} className="block">
-              <Button variant="filled" size="lg" trailingIcon="arrow_forward" className="w-full">
-                Ingresar código de 6 dígitos
-              </Button>
-            </Link>
+          <Button
+            variant="filled"
+            size="lg"
+            type="submit"
+            leadingIcon="mail"
+            disabled={isLoading}
+            className="w-full mt-2 !whitespace-normal text-center"
+          >
+            {isLoading ? "Enviando código..." : "Enviar código de seguridad"}
+          </Button>
 
-            <div className="text-center pt-1">
-              <Link
-                to="/Auth"
-                className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors"
-              >
-                <M3Icon name="arrow_back" size={18} />
-                Volver al Inicio de Sesión
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Correo Electrónico"
-              name="email"
-              type="email"
-              leadingIcon="mail"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (error) setError("");
-              }}
-              placeholder="correo@ejemplo.com"
-              htmlFor="forgot-email"
-              error={error}
-            />
-
-            <Button
-              variant="filled"
-              size="lg"
-              type="submit"
-              leadingIcon="mail"
-              disabled={isLoading}
-              className="w-full mt-2 !whitespace-normal text-center"
+          <div className="text-center pt-1">
+            <Link
+              to="/Auth"
+              className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
             >
-              {isLoading ? "Enviando código..." : "Enviar código de seguridad"}
-            </Button>
-
-            <div className="text-center pt-1">
-              <Link
-                to="/Auth"
-                className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
-              >
-                <M3Icon name="arrow_back" size={18} />
-                Volver a Iniciar Sesión
-              </Link>
-            </div>
-          </form>
-        )}
+              <M3Icon name="arrow_back" size={18} />
+              Volver a Iniciar Sesión
+            </Link>
+          </div>
+        </form>
         <div className="mt-5 pt-4 border-t border-[var(--md-sys-color-outline-variant)]/70 flex flex-col items-center justify-center gap-1 text-center text-xs text-[var(--md-sys-color-on-surface-variant)]">
           <span className="inline-flex items-center gap-1">
             <M3Icon name="support_agent" size={16} className="text-[var(--md-sys-color-primary)] shrink-0" />

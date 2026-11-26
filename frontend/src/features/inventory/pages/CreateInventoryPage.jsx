@@ -42,6 +42,7 @@ export default function CreateInventory() {
         inventoryProductLocation: editItem?.location || "Almacén Central / Bodega",
         productBrandSelect: editItem?.brand ? editItem.brand.toLowerCase() : "alpina",
         numberBatch: editItem ? (editItem.numberBatch || editItem.batch_number || `LT-${editItem.id || "001"}`) : "",
+        unitMeasure: editItem?.unitMeasure || editItem?.unit_measure || "unidad",
         initialStock: editItem?.currentStock !== undefined ? String(editItem.currentStock) : "",
         minAmount: editItem?.minStock !== undefined ? String(editItem.minStock) : "5",
         priceBuy: editItem?.priceBuy !== undefined ? String(editItem.priceBuy) : "45000",
@@ -78,6 +79,7 @@ export default function CreateInventory() {
                 inventoryProductLocation: editItem.location || "Almacén Central / Bodega",
                 productBrandSelect: editItem.brand ? editItem.brand.toLowerCase() : "alpina",
                 numberBatch: editItem.numberBatch || editItem.batch_number || `LT-${editItem.id || "001"}`,
+                unitMeasure: editItem.unitMeasure || editItem.unit_measure || "unidad",
                 initialStock: editItem.currentStock !== undefined ? String(editItem.currentStock) : "",
                 minAmount: editItem.minStock !== undefined ? String(editItem.minStock) : "5",
                 priceBuy: editItem.priceBuy !== undefined ? String(editItem.priceBuy) : "45000",
@@ -145,6 +147,7 @@ export default function CreateInventory() {
                 productName: formInventory.inventoryProductName,
                 brand: formInventory.productBrandSelect,
                 category: "Insumos y Materias Primas",
+                unitMeasure: formInventory.unitMeasure || "unidad",
                 currentStock: Number(formInventory.initialStock) || 0,
                 minStock: Number(formInventory.minAmount) || 0,
                 location: formInventory.inventoryProductLocation,
@@ -365,6 +368,25 @@ export default function CreateInventory() {
                                 </span>
                             )}
                         </div>
+                        <Select
+                            label="Unidad de medida"
+                            name="unitMeasure"
+                            htmlFor="inventory-unit-measure"
+                            options={[
+                                { value: "gr", label: "Gramos (gr)" },
+                                { value: "unidad", label: "Unidad" },
+                                { value: "litro", label: "Litro" },
+                                { value: "botella", label: "Botella" },
+                                { value: "paquete", label: "Paquete" },
+                                { value: "bolsa", label: "Bolsa" },
+                                { value: "galón", label: "Galón" },
+                                { value: "rollo", label: "Rollo" },
+                            ]}
+                            value={formInventory.unitMeasure}
+                            onChange={handleChange}
+                            disabled={isReadOnly}
+                            error={errors.unitMeasure}
+                        />
                         <Input
                             label="Stock Actual"
                             name="initialStock"
