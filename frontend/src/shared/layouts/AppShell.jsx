@@ -94,7 +94,7 @@ export function AppShell({ children, showFooter = false }) {
         )}
 
         {/* Destinos M3 con Indicador Píldora e Ícono Filled/Outlined */}
-        <nav className="flex-1 w-full flex flex-col gap-1.5 overflow-y-auto scrollbar-none">
+        <nav className="flex-1 w-full flex flex-col gap-1 overflow-y-auto scrollbar-none">
           {destinations.map((dest) => {
             const isActive = dest.active;
             if (railExpanded) {
@@ -103,7 +103,7 @@ export function AppShell({ children, showFooter = false }) {
                   key={dest.id}
                   to={dest.to}
                   aria-current={isActive ? "page" : undefined}
-                  className={`m3-state flex items-center gap-3 h-12 px-4 rounded-full text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
+                  className={`m3-state flex items-center gap-3 h-11 px-4 rounded-full text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
                     isActive
                       ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
                       : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
@@ -120,7 +120,7 @@ export function AppShell({ children, showFooter = false }) {
                 key={dest.id}
                 to={dest.to}
                 aria-current={isActive ? "page" : undefined}
-                className="group flex flex-col items-center gap-1 py-1 focus-visible:outline-none"
+                className="group flex flex-col items-center gap-0.5 py-0.5 focus-visible:outline-none"
               >
                 <span
                   className={`m3-state flex items-center justify-center w-14 h-8 rounded-full group-focus-visible:ring-2 group-focus-visible:ring-[var(--md-sys-color-primary)] ${
@@ -132,7 +132,7 @@ export function AppShell({ children, showFooter = false }) {
                   <M3Icon name={dest.icon} filled={isActive} size={20} />
                 </span>
                 <span
-                  className={`text-xs leading-4 tracking-[0.01em] text-center truncate max-w-[80px] ${
+                  className={`text-[11px] leading-4 tracking-[0.01em] text-center truncate max-w-[80px] ${
                     isActive
                       ? "font-medium text-[var(--md-sys-color-on-surface)]"
                       : "font-normal text-[var(--md-sys-color-on-surface-variant)]"
@@ -146,44 +146,44 @@ export function AppShell({ children, showFooter = false }) {
         </nav>
 
         {/* Acciones inferiores del Rail */}
-        <div className="pt-3 border-t border-[var(--md-sys-color-outline-variant)] w-full flex flex-col gap-1 items-center">
+        <div className="pt-2.5 border-t border-[var(--md-sys-color-outline-variant)] w-full flex flex-col gap-1 items-center">
           <button
             type="button"
             onClick={() => setIsHistoryOpen(true)}
             title={isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}
             className={`m3-state flex items-center cursor-pointer rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
-              railExpanded ? "w-full h-11 px-4 gap-3 text-sm font-medium" : "size-11 justify-center"
+              railExpanded ? "w-full h-10 px-4 gap-3 text-sm font-medium" : "size-10 justify-center"
             }`}
           >
             <M3Icon name="history" size={20} />
             {railExpanded && <span className="truncate">Turnos</span>}
           </button>
 
+          {isAdmin && (
+            <Link
+              to="/dashboard/access"
+              title="Permisos y Control de Acceso"
+              aria-label="Permisos"
+              className={`m3-state flex items-center rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
+                railExpanded ? "w-full h-10 px-4 gap-3 text-sm font-medium" : "size-10 justify-center"
+              }`}
+            >
+              <M3Icon name="admin_panel_settings" size={20} />
+              {railExpanded && <span className="truncate">Permisos</span>}
+            </Link>
+          )}
+
           <button
             type="button"
             onClick={() => setIsBiometricsOpen(true)}
             title="Configurar Biometría / Huella"
             className={`m3-state flex items-center cursor-pointer rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
-              railExpanded ? "w-full h-11 px-4 gap-3 text-sm font-medium" : "size-11 justify-center"
+              railExpanded ? "w-full h-10 px-4 gap-3 text-sm font-medium" : "size-10 justify-center"
             }`}
           >
             <M3Icon name="fingerprint" size={20} />
             {railExpanded && <span className="truncate">Biometría</span>}
           </button>
-
-          {isAdmin && (
-            <Link
-              to="/dashboard/access"
-              title="Admin (Gestión de permisos)"
-              aria-label="Admin"
-              className={`m3-state flex items-center rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
-                railExpanded ? "w-full h-11 px-4 gap-3 text-sm font-medium" : "size-11 justify-center"
-              }`}
-            >
-              <M3Icon name="admin_panel_settings" size={20} />
-              {railExpanded && <span className="truncate">Admin</span>}
-            </Link>
-          )}
 
           <button
             type="button"
@@ -191,7 +191,7 @@ export function AppShell({ children, showFooter = false }) {
             title="Cerrar sesión"
             aria-label="Cerrar sesión"
             className={`m3-state flex items-center cursor-pointer rounded-full text-[var(--md-sys-color-error)] hover:text-[var(--md-sys-color-error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
-              railExpanded ? "w-full h-11 px-4 gap-3 text-sm font-medium" : "size-11 justify-center"
+              railExpanded ? "w-full h-10 px-4 gap-3 text-sm font-medium" : "size-10 justify-center"
             }`}
           >
             <M3Icon name="logout" size={20} />

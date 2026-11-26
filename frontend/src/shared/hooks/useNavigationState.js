@@ -222,14 +222,6 @@ export function useNavigationState() {
           active: isUsers,
           visible: isAdmin || canViewUsers,
         },
-        {
-          id: "access",
-          label: "Permisos",
-          to: "/dashboard/access",
-          icon: "admin_panel_settings",
-          active: isAccess,
-          visible: isAdmin,
-        },
       ];
 
   const destinations = baseDestinations.filter((d) => d.visible);

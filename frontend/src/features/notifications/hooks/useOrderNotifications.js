@@ -42,6 +42,27 @@ function isResolvedOrderStatus(status) {
   return s === "entregada" || s === "pagada" || s === "anulada";
 }
 
+function deduplicateStockNotifications(rows = []) {
+  const seenInsumoIds = new Set();
+  const result = [];
+  for (const row of rows) {
+    const isStock =
+      row?.type === "inventory_low_stock" ||
+      row?.type === "inventory_out_of_stock";
+    if (!isStock) {
+      result.push(row);
+      continue;
+    }
+    const insumoKey = String(
+      row?.metadata?.insumoId || row?.orderNumber || row?.title || row?.id
+    );
+    if (seenInsumoIds.has(insumoKey)) continue;
+    seenInsumoIds.add(insumoKey);
+    result.push(row);
+  }
+  return result;
+}
+
 function mergeUnreadBanners(prev, rows, userId) {
   const dismissed = readDismissedSet(userId);
   const rowsById = new Map(rows.map((r) => [Number(r.id), r]));
@@ -60,9 +81,23 @@ function mergeUnreadBanners(prev, rows, userId) {
   );
   if (freshUnread.length === 0) return activePrev;
   const prevIds = new Set(activePrev.map((p) => Number(p.id)));
+  const prevStockKeys = new Set(
+    activePrev
+      .filter((p) => p.type === "inventory_low_stock" || p.type === "inventory_out_of_stock")
+      .map((p) => String(p.metadata?.insumoId || p.orderNumber || p.id))
+  );
   const additions = freshUnread
     .slice(0, 3)
-    .filter((n) => !prevIds.has(Number(n.id)));
+    .filter((n) => {
+      if (prevIds.has(Number(n.id))) return false;
+      const isStock = n.type === "inventory_low_stock" || n.type === "inventory_out_of_stock";
+      if (isStock) {
+        const key = String(n.metadata?.insumoId || n.orderNumber || n.id);
+        if (prevStockKeys.has(key)) return false;
+        prevStockKeys.add(key);
+      }
+      return true;
+    });
   if (additions.length === 0) return activePrev;
   return [...additions, ...activePrev].slice(0, 3);
 }
@@ -91,7 +126,8 @@ export function useOrderNotifications() {
   };
 
   const applyNotificationSnapshot = (data) => {
-    const rows = Array.isArray(data?.notifications) ? data.notifications : [];
+    const rawRows = Array.isArray(data?.notifications) ? data.notifications : [];
+    const rows = deduplicateStockNotifications(rawRows);
     setNotifications(rows);
     setUnreadCount(Number(data?.unreadCount || 0));
     setTopBanners((prev) => mergeUnreadBanners(prev, rows, userId));
@@ -116,7 +152,7 @@ export function useOrderNotifications() {
     }
   };
 
-  // Autodescartar banners flotantes tras 12s (permanecen guardados en la campanita)
+  // Autodescartar banners flotantes tras 5s (permanecen guardados en la campanita)
   useEffect(() => {
     if (topBanners.length === 0) return;
     const oldestBanner = topBanners[topBanners.length - 1];
@@ -124,7 +160,7 @@ export function useOrderNotifications() {
       const numId = Number(oldestBanner.id);
       addDismissedIds(userId, [numId]);
       setTopBanners((prev) => prev.filter((item) => Number(item.id) !== numId));
-    }, 12000);
+    }, 5000);
     return () => clearTimeout(timerId);
   }, [topBanners, userId]);
 
@@ -136,10 +172,7 @@ export function useOrderNotifications() {
       try {
         const data = await getNotifications();
         if (!active) return;
-        const rows = Array.isArray(data?.notifications) ? data.notifications : [];
-        setNotifications(rows);
-        setUnreadCount(Number(data?.unreadCount || 0));
-        setTopBanners((prev) => mergeUnreadBanners(prev, rows, userId));
+        applyNotificationSnapshot(data);
       } catch (err) {
         console.warn("Error consultando notificaciones:", err);
       }

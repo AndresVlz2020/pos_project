@@ -135,69 +135,82 @@ export const notificationService = {
     );
 
     const created = [];
-    for (const row of rows) {
-      if (row.is_active === false) continue;
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      for (const row of rows) {
+        if (row.is_active === false) continue;
 
-      const currentStock = Number(row.current_stock || 0);
-      const minStock = Number(row.min_stock || 0);
-      const unit = row.unit_measure || "un.";
-      const code = row.code || `INV-${row.id}`;
+        // Serializa por insumo dentro de la transacción para evitar alertas duplicadas concurrentes
+        await client.query("SELECT pg_advisory_xact_lock($1);", [910000 + Number(row.id)]);
 
-      if (currentStock <= 0) {
-        await notificationRepository.resolveStockNotificationsByInsumo(row.id, ["inventory_low_stock"]);
-        const existing = await notificationRepository.findActiveStockNotification(row.id, "inventory_out_of_stock");
-        if (!existing) {
-          const notif = await notificationRepository.create({
-            type: "inventory_out_of_stock",
-            title: `Sin stock: ${row.item_name}`,
-            message: `${code} · Stock agotado (0 ${unit}). Requiere reposición inmediata.`,
-            orderId: null,
-            orderNumber: code,
-            tableNumber: "Inventario",
-            targetRole: "NON_MESERO",
-            targetUserId: null,
-            createdByUserId: Number(actorUser?.id) || null,
-            metadata: {
-              insumoId: Number(row.id),
-              insumoCode: code,
-              insumoName: row.item_name,
-              currentStock,
-              minStock,
-              unitMeasure: unit,
-              resolved: false,
-            },
-          });
-          if (notif) created.push(notif);
+        const currentStock = Number(row.current_stock || 0);
+        const minStock = Number(row.min_stock || 0);
+        const unit = row.unit_measure || "un.";
+        const code = row.code || `INV-${row.id}`;
+
+        if (currentStock <= 0) {
+          await notificationRepository.resolveStockNotificationsByInsumo(row.id, ["inventory_low_stock"]);
+          const existing = await notificationRepository.findActiveStockNotification(row.id, "inventory_out_of_stock");
+          if (!existing) {
+            const notif = await notificationRepository.create({
+              type: "inventory_out_of_stock",
+              title: `Sin stock: ${row.item_name}`,
+              message: `${code} · Stock agotado (0 ${unit}). Requiere reposición inmediata.`,
+              orderId: null,
+              orderNumber: code,
+              tableNumber: "Inventario",
+              targetRole: "NON_MESERO",
+              targetUserId: null,
+              createdByUserId: Number(actorUser?.id) || null,
+              metadata: {
+                insumoId: Number(row.id),
+                insumoCode: code,
+                insumoName: row.item_name,
+                currentStock,
+                minStock,
+                unitMeasure: unit,
+                resolved: false,
+              },
+            });
+            if (notif) created.push(notif);
+          }
+        } else if (minStock > 0 && currentStock <= minStock) {
+          await notificationRepository.resolveStockNotificationsByInsumo(row.id, ["inventory_out_of_stock"]);
+          const existing = await notificationRepository.findActiveStockNotification(row.id, "inventory_low_stock");
+          if (!existing) {
+            const notif = await notificationRepository.create({
+              type: "inventory_low_stock",
+              title: `Poco stock: ${row.item_name}`,
+              message: `${code} · Quedan ${currentStock} ${unit} (mínimo: ${minStock} ${unit}). Reabastecer pronto.`,
+              orderId: null,
+              orderNumber: code,
+              tableNumber: "Inventario",
+              targetRole: "NON_MESERO",
+              targetUserId: null,
+              createdByUserId: Number(actorUser?.id) || null,
+              metadata: {
+                insumoId: Number(row.id),
+                insumoCode: code,
+                insumoName: row.item_name,
+                currentStock,
+                minStock,
+                unitMeasure: unit,
+                resolved: false,
+              },
+            });
+            if (notif) created.push(notif);
+          }
+        } else {
+          await notificationRepository.resolveStockNotificationsByInsumo(row.id);
         }
-      } else if (minStock > 0 && currentStock <= minStock) {
-        await notificationRepository.resolveStockNotificationsByInsumo(row.id, ["inventory_out_of_stock"]);
-        const existing = await notificationRepository.findActiveStockNotification(row.id, "inventory_low_stock");
-        if (!existing) {
-          const notif = await notificationRepository.create({
-            type: "inventory_low_stock",
-            title: `Poco stock: ${row.item_name}`,
-            message: `${code} · Quedan ${currentStock} ${unit} (mínimo: ${minStock} ${unit}). Reabastecer pronto.`,
-            orderId: null,
-            orderNumber: code,
-            tableNumber: "Inventario",
-            targetRole: "NON_MESERO",
-            targetUserId: null,
-            createdByUserId: Number(actorUser?.id) || null,
-            metadata: {
-              insumoId: Number(row.id),
-              insumoCode: code,
-              insumoName: row.item_name,
-              currentStock,
-              minStock,
-              unitMeasure: unit,
-              resolved: false,
-            },
-          });
-          if (notif) created.push(notif);
-        }
-      } else {
-        await notificationRepository.resolveStockNotificationsByInsumo(row.id);
       }
+      await client.query("COMMIT");
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
     }
 
     return created;
