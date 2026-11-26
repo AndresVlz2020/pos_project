@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, IconButton, M3Icon } from "@/shared";
 import { getOrderStatusBadgeMeta, normalizeOrderStatus } from "@/features/orders/utils/orderFormHelpers";
 import { useOrderNotifications } from "../hooks/useOrderNotifications";
+import { playWaiterCallVoice } from "../utils/voiceAlert";
 
 function formatRelativeNotificationTime(isoString) {
   if (!isoString) return "";
@@ -71,6 +72,10 @@ export default function NotificationBell() {
   const handleOpenNotification = (notification) => {
     setIsOpen(false);
     markRead(notification.id);
+
+    if (notification.type === "waiter_call") {
+      return;
+    }
 
     if (
       notification.type === "inventory_low_stock" ||
@@ -314,6 +319,7 @@ export default function NotificationBell() {
           {topBanners.map((banner) => {
             const isOutOfStock = banner.type === "inventory_out_of_stock";
             const isLowStock = banner.type === "inventory_low_stock";
+            const isWaiterCall = banner.type === "waiter_call";
             const isStockAlert = isOutOfStock || isLowStock;
 
             return (
@@ -357,8 +363,24 @@ export default function NotificationBell() {
                       size="sm"
                       onClick={() => handleOpenNotification(banner)}
                     >
-                      {isStockAlert ? "Ver inventario" : "Ver / Entregar"}
+                      {isStockAlert ? "Ver inventario" : isWaiterCall ? "Atender mesa" : "Ver / Entregar"}
                     </Button>
+                    {isWaiterCall && (
+                      <Button
+                        type="button"
+                        variant="tonal"
+                        size="sm"
+                        leadingIcon="volume_up"
+                        onClick={() =>
+                          playWaiterCallVoice(
+                            banner.metadata?.spokenText ||
+                              `Mesero solicitado a ${banner.tableNumber || "mesa"}`
+                          )
+                        }
+                      >
+                        Repetir voz
+                      </Button>
+                    )}
                     <Button
                       type="button"
                       variant="text"

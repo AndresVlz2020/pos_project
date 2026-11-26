@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import {
   getAuthToken,
   getStoredAuthUser,
+  getUserRoleFlags,
 } from "@/shared/utils/authStorage";
 import {
   getNotifications,
   markAllNotificationsAsRead,
   markNotificationAsRead,
 } from "../services/notificationService";
+import { announceUnreadWaiterCalls } from "../utils/voiceAlert";
 
 function getDismissedStorageKey(userId) {
   return `dpiero_dismissed_notifs_${userId || "u"}`;
@@ -110,6 +112,7 @@ function mergeUnreadBanners(prev, rows, userId) {
  */
 export function useOrderNotifications() {
   const user = getStoredAuthUser();
+  const { isMesero } = getUserRoleFlags(user);
   const token = getAuthToken();
   const enabled = Boolean(token && user?.id);
   const userId = user?.id || null;
@@ -131,6 +134,7 @@ export function useOrderNotifications() {
     setNotifications(rows);
     setUnreadCount(Number(data?.unreadCount || 0));
     setTopBanners((prev) => mergeUnreadBanners(prev, rows, userId));
+    announceUnreadWaiterCalls(rows, userId, isMesero);
   };
 
   const refresh = async () => {

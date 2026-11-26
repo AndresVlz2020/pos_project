@@ -45,3 +45,18 @@ export async function markAllNotificationsAsRead() {
 
   return await response.json();
 }
+
+export async function callWaiterPublic({ tableNumber, tableId }) {
+  const response = await fetch(`${NOTIFICATIONS_URL}/waiter-call`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tableNumber, tableId }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "No se pudo enviar la solicitud de atención.");
+  }
+
+  return await response.json();
+}

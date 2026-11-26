@@ -1,5 +1,9 @@
 import { notificationRepository } from "./notification.repository.js";
 import { pool } from "../../config/db.js";
+import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
+
+const ttsCache = new Map();
+const TTS_CACHE_LIMIT = 50;
 
 function resolveNotificationScope(user) {
   const role = String(user?.role || "").trim().toLowerCase();
@@ -228,5 +232,102 @@ export const notificationService = {
     );
     const insumoIds = rows.map((r) => Number(r.insumo_id));
     return await this.syncInventoryStockAlertsByInsumoIds(insumoIds, actorUser);
+  },
+
+  async createWaiterCallNotification({ tableNumber, tableId } = {}) {
+    const cleanTable = String(tableNumber || "").trim();
+    const numericId = Number(tableId);
+
+    if (!cleanTable && (!Number.isInteger(numericId) || numericId <= 0)) {
+      const err = new Error("Debes seleccionar una mesa válida.");
+      err.status = 400;
+      throw err;
+    }
+
+    const { rows } = await pool.query(
+      `SELECT
+         t.id,
+         t.table_number AS "tableNumber",
+         t.is_available AS "isAvailable",
+         EXISTS (
+           SELECT 1
+           FROM orders o
+           WHERE LOWER(TRIM(o.table_number)) = LOWER(TRIM(t.table_number))
+             AND LOWER(TRIM(COALESCE(o.status, ''))) IN ('creada', 'completada', 'entregada')
+         ) AS "hasActiveOrder"
+       FROM restaurant_tables t
+       WHERE ($1::int IS NOT NULL AND t.id = $1)
+          OR ($2::text <> '' AND LOWER(TRIM(t.table_number)) = LOWER(TRIM($2)))
+       LIMIT 1;`,
+      [Number.isInteger(numericId) && numericId > 0 ? numericId : null, cleanTable]
+    );
+
+    const table = rows[0];
+    if (!table) {
+      const err = new Error("La mesa seleccionada no existe.");
+      err.status = 404;
+      throw err;
+    }
+
+    if (!table.isAvailable || table.hasActiveOrder) {
+      const err = new Error("La mesa seleccionada está en uso actualmente.");
+      err.status = 409;
+      throw err;
+    }
+
+    const digitsMatch = String(table.tableNumber || "").match(/\d+/);
+    const shortNum = digitsMatch ? digitsMatch[0] : String(table.tableNumber || "").trim();
+    const spokenText = `Mesero solicitado a mesa ${shortNum}`;
+
+    return await notificationRepository.create({
+      type: "waiter_call",
+      title: `Mesero solicitado a Mesa ${shortNum}`,
+      message: `Un cliente solicita atención en la Mesa ${shortNum} desde el menú digital.`,
+      tableNumber: String(table.tableNumber),
+      targetRole: "Mesero",
+      targetUserId: null,
+      createdByUserId: null,
+      metadata: {
+        spokenText,
+        tableShortNumber: shortNum,
+        source: "public_menu",
+        resolved: false,
+      },
+    });
+  },
+
+  async synthesizeSpeechBuffer(rawText) {
+    const cleanText = String(rawText || "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 160);
+
+    if (!cleanText) {
+      const err = new Error("Texto inválido.");
+      err.status = 400;
+      throw err;
+    }
+
+    if (ttsCache.has(cleanText)) {
+      return ttsCache.get(cleanText);
+    }
+
+    const tts = new MsEdgeTTS();
+    await tts.setMetadata(
+      "es-CO-SalomeNeural",
+      OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
+    );
+    const { audioStream } = tts.toStream(cleanText);
+    const chunks = [];
+    for await (const chunk of audioStream) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
+    if (ttsCache.size >= TTS_CACHE_LIMIT) {
+      const oldestKey = ttsCache.keys().next().value;
+      ttsCache.delete(oldestKey);
+    }
+    ttsCache.set(cleanText, buffer);
+    return buffer;
   },
 };

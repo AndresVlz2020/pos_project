@@ -202,12 +202,12 @@ export function AppShell({ children, showFooter = false }) {
 
       {/* Columna Principal: Top App Bar + Workspace 100% Ancho y Alto */}
       <div
-        className={`flex-1 min-w-0 min-h-screen flex flex-col transition-[padding-left] duration-200 ${
+        className={`flex-1 min-w-0 min-h-screen flex flex-col transition-[padding-left] duration-200 print:pl-0 ${
           railExpanded ? "md:pl-60" : "md:pl-[88px]"
         }`}
       >
         {/* M3 Small Top App Bar (64dp) */}
-        <header className="sticky top-0 z-30 h-16 shrink-0 bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
+        <header className="sticky top-0 z-30 h-16 shrink-0 print:hidden bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {/* Botón Drawer en Móvil (< md) */}
             <IconButton

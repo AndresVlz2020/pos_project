@@ -50,6 +50,8 @@ const EditProduct1 = lazyRoute(() => import("@/features/products/pages/EditProdu
 const UserListPage = lazyRoute(() => import("@/features/users"), "UserListPage");
 const UserRegisterForm = lazyRoute(() => import("@/features/users"), "UserRegisterForm");
 const ProductListPage = lazyRoute(() => import("@/features/products"), "ProductListPage");
+const MenuQrPage = lazyRoute(() => import("@/features/products/pages/MenuQrPage"));
+const PublicMenuPage = lazyRoute(() => import("@/features/menu/pages/PublicMenuPage"));
 const SuppliersListPage = lazyRoute(() => import("@/features/suppliers"), "SuppliersListPage");
 const InventoryListPage = lazyRoute(() => import("@/features/inventory"), "InventoryListPage");
 const ReadInventoryPage = lazyRoute(() => import("@/features/inventory"), "ReadInventoryPage");
@@ -58,6 +60,10 @@ const HomePage = lazyRoute(() => import("@/features/home"), "HomePage");
 const AccessPage = lazyRoute(() => import("@/features/access"), "AccessPage");
 
 const router = createBrowserRouter([
+  {
+    path: "/menu",
+    element: <PublicMenuPage />,
+  },
   {
     element: <RootSessionGuard />,
     children: [
@@ -198,7 +204,10 @@ const router = createBrowserRouter([
         <DashboardLayout />
       </ProtectedRoute>
     ),
-    children: [{ index: true, element: <ProductListPage /> }],
+    children: [
+      { index: true, element: <ProductListPage /> },
+      { path: "qr", element: <MenuQrPage /> },
+    ],
   },
   {
     path: "/inventory",

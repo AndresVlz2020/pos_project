@@ -18,6 +18,7 @@ export default function PosProductDetailModal({
   onOrder,
   canCreateOrder = true,
   loadingPermission = false,
+  readOnly = false,
 }) {
   const [quantity, setQuantity] = useState(1);
 
@@ -226,7 +227,7 @@ export default function PosProductDetailModal({
             </div>
           )}
 
-          {!isInhabilitado && !isOutOfStock && !loadingPermission && !canCreateOrder && (
+          {!readOnly && !isInhabilitado && !isOutOfStock && !loadingPermission && !canCreateOrder && (
             <div className="p-3.5 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-xs text-[var(--md-sys-color-on-surface-variant)] flex items-start gap-2">
               <M3Icon name="info" size={18} className="mt-0.5 text-[var(--md-sys-color-primary)]" />
               <span>
@@ -237,59 +238,67 @@ export default function PosProductDetailModal({
         </div>
 
         {/* Barra inferior fija */}
-        <div className="border-t border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center justify-between sm:justify-start gap-4">
-            <div className="inline-flex items-center gap-1 bg-[var(--md-sys-color-surface)] p-1 rounded-full border border-[var(--md-sys-color-outline-variant)]">
-              <IconButton
-                ariaLabel="Disminuir cantidad"
-                variant="standard"
-                onClick={handleDecrease}
-                disabled={orderBlocked || quantity <= 1}
-              >
-                <M3Icon name="remove" size={18} />
-              </IconButton>
-              <span className="w-8 text-center text-base font-medium text-[var(--md-sys-color-on-surface)] tabular-nums">
-                {quantity}
-              </span>
-              <IconButton
-                ariaLabel="Aumentar cantidad"
-                variant="tonal"
-                onClick={handleIncrease}
-                disabled={orderBlocked || quantity >= maxOrderQty}
-              >
-                <M3Icon name="add" size={18} />
-              </IconButton>
-            </div>
+        <div
+          className={`border-t border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center ${
+            readOnly ? "justify-end" : "justify-between"
+          } gap-3 shrink-0`}
+        >
+          {!readOnly && (
+            <div className="flex items-center justify-between sm:justify-start gap-4">
+              <div className="inline-flex items-center gap-1 bg-[var(--md-sys-color-surface)] p-1 rounded-full border border-[var(--md-sys-color-outline-variant)]">
+                <IconButton
+                  ariaLabel="Disminuir cantidad"
+                  variant="standard"
+                  onClick={handleDecrease}
+                  disabled={orderBlocked || quantity <= 1}
+                >
+                  <M3Icon name="remove" size={18} />
+                </IconButton>
+                <span className="w-8 text-center text-base font-medium text-[var(--md-sys-color-on-surface)] tabular-nums">
+                  {quantity}
+                </span>
+                <IconButton
+                  ariaLabel="Aumentar cantidad"
+                  variant="tonal"
+                  onClick={handleIncrease}
+                  disabled={orderBlocked || quantity >= maxOrderQty}
+                >
+                  <M3Icon name="add" size={18} />
+                </IconButton>
+              </div>
 
-            <div className="text-right sm:text-left">
-              <span className="block text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)]">
-                {quantity} {quantity === 1 ? "porción" : "porciones"}
-              </span>
-              <span className="text-base font-bold text-[var(--md-sys-color-on-surface)] tabular-nums">
-                ${subtotal} COP
-              </span>
+              <div className="text-right sm:text-left">
+                <span className="block text-xs leading-4 text-[var(--md-sys-color-on-surface-variant)]">
+                  {quantity} {quantity === 1 ? "porción" : "porciones"}
+                </span>
+                <span className="text-base font-bold text-[var(--md-sys-color-on-surface)] tabular-nums">
+                  ${subtotal} COP
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex items-center justify-end gap-2">
             <Button
               type="button"
-              variant="text"
+              variant={readOnly ? "filled" : "text"}
               size="md"
               onClick={() => onClose?.()}
             >
               Cerrar
             </Button>
-            <Button
-              type="button"
-              variant="filled"
-              size="md"
-              leadingIcon="shopping_bag"
-              disabled={orderBlocked}
-              onClick={handleConfirmOrder}
-            >
-              Ordenar (+{quantity})
-            </Button>
+            {!readOnly && (
+              <Button
+                type="button"
+                variant="filled"
+                size="md"
+                leadingIcon="shopping_bag"
+                disabled={orderBlocked}
+                onClick={handleConfirmOrder}
+              >
+                Ordenar (+{quantity})
+              </Button>
+            )}
           </div>
         </div>
       </div>

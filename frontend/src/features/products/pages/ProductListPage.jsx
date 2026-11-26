@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { DataTable, Button, ListReportModal, Alert, showConfirmAlert, showSuccessAlert, showErrorAlert } from "@/shared";
+import { DataTable, Button, IconButton, M3Icon, ListReportModal, Alert, showConfirmAlert, showSuccessAlert, showErrorAlert } from "@/shared";
 import { getProductColumns } from "../table/ProductColumns";
 import { getProducts, updateProductStatus } from "../services/productServices";
 import usePermission from "@/features/access/services/usePermission";
+import { getUserRoleFlags } from "@/shared/utils/authStorage";
 import { Link } from "react-router-dom";
 
 const productReportFields = [
@@ -26,6 +27,7 @@ export default function ProductListPage() {
   const { granted: canToggleStatus } = usePermission("disable_product");
   const { granted: canEdit } = usePermission("update_product");
   const { granted: canCreate } = usePermission("create_product");
+  const { isAdmin, isCajero } = getUserRoleFlags();
 
   const loadProductsData = useCallback(async () => {
     const data = await getProducts();
@@ -179,7 +181,18 @@ export default function ProductListPage() {
             Listado de Productos
           </h1>
         </div>
-        <div className="flex flex-wrap gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {(isAdmin || isCajero) && (
+            <Link to="/products/qr" title="Código QR del Menú">
+              <IconButton
+                variant="tonal"
+                ariaLabel="Ver código QR del menú"
+                title="Código QR del Menú"
+              >
+                <M3Icon name="qr_code_2" size={24} />
+              </IconButton>
+            </Link>
+          )}
           <Button
             variant="tonal"
             leadingIcon="download"
