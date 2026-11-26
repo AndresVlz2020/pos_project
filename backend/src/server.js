@@ -1,5 +1,6 @@
 import { validateEnv, NODE_ENV } from "./config/env.js";
 import app from "./app.js";
+import { runPendingMigrations } from "./scripts/migrate.js";
 
 // Fallar rápido si falta algún secreto crítico — nunca operar con valores por defecto
 validateEnv();
@@ -15,6 +16,12 @@ process.on("unhandledRejection", (reason) => {
 });
 
 const PORT = process.env.PORT || 4000;
+
+try {
+  await runPendingMigrations({ closePool: false, exitOnError: false });
+} catch (err) {
+  console.error("⚠️ [STARTUP] Error aplicando migraciones pendientes:", err.message);
+}
 
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
