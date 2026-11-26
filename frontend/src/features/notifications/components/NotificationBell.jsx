@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Button, IconButton, M3Icon } from "@/shared";
 import { getOrderStatusBadgeMeta, normalizeOrderStatus } from "@/features/orders/utils/orderFormHelpers";
 import { useOrderNotifications } from "../hooks/useOrderNotifications";
-import { playWaiterCallVoice } from "../utils/voiceAlert";
 
 function formatRelativeNotificationTime(isoString) {
   if (!isoString) return "";
@@ -365,22 +364,6 @@ export default function NotificationBell() {
                     >
                       {isStockAlert ? "Ver inventario" : isWaiterCall ? "Atender mesa" : "Ver / Entregar"}
                     </Button>
-                    {isWaiterCall && (
-                      <Button
-                        type="button"
-                        variant="tonal"
-                        size="sm"
-                        leadingIcon="volume_up"
-                        onClick={() =>
-                          playWaiterCallVoice(
-                            banner.metadata?.spokenText ||
-                              `Mesero solicitado a ${banner.tableNumber || "mesa"}`
-                          )
-                        }
-                      >
-                        Repetir voz
-                      </Button>
-                    )}
                     <Button
                       type="button"
                       variant="text"

@@ -279,7 +279,7 @@ export const notificationService = {
 
     const digitsMatch = String(table.tableNumber || "").match(/\d+/);
     const shortNum = digitsMatch ? digitsMatch[0] : String(table.tableNumber || "").trim();
-    const spokenText = `Mesero solicitado a mesa ${shortNum}`;
+    const spokenText = `¡Atención! Mesero solicitado a mesa ${shortNum}.`;
 
     return await notificationRepository.create({
       type: "waiter_call",
@@ -319,7 +319,10 @@ export const notificationService = {
       "es-CO-SalomeNeural",
       OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
     );
-    const { audioStream } = tts.toStream(cleanText);
+    const { audioStream } = tts.toStream(cleanText, {
+      rate: "-5%",
+      pitch: "+2Hz",
+    });
     const chunks = [];
     for await (const chunk of audioStream) {
       chunks.push(chunk);

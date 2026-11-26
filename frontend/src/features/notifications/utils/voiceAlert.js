@@ -2,6 +2,49 @@ import { API_URL } from "@/features/config";
 
 const SPOKEN_STORAGE_PREFIX = "dpiero_spoken_notifs_";
 
+let sharedAudioCtx = null;
+let pendingSpokenQueue = [];
+let unlockListenersAttached = false;
+
+function getAudioContext() {
+  if (typeof window === "undefined") return null;
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  if (!sharedAudioCtx) {
+    sharedAudioCtx = new Ctx();
+  }
+  return sharedAudioCtx;
+}
+
+function attachUnlockListeners() {
+  if (unlockListenersAttached || typeof window === "undefined") return;
+  unlockListenersAttached = true;
+
+  const unlock = async () => {
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === "suspended") {
+      try {
+        await ctx.resume();
+      } catch {
+        // ignorar
+      }
+    }
+    if (pendingSpokenQueue.length > 0) {
+      const nextText = pendingSpokenQueue.shift();
+      pendingSpokenQueue = [];
+      if (nextText) {
+        playWaiterCallVoice(nextText);
+      }
+    }
+  };
+
+  window.addEventListener("pointerdown", unlock, { passive: true });
+  window.addEventListener("keydown", unlock, { passive: true });
+  window.addEventListener("touchstart", unlock, { passive: true });
+}
+
+attachUnlockListeners();
+
 function getSpokenSet(userId) {
   try {
     const raw = sessionStorage.getItem(`${SPOKEN_STORAGE_PREFIX}${userId || "u"}`);
@@ -34,6 +77,7 @@ function speakWithBrowserFallback(text) {
     utterance.lang = "es-CO";
     utterance.rate = 0.96;
     utterance.pitch = 1.0;
+    utterance.volume = 1.0;
 
     const voices = window.speechSynthesis.getVoices();
     const preferred =
@@ -49,8 +93,8 @@ function speakWithBrowserFallback(text) {
 }
 
 /**
- * Reproduce en voz alta la solicitud de mesero usando el endpoint neural (msedge-tts),
- * con respaldo automático a Web Speech API si el navegador bloquea o falla la red.
+ * Reproduce automáticamente y a volumen alto la solicitud de mesero
+ * usando el endpoint neural (msedge-tts) + amplificación Web Audio API.
  */
 export async function playWaiterCallVoice(text) {
   const cleanText = String(text || "").trim();
@@ -59,11 +103,48 @@ export async function playWaiterCallVoice(text) {
   const ttsUrl = `${API_URL}/notifications/tts?text=${encodeURIComponent(cleanText)}`;
 
   try {
-    const audio = new Audio(ttsUrl);
-    audio.preload = "auto";
+    const res = await fetch(ttsUrl);
+    if (!res.ok) throw new Error("TTS HTTP error");
+    const arrayBuf = await res.arrayBuffer();
+
+    const ctx = getAudioContext();
+    if (ctx) {
+      if (ctx.state === "suspended") {
+        await ctx.resume().catch(() => {});
+      }
+      if (ctx.state === "running") {
+        const audioBuf = await ctx.decodeAudioData(arrayBuf.slice(0));
+        const source = ctx.createBufferSource();
+        source.buffer = audioBuf;
+
+        // Amplificación limpia con compresor para que suene fuerte y natural
+        const gainNode = ctx.createGain();
+        gainNode.gain.value = 1.6;
+
+        const compressor = ctx.createDynamicsCompressor();
+        compressor.threshold.setValueAtTime(-14, ctx.currentTime);
+        compressor.ratio.setValueAtTime(4, ctx.currentTime);
+
+        source.connect(gainNode);
+        gainNode.connect(compressor);
+        compressor.connect(ctx.destination);
+        source.start(0);
+        return;
+      }
+    }
+
+    const blobUrl = URL.createObjectURL(new Blob([arrayBuf], { type: "audio/mpeg" }));
+    const audio = new Audio(blobUrl);
     audio.volume = 1;
-    await audio.play();
+    audio.onended = () => URL.revokeObjectURL(blobUrl);
+    try {
+      await audio.play();
+    } catch {
+      URL.revokeObjectURL(blobUrl);
+      pendingSpokenQueue.push(cleanText);
+    }
   } catch {
+    // Solo usar speechSynthesis si el servidor TTS no responde
     speakWithBrowserFallback(cleanText);
   }
 }
@@ -81,13 +162,13 @@ export function announceUnreadWaiterCalls(rows = [], userId, isMesero) {
 
   if (pendingCalls.length === 0) return;
 
-  // Marcar todas como anunciadas para evitar repeticiones
   pendingCalls.forEach((n) => markSpokenId(userId, n.id));
 
-  // Reproducir la más reciente en voz alta
   const latest = pendingCalls[0];
   const digitsMatch = String(latest.tableNumber || "").match(/\d+/);
-  const shortNum = latest.metadata?.tableShortNumber || (digitsMatch ? digitsMatch[0] : latest.tableNumber || "");
+  const shortNum =
+    latest.metadata?.tableShortNumber ||
+    (digitsMatch ? digitsMatch[0] : latest.tableNumber || "");
   const spokenText =
     latest.metadata?.spokenText || `Mesero solicitado a mesa ${shortNum}`;
 
