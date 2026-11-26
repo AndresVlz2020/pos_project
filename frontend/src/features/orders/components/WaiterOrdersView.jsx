@@ -61,7 +61,7 @@ export default function WaiterOrdersView() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("active"); // "active" | "Completada" | "Creada" | "Entregada" | "Pagada"
   const [scopeFilter, setScopeFilter] = useState("all"); // "all" | "mine"
-  const [creationSort, setCreationSort] = useState("desc"); // "desc" | "asc"
+  const [creationSort, setCreationSort] = useState("asc"); // "asc" | "desc"
   const [searchQuery, setSearchQuery] = useState("");
   const [updatingKey, setUpdatingKey] = useState("");
   const [nowMs, setNowMs] = useState(() => Date.now());
@@ -214,12 +214,6 @@ export default function WaiterOrdersView() {
         );
       })
       .sort((a, b) => {
-        // Priorizar siempre las completadas por Cocina listas para entregar cuando se ven todas activas
-        if (statusFilter === "active") {
-          const aReady = normalizeOrderStatus(a.status) === "Completada" ? 1 : 0;
-          const bReady = normalizeOrderStatus(b.status) === "Completada" ? 1 : 0;
-          if (aReady !== bReady) return bReady - aReady;
-        }
         const diff = getOrderTimestamp(a) - getOrderTimestamp(b);
         return creationSort === "asc" ? diff : -diff;
       });

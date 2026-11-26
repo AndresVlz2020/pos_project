@@ -11,6 +11,7 @@ import { getMyProfileApi, updateMyProfileApi } from "@/services/authService";
 import { getDocumentTypes } from "@/services/selectServices";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
 import { updateStoredAuthUser } from "@/shared/utils/authStorage";
+import { showSuccessAlert } from "@/shared/services/alertService";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -204,9 +205,10 @@ export default function UserProfileModal({ isOpen, onClose, onProfileUpdated }) 
         onProfileUpdated?.(stored);
       }
 
-      setFeedback({
-        type: "success",
-        text: "Perfil y correo de soporte actualizados correctamente.",
+      onClose?.();
+      await showSuccessAlert({
+        title: "Perfil actualizado",
+        text: "Tu perfil se guardó correctamente.",
       });
     } catch (err) {
       if (err?.isStepUpCancelled) return;

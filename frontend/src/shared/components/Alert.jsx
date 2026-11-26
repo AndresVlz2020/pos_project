@@ -39,7 +39,7 @@ export default function Alert({
     <div
       role="alert"
       className={clsx(
-        "flex items-start gap-3 px-4 py-3.5 rounded-xl border m3-elevation-1",
+        "flex items-start gap-4 px-4 py-3.5 rounded-xl border m3-elevation-1",
         styles[type] || styles.info,
         className
       )}
@@ -47,7 +47,7 @@ export default function Alert({
       <M3Icon
         name={iconNames[type] || "info"}
         filled
-        size={20}
+        size={24}
         className="mt-0.5"
       />
       <div className="flex-1 min-w-0">

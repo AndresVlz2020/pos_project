@@ -103,7 +103,7 @@ const SearchField = forwardRef(
           autoComplete={autoComplete}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="search__input flex-1 min-w-0 bg-transparent px-3 outline-none text-[var(--md-sys-color-on-surface)] placeholder:text-[var(--md-sys-color-on-surface-variant)] font-normal"
+          className="search__input flex-1 min-w-0 bg-transparent px-4 outline-none text-[var(--md-sys-color-on-surface)] placeholder:text-[var(--md-sys-color-on-surface-variant)] font-normal"
         />
 
         {value && !disabled && (

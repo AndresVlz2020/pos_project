@@ -167,7 +167,7 @@ export default function Select({
         onClick={handleToggle}
         className={`
           m3-outlined-field w-full ${sizeClasses}
-          flex items-center justify-between gap-2 text-left cursor-pointer outline-none
+          flex items-center justify-between gap-4 text-left cursor-pointer outline-none
           ${isOpen ? "is-focused" : ""}
           ${error ? "is-error" : ""}
           ${hasRealSelection ? "text-[var(--md-sys-color-on-surface)]" : "text-[var(--md-sys-color-on-surface-variant)]"}
@@ -176,11 +176,11 @@ export default function Select({
         `}
         {...props}
       >
-        <span className="flex items-center gap-2 min-w-0">
+        <span className="flex items-center gap-4 min-w-0">
           {leadingIcon && (
             <M3Icon
               name={leadingIcon}
-              size={18}
+              size={24}
               className="text-[var(--md-sys-color-on-surface-variant)] shrink-0"
             />
           )}

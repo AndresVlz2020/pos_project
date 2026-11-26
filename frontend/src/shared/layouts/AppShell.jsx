@@ -103,7 +103,7 @@ export function AppShell({ children, showFooter = false }) {
                   key={dest.id}
                   to={dest.to}
                   aria-current={isActive ? "page" : undefined}
-                  className={`m3-state flex items-center gap-3 h-11 px-4 rounded-full text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
+                  className={`m3-state flex items-center gap-4 h-11 px-4 rounded-full text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
                     isActive
                       ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
                       : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
@@ -152,7 +152,7 @@ export function AppShell({ children, showFooter = false }) {
             onClick={() => setIsHistoryOpen(true)}
             title={isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}
             className={`m3-state flex items-center cursor-pointer rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
-              railExpanded ? "w-full h-10 px-4 gap-3 text-sm font-medium" : "size-10 justify-center"
+              railExpanded ? "w-full h-10 px-4 gap-4 text-sm font-medium" : "size-10 justify-center"
             }`}
           >
             <M3Icon name="history" size={20} />
@@ -165,7 +165,7 @@ export function AppShell({ children, showFooter = false }) {
               title="Permisos y Control de Acceso"
               aria-label="Permisos"
               className={`m3-state flex items-center rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
-                railExpanded ? "w-full h-10 px-4 gap-3 text-sm font-medium" : "size-10 justify-center"
+                railExpanded ? "w-full h-10 px-4 gap-4 text-sm font-medium" : "size-10 justify-center"
               }`}
             >
               <M3Icon name="admin_panel_settings" size={20} />
@@ -178,7 +178,7 @@ export function AppShell({ children, showFooter = false }) {
             onClick={() => setIsBiometricsOpen(true)}
             title="Configurar Biometría / Huella"
             className={`m3-state flex items-center cursor-pointer rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
-              railExpanded ? "w-full h-10 px-4 gap-3 text-sm font-medium" : "size-10 justify-center"
+              railExpanded ? "w-full h-10 px-4 gap-4 text-sm font-medium" : "size-10 justify-center"
             }`}
           >
             <M3Icon name="fingerprint" size={20} />
@@ -191,7 +191,7 @@ export function AppShell({ children, showFooter = false }) {
             title="Cerrar sesión"
             aria-label="Cerrar sesión"
             className={`m3-state flex items-center cursor-pointer rounded-full text-[var(--md-sys-color-error)] hover:text-[var(--md-sys-color-error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
-              railExpanded ? "w-full h-10 px-4 gap-3 text-sm font-medium" : "size-10 justify-center"
+              railExpanded ? "w-full h-10 px-4 gap-4 text-sm font-medium" : "size-10 justify-center"
             }`}
           >
             <M3Icon name="logout" size={20} />
@@ -236,7 +236,7 @@ export function AppShell({ children, showFooter = false }) {
           {/* Indicador de Turno Móvil Compacto (avatar + nombre opcional + timer siempre visible) */}
           {currentUser && (
             <div className="sm:hidden flex-1 flex justify-end min-w-0">
-              <div className={`inline-flex items-center gap-1.5 min-h-[36px] bg-[var(--md-sys-color-surface-container)] p-0.5 ${sessionAnchor ? "pr-1.5" : ""} rounded-full border border-[var(--md-sys-color-outline-variant)]`}>
+              <div className={`inline-flex items-center gap-1.5 min-h-[36px] bg-[var(--md-sys-color-surface-container)] p-0.5 ${!isAdmin && sessionAnchor ? "pr-1.5" : ""} rounded-full border border-[var(--md-sys-color-outline-variant)]`}>
                 <button
                   type="button"
                   onClick={() => setIsProfileOpen(true)}
@@ -257,7 +257,7 @@ export function AppShell({ children, showFooter = false }) {
                     }}
                   />
                 </button>
-                {sessionAnchor && (
+                {!isAdmin && sessionAnchor && (
                   <button
                     type="button"
                     onClick={() => setIsHistoryOpen(true)}
@@ -301,7 +301,7 @@ export function AppShell({ children, showFooter = false }) {
                     {currentUser.role}
                   </span>
                 </button>
-                {sessionAnchor && (
+                {!isAdmin && sessionAnchor && (
                   <button
                     type="button"
                     onClick={() => setIsHistoryOpen(true)}
@@ -355,7 +355,7 @@ export function AppShell({ children, showFooter = false }) {
               <Link
                 to="/CreateOrder"
                 onClick={() => setMobileDrawerOpen(false)}
-                className="m3-state flex items-center gap-3 h-12 px-4 mb-2 rounded-2xl bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] text-sm font-semibold m3-elevation-1"
+                className="m3-state flex items-center gap-4 h-12 px-4 mb-2 rounded-2xl bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] text-sm font-semibold m3-elevation-1"
               >
                 <M3Icon name="add" size={20} />
                 <span>Nueva Orden</span>
@@ -368,7 +368,7 @@ export function AppShell({ children, showFooter = false }) {
                   key={dest.id}
                   to={dest.to}
                   onClick={() => setMobileDrawerOpen(false)}
-                  className={`m3-state flex items-center gap-3 h-14 px-4 rounded-full text-sm font-medium ${
+                  className={`m3-state flex items-center gap-4 h-14 px-4 rounded-full text-sm font-medium ${
                     dest.active
                       ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
                       : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
@@ -387,7 +387,7 @@ export function AppShell({ children, showFooter = false }) {
                   setMobileDrawerOpen(false);
                   setIsProfileOpen(true);
                 }}
-                className="m3-state w-full flex items-center gap-3 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] cursor-pointer"
+                className="m3-state w-full flex items-center gap-4 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] cursor-pointer"
               >
                 <M3Icon name="badge" size={20} />
                 <span>Mi Perfil</span>
@@ -398,7 +398,7 @@ export function AppShell({ children, showFooter = false }) {
                   setMobileDrawerOpen(false);
                   setIsBiometricsOpen(true);
                 }}
-                className="m3-state w-full flex items-center gap-3 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] cursor-pointer"
+                className="m3-state w-full flex items-center gap-4 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] cursor-pointer"
               >
                 <M3Icon name="fingerprint" size={20} />
                 <span>Configurar Biometría / Huella</span>
@@ -409,7 +409,7 @@ export function AppShell({ children, showFooter = false }) {
                   setMobileDrawerOpen(false);
                   setIsHistoryOpen(true);
                 }}
-                className="m3-state w-full flex items-center gap-3 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] cursor-pointer"
+                className="m3-state w-full flex items-center gap-4 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] cursor-pointer"
               >
                 <M3Icon name="history" size={20} />
                 <span>{isAdmin ? "Historial de Turnos" : "Mi Historial de Turnos"}</span>
@@ -418,7 +418,7 @@ export function AppShell({ children, showFooter = false }) {
                 <Link
                   to="/dashboard/access"
                   onClick={() => setMobileDrawerOpen(false)}
-                  className="m3-state w-full flex items-center gap-3 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] cursor-pointer"
+                  className="m3-state w-full flex items-center gap-4 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] cursor-pointer"
                 >
                   <M3Icon name="admin_panel_settings" size={20} />
                   <span>Admin</span>
@@ -430,7 +430,7 @@ export function AppShell({ children, showFooter = false }) {
                   setMobileDrawerOpen(false);
                   handleLogout();
                 }}
-                className="m3-state w-full flex items-center gap-3 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-error)] cursor-pointer"
+                className="m3-state w-full flex items-center gap-4 h-12 px-4 rounded-full text-sm font-medium text-[var(--md-sys-color-error)] cursor-pointer"
               >
                 <M3Icon name="logout" size={20} />
                 <span>Cerrar sesión</span>

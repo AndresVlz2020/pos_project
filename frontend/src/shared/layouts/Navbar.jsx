@@ -46,7 +46,7 @@ export default function Navbar() {
                 <li key={dest.id}>
                   <Link
                     to={dest.to}
-                    className={`m3-state inline-flex items-center gap-2 h-10 px-4 rounded-full text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
+                    className={`m3-state inline-flex items-center gap-4 h-10 px-4 rounded-full text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] ${
                       dest.active
                         ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
                         : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
@@ -87,7 +87,7 @@ export default function Navbar() {
                       {currentUser.role}
                     </span>
                   </button>
-                  {sessionAnchor && (
+                  {!isAdmin && sessionAnchor && (
                     <button
                       type="button"
                       onClick={() => setIsHistoryOpen(true)}

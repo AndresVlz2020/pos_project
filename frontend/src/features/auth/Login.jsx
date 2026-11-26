@@ -220,7 +220,7 @@ export default function Login() {
               setPinError("");
               setPinLockSeconds(0);
             }}
-            className={`m3-state min-h-[42px] flex items-center justify-center gap-2 py-2 px-4 text-label-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer ${
+            className={`m3-state min-h-[42px] flex items-center justify-center gap-4 py-2 px-4 text-label-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer ${
               authMode === "pin"
                 ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
                 : "bg-transparent text-[var(--md-sys-color-on-surface)]"
@@ -239,7 +239,7 @@ export default function Login() {
               setPinError("");
               setPinLockSeconds(0);
             }}
-            className={`m3-state min-h-[42px] flex items-center justify-center gap-2 py-2 px-4 text-label-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer ${
+            className={`m3-state min-h-[42px] flex items-center justify-center gap-4 py-2 px-4 text-label-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer ${
               authMode === "admin"
                 ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
                 : "bg-transparent text-[var(--md-sys-color-on-surface)]"

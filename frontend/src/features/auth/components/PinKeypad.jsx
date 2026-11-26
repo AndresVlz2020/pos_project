@@ -141,7 +141,7 @@ export default function PinKeypad({
         <button
           type="button"
           onClick={onBack}
-          className="m3-state inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer shrink-0"
+          className="m3-state inline-flex items-center gap-4 min-h-[40px] px-3 rounded-full text-sm font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer shrink-0"
         >
           <M3Icon name="arrow_back" size={16} />
           <span>Cambiar</span>
@@ -236,7 +236,7 @@ export default function PinKeypad({
             type="button"
             disabled={biometricBusy}
             onClick={() => triggerBiometricAuth(false)}
-            className="m3-state w-full min-h-[44px] flex items-center justify-center gap-2 py-2 px-5 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-label-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer disabled:opacity-38"
+            className="m3-state w-full min-h-[44px] flex items-center justify-center gap-4 py-2 px-5 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-label-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors cursor-pointer disabled:opacity-38"
           >
             {biometricBusy ? (
               <M3Icon name="progress_activity" size={18} className="animate-spin" />

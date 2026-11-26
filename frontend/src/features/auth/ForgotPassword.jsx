@@ -103,7 +103,7 @@ export default function ForgotPassword() {
           <div className="text-center pt-1">
             <Link
               to="/Auth"
-              className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
+              className="m3-state inline-flex items-center justify-center gap-4 min-h-[44px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
             >
               <M3Icon name="arrow_back" size={18} />
               Volver a Iniciar Sesión

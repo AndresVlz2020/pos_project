@@ -177,7 +177,7 @@ export default function ResetPassword() {
                   if (errors.code) setErrors((prev) => ({ ...prev, code: "" }));
                 }}
                 placeholder="123456"
-                className="w-full h-14 px-3 bg-transparent text-[var(--md-sys-color-primary)] font-mono text-base sm:text-title-md font-bold tracking-[0.22em] sm:tracking-[0.3em] outline-none placeholder:text-[var(--md-sys-color-on-surface-variant)] placeholder:tracking-normal placeholder:font-sans placeholder:font-normal placeholder:text-base"
+                className="w-full h-14 px-4 bg-transparent text-[var(--md-sys-color-primary)] font-mono text-base sm:text-title-md font-bold tracking-[0.22em] sm:tracking-[0.3em] outline-none placeholder:text-[var(--md-sys-color-on-surface-variant)] placeholder:tracking-normal placeholder:font-sans placeholder:font-normal placeholder:text-base"
               />
             </div>
             {errors.code && (
@@ -238,7 +238,7 @@ export default function ResetPassword() {
 
             <Link
               to="/Auth"
-              className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors"
+              className="m3-state inline-flex items-center justify-center gap-4 min-h-[44px] px-3 rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors"
             >
               <M3Icon name="arrow_back" size={18} />
               Volver al Login

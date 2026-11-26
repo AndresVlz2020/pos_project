@@ -53,7 +53,7 @@ export default function Input({
       <div className="relative w-full flex items-center">
         {leadingIcon && (
           <span className="absolute left-3.5 flex items-center pointer-events-none text-[var(--md-sys-color-on-surface-variant)]">
-            <M3Icon name={leadingIcon} size={20} />
+            <M3Icon name={leadingIcon} size={24} />
           </span>
         )}
         <input
@@ -71,7 +71,7 @@ export default function Input({
             m3-outlined-field w-full
             ${sizes[size] || sizes.lg}
             ${bgSurface}
-            ${leadingIcon ? "pl-11 pr-4" : "px-4"}
+            ${leadingIcon ? "pl-[54px] pr-4" : "px-4"}
             ${isPasswordField ? (error ? "pr-20" : "pr-12") : ""}
             text-[var(--md-sys-color-on-surface)]
             placeholder:text-[var(--md-sys-color-on-surface-variant)]/70

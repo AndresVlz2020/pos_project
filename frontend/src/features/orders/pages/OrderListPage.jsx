@@ -30,7 +30,7 @@ export default function OrderListPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [tableFilter, setTableFilter] = useState("all");
   const [waiterFilter, setWaiterFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState(() => new Date().toLocaleDateString("en-CA"));
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -67,12 +67,12 @@ export default function OrderListPage() {
     };
   }, [fetchOrders, isCocina, isMesero]);
 
-  // Ordenar por fecha descendente y normalizar estados canónicos (Creada / Completada / Pagada / Anulada)
+  // Ordenar por fecha ascendente (orden de creación) y normalizar estados canónicos
   const { sortedOrders, statusCounts, tableOptions, waiterOptions, filteredOrders } = useMemo(() => {
     const sorted = [...orders].sort((a, b) => {
       const dateA = new Date(a.createdAt || a.created_at || 0);
       const dateB = new Date(b.createdAt || b.created_at || 0);
-      return dateB - dateA;
+      return dateA - dateB;
     });
     const { normalizedOrders, counts } = summarizeOrderStatuses(sorted);
 
@@ -90,8 +90,8 @@ export default function OrderListPage() {
       if (waiterFilter !== "all" && (o.waiter || "") !== waiterFilter) return false;
       if (dateFilter) {
         const rawDate = o.createdAt || o.created_at;
-        const isoDay = rawDate ? new Date(rawDate).toISOString().slice(0, 10) : "";
-        if (isoDay !== dateFilter) return false;
+        const localDay = rawDate ? new Date(rawDate).toLocaleDateString("en-CA") : "";
+        if (localDay !== dateFilter) return false;
       }
       return true;
     });

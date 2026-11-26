@@ -33,9 +33,9 @@ export default function Button({
   };
 
   const sizes = {
-    sm: normalizedVariant === "text" ? "h-10 px-3 text-sm font-medium gap-2" : "h-10 px-4 text-sm font-medium gap-2",
-    md: normalizedVariant === "text" ? "h-10 px-4 text-sm font-medium gap-2" : "h-10 px-6 text-sm font-medium gap-2",
-    lg: "h-12 px-6 text-sm font-medium gap-2",
+    sm: normalizedVariant === "text" ? "h-10 px-3 text-sm font-medium gap-4" : "h-10 px-4 text-sm font-medium gap-4",
+    md: normalizedVariant === "text" ? "h-10 px-4 text-sm font-medium gap-4" : "h-10 px-6 text-sm font-medium gap-4",
+    lg: "h-12 px-6 text-sm font-medium gap-4",
     icon: "size-10 p-0",
   };
 
