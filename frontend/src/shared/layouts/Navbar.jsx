@@ -33,10 +33,10 @@ export default function Navbar() {
           <div className="flex h-16 items-center justify-between gap-2 sm:gap-4">
             <Link
               to="/"
-              className="flex items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] shrink-0"
+              className="flex items-center min-w-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
             >
               <BrandLogo
-                className="h-6 sm:h-10 w-auto object-contain"
+                className="h-5 sm:h-9 md:h-10 w-auto max-w-[110px] sm:max-w-[200px] md:max-w-none object-contain"
                 alt="D'Piero Logo"
               />
             </Link>

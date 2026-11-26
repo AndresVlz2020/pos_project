@@ -248,12 +248,14 @@ export const notificationService = {
       `SELECT
          t.id,
          t.table_number AS "tableNumber",
-         t.is_available AS "isAvailable",
          EXISTS (
            SELECT 1
            FROM orders o
-           WHERE LOWER(TRIM(o.table_number)) = LOWER(TRIM(t.table_number))
-             AND LOWER(TRIM(COALESCE(o.status, ''))) IN ('creada', 'completada', 'entregada')
+           WHERE (
+             LOWER(TRIM(o.table_number)) = LOWER(TRIM(t.table_number))
+             OR TRIM(o.table_number) = CAST(t.id AS VARCHAR)
+           )
+             AND LOWER(TRIM(COALESCE(o.status, ''))) NOT IN ('pagada', 'cerrada', 'anulada')
          ) AS "hasActiveOrder"
        FROM restaurant_tables t
        WHERE ($1::int IS NOT NULL AND t.id = $1)
@@ -269,7 +271,7 @@ export const notificationService = {
       throw err;
     }
 
-    if (!table.isAvailable || table.hasActiveOrder) {
+    if (table.hasActiveOrder) {
       const err = new Error("La mesa seleccionada está en uso actualmente.");
       err.status = 409;
       throw err;

@@ -207,50 +207,51 @@ export function AppShell({ children, showFooter = false }) {
         }`}
       >
         {/* M3 Small Top App Bar (64dp) */}
-        <header className="sticky top-0 z-30 h-16 shrink-0 print:hidden bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <header className="sticky top-0 z-30 h-16 shrink-0 print:hidden bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] px-2.5 sm:px-6 flex items-center justify-between gap-1.5 sm:gap-4">
+          <div className="flex items-center gap-1 sm:gap-3 min-w-0">
             {/* Botón Drawer en Móvil (< md) */}
             <IconButton
               hitSize={40}
-              iconSize={22}
+              iconSize={24}
               variant="standard"
               ariaLabel="Abrir menú de navegación"
               onClick={() => setMobileDrawerOpen(true)}
-              className="md:hidden"
+              className="md:hidden shrink-0"
             >
-              <M3Icon name="menu" size={22} />
+              <M3Icon name="menu" size={24} />
             </IconButton>
 
             <Link
               to="/"
-              className="flex items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] shrink-0"
+              className="flex items-center min-w-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
             >
               <BrandLogo
-                className="h-6 sm:h-10 w-auto object-contain"
+                className="h-5 sm:h-9 md:h-10 w-auto max-w-[96px] sm:max-w-[200px] md:max-w-none object-contain"
                 alt="D'Piero Logo"
               />
             </Link>
 
           </div>
 
-          {/* Indicador de Turno Móvil Compacto (avatar + nombre opcional + timer siempre visible) */}
-          {currentUser && (
-            <div className="sm:hidden flex-1 flex justify-end min-w-0">
-              <div className={`inline-flex items-center gap-1.5 min-h-[36px] bg-[var(--md-sys-color-surface-container)] p-0.5 ${!isAdmin && sessionAnchor ? "pr-1.5" : ""} rounded-full border border-[var(--md-sys-color-outline-variant)]`}>
+          {/* Controles derechos del Top App Bar */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* Indicador de Turno Móvil Compacto (avatar + timer sin superponerse al logo) */}
+            {currentUser && (
+              <div className={`sm:hidden inline-flex items-center gap-1 min-h-[34px] bg-[var(--md-sys-color-surface-container)] p-0.5 ${!isAdmin && sessionAnchor ? "pr-1" : ""} rounded-full border border-[var(--md-sys-color-outline-variant)] shrink-0`}>
                 <button
                   type="button"
                   onClick={() => setIsProfileOpen(true)}
                   title="Ver mi perfil"
-                  className="m3-state inline-flex items-center gap-1.5 rounded-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
+                  className="m3-state inline-flex items-center rounded-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
                 >
                   <img
                     src={getUserAvatar(currentUser)}
                     alt={currentUser.name || "Usuario"}
                     title={`${currentUser.name || "Usuario"} (${currentUser.role || ""})`}
-                    width={32}
-                    height={32}
+                    width={28}
+                    height={28}
                     decoding="async"
-                    className="size-8 rounded-full object-cover shrink-0"
+                    className="size-7 rounded-full object-cover shrink-0"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = imgWorkerCarlos;
@@ -262,18 +263,14 @@ export function AppShell({ children, showFooter = false }) {
                     type="button"
                     onClick={() => setIsHistoryOpen(true)}
                     title="Ver historial de sesiones"
-                    className="inline-flex items-center gap-1 min-h-[28px] px-2 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-mono text-xs font-medium shrink-0 cursor-pointer"
+                    className="inline-flex items-center gap-0.5 min-h-[26px] px-1.5 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-mono text-[11px] font-medium shrink-0 cursor-pointer"
                   >
-                    <M3Icon name="schedule" size={12} />
+                    <M3Icon name="schedule" size={24} className="!size-4 !min-w-4 !min-h-4" />
                     {formatDuration(elapsedSeconds)}
                   </button>
                 )}
               </div>
-            </div>
-          )}
-
-          {/* Controles derechos del Top App Bar */}
-          <div className="flex items-center gap-2 shrink-0">
+            )}
             {currentUser && (
               <div className="hidden sm:flex items-center gap-2 text-xs bg-[var(--md-sys-color-surface-container)] pl-1.5 pr-3 py-1 rounded-full border border-[var(--md-sys-color-outline-variant)]">
                 <button
