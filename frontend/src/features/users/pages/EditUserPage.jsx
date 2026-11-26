@@ -294,7 +294,7 @@ export default function EditUser1() {
 
             {/* Si es Administrador: campo para actualizar contraseña. Si es Operativo: PIN y fechas */}
             {isRoleAdmin ? (
-              <div className="sm:col-span-2">
+              <div className="md:col-span-2">
                 <Input
                   label="Nueva Contraseña (dejar en blanco para conservar actual)"
                   name="userPassword"

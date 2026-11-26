@@ -195,7 +195,7 @@ export default function PaymentMethodCards({
 
               {/* Contenedor visual del icono M3 o logo oficial */}
               {method.kind === "brand" ? (
-                <div className="h-11 min-w-[104px] px-3 py-1.5 rounded-xl bg-white border border-[var(--md-sys-color-outline-variant)] flex items-center justify-center">
+                <div className="h-11 min-w-[104px] px-3 py-1.5 rounded-xl bg-[var(--color-on-dark)] border border-[var(--md-sys-color-outline-variant)] flex items-center justify-center">
                   <method.Logo
                     className={
                       method.value === "Daviplata" ? "h-8 w-auto" : "h-5 w-auto"
@@ -248,7 +248,7 @@ export function PaymentMethodBadge({ method, showPaidTitle = true }) {
   if (entry.kind === "brand" && entry.Logo) {
     return (
       <span
-        className="inline-flex h-8 px-2.5 rounded-lg bg-white border border-[var(--md-sys-color-outline-variant)] items-center justify-center"
+        className="inline-flex h-8 px-2.5 rounded-lg bg-[var(--color-on-dark)] border border-[var(--md-sys-color-outline-variant)] items-center justify-center"
         title={labelText}
         aria-label={labelText}
       >

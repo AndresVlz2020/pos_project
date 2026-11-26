@@ -90,11 +90,11 @@ export default function Input({
             onClick={() => setShowPassword((prev) => !prev)}
             aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
             title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-            className={`m3-state absolute ${
+            className={`m3-state !absolute ${
               error ? "right-10" : "right-2"
-            } flex items-center justify-center size-9 rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer`}
+            } top-1/2 -translate-y-1/2 z-10 flex items-center justify-center size-10 rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer`}
           >
-            <M3Icon name={showPassword ? "visibility_off" : "visibility"} size={19} />
+            <M3Icon name={showPassword ? "visibility_off" : "visibility"} size={20} />
           </button>
         )}
         {error && (

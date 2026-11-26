@@ -117,17 +117,17 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="w-full flex flex-col justify-center items-center px-4 py-8 font-[family-name:var(--main-font)]">
-      <div className="w-full max-w-md bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-6 sm:p-8 m3-elevation-2 text-[var(--md-sys-color-on-surface)] relative z-10">
-        <div className="flex flex-col items-center text-center mb-6">
-          <BrandLogo className="h-10 w-auto object-contain mb-3" alt="D,PIERO" />
+    <div className="w-full flex flex-col justify-center items-center py-2 sm:py-4 font-[family-name:var(--main-font)]">
+      <div className="w-full max-w-md bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-5 sm:p-8 m3-elevation-2 text-[var(--md-sys-color-on-surface)] relative z-10">
+        <div className="flex flex-col items-center text-center mb-5 sm:mb-6">
+          <BrandLogo className="h-9 sm:h-10 w-auto object-contain mb-3" alt="D,PIERO" />
           <div className="flex items-center gap-2 justify-center mb-1">
-            <M3Icon name="verified_user" size={22} className="text-[var(--md-sys-color-primary)]" />
+            <M3Icon name="verified_user" size={22} className="text-[var(--md-sys-color-primary)] shrink-0" />
             <h2 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
               Verificación de Código
             </h2>
           </div>
-          <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-1">
+          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-1">
             Revisa tu correo electrónico e ingresa el código de 6 dígitos junto con tu nueva contraseña.
           </p>
         </div>
@@ -154,14 +154,14 @@ export default function ResetPassword() {
             error={errors.email}
           />
 
-          <div className="flex flex-col gap-1.5">
+          <div className="w-full">
             <label
               htmlFor="reset-code"
-              className="text-label-md font-medium text-[var(--md-sys-color-on-surface-variant)]"
+              className="block text-xs leading-4 mb-1.5 font-medium text-[var(--md-sys-color-on-surface-variant)]"
             >
               Código de Seguridad (6 dígitos del correo)
             </label>
-            <div className={`m3-outlined-field relative flex items-center rounded-[4px] bg-transparent ${errors.code ? "is-invalid" : ""}`}>
+            <div className={`m3-outlined-field relative flex items-center h-14 rounded-[4px] bg-transparent ${errors.code ? "is-error" : ""}`}>
               <M3Icon name="key" size={20} className="ml-3.5 text-[var(--md-sys-color-primary)] shrink-0" />
               <input
                 id="reset-code"
@@ -175,11 +175,11 @@ export default function ResetPassword() {
                   if (errors.code) setErrors((prev) => ({ ...prev, code: "" }));
                 }}
                 placeholder="123456"
-                className="w-full h-14 px-3 bg-transparent text-[var(--md-sys-color-primary)] font-mono text-title-md font-bold tracking-[0.3em] outline-none placeholder:text-[var(--md-sys-color-on-surface-variant)] placeholder:tracking-normal placeholder:font-sans"
+                className="w-full h-14 px-3 bg-transparent text-[var(--md-sys-color-primary)] font-mono text-base sm:text-title-md font-bold tracking-[0.22em] sm:tracking-[0.3em] outline-none placeholder:text-[var(--md-sys-color-on-surface-variant)] placeholder:tracking-normal placeholder:font-sans placeholder:font-normal placeholder:text-base"
               />
             </div>
             {errors.code && (
-              <p className="text-label-sm text-[var(--md-sys-color-error)] mt-0.5">{errors.code}</p>
+              <p className="text-xs leading-4 text-[var(--md-sys-color-error)] mt-1">{errors.code}</p>
             )}
           </div>
 
@@ -215,28 +215,28 @@ export default function ResetPassword() {
 
           <Button
             variant="filled"
-            size="md"
+            size="lg"
             type="submit"
             leadingIcon="check_circle"
             disabled={isSubmitting}
-            className="w-full mt-2"
+            className="w-full mt-2 !whitespace-normal text-center"
           >
-            {isSubmitting ? "Verificando y Guardando..." : "Validar Código y Guardar Contraseña"}
+            {isSubmitting ? "Verificando y guardando..." : "Guardar nueva contraseña"}
           </Button>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-label-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 text-label-lg">
             <button
               type="button"
               onClick={handleResendCode}
               disabled={isResending}
-              className="m3-state min-h-[40px] px-3 rounded-full text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer disabled:opacity-38"
+              className="m3-state inline-flex items-center justify-center min-h-[44px] px-3 rounded-full text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer disabled:opacity-38"
             >
               {isResending ? "Reenviando..." : "¿No recibiste el código? Reenviar"}
             </button>
 
             <Link
               to="/Auth"
-              className="m3-state inline-flex items-center gap-1.5 min-h-[40px] px-3 rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors"
+              className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors"
             >
               <M3Icon name="arrow_back" size={18} />
               Volver al Login

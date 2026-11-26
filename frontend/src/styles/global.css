@@ -238,7 +238,7 @@ body {
 .m3-elevation-3 { box-shadow: var(--md-sys-elevation-3); }
 
 /* M3 State Layer (8% hover, 10% focus/active) */
-.m3-state {
+:where(.m3-state) {
   position: relative;
   overflow: hidden;
 }

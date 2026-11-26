@@ -135,7 +135,7 @@ export default function Select({
       : "h-14 px-4 text-base";
 
   return (
-    <div className={`w-full mb-3 ${className}`}>
+    <div className={`w-full ${className}`}>
       {label && (
         <label
           htmlFor={selectId}

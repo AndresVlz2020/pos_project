@@ -55,15 +55,15 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="w-full flex flex-col justify-center items-center px-4 py-8 font-[family-name:var(--main-font)]">
+    <div className="w-full flex flex-col justify-center items-center py-2 sm:py-4 font-[family-name:var(--main-font)]">
       {/* Container M3 */}
-      <div className="w-full max-w-md bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-6 sm:p-8 m3-elevation-2 text-[var(--md-sys-color-on-surface)] relative z-10">
-        <div className="flex flex-col items-center text-center mb-6">
-          <BrandLogo className="h-10 w-auto object-contain mb-3" alt="D,PIERO" />
+      <div className="w-full max-w-md bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] rounded-[28px] p-5 sm:p-8 m3-elevation-2 text-[var(--md-sys-color-on-surface)] relative z-10">
+        <div className="flex flex-col items-center text-center mb-5 sm:mb-6">
+          <BrandLogo className="h-9 sm:h-10 w-auto object-contain mb-3" alt="D,PIERO" />
           <h2 className="text-headline-sm font-semibold text-[var(--md-sys-color-on-surface)]">
             Recuperar Contraseña
           </h2>
-          <p className="text-body-sm text-[var(--md-sys-color-on-surface-variant)] mt-1">
+          <p className="text-body-md text-[var(--md-sys-color-on-surface-variant)] mt-1.5">
             Ingresa tu correo registrado para recibir un código de seguridad de 6 dígitos.
           </p>
         </div>
@@ -77,16 +77,16 @@ export default function ForgotPassword() {
               autoClose={false}
             />
 
-            <Link to={`/Auth/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}`}>
-              <Button variant="filled" size="md" trailingIcon="arrow_forward" className="w-full">
-                Ingresar Código de 6 Dígitos
+            <Link to={`/Auth/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}`} className="block">
+              <Button variant="filled" size="lg" trailingIcon="arrow_forward" className="w-full">
+                Ingresar código de 6 dígitos
               </Button>
             </Link>
 
-            <div className="text-center pt-2">
+            <div className="text-center pt-1">
               <Link
                 to="/Auth"
-                className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[40px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors"
+                className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] transition-colors"
               >
                 <M3Icon name="arrow_back" size={18} />
                 Volver al Inicio de Sesión
@@ -112,19 +112,19 @@ export default function ForgotPassword() {
 
             <Button
               variant="filled"
-              size="md"
+              size="lg"
               type="submit"
               leadingIcon="mail"
               disabled={isLoading}
-              className="w-full mt-2"
+              className="w-full mt-2 !whitespace-normal text-center"
             >
-              {isLoading ? "Enviando código..." : "Enviar Código de Seguridad al Correo"}
+              {isLoading ? "Enviando código..." : "Enviar código de seguridad"}
             </Button>
 
-            <div className="text-center mt-4">
+            <div className="text-center pt-1">
               <Link
                 to="/Auth"
-                className="m3-state inline-flex items-center gap-1.5 min-h-[40px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
+                className="m3-state inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-full text-label-lg font-medium text-[var(--md-sys-color-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)]"
               >
                 <M3Icon name="arrow_back" size={18} />
                 Volver a Iniciar Sesión

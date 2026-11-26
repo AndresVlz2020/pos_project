@@ -219,7 +219,7 @@ export default function CreateUser() {
           </div>
 
           {/* Right: form fields */}
-          <div className="md:col-span-8 xl:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="md:col-span-8 xl:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-start">
             <Input
               label="Nombre Completo"
               name="userName"
@@ -283,7 +283,7 @@ export default function CreateUser() {
 
             {/* Si es Administrador: contraseña segura. Si es Operativo: PIN y fechas laborales */}
             {isRoleAdmin ? (
-              <div className="sm:col-span-2">
+              <div className="md:col-span-2">
                 <Input
                   label="Contraseña de Administrador"
                   name="userPassword"
