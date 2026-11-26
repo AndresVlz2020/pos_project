@@ -325,7 +325,7 @@ export const notificationService = {
     const { audioStream } = tts.toStream(cleanText, {
       rate: "-5%",
       pitch: "+2Hz",
-      volume: "+80%",
+      volume: "+120%",
     });
     const chunks = [];
     for await (const chunk of audioStream) {

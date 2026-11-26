@@ -11,22 +11,30 @@ import {
 } from "../services/notificationService";
 import { announceUnreadWaiterCalls } from "../utils/voiceAlert";
 
+const inMemoryDismissed = new Set();
+
 function getDismissedStorageKey(userId) {
   return `dpiero_dismissed_notifs_${userId || "u"}`;
 }
 
 function readDismissedSet(userId) {
+  const merged = new Set(inMemoryDismissed);
   try {
     const raw = sessionStorage.getItem(getDismissedStorageKey(userId));
-    if (!raw) return new Set();
-    const arr = JSON.parse(raw);
-    return new Set(Array.isArray(arr) ? arr.map(Number) : []);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) {
+        arr.forEach((id) => merged.add(Number(id)));
+      }
+    }
   } catch {
-    return new Set();
+    // ignorar error de almacenamiento
   }
+  return merged;
 }
 
 function addDismissedIds(userId, ids) {
+  ids.forEach((id) => inMemoryDismissed.add(Number(id)));
   try {
     const next = readDismissedSet(userId);
     ids.forEach((id) => next.add(Number(id)));
@@ -81,7 +89,9 @@ function mergeUnreadBanners(prev, rows, userId) {
       !isResolvedOrderStatus(n.currentOrderStatus) &&
       !dismissed.has(Number(n.id))
   );
-  if (freshUnread.length === 0) return activePrev;
+  if (freshUnread.length === 0) {
+    return activePrev.length === prev.length ? prev : activePrev;
+  }
   const prevIds = new Set(activePrev.map((p) => Number(p.id)));
   const prevStockKeys = new Set(
     activePrev
@@ -100,7 +110,9 @@ function mergeUnreadBanners(prev, rows, userId) {
       }
       return true;
     });
-  if (additions.length === 0) return activePrev;
+  if (additions.length === 0) {
+    return activePrev.length === prev.length ? prev : activePrev;
+  }
   return [...additions, ...activePrev].slice(0, 3);
 }
 
@@ -131,10 +143,10 @@ export function useOrderNotifications() {
   const applyNotificationSnapshot = (data) => {
     const rawRows = Array.isArray(data?.notifications) ? data.notifications : [];
     const rows = deduplicateStockNotifications(rawRows);
+    announceUnreadWaiterCalls(rows, userId, isMesero);
     setNotifications(rows);
     setUnreadCount(Number(data?.unreadCount || 0));
     setTopBanners((prev) => mergeUnreadBanners(prev, rows, userId));
-    announceUnreadWaiterCalls(rows, userId, isMesero);
   };
 
   const refresh = async () => {

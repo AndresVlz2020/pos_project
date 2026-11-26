@@ -119,7 +119,7 @@ export async function playWaiterCallVoice(text) {
 
         // Amplificación fuerte con compresor para que suene duro y claro sin saturar
         const gainNode = ctx.createGain();
-        gainNode.gain.value = 3.2;
+        gainNode.gain.value = 4.0;
 
         const compressor = ctx.createDynamicsCompressor();
         compressor.threshold.setValueAtTime(-18, ctx.currentTime);
