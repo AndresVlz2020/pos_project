@@ -1,24 +1,49 @@
-// backend/src/features/auth/templates/passwordResetEmailTemplate.js
-// Plantilla de correo componentizada con variables y tokens de diseño
-
 /**
- * Tokens y variables centrales de diseño del correo
+ * @fileoverview Plantilla HTML modular para correo de restablecimiento de contraseña.
+ * Alineada al sistema de diseño Material Design 3 (Terracotta / Warm Espresso) de D'Piero.
  */
+
 export const EMAIL_DESIGN_TOKENS = {
   brandName: "D'Piero Restaurante",
   brandSubtitle: "Parrilla, Bar & Sistema POS",
   colors: {
-    bgApp: "#090D1E",
-    bgCard: "#0F152D",
-    borderCard: "#1B2246",
-    primary: "#EA580C",
-    primaryLight: "#F97316",
-    textWhite: "#FFFFFF",
-    textMuted: "#94A3B8",
-    textFooter: "#64748B",
+    // Superficies M3 Light (Terracotta / Warm Espresso)
+    surface: "#FFF8F5",
+    surfaceContainerLowest: "#FFFFFF",
+    surfaceContainerLow: "#FAF1EC",
+    surfaceContainer: "#F4ECE7",
+    surfaceContainerHigh: "#EFE6E0",
+    // Primarios y contenedores M3
+    primary: "#9E4F24",
+    onPrimary: "#FFFFFF",
+    primaryContainer: "#FFDBCA",
+    onPrimaryContainer: "#351000",
+    // Texto y bordes M3
+    onSurface: "#221A16",
+    onSurfaceVariant: "#52443D",
+    outline: "#85746B",
+    outlineVariant: "#D7C2B9",
+    // Acento oscuro para prefers-color-scheme: dark
+    darkSurface: "#181210",
+    darkSurfaceContainerLow: "#211A17",
+    darkSurfaceContainer: "#251E1B",
+    darkPrimary: "#FFB691",
+    darkOnPrimary: "#552002",
+    darkPrimaryContainer: "#7C3812",
+    darkOnPrimaryContainer: "#FFDBCA",
+    darkOnSurface: "#F0DFD8",
+    darkOnSurfaceVariant: "#D7C2B9",
+    darkOutlineVariant: "#52443D",
   },
   typography: {
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    fontFamily: "'Roboto', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    monoFamily: "'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+  },
+  shape: {
+    cardRadius: "28px",
+    containerRadius: "16px",
+    chipRadius: "12px",
+    pillRadius: "9999px",
   },
   config: {
     expirationMinutes: 15,
@@ -26,76 +51,66 @@ export const EMAIL_DESIGN_TOKENS = {
 };
 
 /**
- * Componente: Encabezado institucional
+ * Componente de cabecera de marca del correo (M3 Terracotta).
  */
-export function EmailHeader({
-  brandName = EMAIL_DESIGN_TOKENS.brandName,
-  subtitle = EMAIL_DESIGN_TOKENS.brandSubtitle,
-} = {}) {
+export function EmailHeader({ title, subtitle }) {
   const { colors } = EMAIL_DESIGN_TOKENS;
   return `
-    <div style="margin-bottom: 24px; border-bottom: 1px solid ${colors.borderCard}; padding-bottom: 16px;">
-      <h2 style="color: ${colors.primaryLight}; margin: 0 0 4px 0; font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">
-        ${brandName}
-      </h2>
-      <span style="color: ${colors.textFooter}; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
-        ${subtitle}
-      </span>
+    <div style="border-bottom: 1px solid ${colors.outlineVariant}; padding-bottom: 18px; margin-bottom: 24px;">
+      <table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tr>
+          <td>
+            <h2 class="dp-brand-title" style="color: ${colors.primary}; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;">
+              ${title}
+            </h2>
+            <p class="dp-text-muted" style="color: ${colors.onSurfaceVariant}; margin: 4px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;">
+              ${subtitle}
+            </p>
+          </td>
+          <td align="right" valign="middle">
+            <span class="dp-badge" style="display: inline-block; background-color: ${colors.primaryContainer}; color: ${colors.onPrimaryContainer}; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: ${EMAIL_DESIGN_TOKENS.shape.pillRadius}; letter-spacing: 0.03em;">
+              Seguridad POS
+            </span>
+          </td>
+        </tr>
+      </table>
     </div>
   `;
 }
 
 /**
- * Componente: Botón de Acción Principal (CTA)
+ * Componente de botón de acción principal (M3 Filled Pill Button).
  */
-export function EmailButton({
-  href,
-  label = "Restablecer mi Contraseña",
-} = {}) {
-  const { colors } = EMAIL_DESIGN_TOKENS;
+export function EmailButton({ href, label }) {
+  const { colors, shape } = EMAIL_DESIGN_TOKENS;
   return `
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="${href}" target="_blank" style="
-        background-color: ${colors.primary};
-        color: ${colors.textWhite};
-        padding: 13px 28px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 700;
-        font-size: 14px;
-        display: inline-block;
-        letter-spacing: 0.01em;
-        box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
-      ">
-        ${label}
-      </a>
-    </div>
+    <table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin: 24px 0 8px 0;">
+      <tr>
+        <td align="center" bgcolor="${colors.primary}" style="border-radius: ${shape.pillRadius};">
+          <a href="${href}" target="_blank" style="display: inline-block; padding: 13px 28px; font-size: 14px; font-weight: 600; color: ${colors.onPrimary}; text-decoration: none; border-radius: ${shape.pillRadius}; letter-spacing: 0.01em;">
+            ${label}
+          </a>
+        </td>
+      </tr>
+    </table>
   `;
 }
 
 /**
- * Componente: Cuadro destacado del código de 6 dígitos
+ * Componente visual para el código de verificación numérico de 6 dígitos (M3 Primary Container).
  */
-export function EmailVerificationCode({ code } = {}) {
-  const { colors } = EMAIL_DESIGN_TOKENS;
+export function EmailVerificationCode({ code }) {
+  const { colors, typography, shape } = EMAIL_DESIGN_TOKENS;
+  const formattedCode = String(code).split("").join(" ");
   return `
-    <div style="text-align: center; margin: 28px 0; padding: 22px 16px; background-color: rgba(234, 88, 12, 0.08); border: 2px dashed ${colors.primaryLight}; border-radius: 12px;">
-      <p style="color: ${colors.textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 10px 0;">
+    <div class="dp-code-box" style="background-color: ${colors.primaryContainer}; border: 1px solid ${colors.outlineVariant}; border-radius: ${shape.containerRadius}; padding: 24px 16px; text-align: center; margin: 24px 0;">
+      <p class="dp-code-eyebrow" style="color: ${colors.onPrimaryContainer}; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 10px 0;">
         Tu Código de Verificación
       </p>
-      <div style="
-        font-family: 'Courier New', Courier, monospace, sans-serif;
-        font-size: 38px;
-        font-weight: 800;
-        letter-spacing: 12px;
-        color: ${colors.primaryLight};
-        text-shadow: 0 2px 10px rgba(249, 115, 22, 0.3);
-        margin: 0;
-        padding-left: 12px;
-      ">
-        ${code}
+      <div class="dp-code-digits" style="font-size: 36px; font-weight: 700; color: ${colors.primary}; letter-spacing: 8px; font-family: ${typography.monoFamily}; line-height: 1.15;">
+        ${formattedCode}
       </div>
-      <p style="color: ${colors.textFooter}; font-size: 11px; margin: 10px 0 0 0;">
+      <p class="dp-code-hint" style="color: ${colors.onPrimaryContainer}; opacity: 0.85; font-size: 12px; margin: 12px 0 0 0; line-height: 1.4;">
         Ingresa este código de 6 dígitos en la pantalla de recuperación
       </p>
     </div>
@@ -103,18 +118,16 @@ export function EmailVerificationCode({ code } = {}) {
 }
 
 /**
- * Componente: Pie de página con vigencia y nota de seguridad
+ * Componente de pie de página con notas de seguridad.
  */
-export function EmailFooter({
-  expirationMinutes = EMAIL_DESIGN_TOKENS.config.expirationMinutes,
-} = {}) {
+export function EmailFooter({ expirationMinutes }) {
   const { colors } = EMAIL_DESIGN_TOKENS;
   return `
-    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid ${colors.borderCard};">
-      <p style="color: ${colors.textFooter}; font-size: 11px; line-height: 1.5; margin: 0 0 6px 0;">
-        ⏱️ Este código es de un solo uso y vencerá en <strong>${expirationMinutes} minutos</strong> por seguridad.
+    <div class="dp-footer" style="border-top: 1px solid ${colors.outlineVariant}; margin-top: 24px; padding-top: 16px;">
+      <p class="dp-text-muted" style="color: ${colors.onSurfaceVariant}; font-size: 12px; line-height: 1.5; margin: 0 0 8px 0;">
+        &#9201; Este código es de un solo uso y vencerá en <strong class="dp-text-strong" style="color: ${colors.onSurface};">${expirationMinutes} minutos</strong> por seguridad.
       </p>
-      <p style="color: ${colors.textFooter}; font-size: 11px; line-height: 1.5; margin: 0;">
+      <p class="dp-text-muted" style="color: ${colors.onSurfaceVariant}; font-size: 11.5px; line-height: 1.5; margin: 0;">
         Si no solicitaste este cambio, puedes ignorar este mensaje de forma segura; tu cuenta no sufrirá modificaciones.
       </p>
     </div>
@@ -122,65 +135,128 @@ export function EmailFooter({
 }
 
 /**
- * Componente / Plantilla Raíz Ensamblada
+ * Genera el HTML completo del correo de restablecimiento con código de 6 dígitos.
+ * Incluye variables CSS M3 en `<style>` para clientes compatibles y fallbacks inline
+ * basados en `EMAIL_DESIGN_TOKENS` para clientes que ignoran `<style>`.
+ *
+ * @param {Object} params
+ * @param {string} params.to - Correo electrónico del destinatario.
+ * @param {string} params.code - Código de verificación de 6 dígitos.
+ * @returns {string} HTML completo listo para enviar por SMTP.
  */
-export function generatePasswordResetEmailHtml({
-  to,
-  code,
-  brandName = EMAIL_DESIGN_TOKENS.brandName,
-  expirationMinutes = EMAIL_DESIGN_TOKENS.config.expirationMinutes,
-} = {}) {
-  const { colors, typography } = EMAIL_DESIGN_TOKENS;
+export function generatePasswordResetEmailHtml({ to, code }) {
+  const { brandName, brandSubtitle, colors, typography, shape, config } = EMAIL_DESIGN_TOKENS;
 
-  const header = EmailHeader({ brandName });
-  const codeBox = EmailVerificationCode({ code });
-  const footer = EmailFooter({ expirationMinutes });
+  const header = EmailHeader({
+    title: brandName,
+    subtitle: brandSubtitle,
+  });
+
+  const codeBlock = EmailVerificationCode({ code });
+  const footer = EmailFooter({ expirationMinutes: config.expirationMinutes });
 
   return `
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Código de Recuperación - ${brandName}</title>
-    </head>
-    <body style="margin: 0; padding: 24px 12px; background-color: ${colors.bgApp}; font-family: ${typography.fontFamily};">
-      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-          <td align="center">
-            <table role="presentation" style="max-width: 520px; width: 100%; background-color: ${colors.bgCard}; border: 1px solid ${colors.borderCard}; border-radius: 14px; padding: 28px; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.4);" border="0" cellspacing="0" cellpadding="0">
-              <tr>
-                <td>
-                  ${header}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>Código de Verificación - ${brandName}</title>
+  <style>
+    :root {
+      --md-sys-color-surface: ${colors.surface};
+      --md-sys-color-surface-container-lowest: ${colors.surfaceContainerLowest};
+      --md-sys-color-surface-container-low: ${colors.surfaceContainerLow};
+      --md-sys-color-surface-container: ${colors.surfaceContainer};
+      --md-sys-color-primary: ${colors.primary};
+      --md-sys-color-primary-container: ${colors.primaryContainer};
+      --md-sys-color-on-primary-container: ${colors.onPrimaryContainer};
+      --md-sys-color-on-surface: ${colors.onSurface};
+      --md-sys-color-on-surface-variant: ${colors.onSurfaceVariant};
+      --md-sys-color-outline-variant: ${colors.outlineVariant};
+    }
+    a.dp-email-link {
+      color: ${colors.onSurface} !important;
+      text-decoration: none !important;
+    }
+    @media (prefers-color-scheme: dark) {
+      body.dp-body {
+        background-color: ${colors.darkSurface} !important;
+      }
+      table.dp-card {
+        background-color: ${colors.darkSurfaceContainerLow} !important;
+        border-color: ${colors.darkOutlineVariant} !important;
+      }
+      .dp-brand-title,
+      .dp-code-digits {
+        color: ${colors.darkPrimary} !important;
+      }
+      .dp-text-strong,
+      a.dp-email-link {
+        color: ${colors.darkOnSurface} !important;
+      }
+      .dp-text-muted {
+        color: ${colors.darkOnSurfaceVariant} !important;
+      }
+      .dp-email-chip {
+        background-color: ${colors.darkSurfaceContainer} !important;
+        border-left-color: ${colors.darkPrimary} !important;
+      }
+      .dp-code-box,
+      .dp-badge {
+        background-color: ${colors.darkPrimaryContainer} !important;
+        border-color: ${colors.darkOutlineVariant} !important;
+      }
+      .dp-code-eyebrow,
+      .dp-code-hint,
+      .dp-badge {
+        color: ${colors.darkOnPrimaryContainer} !important;
+      }
+      .dp-footer {
+        border-top-color: ${colors.darkOutlineVariant} !important;
+      }
+    }
+  </style>
+</head>
+<body class="dp-body" style="margin: 0; padding: 28px 12px; background-color: ${colors.surface}; font-family: ${typography.fontFamily}; color: ${colors.onSurface};">
+  <table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%">
+    <tr>
+      <td align="center">
+        <table role="presentation" class="dp-card" style="max-width: 520px; width: 100%; background-color: ${colors.surfaceContainerLowest}; border: 1px solid ${colors.outlineVariant}; border-radius: ${shape.cardRadius}; padding: 32px 28px; text-align: left; box-shadow: 0 4px 16px rgba(34, 26, 22, 0.08);" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td>
+              ${header}
 
-                  <h3 style="color: ${colors.textWhite}; font-size: 16px; margin: 0 0 10px 0; font-weight: 600;">
-                    Código para Restablecer Contraseña
-                  </h3>
+              <h3 class="dp-text-strong" style="color: ${colors.onSurface}; font-size: 20px; margin: 0 0 10px 0; font-weight: 700; letter-spacing: -0.015em; line-height: 1.3;">
+                Código para Restablecer Contraseña
+              </h3>
 
-                  <p style="color: ${colors.textMuted}; font-size: 13.5px; line-height: 1.6; margin: 0 0 8px 0;">
-                    Hemos recibido una solicitud para cambiar la contraseña de tu cuenta:
-                  </p>
+              <p class="dp-text-muted" style="color: ${colors.onSurfaceVariant}; font-size: 14px; line-height: 1.6; margin: 0 0 8px 0;">
+                Hemos recibido una solicitud para cambiar la contraseña de tu cuenta:
+              </p>
 
-                  <div style="background-color: rgba(27, 34, 70, 0.5); border-left: 3px solid ${colors.primaryLight}; padding: 8px 12px; margin: 12px 0; border-radius: 4px;">
-                    <span style="color: ${colors.textWhite}; font-size: 13px; font-family: monospace; font-weight: 600;">
-                      ${to}
-                    </span>
-                  </div>
+              <div class="dp-email-chip" style="background-color: ${colors.surfaceContainer}; border-left: 4px solid ${colors.primary}; padding: 10px 14px; margin: 14px 0; border-radius: ${shape.chipRadius};">
+                <a href="mailto:${to}" class="dp-email-link" style="color: ${colors.onSurface}; font-size: 13.5px; font-family: ${typography.monoFamily}; font-weight: 600; text-decoration: none;">
+                  ${to}
+                </a>
+              </div>
 
-                  <p style="color: ${colors.textMuted}; font-size: 13px; line-height: 1.5; margin: 0;">
-                    Usa el siguiente código de seguridad en el sistema para autorizar el cambio de tu contraseña:
-                  </p>
+              <p class="dp-text-muted" style="color: ${colors.onSurfaceVariant}; font-size: 14px; line-height: 1.55; margin: 0;">
+                Usa el siguiente código de seguridad en el sistema para autorizar el cambio de tu contraseña:
+              </p>
 
-                  ${codeBox}
+              ${codeBlock}
 
-                  ${footer}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </body>
-    </html>
-  `;
+              ${footer}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
 }
