@@ -20,7 +20,7 @@ INSERT INTO users (
     '3001234567',
     'CC',
     '1000000001',
-    '$2b$10$9ZSar0stjiLkcAWs5mtab.YdpcX4LFdn64OlBvjVS9vB3mtjYddN6',
+    '$2b$10$ErPQPO0Lp5Aj3bjgTkDmoOiQ5nD6a4XeRWx5IVB.KL5XVzDT7kBYK',
     NULL,
     'admin',
     true,

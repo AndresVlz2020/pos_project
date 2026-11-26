@@ -115,7 +115,7 @@ describe("recuperación de contraseña (sin envío real de correo)", () => {
     expect(ok.status).toBe(200);
 
     // 5) La contraseña anterior ya no funciona.
-    const old = await login({ email: "admin@dpiero.com", password: "12345678" });
+    const old = await login({ email: "admin@dpiero.com", password: "Administrador123$" });
     expect(old.status).toBe(401);
   });
 

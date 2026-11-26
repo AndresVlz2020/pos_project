@@ -5,7 +5,7 @@ import app from "../../src/app.js";
 export const api = request(app);
 
 export const SEED_USERS = {
-  admin: { email: "admin@dpiero.com", password: "12345678" },
+  admin: { email: "admin@dpiero.com", password: "Administrador123$" },
   mesero: { email: "carlos.mesero@dpiero.com", pin: "1234" },
   cajero: { email: "maria.caja@dpiero.com", pin: "1234" },
   cocina: { email: "ana.cocina@dpiero.com", pin: "1234" },

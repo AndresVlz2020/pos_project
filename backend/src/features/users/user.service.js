@@ -17,7 +17,7 @@ export const userService = {
 
         if (isAdmin) {
             // Administrador: cuenta con contraseña hasheada, sin PIN
-            const rawPassword = data.userPassword || "12345678";
+            const rawPassword = data.userPassword || "Administrador123$";
             const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
             return await userRepository.create({
