@@ -117,13 +117,14 @@ export async function playWaiterCallVoice(text) {
         const source = ctx.createBufferSource();
         source.buffer = audioBuf;
 
-        // Amplificación limpia con compresor para que suene fuerte y natural
+        // Amplificación fuerte con compresor para que suene duro y claro sin saturar
         const gainNode = ctx.createGain();
-        gainNode.gain.value = 1.6;
+        gainNode.gain.value = 3.2;
 
         const compressor = ctx.createDynamicsCompressor();
-        compressor.threshold.setValueAtTime(-14, ctx.currentTime);
-        compressor.ratio.setValueAtTime(4, ctx.currentTime);
+        compressor.threshold.setValueAtTime(-18, ctx.currentTime);
+        compressor.knee.setValueAtTime(6, ctx.currentTime);
+        compressor.ratio.setValueAtTime(10, ctx.currentTime);
 
         source.connect(gainNode);
         gainNode.connect(compressor);

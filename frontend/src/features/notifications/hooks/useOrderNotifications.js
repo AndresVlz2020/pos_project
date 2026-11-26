@@ -186,7 +186,7 @@ export function useOrderNotifications() {
       if (active) poll();
     });
 
-    const intervalId = setInterval(poll, 5000);
+    const intervalId = setInterval(poll, 2500);
     const onVisible = () => {
       if (document.visibilityState === "visible") poll();
     };

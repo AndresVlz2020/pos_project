@@ -279,7 +279,10 @@ export const notificationService = {
 
     const digitsMatch = String(table.tableNumber || "").match(/\d+/);
     const shortNum = digitsMatch ? digitsMatch[0] : String(table.tableNumber || "").trim();
-    const spokenText = `¡Atención! Mesero solicitado a mesa ${shortNum}.`;
+    const spokenText = `Mesero solicitado a mesa ${shortNum}`;
+
+    // Pre-calentar el audio MP3 en caché para respuesta instantánea al Mesero
+    this.synthesizeSpeechBuffer(spokenText).catch(() => {});
 
     return await notificationRepository.create({
       type: "waiter_call",
@@ -322,6 +325,7 @@ export const notificationService = {
     const { audioStream } = tts.toStream(cleanText, {
       rate: "-5%",
       pitch: "+2Hz",
+      volume: "+80%",
     });
     const chunks = [];
     for await (const chunk of audioStream) {
