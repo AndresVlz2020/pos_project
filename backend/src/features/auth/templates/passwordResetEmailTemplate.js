@@ -12,7 +12,7 @@ export const EMAIL_DESIGN_TOKENS = {
     surfaceContainerLowest: "#FFFFFF",
     surfaceContainerLow: "#FAF1EC",
     surfaceContainer: "#F4ECE7",
-    surfaceContainerHigh: "#EFE6E0",
+    surfaceContainerHigh: "#EEE6E1",
     // Primarios y contenedores M3
     primary: "#9E4F24",
     onPrimary: "#FFFFFF",
@@ -23,15 +23,15 @@ export const EMAIL_DESIGN_TOKENS = {
     onSurfaceVariant: "#52443D",
     outline: "#85746B",
     outlineVariant: "#D7C2B9",
-    // Acento oscuro para prefers-color-scheme: dark
+    // Acento oscuro para prefers-color-scheme: dark (idéntico a global.css)
     darkSurface: "#181210",
     darkSurfaceContainerLow: "#211A17",
     darkSurfaceContainer: "#251E1B",
     darkPrimary: "#FFB691",
-    darkOnPrimary: "#552002",
-    darkPrimaryContainer: "#7C3812",
+    darkOnPrimary: "#571F00",
+    darkPrimaryContainer: "#7D360E",
     darkOnPrimaryContainer: "#FFDBCA",
-    darkOnSurface: "#F0DFD8",
+    darkOnSurface: "#EDE0DA",
     darkOnSurfaceVariant: "#D7C2B9",
     darkOutlineVariant: "#52443D",
   },
