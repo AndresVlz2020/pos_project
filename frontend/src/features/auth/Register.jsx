@@ -94,7 +94,7 @@ export default function Register() {
             <h2 className="text-headline-sm font-semibold text-center mb-6 text-[var(--md-sys-color-on-surface)]">
               Registro de Cuenta
             </h2>
-            <div className="grid gap-3.5">
+            <div className="grid gap-4">
               <Input
                 label="Nombre"
                 name="userName"

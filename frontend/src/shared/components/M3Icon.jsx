@@ -3,7 +3,7 @@ import { M3_ICON_PATHS } from "./m3IconPaths";
 export default function M3Icon({
   name,
   filled = false,
-  size = 20,
+  size = 24,
   className = "",
   ariaLabel,
   style,
@@ -11,7 +11,13 @@ export default function M3Icon({
 }) {
   const entry = M3_ICON_PATHS[name] || M3_ICON_PATHS.tag;
   const pathData = filled ? entry.f : entry.o;
-  const pxSize = typeof size === "number" ? `${size}px` : size;
+  const numericSize = typeof size === "number" ? size : Number.parseFloat(size);
+  const pxSize =
+    typeof size === "number"
+      ? `${Math.max(24, size)}px`
+      : Number.isFinite(numericSize) && /^\d+(\.\d+)?(px)?$/.test(String(size).trim())
+      ? `${Math.max(24, numericSize)}px`
+      : size;
 
   return (
     <svg

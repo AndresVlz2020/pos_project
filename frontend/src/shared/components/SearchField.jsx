@@ -81,13 +81,13 @@ const SearchField = forwardRef(
         {loading ? (
           <M3Icon
             name="progress_activity"
-            size={20}
+            size={24}
             className="animate-spin text-[var(--md-sys-color-primary)]"
           />
         ) : (
           <M3Icon
             name={iconName}
-            size={20}
+            size={24}
             className="text-[var(--md-sys-color-on-surface-variant)]"
           />
         )}
@@ -113,7 +113,7 @@ const SearchField = forwardRef(
             aria-label="Limpiar búsqueda"
             className="m3-state search__clear size-10 -mr-2 inline-flex items-center justify-center rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] cursor-pointer shrink-0"
           >
-            <M3Icon name="close" size={18} />
+            <M3Icon name="close" size={24} />
           </button>
         )}
       </Container>

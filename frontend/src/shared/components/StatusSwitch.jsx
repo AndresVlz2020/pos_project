@@ -25,15 +25,15 @@ export default function StatusSwitch({
   };
 
   const knobSizes = {
-    sm: isChecked ? "size-5" : "size-4",
-    md: isChecked ? "size-6" : "size-5",
-    lg: isChecked ? "size-7" : "size-6",
+    sm: "size-6",
+    md: "size-6",
+    lg: "size-7",
   };
 
   const knobPositions = {
-    sm: isChecked ? "translate-x-[22px]" : "translate-x-1",
-    md: isChecked ? "translate-x-[22px]" : "translate-x-1",
-    lg: isChecked ? "translate-x-[30px]" : "translate-x-1",
+    sm: isChecked ? "translate-x-[20px]" : "translate-x-0.5",
+    md: isChecked ? "translate-x-[22px]" : "translate-x-0.5",
+    lg: isChecked ? "translate-x-[30px]" : "translate-x-0.5",
   };
 
   return (

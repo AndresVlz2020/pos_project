@@ -124,7 +124,7 @@ export default function PinKeypad({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-[var(--md-sys-color-outline-variant)]">
         <div className="flex items-center gap-2.5 min-w-0">
           <StaffAvatar staff={selectedStaff} sizeClass="size-10" />
@@ -163,7 +163,7 @@ export default function PinKeypad({
         <p className="text-sm leading-5 text-[var(--md-sys-color-on-surface-variant)] mb-2">
           Ingresa tu PIN de 4 dígitos
         </p>
-        <div className="flex items-center justify-center gap-3.5">
+        <div className="flex items-center justify-center gap-4">
           {[0, 1, 2, 3].map((index) => {
             const isFilled = pinInput.length > index;
             return (
@@ -186,7 +186,7 @@ export default function PinKeypad({
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-2 max-w-[264px] mx-auto">
+      <div className="grid grid-cols-3 gap-4 max-w-[264px] mx-auto">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
           <button
             key={num}

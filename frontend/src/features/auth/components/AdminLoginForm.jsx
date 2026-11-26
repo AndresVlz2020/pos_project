@@ -153,7 +153,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
 
   if (step === "email") {
     return (
-      <form onSubmit={handleValidateEmail} className="space-y-3.5">
+      <form onSubmit={handleValidateEmail} className="space-y-4">
         <div className="text-center mb-3">
           <h2 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)]">
             Acceso Administrativo
@@ -217,7 +217,7 @@ export default function AdminLoginForm({ onSubmit, onBiometricLogin }) {
   }
 
   return (
-    <form onSubmit={handleSubmitCredentials} className="space-y-3.5">
+    <form onSubmit={handleSubmitCredentials} className="space-y-4">
       <div className="text-center mb-2">
         <h2 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)]">
           Acceso Administrativo

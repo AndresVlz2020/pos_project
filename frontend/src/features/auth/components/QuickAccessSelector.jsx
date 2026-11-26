@@ -93,7 +93,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
   const isSearching = Boolean(searchQuery.trim());
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="text-center">
         <h2 className="text-title-md font-semibold text-[var(--md-sys-color-on-surface)]">
           Selecciona tu Perfil de Turno
@@ -118,7 +118,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
       </div>
 
       {isSearching ? (
-        <div className="space-y-3 pt-0.5">
+        <div className="space-y-4 pt-0.5">
           <div className="flex items-center justify-between text-sm px-1">
             <span className="text-[var(--md-sys-color-on-surface-variant)] font-medium">
               Resultados encontrados ({filteredStaffList.length})
@@ -177,7 +177,7 @@ export default function QuickAccessSelector({ onSelectStaff }) {
           )}
         </div>
       ) : (
-        <div className="space-y-3 pt-0.5">
+        <div className="space-y-4 pt-0.5">
           <div className="flex items-center justify-center px-0.5">
             <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--md-sys-color-on-surface-variant)]">
               Acceso Rápido
