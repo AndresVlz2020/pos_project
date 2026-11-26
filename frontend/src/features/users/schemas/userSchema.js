@@ -125,7 +125,7 @@ export const userSchema = z.object({
 
   userPassword: z
     .string()
-    .min(8, "La contraseña debe tener al menos 10 caracteres")
+    .min(10, "La contraseña debe tener al menos 10 caracteres")
     .optional()
     .or(z.literal("")),
 
@@ -144,7 +144,7 @@ export const loginSchema = z.object({
 
   userPassword: z
     .string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres"),
+    .min(10, "La contraseña debe tener al menos 10 caracteres"),
 
   remember: z.boolean().optional(),
 });
