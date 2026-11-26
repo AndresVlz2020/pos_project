@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import M3Icon from "./M3Icon";
 import { IconButton } from "./IconButton";
+import { useScrollLock } from "../hooks/useScrollLock";
 
 export function Modal({
   isOpen = false,
@@ -11,6 +12,8 @@ export function Modal({
   maxWidth = "max-w-md",
   className = "",
 }) {
+  useScrollLock(isOpen);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape" && isOpen && onClose) {
@@ -18,11 +21,9 @@ export function Modal({
       }
     };
     if (isOpen) {
-      document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => {
-      document.body.style.overflow = "unset";
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);

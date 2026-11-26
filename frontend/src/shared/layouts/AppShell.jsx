@@ -12,6 +12,7 @@ import BiometricSettingsModal from "../components/BiometricSettingsModal";
 import UserProfileModal from "../components/UserProfileModal";
 import NotificationBell from "@/features/notifications/components/NotificationBell";
 import Footer from "./Footer";
+import { useScrollLock } from "../hooks/useScrollLock";
 
 export function AppShell({ children, showFooter = false }) {
   const {
@@ -31,6 +32,8 @@ export function AppShell({ children, showFooter = false }) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isBiometricsOpen, setIsBiometricsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  useScrollLock(mobileDrawerOpen);
 
   const toggleRail = () => {
     setRailExpanded((prev) => {

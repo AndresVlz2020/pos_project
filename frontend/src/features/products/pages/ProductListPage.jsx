@@ -18,6 +18,9 @@ const productReportFields = [
 export default function ProductListPage() {
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [stockFilter, setStockFilter] = useState("all");
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const { granted: canToggleStatus } = usePermission("disable_product");
@@ -103,6 +106,66 @@ export default function ProductListPage() {
     }
   };
 
+  const { categoryOptions, filteredProducts } = useMemo(() => {
+    const uniqueCats = Array.from(
+      new Set(productList.map((p) => p.category).filter(Boolean))
+    ).sort();
+    const filtered = productList.filter((p) => {
+      if (categoryFilter !== "all" && String(p.category || "").toLowerCase() !== categoryFilter.toLowerCase()) {
+        return false;
+      }
+      if (statusFilter !== "all" && String(p.status || "").toLowerCase() !== statusFilter.toLowerCase()) {
+        return false;
+      }
+      const stockVal = Math.max(0, Math.trunc(Number(p.stock ?? 0)));
+      if (stockFilter === "available" && stockVal <= 0) return false;
+      if (stockFilter === "out" && stockVal > 0) return false;
+      return true;
+    });
+    return {
+      categoryOptions: [
+        { value: "all", label: "Todas las categorías" },
+        ...uniqueCats.map((c) => ({ value: c, label: c })),
+      ],
+      filteredProducts: filtered,
+    };
+  }, [productList, categoryFilter, statusFilter, stockFilter]);
+
+  const tableFilters = useMemo(
+    () => [
+      {
+        key: "category",
+        label: "Categoría",
+        value: categoryFilter,
+        onChange: setCategoryFilter,
+        options: categoryOptions,
+      },
+      {
+        key: "status",
+        label: "Estado",
+        value: statusFilter,
+        onChange: setStatusFilter,
+        options: [
+          { value: "all", label: "Todos los estados" },
+          { value: "Activo", label: "Activo" },
+          { value: "Inactivo", label: "Inactivo" },
+        ],
+      },
+      {
+        key: "stock",
+        label: "Disponibilidad",
+        value: stockFilter,
+        onChange: setStockFilter,
+        options: [
+          { value: "all", label: "Todas" },
+          { value: "available", label: "Con stock" },
+          { value: "out", label: "Agotado" },
+        ],
+      },
+    ],
+    [categoryFilter, statusFilter, stockFilter, categoryOptions]
+  );
+
   const columns = useMemo(
     () => getProductColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus, canEdit }),
     [canToggleStatus, canEdit]
@@ -150,14 +213,24 @@ export default function ProductListPage() {
           Cargando productos...
         </div>
       ) : (
-        <DataTable className="flex-1" data={productList} columns={columns} />
+        <DataTable
+          className="flex-1"
+          data={filteredProducts}
+          columns={columns}
+          filters={tableFilters}
+          onClearFilters={() => {
+            setCategoryFilter("all");
+            setStatusFilter("all");
+            setStockFilter("all");
+          }}
+        />
       )}
 
       <ListReportModal
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         title="menú gastronómico"
-        data={productList}
+        data={filteredProducts}
         fields={productReportFields}
         filePrefix="menu-platillos"
         onReportSuccess={(msg) =>

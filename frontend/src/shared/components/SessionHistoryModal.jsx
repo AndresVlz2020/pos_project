@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { M3Icon, IconButton, Select } from "@/shared";
+import { M3Icon, IconButton, Select, useScrollLock } from "@/shared";
 import { getSessionHistory, formatDuration } from "@/services/sessionService";
 import { getUsers } from "@/services/userService";
 import {
@@ -20,6 +20,8 @@ const DATE_PRESETS = [
 ];
 
 export default function SessionHistoryModal({ isOpen, onClose, isAdmin = false }) {
+  useScrollLock(isOpen);
+
   const [rows, setRows] = useState([]);
   const [directoryUsers, setDirectoryUsers] = useState([]);
   const [loadedAtMs, setLoadedAtMs] = useState(() => Date.now());

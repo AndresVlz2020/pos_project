@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Button, M3Icon, IconButton } from "@/shared";
+import { Button, M3Icon, IconButton, useScrollLock } from "@/shared";
 import { getProductImage, imgPunta } from "@/utils/imageHelper";
 
 const CATEGORY_ICON_MAP = {
@@ -21,11 +21,10 @@ export default function PosProductDetailModal({
 }) {
   const [quantity, setQuantity] = useState(1);
 
+  useScrollLock(Boolean(isOpen && product));
+
   useEffect(() => {
     if (!isOpen) return undefined;
-
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
 
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -35,7 +34,6 @@ export default function PosProductDetailModal({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.body.style.overflow = prevOverflow || "unset";
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);

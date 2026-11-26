@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { DataTable, Button, ListReportModal, ConfirmDialog, Alert, Select } from "@/shared";
+import { DataTable, Button, ListReportModal, ConfirmDialog, Alert } from "@/shared";
 import { getInventoryColumns } from "../table/InventoryColumns";
 import { getInventory, updateInventoryStatus } from "../services/inventoryServices";
 import usePermission from "@/features/access/services/usePermission";
@@ -22,6 +22,7 @@ export default function InventoryListPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [brandFilter, setBrandFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [pendingChange, setPendingChange] = useState(null);
   const [feedback, setFeedback] = useState(null);
@@ -127,15 +128,21 @@ export default function InventoryListPage() {
     setPendingChange(null);
   };
 
-  const { brandOptions, filteredInventory } = useMemo(() => {
+  const { brandOptions, categoryOptions, filteredInventory } = useMemo(() => {
     const uniqueBrands = Array.from(
       new Set(inventoryList.map((i) => i.brand).filter(Boolean))
+    ).sort();
+    const uniqueCategories = Array.from(
+      new Set(inventoryList.map((i) => i.productCategory).filter(Boolean))
     ).sort();
     const filtered = inventoryList.filter((item) => {
       if (statusFilter !== "all" && String(item.status || "").toLowerCase() !== statusFilter.toLowerCase()) {
         return false;
       }
       if (brandFilter !== "all" && String(item.brand || "").toLowerCase() !== brandFilter.toLowerCase()) {
+        return false;
+      }
+      if (categoryFilter !== "all" && String(item.productCategory || "").toLowerCase() !== categoryFilter.toLowerCase()) {
         return false;
       }
       return true;
@@ -145,9 +152,46 @@ export default function InventoryListPage() {
         { value: "all", label: "Todas las marcas" },
         ...uniqueBrands.map((b) => ({ value: b, label: b })),
       ],
+      categoryOptions: [
+        { value: "all", label: "Todas las categorías" },
+        ...uniqueCategories.map((c) => ({ value: c, label: c })),
+      ],
       filteredInventory: filtered,
     };
-  }, [inventoryList, statusFilter, brandFilter]);
+  }, [inventoryList, statusFilter, brandFilter, categoryFilter]);
+
+  const tableFilters = useMemo(
+    () => [
+      {
+        key: "status",
+        label: "Estado",
+        value: statusFilter,
+        onChange: setStatusFilter,
+        options: [
+          { value: "all", label: "Todos los estados" },
+          { value: "Activo", label: "Activo" },
+          { value: "Agotado", label: "Agotado" },
+          { value: "Vencido", label: "Vencido" },
+          { value: "Inactivo", label: "Inactivo" },
+        ],
+      },
+      {
+        key: "brand",
+        label: "Marca",
+        value: brandFilter,
+        onChange: setBrandFilter,
+        options: brandOptions,
+      },
+      {
+        key: "category",
+        label: "Categoría",
+        value: categoryFilter,
+        onChange: setCategoryFilter,
+        options: categoryOptions,
+      },
+    ],
+    [statusFilter, brandFilter, categoryFilter, brandOptions, categoryOptions]
+  );
 
   const columns = useMemo(
     () => getInventoryColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus, canEdit }),
@@ -191,37 +235,22 @@ export default function InventoryListPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-        <Select
-          label="Filtrar por estado"
-          size="sm"
-          includeEmptyOption={false}
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          options={[
-            { value: "all", label: "Todos los estados" },
-            { value: "Activo", label: "Activo" },
-            { value: "Agotado", label: "Agotado" },
-            { value: "Vencido", label: "Vencido" },
-            { value: "Inactivo", label: "Inactivo" },
-          ]}
-        />
-        <Select
-          label="Filtrar por marca"
-          size="sm"
-          includeEmptyOption={false}
-          value={brandFilter}
-          onChange={(e) => setBrandFilter(e.target.value)}
-          options={brandOptions}
-        />
-      </div>
-
       {loading && inventoryList.length === 0 ? (
         <div className="flex-1 flex items-center justify-center py-12 text-body-md text-[var(--md-sys-color-on-surface-variant)]">
           Cargando inventario...
         </div>
       ) : (
-        <DataTable className="flex-1" data={filteredInventory} columns={columns} />
+        <DataTable
+          className="flex-1"
+          data={filteredInventory}
+          columns={columns}
+          filters={tableFilters}
+          onClearFilters={() => {
+            setStatusFilter("all");
+            setBrandFilter("all");
+            setCategoryFilter("all");
+          }}
+        />
       )}
 
       <ListReportModal

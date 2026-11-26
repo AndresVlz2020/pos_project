@@ -6,6 +6,7 @@ import Select from "./Select";
 import FileInput from "./FileInput";
 import M3Icon from "./M3Icon";
 import { IconButton } from "./IconButton";
+import { useScrollLock } from "../hooks/useScrollLock";
 import { getMyProfileApi, updateMyProfileApi } from "@/services/authService";
 import { getDocumentTypes } from "@/services/selectServices";
 import { getUserAvatar, imgWorkerCarlos } from "@/utils/imageHelper";
@@ -26,6 +27,8 @@ function formatShortDate(val) {
  * - Solo el Administrador puede editar su propio perfil y modificar el correo de soporte global.
  */
 export default function UserProfileModal({ isOpen, onClose, onProfileUpdated }) {
+  useScrollLock(isOpen);
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState(null);

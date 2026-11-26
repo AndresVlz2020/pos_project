@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, M3Icon, showWarningAlert } from "@/shared";
+import { Button, M3Icon, showWarningAlert, useScrollLock } from "@/shared";
 import { logout } from "@/services/authService";
 
 export function SessionTimeout({ timeoutMinutes = 10, warningSeconds = 60 }) {
   const navigate = useNavigate();
   const [showWarning, setShowWarning] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(warningSeconds);
+
+  useScrollLock(showWarning);
 
   const timeoutMs = timeoutMinutes * 60 * 1000;
   const warningMs = timeoutMs - warningSeconds * 1000;

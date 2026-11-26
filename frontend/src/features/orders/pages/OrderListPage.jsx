@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { DataTable, Button, ListReportModal, ConfirmDialog, Alert, Select, Input } from "@/shared";
+import { DataTable, Button, ListReportModal, ConfirmDialog, Alert } from "@/shared";
 import { getOrderColumns } from "../table/OrderColumns";
 import { getOrders, cancelOrder } from "../services/orderServices";
 import OrderViewModal from "../components/OrderViewModal";
@@ -202,33 +202,6 @@ export default function OrderListPage() {
         className="mb-3"
       />
 
-      {/* Filtros en tiempo real por mesa, mesero y fecha */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-        <Select
-          label="Filtrar por mesa"
-          size="sm"
-          includeEmptyOption={false}
-          value={tableFilter}
-          onChange={(e) => setTableFilter(e.target.value)}
-          options={tableOptions}
-        />
-        <Select
-          label="Filtrar por mesero"
-          size="sm"
-          includeEmptyOption={false}
-          value={waiterFilter}
-          onChange={(e) => setWaiterFilter(e.target.value)}
-          options={waiterOptions}
-        />
-        <Input
-          label="Filtrar por fecha"
-          type="date"
-          size="sm"
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-        />
-      </div>
-
       {feedback && (
         <div className="mb-4">
           <Alert
@@ -245,7 +218,55 @@ export default function OrderListPage() {
           Cargando órdenes...
         </div>
       ) : (
-        <DataTable className="flex-1" data={filteredOrders} columns={columns} />
+        <DataTable
+          className="flex-1"
+          data={filteredOrders}
+          columns={columns}
+          filters={[
+            {
+              key: "status",
+              label: "Estado",
+              value: statusFilter,
+              onChange: setStatusFilter,
+              options: [
+                { value: "all", label: "Todos los estados" },
+                { value: "Creada", label: "Creada" },
+                { value: "Completada", label: "Completada" },
+                { value: "Entregada", label: "Entregada" },
+                { value: "Pagada", label: "Pagada" },
+                { value: "Anulada", label: "Anulada" },
+              ],
+            },
+            {
+              key: "table",
+              label: "Mesa",
+              value: tableFilter,
+              onChange: setTableFilter,
+              options: tableOptions,
+            },
+            {
+              key: "waiter",
+              label: "Mesero",
+              value: waiterFilter,
+              onChange: setWaiterFilter,
+              options: waiterOptions,
+            },
+            {
+              key: "date",
+              label: "Fecha",
+              type: "date",
+              defaultValue: "",
+              value: dateFilter,
+              onChange: setDateFilter,
+            },
+          ]}
+          onClearFilters={() => {
+            setStatusFilter("all");
+            setTableFilter("all");
+            setWaiterFilter("all");
+            setDateFilter("");
+          }}
+        />
       )}
 
       {/* Modal de consulta de orden */}

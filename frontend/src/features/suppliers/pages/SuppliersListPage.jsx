@@ -15,6 +15,7 @@ const suppliersReportFields = [
 
 export default function SuppliersListPage() {
   const [suppliersList, setSuppliersList] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("all");
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const { granted: canToggleStatus } = usePermission("disable_supplier");
@@ -94,6 +95,32 @@ export default function SuppliersListPage() {
     }
   };
 
+  const filteredSuppliers = useMemo(() => {
+    return sortedSuppliers.filter((s) => {
+      const isAct = s.isActive ?? s.is_active ?? true;
+      if (statusFilter === "active" && !isAct) return false;
+      if (statusFilter === "inactive" && isAct) return false;
+      return true;
+    });
+  }, [sortedSuppliers, statusFilter]);
+
+  const tableFilters = useMemo(
+    () => [
+      {
+        key: "status",
+        label: "Estado",
+        value: statusFilter,
+        onChange: setStatusFilter,
+        options: [
+          { value: "all", label: "Todos los estados" },
+          { value: "active", label: "Activos" },
+          { value: "inactive", label: "Inactivos" },
+        ],
+      },
+    ],
+    [statusFilter]
+  );
+
   const columns = useMemo(
     () => getSuppliersColumns({ onRequestStatusChange: handleRequestStatusChange, canToggleStatus, canEdit }),
     [canToggleStatus, canEdit]
@@ -136,13 +163,19 @@ export default function SuppliersListPage() {
         </div>
       )}
 
-      <DataTable className="flex-1" data={sortedSuppliers} columns={columns} />
+      <DataTable
+        className="flex-1"
+        data={filteredSuppliers}
+        columns={columns}
+        filters={tableFilters}
+        onClearFilters={() => setStatusFilter("all")}
+      />
 
       <ListReportModal
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         title="proveedores y distribuidores"
-        data={sortedSuppliers}
+        data={filteredSuppliers}
         fields={suppliersReportFields}
         filePrefix="proveedores"
       />

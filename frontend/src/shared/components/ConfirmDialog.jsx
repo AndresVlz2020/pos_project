@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import Button from "./Button";
 import M3Icon from "./M3Icon";
 import { IconButton } from "./IconButton";
+import { useScrollLock } from "../hooks/useScrollLock";
 
 export function ConfirmDialog({
   isOpen = false,
@@ -14,6 +15,8 @@ export function ConfirmDialog({
   isDestructive = false,
   isLoading = false,
 }) {
+  useScrollLock(isOpen);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape" && isOpen && onCancel) {
@@ -21,11 +24,9 @@ export function ConfirmDialog({
       }
     };
     if (isOpen) {
-      document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => {
-      document.body.style.overflow = "unset";
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onCancel]);

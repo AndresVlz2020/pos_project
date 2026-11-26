@@ -6,6 +6,7 @@ import { IconButton } from "./IconButton";
 import Input from "./Input";
 import { ConfirmDialog } from "./ConfirmDialog";
 import DataConsentField from "./DataConsentField";
+import { useScrollLock } from "../hooks/useScrollLock";
 import {
   getBiometricCapabilities,
   listMyBiometricsApi,
@@ -31,6 +32,8 @@ export default function BiometricSettingsModal({
   isAdmin = false,
   userName = "",
 }) {
+  useScrollLock(isOpen);
+
   const [capabilities, setCapabilities] = useState({
     supported: false,
     platformAvailable: false,

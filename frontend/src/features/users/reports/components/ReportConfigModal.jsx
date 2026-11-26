@@ -2,9 +2,11 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { userReportFields } from "../config/userReportFields";
 import { generateUserReport } from "../services/generateUserReport";
-import { Button, Input, Select, Checkbox, Alert, M3Icon, IconButton } from "@/shared";
+import { Button, Input, Select, Checkbox, Alert, M3Icon, IconButton, useScrollLock } from "@/shared";
 
 export default function ReportConfigModal({ isOpen, onClose, data = [] }) {
+  useScrollLock(isOpen);
+
   const [format, setFormat] = useState("pdf");
   const [scope, setScope] = useState("all");
   const [documentNumber, setDocumentNumber] = useState("");

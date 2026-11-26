@@ -6,6 +6,7 @@ import Select from "./Select";
 import Alert from "./Alert";
 import M3Icon from "./M3Icon";
 import { IconButton } from "./IconButton";
+import { useScrollLock } from "../hooks/useScrollLock";
 import { generateExcelReport } from "../../features/users/reports/services/generateExcelReport";
 import { generatePdfReport } from "../../features/users/reports/services/generatePdfReport";
 
@@ -20,6 +21,8 @@ export default function ListReportModal({
   statusKey = "status",
   onReportSuccess,
 }) {
+  useScrollLock(isOpen);
+
   const [format, setFormat] = useState("pdf");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedKeys, setSelectedKeys] = useState(() =>

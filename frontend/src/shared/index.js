@@ -51,3 +51,4 @@ export {
 
 // Hooks
 export { useInactivityTimeout } from "./hooks/useInactivityTimeout";
+export { useScrollLock } from "./hooks/useScrollLock";

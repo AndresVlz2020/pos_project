@@ -20,6 +20,8 @@ import { getStoredAuthUser } from "@/shared/utils/authStorage";
 export default function UserListPage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [userList, setUserList] = useState([]);
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState(null);
 
@@ -122,6 +124,53 @@ export default function UserListPage() {
     [canToggleStatus]
   );
 
+  const { roleOptions, filteredUsers } = useMemo(() => {
+    const uniqueRoles = Array.from(
+      new Set(userList.map((u) => u.userType || u.role).filter(Boolean))
+    ).sort();
+    const filtered = userList.filter((u) => {
+      const r = u.userType || u.role || "";
+      if (roleFilter !== "all" && r.toLowerCase() !== roleFilter.toLowerCase()) {
+        return false;
+      }
+      const isAct = u.isActive ?? u.is_active ?? true;
+      if (statusFilter === "active" && !isAct) return false;
+      if (statusFilter === "inactive" && isAct) return false;
+      return true;
+    });
+    return {
+      roleOptions: [
+        { value: "all", label: "Todos los roles" },
+        ...uniqueRoles.map((r) => ({ value: r, label: r })),
+      ],
+      filteredUsers: filtered,
+    };
+  }, [userList, roleFilter, statusFilter]);
+
+  const tableFilters = useMemo(
+    () => [
+      {
+        key: "role",
+        label: "Rol",
+        value: roleFilter,
+        onChange: setRoleFilter,
+        options: roleOptions,
+      },
+      {
+        key: "status",
+        label: "Estado",
+        value: statusFilter,
+        onChange: setStatusFilter,
+        options: [
+          { value: "all", label: "Todos los estados" },
+          { value: "active", label: "Activos" },
+          { value: "inactive", label: "Inactivos" },
+        ],
+      },
+    ],
+    [roleFilter, statusFilter, roleOptions]
+  );
+
   if (!canViewUsers && !loading) {
     return (
       <div className="flex-1 flex items-center justify-center p-4">
@@ -185,13 +234,22 @@ export default function UserListPage() {
         </div>
       )}
 
-      <DataTable className="flex-1" data={userList} columns={columns} />
+      <DataTable
+        className="flex-1"
+        data={filteredUsers}
+        columns={columns}
+        filters={tableFilters}
+        onClearFilters={() => {
+          setRoleFilter("all");
+          setStatusFilter("all");
+        }}
+      />
 
       <ReportConfigModal
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         title="Usuarios del sistema"
-        data={userList}
+        data={filteredUsers}
         filePrefix="usuarios"
       />
     </div>

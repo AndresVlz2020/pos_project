@@ -4,6 +4,7 @@ import M3Icon from "./M3Icon";
 import Button from "./Button";
 import Input from "./Input";
 import { IconButton } from "./IconButton";
+import { useScrollLock } from "../hooks/useScrollLock";
 import { registerAdminStepUpListener } from "@/shared/services/adminStepUpService";
 import {
   getBiometricCapabilities,
@@ -23,6 +24,8 @@ export default function AdminStepUpModal() {
   const [infoMsg, setInfoMsg] = useState("");
   const autoTriggeredRef = useRef(false);
   const cachedOptionsRef = useRef(null);
+
+  useScrollLock(Boolean(requestState));
 
   useEffect(() => {
     return registerAdminStepUpListener(({ actionLabel }) => {

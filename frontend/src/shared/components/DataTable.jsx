@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import Button from "./Button";
 import SearchField from "./SearchField";
 import Select from "./Select";
+import Input from "./Input";
 import M3Icon from "./M3Icon";
 import { IconButton } from "./IconButton";
 
@@ -39,13 +40,21 @@ export default function DataTable({
   compact = false,
   defaultPageSize = 5,
   storageKey = "",
+  filters = [],
+  onClearFilters,
 }) {
   const resolvedKey = resolveTableStorageKey(storageKey);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [pagination, setPagination] = useState(() => ({
     pageIndex: 0,
     pageSize: readPersistedPageSize(resolvedKey, defaultPageSize),
   }));
+
+  const activeFilterCount = filters.filter((f) => {
+    const defVal = f.defaultValue ?? "all";
+    return f.value !== undefined && f.value !== null && f.value !== "" && f.value !== defVal;
+  }).length;
 
   useEffect(() => {
     try {
@@ -82,15 +91,36 @@ export default function DataTable({
 
   return (
     <div className="w-full flex flex-col gap-4">
-      {/* Toolbar M3: SearchBar + Selector de filas */}
+      {/* Toolbar M3: SearchBar + Botón de Filtros + Selector de filas */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
-        <div className="w-full sm:w-96">
-          <SearchField
-            placeholder="Buscar en la tabla..."
-            value={globalFilter ?? ""}
-            onChange={(val) => setGlobalFilter(val)}
-            size="sm"
-          />
+        <div className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[360px]">
+          <div className="flex-1 sm:w-80">
+            <SearchField
+              placeholder="Buscar en la tabla..."
+              value={globalFilter ?? ""}
+              onChange={(val) => setGlobalFilter(val)}
+              size="sm"
+            />
+          </div>
+          {filters.length > 0 && (
+            <div className="relative shrink-0">
+              <IconButton
+                variant={filtersOpen || activeFilterCount > 0 ? "tonal" : "standard"}
+                hitSize={40}
+                iconSize={20}
+                ariaLabel="Mostrar u ocultar filtros"
+                title="Filtros de la tabla"
+                onClick={() => setFiltersOpen((prev) => !prev)}
+              >
+                <M3Icon name="filter_list" size={20} />
+              </IconButton>
+              {activeFilterCount > 0 && (
+                <span className="pointer-events-none absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] text-[10px] font-bold leading-[18px] text-center tabular-nums">
+                  {activeFilterCount}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2.5 text-sm text-[var(--md-sys-color-on-surface-variant)]">
@@ -110,6 +140,48 @@ export default function DataTable({
           />
         </div>
       </div>
+
+      {filtersOpen && filters.length > 0 && (
+        <div className="dpiero-modal-in rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] p-3.5 sm:p-4 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+            {filters.map((f) =>
+              f.type === "date" ? (
+                <Input
+                  key={f.key}
+                  label={f.label}
+                  type="date"
+                  size="sm"
+                  value={f.value ?? ""}
+                  onChange={(e) => f.onChange?.(e.target.value)}
+                />
+              ) : (
+                <Select
+                  key={f.key}
+                  label={f.label}
+                  size="sm"
+                  includeEmptyOption={false}
+                  value={f.value ?? (f.defaultValue ?? "all")}
+                  onChange={(e) => f.onChange?.(e.target.value)}
+                  options={f.options || []}
+                />
+              )
+            )}
+          </div>
+          {activeFilterCount > 0 && onClearFilters && (
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="text"
+                size="sm"
+                leadingIcon="close"
+                onClick={onClearFilters}
+              >
+                Limpiar filtros ({activeFilterCount})
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Vista Móvil en Tarjetas M3 (< sm) */}
       <div className="sm:hidden space-y-3">

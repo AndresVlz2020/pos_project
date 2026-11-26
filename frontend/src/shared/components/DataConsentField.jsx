@@ -4,6 +4,7 @@ import Checkbox from "./Checkbox";
 import Button from "./Button";
 import M3Icon from "./M3Icon";
 import { IconButton } from "./IconButton";
+import { useScrollLock } from "../hooks/useScrollLock";
 
 /**
  * Checkbox reutilizable de autorización de tratamiento de datos personales (Ley 1581 de 2012)
@@ -20,6 +21,8 @@ export default function DataConsentField({
   className = "",
 }) {
   const [showPolicy, setShowPolicy] = useState(false);
+
+  useScrollLock(showPolicy);
 
   return (
     <div className={`space-y-1 ${className}`}>
